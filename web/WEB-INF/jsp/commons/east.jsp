@@ -6,9 +6,6 @@
 
 <%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-
-
 <div class="ui-layout-content east">
 
 </div>

@@ -56,4 +56,24 @@
     <welcome-file-list>
         <welcome-file>/index.jsp</welcome-file>
     </welcome-file-list>
+    <!-- See http://www.stripesframework.org/display/stripes/Localization (bottom of the page) -->
+    <context-param>
+        <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+        <param-value>StripesResources</param-value>
+        <!-- huidige locale wordt hier automatisch slim achtergeplakt (_nl etc.) -->
+    </context-param>
+
+    <context-param>
+        <description>
+            Puntkomma gescheiden directories/shares/drives die de roots vormen van waaruit metadata gezocht kan worden.
+            Elke root kan weer een displayname bevatten na een komma.
+            Voorbeeld:
+            X:\, OudeShare; Y:\, Nieuwe Share
+
+            Deze scheidingstekens zijn uiteraard niet correct in de zin dat een ";" voor mag komen in een windows-bestandsnaam.
+            Hier dealen we mee als we het tegenkomen. Voor nu is dit goed genoeg.
+        </description>
+        <param-name>CatalogRoots</param-name>
+        <param-value>D:\ArcCatalogRoot, Root</param-value>
+    </context-param>
 </web-app>

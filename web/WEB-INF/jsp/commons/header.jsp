@@ -6,9 +6,6 @@
 
 <%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-
-
 <div class="ui-layout-content header">
     <div class="login-info-block">
         <div class="logged-in-as">
@@ -17,5 +14,5 @@
         </div>
         <stripes:link href="/logout.jsp" class="logout-link">Uitloggen</stripes:link>
     </div>
-    <img src="<stripes:url value="${contextPath}/images/datastorelinkerlogo.png"/>" alt="DataStoreLinker Logo" style="margin-left: 50px;" />
+    <img src="<stripes:url value="${contextPath}/images/B3pCatalogLogo.png"/>" alt="B3pCatalog Logo" style="margin-left: 50px;" />
 </div>

@@ -12,7 +12,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta http-equiv="Expires" content="-1" />
         <meta http-equiv="Cache-Control" content="max-age=0, no-store" />
 
@@ -44,8 +43,8 @@
                 $("body").layout({
                     resizable: true,
                     closable: false,
-                    west__size: 50,
-                    east__size: 50,
+                    west__size: 200,
+                    east__size: 0,
                     north__size: 50,
                     south__size: 50/*,
                     spacing_open: 0,
@@ -62,7 +61,7 @@
             </stripes:layout-component>
         </div>
 
-        <div class="ui-layout-west">
+        <div class="ui-layout-west" id="west">
             <stripes:layout-component name="west">
                 <jsp:include page="/WEB-INF/jsp/commons/west.jsp"/>
             </stripes:layout-component>
@@ -80,7 +79,7 @@
             </stripes:layout-component>
         </div>
 
-        <div id="centerWrapper" class="ui-layout-center" style="height: 100%">
+        <div class="ui-layout-center" id="center" style="height: 100%">
             <stripes:layout-component name="content"/>
         </div>
 
