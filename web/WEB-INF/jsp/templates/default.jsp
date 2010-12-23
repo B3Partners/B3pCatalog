@@ -41,14 +41,16 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                var mainTabsLayout = $("body").layout($.extend({}, defaultLayoutOptions, {
+                $("body").layout({
+                    resizable: true,
+                    closable: false,
                     west__size: 50,
                     east__size: 50,
                     north__size: 50,
-                    south__size: 50,
+                    south__size: 50/*,
                     spacing_open: 0,
-                    spacing_close: 0
-                }));
+                    spacing_close: 0*/
+                });
             });
         </script>
 
@@ -66,7 +68,7 @@
             </stripes:layout-component>
         </div>
 
-        <div class="ui-layout-west">
+        <div class="ui-layout-east">
             <stripes:layout-component name="east">
                 <jsp:include page="/WEB-INF/jsp/commons/east.jsp"/>
             </stripes:layout-component>
