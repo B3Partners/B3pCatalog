@@ -7,7 +7,7 @@
 
 <stripes:layout-render name="/WEB-INF/jsp/templates/default.jsp" pageTitle="B3pCatalog">
     <stripes:layout-component name="west">
-        <jsp:include page="/WEB-INF/jsp/main/folderTree.jsp"/>
+        <jsp:include page="/WEB-INF/jsp/main/filetree.jsp"/>
     </stripes:layout-component>
     <stripes:layout-component name="content">
         <jsp:include page="/WEB-INF/jsp/main/mde.jsp"/>
