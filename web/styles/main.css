@@ -66,4 +66,8 @@
     width: 200px;
 }
 
+.ui-layout-resizer {
+    background-color: #dddddd;
+    border: 1px solid #bbbbbb;
+}
 

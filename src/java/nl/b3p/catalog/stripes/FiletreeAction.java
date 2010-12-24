@@ -119,13 +119,14 @@ public class FiletreeAction extends DefaultAction {
             filesList.add(newFile);
         }
 
-        Collections.sort(dirsList, new DirExtensionComparator());
-        Collections.sort(filesList, new FileExtensionComparator());
-
         dc.setDirs(dirsList);
         dc.setFiles(filesList);
 
         filterOutFilesToHide(dc);
+
+        // sort just at the end, because filters (above) could have needed sorting.
+        Collections.sort(dirsList, new DirExtensionComparator());
+        Collections.sort(filesList, new FileExtensionComparator());
 
         if (subDirList != null && subDirList.size() > 0) {
             String subDirString = subDirList.remove(0);
@@ -143,7 +144,30 @@ public class FiletreeAction extends DefaultAction {
     }
 
     protected void filterOutFilesToHide(DirContent dc) {
+        filterOutMetadataFiles(dc);
         filterOutShapeExtraFiles(dc);
+    }
+
+    protected void filterOutMetadataFiles(DirContent dc) {
+        List<nl.b3p.catalog.filetree.File> toBeIgnoredFiles = new ArrayList<nl.b3p.catalog.filetree.File>();
+
+        List<nl.b3p.catalog.filetree.File> filesList = dc.getFiles();
+        Collections.sort(filesList, new FilenameComparator());
+        
+        String lastFilename = null;
+        for (nl.b3p.catalog.filetree.File file : filesList) {
+            String filename = file.getName();
+
+            if (lastFilename == null || !filename.startsWith(lastFilename)) {
+                lastFilename = filename;
+            } else if (filename.length() == (lastFilename.length() + 4) && filename.endsWith(".xml")) {
+                toBeIgnoredFiles.add(file);
+            }
+        }
+
+        for (nl.b3p.catalog.filetree.File file : toBeIgnoredFiles) {
+            filesList.remove(file);
+        }
     }
 
     protected void filterOutShapeExtraFiles(DirContent dc) {
@@ -279,7 +303,6 @@ public class FiletreeAction extends DefaultAction {
     }
 
     private class DirExtensionComparator implements Comparator<Dir> {
-
         @Override
         public int compare(Dir d1, Dir d2) {
             String s1 = d1.getName();
@@ -289,7 +312,6 @@ public class FiletreeAction extends DefaultAction {
     }
 
     private class FileExtensionComparator implements Comparator<nl.b3p.catalog.filetree.File> {
-
         @Override
         public int compare(nl.b3p.catalog.filetree.File f1, nl.b3p.catalog.filetree.File f2) {
             String s1 = f1.getName();
@@ -297,5 +319,14 @@ public class FiletreeAction extends DefaultAction {
             return compareExtensions(s1, s2);
         }
     }
-    // </editor-fold>
+
+    private class FilenameComparator implements Comparator<nl.b3p.catalog.filetree.File> {
+        @Override
+        public int compare(nl.b3p.catalog.filetree.File f1, nl.b3p.catalog.filetree.File f2) {
+            String s1 = f1.getName();
+            String s2 = f2.getName();
+            return s1.compareTo(s2);
+        }
+    }
+// </editor-fold>
 }

@@ -20,7 +20,7 @@
         <c:choose>
             <c:when test="${not empty dir.content}">
                 <li class="directory expanded">
-                    <a href="#" rel="${dir.path}">
+                    <a href="#" rel="${dir.path}" title="${dir.name}">
                         ${dir.name}
                     </a>
 
@@ -31,7 +31,7 @@
             </c:when>
             <c:otherwise>
                 <li class="directory collapsed">
-                    <a href="#" rel="${dir.path}">
+                    <a href="#" rel="${dir.path}" title="${dir.name}">
                         ${dir.name}
                     </a>
                 </li>
@@ -40,7 +40,7 @@
     </c:forEach>
     <c:forEach var="file" items="${files}">
         <li class="file ext_file">
-            <a href="#" rel="${file.path}">
+            <a href="#" rel="${file.path}" title="${file.name}">
                 ${file.name}
             </a>
         </li>

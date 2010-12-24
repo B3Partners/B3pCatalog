@@ -12,10 +12,6 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        initFiletree();
-    });
-
-    function initFiletree() {
         selectedFilePath = null;
         selectedFileFound = false;
         <c:if test="${not empty actionBean.selectedFilePath}">
@@ -39,8 +35,11 @@
             activeClass: activeClass,
             activateDirsOnClick: false,
             expandOnFirstCallTo: selectedFilePath,
-            fileCallback: function(fileName) {
-                log(fileName + " clicked!");
+            fileCallback: function(filename) {
+                log(filename + " clicked!");
+                $.get("${metadataUrl}", {"load" : "", "filename" : filename}, function(data) {
+                    $("#center").html(data);
+                });
             },
             readyCallback: function(root) {
                 if (selectedFilePath != null && !selectedFileFound) {
@@ -58,9 +57,10 @@
                         );
                     }
                 }
+                root.css("height", "100%");
             }
         });
-    }
+    });
 </script>
 
-<div id="filetree"></div>
+<div id="filetree" class="ui-layout-content"></div>
