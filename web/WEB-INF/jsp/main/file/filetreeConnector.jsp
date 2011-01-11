@@ -15,7 +15,7 @@
 <c:set var="dirs" value="${dirContent.dirs}" scope="page"/>
 <c:set var="files" value="${dirContent.files}" scope="page"/>
 
-<ul class="jqueryFileTree" style="display: block;">
+<ul class="jqueryFileTree">
     <c:forEach var="dir" items="${dirs}">
         <c:choose>
             <c:when test="${not empty dir.content}">
@@ -39,7 +39,7 @@
         </c:choose>
     </c:forEach>
     <c:forEach var="file" items="${files}">
-        <li class="file ext_file">
+        <li class="file ext_${file.extension}">
             <a href="#" rel="${file.path}" title="${file.name}">
                 ${file.name}
             </a>

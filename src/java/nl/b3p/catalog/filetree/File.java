@@ -35,4 +35,8 @@ public class File {
         this.path = path;
     }
 
+    public String getExtension() {
+        return name.substring(name.lastIndexOf(".") + 1);
+    }
+
 }

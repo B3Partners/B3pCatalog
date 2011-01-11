@@ -7,42 +7,37 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<link href="${contextPath}/scripts/mde/styles/jquery-ui-1.8.5.custom.css" rel="stylesheet" type="text/css" />
-<link href="${contextPath}/scripts/mde/styles/metadataEdit.css" rel="stylesheet" type="text/css" />
-<!--[if IE]> <link href="${contextPath}/scripts/mde/styles/metadataEdit-ie.css" rel="stylesheet" type="text/css" /> <![endif]-->
-<!--[if lte IE 7]> <link href="${contextPath}/scripts/mde/styles/metadataEdit-ie7.css" rel="stylesheet" type="text/css" /> <![endif]-->
+<div class="ui-layout-ignore">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/jquery-ui-1.8.5.custom.css" />
+    <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit.css" />
+    <!--[if IE]> <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit-ie.css" /> <![endif]-->
+    <!--[if lte IE 7]> <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit-ie7.css" /> <![endif]-->
+    
+    <!-- mde dependencies -->
+    <script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa.js"></script>
+    <!--script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa-compressed.js"></script-->
+    <script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa_ieemu_xpath.js"></script>
+    <!--script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa_ieemu_xpath-compressed.js"></script-->
+    <script type="text/javascript" src="${contextPath}/scripts/mde/includes/Math.uuid.js"></script>
+    <script type="text/javascript" src="${contextPath}/scripts/mde/includes/wiki2html.js"></script>
 
-<!-- mde dependencies -->
-<script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa.js"></script>
-<!--script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa-compressed.js"></script-->
-<script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa_ieemu_xpath.js"></script>
-<!--script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa_ieemu_xpath-compressed.js"></script-->
-<script type="text/javascript" src="${contextPath}/scripts/mde/includes/Math.uuid.js"></script>
-<script type="text/javascript" src="${contextPath}/scripts/mde/includes/wiki2html.js"></script>
+    <!-- organisations database. should be filled by customer data. -->
+    <script type="text/javascript" src="${contextPath}/scripts/mde/picklists/organisations.js"></script>
+    <!-- mde -->
+    <script type="text/javascript" src="${contextPath}/scripts/mde/includes/metadataEditor.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            //$.mde.logMode = true;
 
-<!-- organisations database. should be filled by customer data. -->
-<script type="text/javascript" src="${contextPath}/scripts/mde/picklists/organisations.js"></script>
-<!-- mde -->
-<script type="text/javascript" src="${contextPath}/scripts/mde/includes/metadataEditor.js"></script>
-
-
-<script type="text/javascript">
-
-    $(document).ready(function() {
-        //$.mde.logMode = true;
-
-        $("#mde").mde({
-            xmlString: "",
-            baseFullPath: "${contextPath}/scripts/mde/",
-            profile: "nl_md_1.2_with_fc",
-            changed: function(changed) {
-            }
+            $("#mde").mde({
+                xmlString: "",
+                baseFullPath: "${contextPath}/scripts/mde/",
+                profile: "nl_md_1.2_with_fc",
+                changed: function(changed) {
+                }
+            });
         });
-
-        //$("body").layout().resizeAll();
-
-    });
-
-</script>
+    </script>
+</div>
 
 <div id="mde" class="ui-layout-content"></div>

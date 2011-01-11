@@ -124,7 +124,7 @@ public class FiletreeAction extends DefaultAction {
 
         filterOutFilesToHide(dc);
 
-        // sort just at the end, because filters (above) could have needed sorting.
+        // sort just at the end, because filters (above) could have needed sorting (of a different kind).
         Collections.sort(dirsList, new DirExtensionComparator());
         Collections.sort(filesList, new FileExtensionComparator());
 
@@ -246,7 +246,7 @@ public class FiletreeAction extends DefaultAction {
             }
         }
         if (roots.isEmpty())
-            throw new RuntimeException("CatalogRoots context parameter not or uncorrectly defined: " + catalogRoots);
+            throw new RuntimeException("'CatalogRoots' context parameter not or uncorrectly defined: " + catalogRoots);
         return new File(roots.get(0).getPath());
     }
 

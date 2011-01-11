@@ -36,25 +36,26 @@
         <!-- B3p libs: -->
         <script type="text/javascript" src="${contextPath}/scripts/log.js"></script>
 
+
+
         <stripes:layout-component name="head"/>
 
         <script type="text/javascript">
             $(document).ready(function() {
-                var theLayout = $("body").layout({
+                theLayout = $("body").layout({
                     // algemeen:
                     resizable: false,
                     closable: false,
                     spacing_close: 0,
+                    spacing_open: 0,
                     // per pane:
                     north__size: 50,
                     south__size: 50,
-                    west__size: $("body").width() / 20,
+                    west__size: $("body").width() / 3,
                     west__resizable: true,
-                    west__spacing_open: 8,
-                    west__onresize: function() {
-                        $("#filetree").css("height", "100%");
-                    }
+                    west__spacing_open: 8
                 });
+                
             });
         </script>
 
