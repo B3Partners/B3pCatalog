@@ -19,21 +19,21 @@ import java.util.LinkedList;
 import java.util.List;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.util.Log;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirContent;
-import nl.b3p.catalog.filetree.Root;
+import nl.b3p.catalog.filetree.Rewrite;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
  * @author Erik van de Pol
  */
 public class FiletreeAction extends DefaultAction {
-
-    private final static Log log = Log.getInstance(FiletreeAction.class);
+    private final static Log log = LogFactory.getLog(FiletreeAction.class);
 
     protected final static String SHAPE_EXT = ".shp";
-    protected final static String PRETTY_DIR_SEPARATOR = "/";
+    
     /*protected final static String[] ALLOWED_CONTENT_TYPES = {
         ""
     };*/
@@ -60,9 +60,9 @@ public class FiletreeAction extends DefaultAction {
                 return null;
             }
 
-            directory = getFileFromPPFileName(dir);
+            directory = Rewrite.getFileFromPPFileName(dir, getContext());
         } else {
-            directory = getRootDirectoryIOFile();
+            directory = Rewrite.getRootDirectoryIOFile(getContext());
         }
 
         if (expandTo == null) {
@@ -73,7 +73,7 @@ public class FiletreeAction extends DefaultAction {
 
             List<String> subDirList = new LinkedList<String>();
 
-            File currentDirFile = getFileFromPPFileName(selectedFilePath);
+            File currentDirFile = Rewrite.getFileFromPPFileName(selectedFilePath, getContext());
             while (!currentDirFile.getAbsolutePath().equals(directory.getAbsolutePath())) {
                 subDirList.add(0, currentDirFile.getName());
                 currentDirFile = currentDirFile.getParentFile();
@@ -107,7 +107,7 @@ public class FiletreeAction extends DefaultAction {
         for (File dir : dirs) {
             Dir newDir = new Dir();
             newDir.setName(dir.getName());
-            newDir.setPath(getFileNameRelativeToRootDirPP(dir));
+            newDir.setPath(Rewrite.getFileNameRelativeToRootDirPP(dir, getContext()));
             dirsList.add(newDir);
         }
 
@@ -115,7 +115,7 @@ public class FiletreeAction extends DefaultAction {
         for (File file : files) {
             nl.b3p.catalog.filetree.File newFile = new nl.b3p.catalog.filetree.File();
             newFile.setName(file.getName());
-            newFile.setPath(getFileNameRelativeToRootDirPP(file));
+            newFile.setPath(Rewrite.getFileNameRelativeToRootDirPP(file, getContext()));
             filesList.add(newFile);
         }
 
@@ -133,7 +133,7 @@ public class FiletreeAction extends DefaultAction {
 
             for (Dir subDir : dc.getDirs()) {
                 if (subDir.getName().equals(subDirString)) {
-                    File followSubDir = getFileFromPPFileName(subDir.getPath());
+                    File followSubDir = Rewrite.getFileFromPPFileName(subDir.getPath(), getContext());
                     subDir.setContent(getDirContent(followSubDir, subDirList));
                     break;
                 }
@@ -189,65 +189,6 @@ public class FiletreeAction extends DefaultAction {
                 dc.getFiles().remove(file);
             }
         }
-    }
-
-    private File getFileFromPPFileName(String fileName) {
-        String subPath = fileName.replace(PRETTY_DIR_SEPARATOR, File.separator);
-        return new File(getRootDirectoryIOFile(), subPath);
-    }
-
-    public String getFileNameFromPPFileName(String fileName) {
-        File file = getFileFromPPFileName(fileName);
-        if (file == null) {
-            return null;
-        } else {
-            return file.getAbsolutePath();
-        }
-    }
-
-    // Pretty printed version of getFileNameRelativeToUploadDir(File file).
-    // This name is uniform on all systems where the server runs (*nix or Windows).
-    private String getFileNameRelativeToRootDirPP(File file) {
-        String name = getFileNameRelativeToRootDir(file);
-        if (name == null) {
-            return null;
-        } else {
-            return name.replace(File.separator, PRETTY_DIR_SEPARATOR);
-        }
-    }
-
-    private String getFileNameRelativeToRootDir(File file) {
-        String absName = file.getAbsolutePath();
-        String uploadDir = getRootDirectory();
-        if (uploadDir == null || !absName.startsWith(uploadDir)) {
-            return null;
-        } else {
-            return absName.substring(getRootDirectory().length());
-        }
-    }
-
-    private String getRootDirectory() {
-        return getRootDirectoryIOFile().getAbsolutePath();
-    }
-
-    /**
-     * Nu nog maar ondersteuning voor één afzonderlijke root.
-     * @return
-     */
-    private File getRootDirectoryIOFile() {
-        String catalogRoots = getContext().getServletContext().getInitParameter("CatalogRoots");
-        List<Root> roots = new ArrayList<Root>();
-        for (String catalogRoot : catalogRoots.split(";")) {
-            String[] catalogRootSplit = catalogRoot.split(",");
-            if (catalogRootSplit.length > 0) {
-                String path = catalogRootSplit[0];
-                String prettyName = catalogRootSplit.length > 1 ? catalogRootSplit[1] : null;
-                roots.add(new Root(path, prettyName));
-            }
-        }
-        if (roots.isEmpty())
-            throw new RuntimeException("'CatalogRoots' context parameter not or uncorrectly defined: " + catalogRoots);
-        return new File(roots.get(0).getPath());
     }
 
     public DirContent getDirContent() {

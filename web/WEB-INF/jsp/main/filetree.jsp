@@ -39,8 +39,18 @@
                 fileCallback: function(filename) {
                     log(filename + " clicked!");
                     $.get("${metadataUrl}", {"load" : "", "filename" : filename}, function(data) {
-                        $("#center").html(data);
+                        //$("#center").html(data);
+                        log("type: " + typeof data);
+                        log(data);
+                        $("#mde").mde({
+                            xml: data,
+                            baseFullPath: "${contextPath}/scripts/mde/",
+                            profile: "nl_md_1.2_with_fc",
+                            changed: function(changed) {
+                            }
+                        });
                     });
+                    //theLayout.resizeAll();
                 },
                 readyCallback: function(root) {
                     if (selectedFilePath != null && !selectedFileFound) {

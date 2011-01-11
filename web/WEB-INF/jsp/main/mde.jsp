@@ -29,15 +29,19 @@
         $(document).ready(function() {
             //$.mde.logMode = true;
 
-            $("#mde").mde({
-                xmlString: "",
+            /*$("#mde").mde({
+                xmlString: Sarissa.unescape($("#metadata").text()),
                 baseFullPath: "${contextPath}/scripts/mde/",
                 profile: "nl_md_1.2_with_fc",
                 changed: function(changed) {
                 }
-            });
+            });*/
         });
     </script>
 </div>
+
+<%--div id="metadata" class="ui-layout-ignore" style="display: none">
+    <c:out value="${actionBean.metadata}" escapeXml="true"/>
+</div--%>
 
 <div id="mde" class="ui-layout-content"></div>
