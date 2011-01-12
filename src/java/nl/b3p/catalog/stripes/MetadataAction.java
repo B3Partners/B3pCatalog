@@ -7,9 +7,6 @@ package nl.b3p.catalog.stripes;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.validation.Validate;
@@ -25,8 +22,6 @@ import org.apache.commons.logging.LogFactory;
 public class MetadataAction extends DefaultAction {
     private final static Log log = LogFactory.getLog(MetadataAction.class);
 
-    private final static String MDE_JSP = "/WEB-INF/jsp/main/mde.jsp";
-    
     private final static String METADATA_FILE_EXTENSION = ".xml";
 
     @Validate(required=true)
@@ -40,12 +35,13 @@ public class MetadataAction extends DefaultAction {
     public Resolution load() {
         File mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
         if (!mdFile.exists()) {
-            try {
-                mdFile.createNewFile();
-            } catch (IOException ex) {
+            //try {
+                //mdFile.createNewFile();
+                return new StreamingResolution("text/plain", "");
+            /*} catch (IOException ex) {
                 log.warn("Could not create file: " + mdFile.getAbsolutePath(), ex);
-                return new StreamingResolution("text/xml", "");
-            }
+                return new StreamingResolution("text/plain", "");
+            }*/
         }
 
         try {
@@ -54,13 +50,20 @@ public class MetadataAction extends DefaultAction {
             return res;
         } catch (IOException ex) {
             log.warn("Could not read file: " + mdFile.getAbsolutePath(), ex);
-            return new StreamingResolution("text/xml", "");
+            return new StreamingResolution("text/plain", "");
         }
     }
 
     // TODO: check permissie om file te saven!!
     public Resolution save() {
-        throw new UnsupportedOperationException();
+        File mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
+        try {
+            FileUtils.writeStringToFile(mdFile, metadata, "UTF-8");
+            return new StreamingResolution("text/plain", "success");
+        } catch (IOException ex) {
+            log.warn("Could not write file: " + mdFile.getAbsolutePath(), ex);
+            return new StreamingResolution("text/plain", "Het is niet gelukt om de metadata op te slaan:\n\n" + ex.getLocalizedMessage());
+        }
     }
 
     public String getFilename() {

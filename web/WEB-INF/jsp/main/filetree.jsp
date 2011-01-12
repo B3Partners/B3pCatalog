@@ -37,20 +37,49 @@
                 activateDirsOnClick: false,
                 expandOnFirstCallTo: selectedFilePath,
                 fileCallback: function(filename) {
-                    log(filename + " clicked!");
-                    $.get("${metadataUrl}", {"load" : "", "filename" : filename}, function(data) {
-                        //$("#center").html(data);
-                        log("type: " + typeof data);
-                        log(data);
-                        $("#mde").mde({
-                            xml: data,
-                            baseFullPath: "${contextPath}/scripts/mde/",
-                            profile: "nl_md_1.2_with_fc",
-                            changed: function(changed) {
-                            }
-                        });
+                    $.ajax({
+                        url: "${metadataUrl}",
+                        type: "POST",
+                        data: {"load" : "", "filename" : filename},
+                        success: function(data) {
+                            log("data: " + data);
+                            $("#mde").mde({
+                                xml: data,
+                                baseFullPath: "${contextPath}/scripts/mde/",
+                                profile: "nl_md_1.2_with_fc",
+                                changed: function(changed) {
+                                    $("#saveMD").button("option", "disabled", !changed);
+                                }
+                            });
+                            $("#mde-toolbar").html($("<div/>", {
+                                id: "saveMD",
+                                text: "Opslaan",
+                                click: function(event) {
+                                    $(this).removeClass("ui-state-hover");
+                                    var xml = $("#mde").mde("save", {
+                                        profile: "nl_md_1.2_with_fc"
+                                    });
+                                    $.ajax({
+                                        url: "${metadataUrl}",
+                                        type: "POST",
+                                        data: {save: "", filename: filename, metadata: xml},
+                                        success: function(data, textStatus, xhr) {
+                                            if (data !== "success") {
+                                                log("metadata save error: " + data);
+                                                openErrorDialog(data);
+                                            } else {
+                                                log("metadata saved succesfully.");
+                                                $("#saveMD").button("option", "disabled", true);
+                                            }
+                                        },
+                                        error: function(xhr, textStatus, errorThrown) {
+                                            openErrorDialog(errorThrown);
+                                        }
+                                    });
+                                }
+                            }).button({disabled: true}));
+                        }
                     });
-                    //theLayout.resizeAll();
                 },
                 readyCallback: function(root) {
                     if (selectedFilePath != null && !selectedFileFound) {
@@ -71,6 +100,23 @@
                 }
             });
         });
+
+        function openErrorDialog(message) {
+            log("error: " + message);
+            $("<div/>").text(message).appendTo(document.body).dialog({
+                title: "Error",
+                modal: true,
+                buttons: [{
+                    text: "Ok",
+                    click: function(event) {
+                        $(this).close();
+                    }
+                }],
+                close: function(event) {
+                    $(this).dialog("destroy").remove();
+                }
+            });
+        }
     </script>
 </div>
 

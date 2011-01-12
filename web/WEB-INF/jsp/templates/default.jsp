@@ -18,6 +18,11 @@
         <title>${pageTitle}</title>
 
         <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/jquery-ui-1.8.5.custom.css" />
+        <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit.css" />
+        <!--[if IE]> <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit-ie.css" /> <![endif]-->
+        <!--[if lte IE 7]> <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit-ie7.css" /> <![endif]-->
+
+        <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/jquery-ui-1.8.5.custom.css" />
         <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/jquery.filetree/jquery.filetree.css" />
         <link rel="stylesheet" type="text/css" href="${contextPath}/styles/main.css" />
 
@@ -32,6 +37,19 @@
         <!--script type="text/javascript" src="${contextPath}/scripts/jquery.scrollTo/jquery.scrollTo-min.js"></script-->
         <script type="text/javascript" src="${contextPath}/scripts/jquery.filetree/jquery.filetree-latest.js"></script>
         <script type="text/javascript" src="${contextPath}/scripts/jquery.easing/jquery.easing-latest.js"></script>
+
+        <!-- mde dependencies -->
+        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa.js"></script>
+        <!--script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa-compressed.js"></script-->
+        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa_ieemu_xpath.js"></script>
+        <!--script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa_ieemu_xpath-compressed.js"></script-->
+        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/Math.uuid.js"></script>
+        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/wiki2html.js"></script>
+
+        <!-- organisations database. should be filled by customer data. -->
+        <script type="text/javascript" src="${contextPath}/scripts/mde/picklists/organisations.js"></script>
+        <!-- mde -->
+        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/metadataEditor.js"></script>
 
         <!-- B3p libs: -->
         <script type="text/javascript" src="${contextPath}/scripts/log.js"></script>
