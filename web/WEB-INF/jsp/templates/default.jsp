@@ -54,6 +54,10 @@
         <!-- B3p libs: -->
         <script type="text/javascript" src="${contextPath}/scripts/log.js"></script>
 
+        <!-- B3pCatalog main js -->
+        <script type="text/javascript" src="${contextPath}/scripts/init.js.jsp"></script>
+        <script type="text/javascript" src="${contextPath}/scripts/main.js"></script>
+
 
 
         <stripes:layout-component name="head"/>

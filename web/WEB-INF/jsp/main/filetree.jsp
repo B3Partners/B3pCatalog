@@ -37,60 +37,36 @@
                 activateDirsOnClick: false,
                 expandOnFirstCallTo: selectedFilePath,
                 fileCallback: function(filename) {
-                    $.ajax({
-                        url: "${metadataUrl}",
-                        type: "POST",
-                        data: {"load" : "", "filename" : filename},
-                        success: function(data) {
-                            log("data: " + data);
-                            $.mde.logMode = true;
-                            $("#mde").mde({
-                                xml: data,
-                                baseFullPath: "${contextPath}/scripts/mde/",
-                                profile: "nl_md_1.2_with_fc",
-                                changed: function(changed) {
-                                    $("#saveMD").button("option", "disabled", !changed);
-                                }
-                            });
-                            $("#mde-toolbar").empty().append($("<span/>", {
-                                id: "saveMD",
-                                text: "Opslaan",
-                                title: "Metadatadocument opslaan",
+                    if ($("#mde").mde("initialized") && $("#mde").mde("changed")) {
+                        $("<div/>").text("Wilt u uw wijzigingen opslaan?").appendTo(document.body).dialog({
+                            title: "Vraag",
+                            modal: true,
+                            buttons: [{
+                                text: "Ja",
                                 click: function(event) {
-                                    $(this).removeClass("ui-state-hover");
-                                    var xml = $("#mde").mde("save", {
-                                        profile: "nl_md_1.2_with_fc"
-                                    });
-                                    $.ajax({
-                                        url: "${metadataUrl}",
-                                        type: "POST",
-                                        data: {save: "", filename: filename, metadata: xml},
-                                        success: function(data, textStatus, xhr) {
-                                            if (data !== "success") {
-                                                log("metadata save error: " + data);
-                                                openErrorDialog(data);
-                                            } else {
-                                                log("metadata saved succesfully.");
-                                                $("#saveMD").button("option", "disabled", true);
-                                            }
-                                        },
-                                        error: function(xhr, textStatus, errorThrown) {
-                                            openErrorDialog(errorThrown);
-                                        }
-                                    });
+                                    B3pCatalog.saveMetadata();
+                                    B3pCatalog.openFile(filename);
+                                    $(this).dialog("close");
                                 }
-                            }).button({disabled: true})).append($("<span/>", {
-                                id: "resetMD",
-                                text: "Legen",
-                                title: "Metadatadocument volledig leeg maken. Wordt nog niet opgeslagen.",
+                            }, {
+                                text: "Nee",
                                 click: function(event) {
-                                    $(this).removeClass("ui-state-hover");
-                                    $("#mde").mde("reset");
+                                    B3pCatalog.openFile(filename);
+                                    $(this).dialog("close");
                                 }
-                            }).button({disabled: false})
-                            );
-                        }
-                    });
+                            }, {
+                                text: "Annuleren",
+                                click: function(event) {
+                                    $(this).dialog("close");
+                                }
+                            }],
+                            close: function(event) {
+                                $(this).dialog("destroy").remove();
+                            }
+                        });
+                    } else {
+                        B3pCatalog.openFile(filename);
+                    }
                 },
                 readyCallback: function(root) {
                     if (selectedFilePath != null && !selectedFileFound) {
@@ -112,22 +88,6 @@
             });
         });
 
-        function openErrorDialog(message) {
-            log("error: " + message);
-            $("<div/>").text(message).appendTo(document.body).dialog({
-                title: "Error",
-                modal: true,
-                buttons: [{
-                    text: "Ok",
-                    click: function(event) {
-                        $(this).close();
-                    }
-                }],
-                close: function(event) {
-                    $(this).dialog("destroy").remove();
-                }
-            });
-        }
     </script>
 </div>
 
