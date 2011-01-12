@@ -43,6 +43,7 @@
                         data: {"load" : "", "filename" : filename},
                         success: function(data) {
                             log("data: " + data);
+                            $.mde.logMode = true;
                             $("#mde").mde({
                                 xml: data,
                                 baseFullPath: "${contextPath}/scripts/mde/",
@@ -51,9 +52,10 @@
                                     $("#saveMD").button("option", "disabled", !changed);
                                 }
                             });
-                            $("#mde-toolbar").html($("<div/>", {
+                            $("#mde-toolbar").empty().append($("<span/>", {
                                 id: "saveMD",
                                 text: "Opslaan",
+                                title: "Metadatadocument opslaan",
                                 click: function(event) {
                                     $(this).removeClass("ui-state-hover");
                                     var xml = $("#mde").mde("save", {
@@ -77,7 +79,16 @@
                                         }
                                     });
                                 }
-                            }).button({disabled: true}));
+                            }).button({disabled: true})).append($("<span/>", {
+                                id: "resetMD",
+                                text: "Legen",
+                                title: "Metadatadocument volledig leeg maken. Wordt nog niet opgeslagen.",
+                                click: function(event) {
+                                    $(this).removeClass("ui-state-hover");
+                                    $("#mde").mde("reset");
+                                }
+                            }).button({disabled: false})
+                            );
                         }
                     });
                 },
