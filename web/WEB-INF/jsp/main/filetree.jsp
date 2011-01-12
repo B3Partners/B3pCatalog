@@ -57,6 +57,8 @@
                             }, {
                                 text: "Annuleren",
                                 click: function(event) {
+                                    $("a[rel='" + filename + "']", "#filetree").removeClass(activeClass);
+                                    $("a[rel='" + B3pCatalog.currentFilename + "']", "#filetree").addClass(activeClass);
                                     $(this).dialog("close");
                                 }
                             }],
