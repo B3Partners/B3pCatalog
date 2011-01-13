@@ -37,6 +37,10 @@
                 activateDirsOnClick: false,
                 expandOnFirstCallTo: selectedFilePath,
                 fileCallback: function(filename) {
+                    var anchor = $("a[rel='" + filename + "']", "#filetree");
+                    if (anchor.length > 0 && anchor.hasClass(activeClass))
+                        return;
+                    
                     if ($("#mde").mde("initialized") && $("#mde").mde("changed")) {
                         $("<div/>").text("Wilt u uw wijzigingen opslaan?").appendTo(document.body).dialog({
                             title: "Vraag",

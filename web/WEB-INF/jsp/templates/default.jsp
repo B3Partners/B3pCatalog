@@ -17,19 +17,23 @@
 
         <title>${pageTitle}</title>
 
-        <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/jquery-ui-1.8.5.custom.css" />
-        <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit.css" />
+        <link rel="icon" href="${contextPath}/images/favicon.ico" type="image/x-icon" />
+
+        <!-- Rijkshuisstijl PBL -->
+        <!--link rel="stylesheet" type="text/css" href="${contextPath}/styles/screen.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="${contextPath}/styles/print.css" media="print" /-->
+        <!-- Overige css -->
+        <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/profiles/pbl/jquery-ui-latest.custom.css" />
+        <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/profiles/pbl/metadataEdit.css" />
         <!--[if IE]> <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit-ie.css" /> <![endif]-->
         <!--[if lte IE 7]> <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit-ie7.css" /> <![endif]-->
-
-        <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/jquery-ui-1.8.5.custom.css" />
-        <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/jquery.filetree/jquery.filetree.css" />
+        <link rel="stylesheet" type="text/css" href="${contextPath}/styles/jquery.filetree.css" />
         <link rel="stylesheet" type="text/css" href="${contextPath}/styles/main.css" />
 
         <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.js"></script>
         <!--script type="text/javascript" src="${contextPath}/scripts/jquery/jquery-latest.min.js"></script-->
-        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery-ui/jquery-ui-1.8.5.custom.js"></script>
-        <!--script type="text/javascript" src="${contextPath}/scripts/jquery-ui/jquery-ui-1.8.5.custom.min.js"></script-->
+        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.js"></script>
+        <!--script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.min.js"></script-->
         <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery.ui.datepicker-nl/jquery.ui.datepicker-nl.js"></script>
 
         <script type="text/javascript" src="${contextPath}/scripts/jquery.layout/jquery.layout-latest.js"></script>
@@ -71,8 +75,8 @@
                     spacing_close: 0,
                     spacing_open: 0,
                     // per pane:
-                    north__size: 50,
-                    south__size: 50,
+                    //north__size: 200,
+                    south__size: 75,
                     west__size: $("body").width() / 3,
                     west__resizable: true,
                     west__spacing_open: 8
@@ -83,7 +87,7 @@
 
     </head>
     <body>
-        <div class="ui-layout-north">
+        <div class="ui-layout-north" id="north">
             <stripes:layout-component name="header">
                 <jsp:include page="/WEB-INF/jsp/commons/header.jsp"/>
             </stripes:layout-component>
@@ -95,7 +99,7 @@
             </stripes:layout-component>
         </div>
 
-        <div class="ui-layout-south">
+        <div class="ui-layout-south" id="south">
             <stripes:layout-component name="footer">
                 <jsp:include page="/WEB-INF/jsp/commons/footer.jsp"/>
             </stripes:layout-component>

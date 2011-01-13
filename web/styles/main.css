@@ -6,24 +6,94 @@
         Purpose of the stylesheet follows.
 */
 
+
+body {
+	margin: 0px;
+    padding: 0px;/*2.1em 0;*/
+    background: #f3f5f6;
+    border-top: 1px solid #535353;
+	font-size: 11px;
+	font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
+}
+
 .header {
-    /*background-image: url(../images/bovenbalk.gif);*/
-    background-repeat: repeat-x;
+    background: url(skin/sh_top.png) left top repeat-x;
+    background-position: -20px 0px;
+    background-color: #f3f5f6;
+    padding-top: 8px;
+    text-align: center;
+}
+
+.header .branding {
+    margin: 0px;
+    padding: 0px;
+    height: 75px;
+    max-height: 75px;
+    background-color: #fff;
+}
+
+.header .branding img {
+    margin: 0;
+    border: none;
+}
+
+.nav-bar {
+    margin: 0;
+    padding: 0;/*2.8em 0 0;*/
+    text-align: left;
+    /*position: relative;*/
+    background-color: #777c00;
+    border-bottom: 10px solid #d6d7b2; /* #ebebd9 */
+    height: 70px;
+}
+
+.nav-bar .title-bar {
+    background-color: #d6d7b2;
+    height: 30px;
+}
+
+.nav-bar .title-bar h1 {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+}
+
+.login-info-block {
+    font-size: 12px;
+    line-height: 1.5em; /* IE 7 fix */
+    float: right;
+    position: absolute;
+    right: 50px;
+    bottom: 10px;
+}
+
+.logged-in-as {
+    display: inline;
+    color: #fff;
+}
+
+.logout-link {
+    font-weight: bold;
+    color: #fff;
+    margin-left: 10px;
 }
 
 .footer {
-    /*background-image: url(../images/onderbalk.gif);*/
-    background-repeat: repeat-x;
+    background: url(skin/sh_bot.png) left bottom repeat-x;
+    background-position: -20px 27px;
+    background-color: #f3f5f6;
+    position: relative;
 }
 
-.west {
-    /*background-image: url(../images/leftbg.gif);*/
-    background-repeat: repeat-y;
+.footer .ref {
+    border: 0;
+    padding: 0 0 8px;
+    text-align: center;
 }
 
-.east {
-    /*background-image: url(../images/rightbg.gif);*/
-    background-repeat: repeat-y;
+.footer .ref img {
+    margin: 0;
+    margin-top: 10px;
+    background-color: #fff;
 }
 
 .footer-text {
@@ -37,38 +107,13 @@
     top: 18px;
 }
 
-.login {
-    font-size: 1.5em;
-    padding: 0.5em;
-}
-
-.login-info-block {
-    font-size: 12px;
-    line-height: 1.5em; /* IE 7 fix */
-    float: right;
-    position: absolute;
-    right: 50px;
-    top: 32px;
-}
-
-.logged-in-as {
-    display: inline;
-    color: #7891A5;
-}
-
-.logout-link {
-    text-decoration: none;
-    color: #fff;
-    margin-left: 10px;
-}
-
-.login-field {
-    width: 200px;
+#north, #south, #west, #east, #center {
+    background: #fff;
 }
 
 .ui-layout-resizer {
-    background-color: #dddddd;
-    border: 1px solid #bbbbbb;
+    background-color: #d6d7b2;
+    border: 1px solid #d6d7b2;/*#bbbbbb;*/
 }
 
 #mde-toolbar {

@@ -8,6 +8,9 @@
 
 <div class="ui-layout-content footer">
     <div id="footer-text-left" class="footer-text">
-        &copy; 2010 B3Partners
+        &copy; 2010, 2011 B3Partners BV
+    </div>
+    <div class="ref">
+        <img src="<stripes:url value="${contextPath}/images/RO_footer.png"/>" alt="Footer logo" />
     </div>
 </div>

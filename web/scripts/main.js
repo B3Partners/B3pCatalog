@@ -28,7 +28,7 @@ B3pCatalog.openFile = function(filename) {
             B3pCatalog.currentFilename = filename;
             //log(B3pCatalog.currentFilename);
             //log("data: " + data);
-            //$.mde.logMode = true;
+            $.mde.logMode = true;
             $("#mde").mde({
                 xml: data,
                 baseFullPath: B3pCatalog.contextPath + "/scripts/mde/",
