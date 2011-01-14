@@ -62,8 +62,8 @@
                             }, {
                                 text: "Annuleren",
                                 click: function(event) {
-                                    $("a[rel='" + filename + "']", "#filetree").removeClass(activeClass);
-                                    $("a[rel='" + B3pCatalog.currentFilename + "']", "#filetree").addClass(activeClass);
+                                    $("a[rel='" + RegExp.escape(filename) + "']", "#filetree").removeClass(activeClass);
+                                    $("a[rel='" + RegExp.escape(B3pCatalog.currentFilename) + "']", "#filetree").addClass(activeClass);
                                     $(this).dialog("close");
                                 }
                             }],
@@ -91,7 +91,7 @@
                 readyCallback: function(root) {
                     if (selectedFilePath != null && !selectedFileFound) {
                         //log(root);
-                        var selectedFile = root.find("input:radio[value='" + selectedFilePath + "']");
+                        var selectedFile = root.find("input:radio[value='" + RegExp.escape(selectedFilePath) + "']");
                         log(selectedFile);
                         if (selectedFile.length > 0) {
                             selectedFileFound = true;

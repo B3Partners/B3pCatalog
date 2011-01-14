@@ -23,7 +23,6 @@ public class Rewrite {
     public static java.io.File getFileFromPPFileName(String fileName, ActionBeanContext context) {
         String subPath = fileName.replace(PRETTY_DIR_SEPARATOR, java.io.File.separator);
         return new java.io.File(subPath);
-        //return new java.io.File(getRootDirectoryFile(context), subPath);
     }
 
     public static String getFileNameFromPPFileName(String fileName, ActionBeanContext context) {
@@ -47,30 +46,8 @@ public class Rewrite {
     }
 
     public static String getFileNameRelativeToRootDir(java.io.File file, ActionBeanContext context) {
-        String absName = file.getAbsolutePath();
-        return absName;
-        /*String uploadDir = getRootDirectory(context);
-        if (uploadDir == null || !absName.startsWith(uploadDir)) {
-            return null;
-        } else {
-            return absName.substring(getRootDirectory(context).length());
-        }*/
+        return file.getAbsolutePath();
     }
-
-    /*public static String getRootDirectory(ActionBeanContext context) {
-        return getRootDirectoryFile(context).getAbsolutePath();
-    }*/
-
-    /**
-     * Nu nog maar ondersteuning voor één afzonderlijke root.
-     * @return
-     */
-    /*public static java.io.File getRootDirectoryFile(ActionBeanContext context) {
-        List<Root> roots = getRoots(context);
-        if (roots.isEmpty())
-            throw new RuntimeException("'CatalogRoots' context parameter not or uncorrectly defined: " + roots);
-        return new java.io.File(roots.get(0).getPath());
-    }*/
 
     public static List<Root> getRoots(ActionBeanContext context) {
         String catalogRoots = context.getServletContext().getInitParameter("CatalogRoots");
