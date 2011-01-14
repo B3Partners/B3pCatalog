@@ -92,3 +92,10 @@ B3pCatalog.saveMetadata = function(filename, updateUI) {
     });
 }
 
+// http://simonwillison.net/2006/Jan/20/escape/
+// used for escaping the file/dirname in the "a" rel-attribute. So it can be put in the jQuery selector.
+RegExp.escape = function(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
+

@@ -38,7 +38,7 @@
                 expandOnFirstCallTo: selectedFilePath,
                 fileCallback: function(filename) {
                     log("file clicked: " + filename);
-                    var anchor = $('a[rel="' + filename.replace(/\\/g, "\\\\") + '"]', "#filetree");
+                    var anchor = $('a[rel="' + RegExp.escape(filename) + '"]', "#filetree");
                     if (anchor.length > 0 && anchor.hasClass(activeClass))
                         return;
                     
@@ -77,8 +77,7 @@
                 },
                 dirExpandCallback: function(dir) {
                     log("dir clicked: " + dir);
-                    // TODO: wellicht ook andere tekens die ook niet kunnen, escapen: http://api.jquery.com/attribute-equals-selector/#comment-104845735
-                    var anchor = $('a[rel="' + dir.replace(/\\/g, "\\\\") + '"]', "#filetree");
+                    var anchor = $('a[rel="' + RegExp.escape(dir) + '"]', "#filetree");
                     //anchor.blur();
                     if (anchor.position() && anchor.position().top > 5) {
                         $("#filetree").scrollTo(anchor, {
