@@ -22,6 +22,7 @@ import net.sourceforge.stripes.action.Resolution;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirContent;
 import nl.b3p.catalog.filetree.Rewrite;
+import nl.b3p.catalog.filetree.Root;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,8 +51,9 @@ public class FiletreeAction extends DefaultAction {
         log.debug("Directory requested: " + dir);
         log.debug("expandTo: " + expandTo);
 
-        File directory = null;
-        if (dir != null) {
+        if (dir == null) {
+            dirContent = getRootDirContent();
+        } else {
             // wordt dit niet gewoon goed geregeld met user privileges?
             // De tomcat user kan in *nix niet naar de root / parent dir?
             // Voorbeelden bekijken / info inwinnen.
@@ -60,32 +62,44 @@ public class FiletreeAction extends DefaultAction {
                 return null;
             }
 
-            directory = Rewrite.getFileFromPPFileName(dir, getContext());
-        } else {
-            directory = Rewrite.getRootDirectoryIOFile(getContext());
-        }
+            File directory = Rewrite.getFileFromPPFileName(dir, getContext());
+            log.debug("dir: " + directory);
 
-        if (expandTo == null) {
-            dirContent = getDirContent(directory, null);
-        } else {
-            selectedFilePath = expandTo.trim().replace("\n", "").replace("\r", "");
-            log.debug("selectedFilePath/expandTo: " + selectedFilePath);
+            if (expandTo == null) {
+                dirContent = getDirContent(directory, null);
+            } else {
+                selectedFilePath = expandTo.trim().replace("\n", "").replace("\r", "");
+                log.debug("selectedFilePath/expandTo: " + selectedFilePath);
 
-            List<String> subDirList = new LinkedList<String>();
+                List<String> subDirList = new LinkedList<String>();
 
-            File currentDirFile = Rewrite.getFileFromPPFileName(selectedFilePath, getContext());
-            while (!currentDirFile.getAbsolutePath().equals(directory.getAbsolutePath())) {
-                subDirList.add(0, currentDirFile.getName());
-                currentDirFile = currentDirFile.getParentFile();
+                File currentDirFile = Rewrite.getFileFromPPFileName(selectedFilePath, getContext());
+                while (!currentDirFile.getAbsolutePath().equals(directory.getAbsolutePath())) {
+                    subDirList.add(0, currentDirFile.getName());
+                    currentDirFile = currentDirFile.getParentFile();
+                }
+
+                dirContent = getDirContent(directory, subDirList);
             }
-
-            dirContent = getDirContent(directory, subDirList);
         }
 
         //log.debug("dirs: " + directories.size());
         //log.debug("files: " + files.size());
 
         return new ForwardResolution(DIRCONTENTS_JSP);
+    }
+
+    protected DirContent getRootDirContent() {
+        DirContent dc = new DirContent();
+        List<Dir> dirs = new ArrayList<Dir>();
+        for (Root root : Rewrite.getRoots(getContext())) {
+            Dir dir = new Dir();
+            dir.setPath(root.getPath());
+            dir.setName(root.getPrettyName() + " (" + root.getPath() + ")");
+            dirs.add(dir);
+        }
+        dc.setDirs(dirs);
+        return dc;
     }
 
     protected DirContent getDirContent(File directory, List<String> subDirList) {
@@ -104,19 +118,23 @@ public class FiletreeAction extends DefaultAction {
         });
 
         List<Dir> dirsList = new ArrayList<Dir>();
-        for (File dir : dirs) {
-            Dir newDir = new Dir();
-            newDir.setName(dir.getName());
-            newDir.setPath(Rewrite.getFileNameRelativeToRootDirPP(dir, getContext()));
-            dirsList.add(newDir);
+        if (dirs != null) {
+            for (File dir : dirs) {
+                Dir newDir = new Dir();
+                newDir.setName(dir.getName());
+                newDir.setPath(Rewrite.getFileNameRelativeToRootDirPP(dir, getContext()));
+                dirsList.add(newDir);
+            }
         }
 
         List<nl.b3p.catalog.filetree.File> filesList = new ArrayList<nl.b3p.catalog.filetree.File>();
-        for (File file : files) {
-            nl.b3p.catalog.filetree.File newFile = new nl.b3p.catalog.filetree.File();
-            newFile.setName(file.getName());
-            newFile.setPath(Rewrite.getFileNameRelativeToRootDirPP(file, getContext()));
-            filesList.add(newFile);
+        if (files != null) {
+            for (File file : files) {
+                nl.b3p.catalog.filetree.File newFile = new nl.b3p.catalog.filetree.File();
+                newFile.setName(file.getName());
+                newFile.setPath(Rewrite.getFileNameRelativeToRootDirPP(file, getContext()));
+                filesList.add(newFile);
+            }
         }
 
         dc.setDirs(dirsList);

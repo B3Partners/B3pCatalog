@@ -104,7 +104,7 @@
     <context-param>
         <description>
             Puntkomma gescheiden directories/shares/drives die de roots vormen van waaruit metadata gezocht kan worden.
-            Elke root kan weer een displayname bevatten na een komma.
+            Elke root kan weer een displayname (label) bevatten na een komma.
             Voorbeeld:
             X:\, OudeShare; Y:\, Nieuwe Share
 
@@ -112,6 +112,9 @@
             Hier dealen we mee als we het tegenkomen. Voor nu is dit goed genoeg.
         </description>
         <param-name>CatalogRoots</param-name>
-        <param-value>D:\ArcCatalogRoot, Root</param-value>
+        <!--param-value>D:\ArcCatalogRoot, Root</param-value-->
+        <!--param-value>D:\ArcCatalogRoot, Root1; D:\B3pCatalogRootTest, Root2</param-value-->
+        <param-value>D:\ArcCatalogRoot, Root1; D:\, Root2</param-value>
+        <!--param-value>D:\, Oude Share</param-value-->
     </context-param>
 </web-app>

@@ -37,7 +37,8 @@
                 activateDirsOnClick: false,
                 expandOnFirstCallTo: selectedFilePath,
                 fileCallback: function(filename) {
-                    var anchor = $("a[rel='" + filename + "']", "#filetree");
+                    log("file clicked: " + filename);
+                    var anchor = $('a[rel="' + filename.replace(/\\/g, "\\\\") + '"]', "#filetree");
                     if (anchor.length > 0 && anchor.hasClass(activeClass))
                         return;
                     
@@ -74,6 +75,20 @@
                         B3pCatalog.openFile(filename);
                     }
                 },
+                dirExpandCallback: function(dir) {
+                    log("dir clicked: " + dir);
+                    // TODO: wellicht ook andere tekens die ook niet kunnen, escapen: http://api.jquery.com/attribute-equals-selector/#comment-104845735
+                    var anchor = $('a[rel="' + dir.replace(/\\/g, "\\\\") + '"]', "#filetree");
+                    //anchor.blur();
+                    if (anchor.position() && anchor.position().top > 5) {
+                        $("#filetree").scrollTo(anchor, {
+                            axis: "y",
+                            duration: 1000,
+                            easing: "easeOutBounce"
+                        });
+                    }
+                    //anchor.focus();
+                },
                 readyCallback: function(root) {
                     if (selectedFilePath != null && !selectedFileFound) {
                         //log(root);
@@ -83,11 +98,10 @@
                             selectedFileFound = true;
                             selectedFile.attr("checked", true);
                             selectedFile.siblings("a").addClass(activeClass);
-                            $("#filetree").parent().scrollTo(
-                                selectedFile,
-                                defaultScrollToDuration,
-                                defaultScrollToOptions
-                            );
+                            $("#filetree").parent().scrollTo(selectedFile, {
+                                duration: 1000,
+                                easing: "easeOutBounce"
+                            });
                         }
                     }
                 }
