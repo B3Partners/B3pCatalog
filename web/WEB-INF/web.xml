@@ -13,14 +13,27 @@
             <param-value>nl_NL, nl</param-value>
         </init-param>
     </filter>
-	<filter>
-		<filter-name>Request encoding filter</filter-name>
-		<filter-class>nl.b3p.commons.services.SetRequestEncodingFilter</filter-class>
-		<init-param>
-			<param-name>requestEncoding</param-name>
-			<param-value>UTF-8</param-value>
-		</init-param>
-	</filter>
+    <filter>
+        <filter-name>Request encoding filter</filter-name>
+        <filter-class>nl.b3p.commons.services.SetRequestEncodingFilter</filter-class>
+        <init-param>
+            <param-name>requestEncoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <display-name>Security Filter</display-name>
+        <filter-name>SecurityFilter</filter-name>
+        <filter-class>org.securityfilter.filter.SecurityFilter</filter-class>
+        <init-param>
+            <param-name>config</param-name>
+            <param-value>/WEB-INF/securityfilter-config.xml</param-value>
+        </init-param>
+        <init-param>
+            <param-name>validate</param-name>
+            <param-value>false</param-value>
+        </init-param>
+    </filter>
     <filter-mapping>
         <filter-name>StripesFilter</filter-name>
         <url-pattern>*.jsp</url-pattern>
@@ -37,21 +50,47 @@
         <dispatcher>INCLUDE</dispatcher>
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
-	<filter-mapping>
-		<filter-name>Request encoding filter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+    <filter-mapping>
+        <filter-name>Request encoding filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>SecurityFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     <servlet>
         <servlet-name>StripesDispatcher</servlet-name>
         <servlet-class>net.sourceforge.stripes.controller.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>securityconfig</servlet-name>
+        <servlet-class>nl.b3p.catalog.security.ConfigServlet</servlet-class>
+        <init-param>
+            <param-name>kburl</param-name>
+            <param-value>http://www.kaartenbalie.nl/kaartenbalie/services/</param-value>
+        </init-param>
+        <init-param>
+            <param-name>anonymous_user</param-name>
+            <param-value>anoniem</param-value>
+        </init-param>
+        <load-on-startup>3</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>xmlsecuritydatabase</servlet-name>
+        <servlet-class>nl.b3p.commons.security.XmlSecurityDatabase</servlet-class>
+        <init-param>
+            <param-name>config</param-name>
+            <param-value>/WEB-INF/users.xml</param-value>
+        </init-param>
+        <load-on-startup>4</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>*.action</url-pattern>
     </servlet-mapping>
     <session-config>
-        <session-timeout>30</session-timeout>
+        <session-timeout>600</session-timeout>
     </session-config>
     <welcome-file-list>
         <welcome-file>/index.jsp</welcome-file>
@@ -62,7 +101,6 @@
         <param-value>StripesResources</param-value>
         <!-- huidige locale wordt hier automatisch slim achtergeplakt (_nl etc.) -->
     </context-param>
-
     <context-param>
         <description>
             Puntkomma gescheiden directories/shares/drives die de roots vormen van waaruit metadata gezocht kan worden.

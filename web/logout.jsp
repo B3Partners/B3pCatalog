@@ -5,14 +5,13 @@
 <% request.getSession().invalidate(); %>
 
 
-<stripes:layout-render name="/WEB-INF/jsp/templates/default.jsp" pageTitle="DataStoreLinker uitgelogd">
-    <stripes:layout-component name="content">
-
-        <div class="login">
-            <div class="ui-state-success message">U bent uitgelogd.</div>
-
-            <%@include file="/loginForm.jsp" %>
+<stripes:layout-render name="/loginPage.jsp" pageTitle="B3pCatalog | Uitgelogd">
+    <stripes:layout-component name="messages">
+        <div class="mod message_info">
+            U bent uitgelogd.
         </div>
-
+    </stripes:layout-component>
+    <stripes:layout-component name="content">
+        <stripes:layout-render name="/loginForm.jsp"/>
     </stripes:layout-component>
 </stripes:layout-render>

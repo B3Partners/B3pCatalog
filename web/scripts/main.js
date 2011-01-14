@@ -26,6 +26,7 @@ B3pCatalog.openFile = function(filename) {
         data: {"load" : "", "filename" : filename},
         success: function(data) {
             B3pCatalog.currentFilename = filename;
+            document.title = "B3pCatalog | " + filename;
             //log(B3pCatalog.currentFilename);
             //log("data: " + data);
             $.mde.logMode = true;
