@@ -15,7 +15,7 @@
         </div>
         <div class="nav-bar">
             <div class="title-bar">
-                <h1>B3pCatalog</h1>
+                <h1>${title}</h1>
             </div>
             <div class="login-info-block">
                 <div class="logged-in-as">

@@ -41,11 +41,18 @@ B3pCatalog.createMde = function(xmlDoc) {
         baseFullPath: B3pCatalog.contextPath + "/scripts/mde/",
         profile: "nl_md_1.2_with_fc",
         commentMode: true,
-        username: B3pCatalog.username,
-        commentSubmit: function() {
-            // we submit the entire metadata doc.
-            B3pCatalog.saveMetadata({async: false});
-            return true;
+        commentPosted: function(comment) {
+            var xhr = $.ajax({
+                url: B3pCatalog.contextPath + "/Metadata.action",
+                data: {"postComment": "", "comment": comment, filename: B3pCatalog.currentFilename},
+                method: "POST",
+                async: false
+            });
+            if (xhr.responseXML == null || typeof xhr.responseXML != "object") {
+                return xhr.responseText;
+            } else {
+                return xhr.responseXML;
+            }
         },
         changed: function(changed) {
             $("#saveMD").button("option", "disabled", !changed);

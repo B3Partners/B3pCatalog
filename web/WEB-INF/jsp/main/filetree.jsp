@@ -51,26 +51,26 @@
                                 click: function(event) {
                                     B3pCatalog.saveMetadata();
                                     B3pCatalog.openFile(filename);
-                                    $(this).dialog("close");
+                                    $(this).dialog("destroy").remove();
                                 }
                             }, {
                                 text: "Nee",
                                 click: function(event) {
                                     B3pCatalog.openFile(filename);
-                                    $(this).dialog("close");
+                                    $(this).dialog("destroy").remove();
                                 }
                             }, {
                                 text: "Annuleren",
                                 click: function(event) {
-                                    $("a[rel='" + RegExp.escape(filename) + "']", "#filetree").removeClass(activeClass);
-                                    $("a[rel='" + RegExp.escape(B3pCatalog.currentFilename) + "']", "#filetree").addClass(activeClass);
                                     $(this).dialog("close");
                                 }
                             }],
                             close: function(event) {
+                                $("a[rel='" + RegExp.escape(filename) + "']", "#filetree").removeClass(activeClass);
+                                $("a[rel='" + RegExp.escape(B3pCatalog.currentFilename) + "']", "#filetree").addClass(activeClass);
                                 $(this).dialog("destroy").remove();
                             }
-                        });
+                        });//.find("a.ui-dialog-titlebar-close").remove();
                     } else {
                         B3pCatalog.openFile(filename);
                     }

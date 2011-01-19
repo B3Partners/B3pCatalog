@@ -5,7 +5,7 @@
 --%>
 <%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
 
-<stripes:layout-render name="/WEB-INF/jsp/templates/default.jsp" pageTitle="B3pCatalog">
+<stripes:layout-render name="/WEB-INF/jsp/templates/default.jsp" pageTitle="${title}">
     <stripes:layout-component name="west">
         <jsp:include page="/WEB-INF/jsp/main/filetree.jsp"/>
     </stripes:layout-component>
