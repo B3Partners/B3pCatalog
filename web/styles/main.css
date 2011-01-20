@@ -19,7 +19,7 @@ body {
 .header {
     background: url(skin/sh_top.png) left top repeat-x;
     background-position: -20px 0px;
-    background-color: #f3f5f6;
+    background-color: #ffffff;
     padding-top: 8px;
     text-align: center;
 }
@@ -27,8 +27,8 @@ body {
 .header .branding {
     margin: 0px;
     padding: 0px;
-    height: 75px;
-    max-height: 75px;
+    height: 87px;
+    max-height: 87px;
     background-color: #fff;
 }
 
@@ -55,6 +55,9 @@ body {
 .nav-bar .title-bar h1 {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 18px;
+    margin: 0px;
+    padding-top: 4px;
+    padding-left: 10px;
 }
 
 .login-info-block {
@@ -62,8 +65,8 @@ body {
     line-height: 1.5em; /* IE 7 fix */
     float: right;
     position: absolute;
-    right: 50px;
-    bottom: 10px;
+    right: 10px;
+    bottom: 15px;
 }
 
 .logged-in-as {
@@ -78,21 +81,24 @@ body {
 }
 
 .footer {
-    background: url(skin/sh_bot.png) left bottom repeat-x;
-    background-position: -20px 27px;
     background-color: #f3f5f6;
     position: relative;
 }
 
 .footer .ref {
     border: 0;
-    padding: 0 0 8px;
+    padding: 0 0 6px;
     text-align: center;
+    background: url(skin/sh_bot.png) left bottom repeat-x;
+    background-position: -20px 40px;
+    background-color: #ffffff;
+    border-top: 10px solid #D6D7B2;
+    height: 50px;
 }
 
 .footer .ref img {
     margin: 0;
-    margin-top: 10px;
+    margin-top: 23px;
     background-color: #fff;
 }
 
@@ -103,8 +109,8 @@ body {
 
 #footer-text-left {
     position: absolute;
-    left: 50px;
-    top: 18px;
+    left: 10px;
+    top: 35px;
 }
 
 #north, #south, #west, #east, #center {
@@ -120,3 +126,66 @@ body {
     margin: 1em;
 }
 
+#filetree {
+    padding: 10px;
+}
+
+#borderLeft {
+    position: absolute;
+    right: 0px;
+    width: 8px;
+}
+
+#borderRight {
+    position: absolute;
+    left: 0px;
+    width: 8px;
+}
+
+#borderLeftTop, #borderRightTop {
+    background: url(skin/sh_top_left.png);
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    height: 8px;
+    width: 8px;
+    z-index: 30;
+}
+
+#borderLeftMiddle, #borderRightMiddle {
+    background: url(skin/sh_left_small.png);
+    position: absolute;
+    top: 8px;
+    bottom: 17px;
+    right: 0px;
+    width: 8px;
+    z-index: 29;
+}
+
+#borderLeftBottom, #borderRightBottom {
+    background: url(skin/sh_bot_left.png);
+    position: absolute;
+    right: 0px;
+    bottom: 9px;
+    height: 8px;
+    width: 8px;
+    z-index: 30;
+}
+
+#borderRightTop {
+    background: url(skin/sh_top_right.png);
+    right: auto;
+    left: 0px;
+}
+
+#borderRightMiddle {
+    background: url(skin/sh_right_small.png);
+    right: auto;
+    left: 0px;
+}
+
+#borderRightBottom {
+    background: url(skin/sh_bot_right.png);
+    right: auto;
+    left: 0px;
+}
