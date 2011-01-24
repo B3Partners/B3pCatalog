@@ -94,19 +94,19 @@
 
     </head>
     <body>
-        <div class="ui-layout-west" id="border-left" style="height: 100%">
+        <div class="ui-layout-west" id="border-left">
             <stripes:layout-component name="borderLeft">
                 <jsp:include page="/WEB-INF/jsp/commons/borderLeft.jsp"/>
             </stripes:layout-component>
         </div>
 
-        <div class="ui-layout-east" id="border-right" style="height: 100%">
+        <div class="ui-layout-east" id="border-right">
             <stripes:layout-component name="borderRight">
                 <jsp:include page="/WEB-INF/jsp/commons/borderRight.jsp"/>
             </stripes:layout-component>
         </div>
 
-        <div class="ui-layout-center" id="center-wrapper" style="height: 100%">
+        <div class="ui-layout-center" id="center-wrapper">
             <div class="ui-layout-north" id="north">
                 <stripes:layout-component name="header">
                     <jsp:include page="/WEB-INF/jsp/commons/header.jsp"/>
@@ -119,13 +119,13 @@
                 </stripes:layout-component>
             </div>
 
-            <div class="ui-layout-west" id="west" style="height: 100%">
+            <div class="ui-layout-west" id="west">
                 <stripes:layout-component name="west">
                     <jsp:include page="/WEB-INF/jsp/commons/west.jsp"/>
                 </stripes:layout-component>
             </div>
 
-            <div class="ui-layout-center" id="center" style="height: 100%">
+            <div class="ui-layout-center" id="center">
                 <stripes:layout-component name="content"/>
             </div>
         </div>
