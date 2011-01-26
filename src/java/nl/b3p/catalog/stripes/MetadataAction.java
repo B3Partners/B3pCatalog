@@ -61,23 +61,24 @@ public class MetadataAction extends DefaultAction {
     // TODO: check permissie om file te loaden!!
     // TODO: foutafhandeling!
     public Resolution load() {
-        File mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
-        if (!mdFile.exists()) {
-            //try {
-                //mdFile.createNewFile();
-                return new StreamingResolution("text/plain", "");
-            /*} catch (IOException ex) {
-                log.warn("Could not create file: " + mdFile.getAbsolutePath(), ex);
-                return new StreamingResolution("text/plain", "");
-            }*/
-        }
-
+        File mdFile = null;
         try {
+            mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
+            if (!mdFile.exists()) {
+                //try {
+                    //mdFile.createNewFile();
+                    return new StreamingResolution("text/plain", "");
+                /*} catch (IOException ex) {
+                    log.warn("Could not create file: " + mdFile.getAbsolutePath(), ex);
+                    return new StreamingResolution("text/plain", "");
+                }*/
+            }
+
             StreamingResolution res = new StreamingResolution("text/xml", FileUtils.openInputStream(mdFile));
             //res.setCharacterEncoding("UTF-8");
             return res;
         } catch (IOException ex) {
-            log.warn("Could not read file: " + mdFile.getAbsolutePath(), ex);
+            log.warn("Could not read file: " + mdFile == null ? "none" : mdFile.getAbsolutePath(), ex);
             return new StreamingResolution("text/plain", "");
         }
     }
@@ -85,13 +86,14 @@ public class MetadataAction extends DefaultAction {
     // TODO: check permissie om file te saven!!
     // TODO: gooi alle comments uit geüploadede xml weg en voeg de comments uit xml op schijf toe. Dan pas wegschrijven.
     public Resolution save() {
-        File mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
+        File mdFile = null;
         try {
+            mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
             // remove comments: they could be tampered with.
             FileUtils.writeStringToFile(mdFile, metadata, "UTF-8");
             return new StreamingResolution("text/plain", "success");
         } catch (IOException ex) {
-            log.warn("Could not write file: " + mdFile.getAbsolutePath(), ex);
+            log.warn("Could not write file: " + mdFile == null ? "none" : mdFile.getAbsolutePath(), ex);
             return new StreamingResolution("text/plain", "Het is niet gelukt om de metadata op te slaan:\n\n" + ex.getLocalizedMessage());
         }
     }
@@ -99,8 +101,9 @@ public class MetadataAction extends DefaultAction {
     // Comments can be posted by anyone to any ".xml"-file that is a descendant of one of the roots.
     // that has <metadata/> or <gmd:MD_Metadata/> as root. This is by design.
     public Resolution postComment() {
-        File mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
         try {
+            File mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
+            
             Document doc = null;
             if (mdFile.exists())
                 doc = new SAXBuilder().build(FileUtils.openInputStream(mdFile));
@@ -111,7 +114,7 @@ public class MetadataAction extends DefaultAction {
             boolean rootIsWrapper = root.getName().equals(METADATA_NAME) && root.getNamespace().equals(Namespace.NO_NAMESPACE);
             boolean rootIs19139 = root.getName().equals(MD_METADATA_NAME) && root.getNamespace().equals(GMD_NAMESPACE);
             if (!rootIsWrapper && !rootIs19139) {
-                return new StreamingResolution("text/plain", "Hack attempt. Trying to insert comment in non-metadata xml.");
+                return new StreamingResolution("text/plain", "Trying to insert comment in non-metadata xml. This is not allowed.");
             }
 
             // we need 19139 metadata to be in a wrapper to be able to add comments:
@@ -145,7 +148,7 @@ public class MetadataAction extends DefaultAction {
             
             return new StreamingResolution("text/xml", FileUtils.openInputStream(mdFile));
         } catch(Exception ex) {
-            return new StreamingResolution("text/plain", "Het is niet gelukt om het commentaar te posten:\n\n" + ex.getLocalizedMessage());
+            return new StreamingResolution("text/plain", "Het is niet gelukt om het commentaar (" + comment + ") te posten in file \"" + filename + METADATA_FILE_EXTENSION + "\":\n\n" + ex.getLocalizedMessage());
         }
     }
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+        version="2.4">
     <filter>
         <display-name>Stripes Filter</display-name>
         <filter-name>StripesFilter</filter-name>
@@ -110,6 +111,8 @@
 
             Deze scheidingstekens zijn uiteraard niet correct in de zin dat een ";" voor mag komen in een windows-bestandsnaam.
             Hier dealen we mee als we het tegenkomen. Voor nu is dit goed genoeg.
+
+            N.B.: Windows drive-letters MOETEN een hoofdletter zijn.
         </description>
         <param-name>CatalogRoots</param-name>
         <!--param-value>D:\ArcCatalogRoot, Root</param-value-->

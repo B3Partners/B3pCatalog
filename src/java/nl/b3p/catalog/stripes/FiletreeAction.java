@@ -12,6 +12,7 @@ package nl.b3p.catalog.stripes;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,36 +52,32 @@ public class FiletreeAction extends DefaultAction {
         log.debug("Directory requested: " + dir);
         log.debug("expandTo: " + expandTo);
 
-        if (dir == null) {
-            dirContent = getRootDirContent();
-        } else {
-            // wordt dit niet gewoon goed geregeld met user privileges?
-            // De tomcat user kan in *nix niet naar de root / parent dir?
-            // Voorbeelden bekijken / info inwinnen.
-            if (dir.contains("..")) {
-                log.error("Possible hack attempt; Dir requested: " + dir);
-                return null;
-            }
+        if (dir != null) {
+            try {
+                File directory = Rewrite.getFileFromPPFileName(dir, getContext());
+                log.debug("dir: " + directory);
 
-            File directory = Rewrite.getFileFromPPFileName(dir, getContext());
-            log.debug("dir: " + directory);
+                if (expandTo == null) {
+                    dirContent = getDirContent(directory, null);
+                } else {
+                    selectedFilePath = expandTo.trim().replace("\n", "").replace("\r", "");
+                    log.debug("selectedFilePath/expandTo: " + selectedFilePath);
 
-            if (expandTo == null) {
-                dirContent = getDirContent(directory, null);
-            } else {
-                selectedFilePath = expandTo.trim().replace("\n", "").replace("\r", "");
-                log.debug("selectedFilePath/expandTo: " + selectedFilePath);
+                    List<String> subDirList = new LinkedList<String>();
 
-                List<String> subDirList = new LinkedList<String>();
+                    File currentDirFile = Rewrite.getFileFromPPFileName(selectedFilePath, getContext());
+                    while (!currentDirFile.getAbsolutePath().equals(directory.getAbsolutePath())) {
+                        subDirList.add(0, currentDirFile.getName());
+                        currentDirFile = currentDirFile.getParentFile();
+                    }
 
-                File currentDirFile = Rewrite.getFileFromPPFileName(selectedFilePath, getContext());
-                while (!currentDirFile.getAbsolutePath().equals(directory.getAbsolutePath())) {
-                    subDirList.add(0, currentDirFile.getName());
-                    currentDirFile = currentDirFile.getParentFile();
+                    dirContent = getDirContent(directory, subDirList);
                 }
-
-                dirContent = getDirContent(directory, subDirList);
+            } catch(IOException ioex) {
+                dirContent = getRootDirContent();
             }
+        } else {
+            dirContent = getRootDirContent();
         }
 
         //log.debug("dirs: " + directories.size());
@@ -102,7 +99,7 @@ public class FiletreeAction extends DefaultAction {
         return dc;
     }
 
-    protected DirContent getDirContent(File directory, List<String> subDirList) {
+    protected DirContent getDirContent(File directory, List<String> subDirList) throws IOException {
         DirContent dc = new DirContent();
 
         File[] dirs = directory.listFiles(new FileFilter() {
