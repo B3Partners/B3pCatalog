@@ -40,6 +40,7 @@ B3pCatalog.createMde = function(xmlDoc) {
         xml: xmlDoc,
         baseFullPath: B3pCatalog.contextPath + "/scripts/mde/",
         profile: "nl_md_1.2_with_fc",
+        richTextMode: true,
         commentMode: true,
         commentPosted: function(comment) {
             var xhr = $.ajax({
