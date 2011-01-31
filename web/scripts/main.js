@@ -50,7 +50,7 @@ B3pCatalog.createMde = function(xmlDoc) {
                 async: false
             });
             if (xhr.responseXML == null || typeof xhr.responseXML != "object") {
-                return xhr.responseText;
+                return xhr.responseText; // mde itself will deal with / show the error
             } else {
                 return xhr.responseXML;
             }

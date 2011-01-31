@@ -22,6 +22,8 @@ public class Rewrite {
     protected final static String PRETTY_DIR_SEPARATOR = "\\";
     
     public static java.io.File getFileFromPPFileName(String fileName, ActionBeanContext context) throws IOException {
+        if (fileName == null || context == null)
+            return null;
         String fullPath = fileName.replace(PRETTY_DIR_SEPARATOR, java.io.File.separator);
         java.io.File file = new java.io.File(fullPath);
         startsWithARoot(file.getCanonicalPath(), context);
@@ -49,6 +51,8 @@ public class Rewrite {
     }
 
     public static String getFileNameRelativeToRootDir(java.io.File file, ActionBeanContext context) throws IOException {
+        if (file == null || context == null)
+            return null;
         String name = file.getCanonicalPath();
         startsWithARoot(name, context);
         return name;

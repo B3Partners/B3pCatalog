@@ -5,8 +5,14 @@
 
 package nl.b3p.catalog.stripes;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -18,8 +24,10 @@ import nl.b3p.catalog.filetree.Rewrite;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
@@ -59,42 +67,56 @@ public class MetadataAction extends DefaultAction {
     private String comment;
 
     // TODO: check permissie om file te loaden!!
-    // TODO: foutafhandeling!
     public Resolution load() {
         File mdFile = null;
         try {
             mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
             if (!mdFile.exists()) {
-                //try {
-                    //mdFile.createNewFile();
-                    return new StreamingResolution("text/plain", "");
-                /*} catch (IOException ex) {
-                    log.warn("Could not create file: " + mdFile.getAbsolutePath(), ex);
-                    return new StreamingResolution("text/plain", "");
-                }*/
+                // create new metadata on client side:
+                return new StreamingResolution("text/plain", "");
             }
 
-            StreamingResolution res = new StreamingResolution("text/xml", FileUtils.openInputStream(mdFile));
+            StreamingResolution res = new StreamingResolution("text/xml", new BufferedInputStream(FileUtils.openInputStream(mdFile)));
             //res.setCharacterEncoding("UTF-8");
             return res;
-        } catch (IOException ex) {
-            log.warn("Could not read file: " + mdFile == null ? "none" : mdFile.getAbsolutePath(), ex);
-            return new StreamingResolution("text/plain", "");
+        } catch (Exception ex) {
+            String message = "Could not read file: " + mdFile == null ? "none" : mdFile.getAbsolutePath();
+            log.error(message, ex);
+            return new StreamingResolution("text/plain", message + "\n\n" + ex.getLocalizedMessage());
         }
     }
 
     // TODO: check permissie om file te saven!!
-    // TODO: gooi alle comments uit geüploadede xml weg en voeg de comments uit xml op schijf toe. Dan pas wegschrijven.
     public Resolution save() {
         File mdFile = null;
         try {
             mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
-            // remove comments: they could be tampered with.
-            FileUtils.writeStringToFile(mdFile, metadata, "UTF-8");
+
+            // replace sent comments with (safe, untampered) comments on disk.
+            Document oldDoc = getMetadataDocument(mdFile);
+
+            Element comments = getComments(oldDoc);
+            if (comments == null)
+                return new StreamingResolution("text/plain", "Xml Document is non-metadata xml. This is not allowed.");
+            Content safeComments = comments.detach();
+
+            Document doc = new SAXBuilder().build(new StringReader(metadata));
+            Element unsafeComments = getComments(doc);
+            if (comments == null)
+                return new StreamingResolution("text/plain", "Xml Document is non-metadata xml. This is not allowed.");
+            Element b3pElem = unsafeComments.getParentElement();
+            b3pElem.removeContent(unsafeComments);
+            b3pElem.addContent(safeComments);
+
+            OutputStream outputStream = new BufferedOutputStream(FileUtils.openOutputStream(mdFile));
+            new XMLOutputter(Format.getPrettyFormat()).output(doc, outputStream);
+            outputStream.close();
+            
             return new StreamingResolution("text/plain", "success");
-        } catch (IOException ex) {
-            log.warn("Could not write file: " + mdFile == null ? "none" : mdFile.getAbsolutePath(), ex);
-            return new StreamingResolution("text/plain", "Het is niet gelukt om de metadata op te slaan:\n\n" + ex.getLocalizedMessage());
+        } catch (Exception ex) {
+            String message = "Could not write file: " + mdFile == null ? "none" : mdFile.getAbsolutePath();
+            log.error(message, ex);
+            return new StreamingResolution("text/plain", message + "\n\n" + ex.getLocalizedMessage());
         }
     }
 
@@ -103,39 +125,12 @@ public class MetadataAction extends DefaultAction {
     public Resolution postComment() {
         try {
             File mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
-            
-            Document doc = null;
-            if (mdFile.exists())
-                doc = new SAXBuilder().build(FileUtils.openInputStream(mdFile));
-            else
-                doc = new Document(new Element(METADATA_NAME));
-            Element root = doc.getRootElement();
 
-            boolean rootIsWrapper = root.getName().equals(METADATA_NAME) && root.getNamespace().equals(Namespace.NO_NAMESPACE);
-            boolean rootIs19139 = root.getName().equals(MD_METADATA_NAME) && root.getNamespace().equals(GMD_NAMESPACE);
-            if (!rootIsWrapper && !rootIs19139) {
-                return new StreamingResolution("text/plain", "Trying to insert comment in non-metadata xml. This is not allowed.");
-            }
+            Document doc = getMetadataDocument(mdFile);
 
-            // we need 19139 metadata to be in a wrapper to be able to add comments:
-            if (!rootIsWrapper && rootIs19139) {
-                Element oldRoot = doc.detachRootElement();
-                root = new Element(METADATA_NAME);
-                root.setContent(oldRoot);
-                doc.setRootElement(root);
-            }
-
-            Element b3partners = root.getChild(B3PARTNERS_NAME);
-            if (b3partners == null) {
-                b3partners = new Element(B3PARTNERS_NAME);
-                root.addContent(b3partners);
-            }
-
-            Element comments = b3partners.getChild(COMMENTS_NAME);
-            if (comments == null) {
-                comments = new Element(COMMENTS_NAME);
-                b3partners.addContent(comments);
-            }
+            Element comments = getComments(doc);
+            if (comments == null)
+                return new StreamingResolution("text/plain", "Xml Document is non-metadata xml. This is not allowed.");
 
             Element newComment = new Element(COMMENT_NAME).addContent(Arrays.asList(
                 new Element(USERNAME_NAME).setText(getContext().getRequest().getRemoteUser()),
@@ -144,12 +139,72 @@ public class MetadataAction extends DefaultAction {
             ));
             comments.addContent(newComment);
 
-            new XMLOutputter(Format.getPrettyFormat()).output(doc, FileUtils.openOutputStream(mdFile));
-            
-            return new StreamingResolution("text/xml", FileUtils.openInputStream(mdFile));
+            OutputStream outputStream = new BufferedOutputStream(FileUtils.openOutputStream(mdFile));
+            new XMLOutputter(Format.getPrettyFormat()).output(doc, outputStream);
+            outputStream.close();
+
+            return new StreamingResolution("text/xml", new BufferedInputStream(FileUtils.openInputStream(mdFile)));
         } catch(Exception ex) {
-            return new StreamingResolution("text/plain", "Het is niet gelukt om het commentaar (" + comment + ") te posten in file \"" + filename + METADATA_FILE_EXTENSION + "\":\n\n" + ex.getLocalizedMessage());
+            String message = "Het is niet gelukt om het commentaar (" + comment + ") te posten in file \"" + filename + METADATA_FILE_EXTENSION + "\"";
+            log.error(message, ex);
+            return new StreamingResolution("text/plain", message + "\n\n" + ex.getLocalizedMessage());
         }
+    }
+
+    private Document getMetadataDocument(File mdFile) throws IOException, JDOMException {
+        if (mdFile == null)
+            return null;
+        Document doc = null;
+        if (mdFile.exists()) {
+            InputStream inputStream = new BufferedInputStream(FileUtils.openInputStream(mdFile));
+            doc = new SAXBuilder().build(inputStream);
+            inputStream.close();
+        } else {
+            doc = new Document(new Element(METADATA_NAME));
+        }
+        return doc;
+    }
+
+    private Element getRoot(Document doc) {
+        if (doc == null)
+            return null;
+        Element root = doc.getRootElement();
+
+        boolean rootIsWrapper = root.getName().equals(METADATA_NAME) && root.getNamespace().equals(Namespace.NO_NAMESPACE);
+        boolean rootIs19139 = root.getName().equals(MD_METADATA_NAME) && root.getNamespace().equals(GMD_NAMESPACE);
+        if (!rootIsWrapper && !rootIs19139) {
+            return null;
+        }
+
+        // we need 19139 metadata to be in a wrapper to be able to add comments:
+        if (!rootIsWrapper && rootIs19139) {
+            Element oldRoot = doc.detachRootElement();
+            root = new Element(METADATA_NAME);
+            root.setContent(oldRoot);
+            doc.setRootElement(root);
+        }
+
+        return root;
+    }
+
+    private Element getComments(Document doc) {
+        Element root = getRoot(doc);
+        if (root == null)
+            return null;
+
+        Element b3partners = root.getChild(B3PARTNERS_NAME);
+        if (b3partners == null) {
+            b3partners = new Element(B3PARTNERS_NAME);
+            root.addContent(b3partners);
+        }
+
+        Element comments = b3partners.getChild(COMMENTS_NAME);
+        if (comments == null) {
+            comments = new Element(COMMENTS_NAME);
+            b3partners.addContent(comments);
+        }
+
+        return comments;
     }
 
     public String getFilename() {
