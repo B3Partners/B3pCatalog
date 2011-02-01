@@ -20,6 +20,7 @@ import java.util.Date;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.validation.Validate;
+import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.filetree.Rewrite;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -43,7 +44,7 @@ public class MetadataAction extends DefaultAction {
     private final static String METADATA_FILE_EXTENSION = ".xml";
 
     private final static Namespace GMD_NAMESPACE = Namespace.getNamespace("gmd", "http://www.isotc211.org/2005/gmd");
-    private final static Namespace GCO_NAMESPACE = Namespace.getNamespace("gco", "http://www.isotc211.org/2005/gco");
+    private final static Namespace B3P_NAMESPACE = Namespace.getNamespace("b3p", "http://www.b3partners.nl/xsd/metadata");
 
     private final static String METADATA_NAME = "metadata";
     private final static String MD_METADATA_NAME = "MD_Metadata";
@@ -53,6 +54,7 @@ public class MetadataAction extends DefaultAction {
     private final static String USERNAME_NAME = "username";
     private final static String DATE_TIME_NAME = "dateTime";
     private final static String CONTENT_NAME = "content";
+    private final static String METADATA_PBL_NAME = "metadataPBL";
 
 
     private final static DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -132,10 +134,10 @@ public class MetadataAction extends DefaultAction {
             if (comments == null)
                 return new StreamingResolution("text/plain", "Xml Document is non-metadata xml. This is not allowed.");
 
-            Element newComment = new Element(COMMENT_NAME).addContent(Arrays.asList(
-                new Element(USERNAME_NAME).setText(getContext().getRequest().getRemoteUser()),
-                new Element(DATE_TIME_NAME, GCO_NAMESPACE).setText(DATETIME_FORMAT.format(new Date())),
-                new Element(CONTENT_NAME).setText(comment)
+            Element newComment = new Element(COMMENT_NAME, B3P_NAMESPACE).addContent(Arrays.asList(
+                new Element(USERNAME_NAME, B3P_NAMESPACE).setText(getContext().getRequest().getRemoteUser()),
+                new Element(DATE_TIME_NAME, B3P_NAMESPACE).setText(DATETIME_FORMAT.format(new Date())),
+                new Element(CONTENT_NAME, B3P_NAMESPACE).setText(comment)
             ));
             comments.addContent(newComment);
 
@@ -151,9 +153,9 @@ public class MetadataAction extends DefaultAction {
         }
     }
 
-    private Document getMetadataDocument(File mdFile) throws IOException, JDOMException {
+    private Document getMetadataDocument(File mdFile) throws IOException, JDOMException, B3PCatalogException {
         if (mdFile == null)
-            return null;
+            throw new B3PCatalogException("Metadata file is null.");
         Document doc = null;
         if (mdFile.exists()) {
             InputStream inputStream = new BufferedInputStream(FileUtils.openInputStream(mdFile));
@@ -165,18 +167,17 @@ public class MetadataAction extends DefaultAction {
         return doc;
     }
 
-    private Element getRoot(Document doc) {
+    private Element getRoot(Document doc) throws B3PCatalogException {
         if (doc == null)
-            return null;
+            throw new B3PCatalogException("Metadata document is null.");
         Element root = doc.getRootElement();
 
         boolean rootIsWrapper = root.getName().equals(METADATA_NAME) && root.getNamespace().equals(Namespace.NO_NAMESPACE);
         boolean rootIs19139 = root.getName().equals(MD_METADATA_NAME) && root.getNamespace().equals(GMD_NAMESPACE);
-        if (!rootIsWrapper && !rootIs19139) {
-            return null;
-        }
+        if (!rootIsWrapper && !rootIs19139)
+            throw new B3PCatalogException("Root element must be either <metadata/> (no ns) or <MD_Metadata/> (from ns \"http://www.isotc211.org/2005/gmd\"). Root name is: " + root.getName());
 
-        // we need 19139 metadata to be in a wrapper to be able to add comments:
+        // we need 19139 metadata to be in a wrapper to be able to add comments and other stuff:
         if (!rootIsWrapper && rootIs19139) {
             Element oldRoot = doc.detachRootElement();
             root = new Element(METADATA_NAME);
@@ -187,24 +188,32 @@ public class MetadataAction extends DefaultAction {
         return root;
     }
 
-    private Element getComments(Document doc) {
-        Element root = getRoot(doc);
-        if (root == null)
-            return null;
+    private Element getB3Partners(Document doc) throws B3PCatalogException {
+        return getOrCreateElement(getRoot(doc), B3PARTNERS_NAME, B3P_NAMESPACE);
+    }
 
-        Element b3partners = root.getChild(B3PARTNERS_NAME);
-        if (b3partners == null) {
-            b3partners = new Element(B3PARTNERS_NAME);
-            root.addContent(b3partners);
+    private Element getComments(Document doc) throws B3PCatalogException {
+        return getOrCreateElement(getB3Partners(doc), COMMENTS_NAME, B3P_NAMESPACE);
+    }
+
+    private Element getMetadataPBL(Document doc) throws B3PCatalogException {
+        return getOrCreateElement(getB3Partners(doc), METADATA_PBL_NAME);
+    }
+
+    private Element getOrCreateElement(Element parent, String name) throws B3PCatalogException {
+        return getOrCreateElement(parent, name, Namespace.NO_NAMESPACE);
+    }
+
+    private Element getOrCreateElement(Element parent, String name, Namespace ns) throws B3PCatalogException {
+        if (parent == null)
+            throw new B3PCatalogException("Parent element is null when trying to create element with name: " + name);
+
+        Element child = parent.getChild(name, ns);
+        if (child == null) {
+            child = new Element(name, ns);
+            parent.addContent(child);
         }
-
-        Element comments = b3partners.getChild(COMMENTS_NAME);
-        if (comments == null) {
-            comments = new Element(COMMENTS_NAME);
-            b3partners.addContent(comments);
-        }
-
-        return comments;
+        return child;
     }
 
     public String getFilename() {
