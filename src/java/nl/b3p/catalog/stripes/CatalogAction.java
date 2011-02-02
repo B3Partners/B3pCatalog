@@ -38,7 +38,7 @@ import org.jdom.JDOMException;
 public class CatalogAction extends DefaultAction {
     private final static Log log = LogFactory.getLog(CatalogAction.class);
 
-    protected final static String SEARCH_RESULTS_JSP = "/WEB-INF/jsp/searchResults.jsp";
+    protected final static String SEARCH_RESULTS_JSP = "/WEB-INF/jsp/main/searchResults.jsp";
 
     @Validate(required=true, on="search")
     private String searchString;
@@ -106,7 +106,7 @@ public class CatalogAction extends DefaultAction {
 
     protected List<MetadataBean> createMetadataList(OutputBySearch output) throws TransformerConfigurationException, TransformerFactoryConfigurationError, TransformerException, JDOMException, JAXBException, OwsException {
         List<Element> metadataDocs = output.getSearchResults();
-        List<MetadataBean> metadataList = new ArrayList<MetadataBean>(metadataDocs.size());
+        List<MetadataBean> list = new ArrayList<MetadataBean>(metadataDocs.size());
 
         for (Element mdElem : metadataDocs) {
             MetadataBean metadataBean = new MetadataBean();
@@ -114,12 +114,12 @@ public class CatalogAction extends DefaultAction {
             metadataBean.setTitle(output.getTitle(mdElem));
             metadataBean.setAltTitle("");
             metadataBean.setAbstractString(output.getAbstractText(mdElem));
-            metadataBean.setUuid(output.getUUID(mdElem));
+            metadataBean.setUuid(output.getUUID(mdElem, true));
 
-            metadataList.add(metadataBean);
+            list.add(metadataBean);
         }
 
-        return metadataList;
+        return list;
     }
 
     // placeholder for preprocessed metadata to be used in the jsp only.
@@ -188,6 +188,14 @@ public class CatalogAction extends DefaultAction {
 
     public void setSearchType(String searchType) {
         this.searchType = searchType;
+    }
+
+    public List<MetadataBean> getMetadataList() {
+        return metadataList;
+    }
+
+    public void setMetadataList(List<MetadataBean> metadataList) {
+        this.metadataList = metadataList;
     }
 
 

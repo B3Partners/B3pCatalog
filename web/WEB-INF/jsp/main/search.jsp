@@ -12,8 +12,33 @@
     <script type="text/javaScript">
         $(document).ready(function() {
             $("#searchButton").button();
-            searchTabShown();
             $("#searchForm input:text, #searchForm select").width("200px");
+            $("#searchForm").ajaxForm({
+                //target: "#searchResultsContainer",
+                success: function(data, textStatus, jqXHR) {
+                    if ($.trim(jqXHR.getResponseHeader("Content-type")).startsWith("text/html")) {
+                        $("#searchResultsContainer").html(data);
+                    } else {
+                        var text = data.wiki2html ? data.wiki2html() : (!!wiki2html ? wiki2html(data) : data);
+                        $("#searchResultsContainer").html($("<div/>", {
+                            "className": "mod message_err",
+                            html: text
+                        }));
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    var message = textStatus + ": " + errorThrown;
+                    if (jqXHR.responseXML)
+                        message = jqXHR.responseXML;
+                    else if (jqXHR.responseText)
+                        message = jqXHR.responseText;
+                    log(message);
+                    $("#searchResultsContainer").html($("<div/>", {
+                        "className": "mod message_err",
+                        html: message
+                    }));
+                }
+            });
         });
 
         function searchTabShown() {

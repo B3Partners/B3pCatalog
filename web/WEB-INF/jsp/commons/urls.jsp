@@ -8,3 +8,4 @@
 
 <stripes:url var="filetreeUrl" beanclass="nl.b3p.catalog.stripes.FiletreeAction"/>
 <stripes:url var="metadataUrl" beanclass="nl.b3p.catalog.stripes.MetadataAction"/>
+<stripes:url var="catalogUrl" beanclass="nl.b3p.catalog.stripes.CatalogAction"/>

@@ -41,39 +41,18 @@
                     var anchor = $('a[rel="' + RegExp.escape(filename) + '"]', "#filetree");
                     if (anchor.length > 0 && anchor.hasClass(activeClass))
                         return;
-                    
-                    if ($("#mde").mde("initialized") && $("#mde").mde("changed")) {
-                        $("<div/>").text("Wilt u uw wijzigingen opslaan?").appendTo(document.body).dialog({
-                            title: "Vraag",
-                            modal: true,
-                            buttons: [{
-                                text: "Ja",
-                                click: function(event) {
-                                    B3pCatalog.saveMetadata();
-                                    B3pCatalog.openFile(filename);
-                                    $(this).dialog("destroy").remove();
-                                }
-                            }, {
-                                text: "Nee",
-                                click: function(event) {
-                                    B3pCatalog.openFile(filename);
-                                    $(this).dialog("destroy").remove();
-                                }
-                            }, {
-                                text: "Annuleren",
-                                click: function(event) {
-                                    $(this).dialog("close");
-                                }
-                            }],
-                            close: function(event) {
-                                $("a[rel='" + RegExp.escape(filename) + "']", "#filetree").removeClass(activeClass);
-                                $("a[rel='" + RegExp.escape(B3pCatalog.currentFilename) + "']", "#filetree").addClass(activeClass);
-                                $(this).dialog("destroy").remove();
-                            }
-                        });//.find("a.ui-dialog-titlebar-close").remove();
-                    } else {
-                        B3pCatalog.openFile(filename);
-                    }
+
+                    B3pCatalog.saveDataUserConfirm({
+                        done: function() {
+                            B3pCatalog.openFile(filename);
+                        },
+                        cancel: function() {
+                            $("a[rel='" + RegExp.escape(filename) + "']", "#filetree")
+                                .removeClass(activeClass);
+                            $("a[rel='" + RegExp.escape(B3pCatalog.currentFilename) + "']", "#filetree")
+                                .addClass(activeClass);
+                        }
+                    });
                 },
                 dirExpandCallback: function(dir) {
                     log("dir clicked: " + dir);

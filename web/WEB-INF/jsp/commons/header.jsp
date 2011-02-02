@@ -50,10 +50,10 @@
             </div>
             <ul id="main-tabs" class="ui-helper-reset">
                 <li class="ui-corner-top">
-                    <a href="#filetree">Verkennen</a>
+                    <a href="#filetree">Bestanden verkennen</a>
                 </li>
                 <li class="ui-corner-top">
-                    <a href="#search">Zoeken</a>
+                    <a href="#search">Zoeken in Catalog</a>
                 </li>
             </ul>
             <div class="login-info-block">

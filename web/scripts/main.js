@@ -4,7 +4,7 @@ B3pCatalog.currentFilename = "";
 
 B3pCatalog.openErrorDialog = function(message) {
     log("error: " + message);
-    $("<div/>").text(message).appendTo(document.body).dialog({
+    $("<div/>").html(message).appendTo(document.body).dialog({
         title: "Error",
         modal: true,
         buttons: [{
@@ -24,23 +24,33 @@ B3pCatalog.openFile = function(filename) {
         url: B3pCatalog.metadataUrl,
         type: "POST",
         data: {"load" : "", "filename" : filename},
-        success: function(data) {
-            B3pCatalog.currentFilename = filename;
-            document.title = "B3pCatalog | " + filename;
-            //log(B3pCatalog.currentFilename);
-            B3pCatalog.createMde(data);
+        success: function(data, textStatus, jqXHR) {
+            if ($.isXMLDoc(data)) {
+                B3pCatalog.currentFilename = filename;
+                document.title = "B3pCatalog | " + filename;
+                //log(B3pCatalog.currentFilename);
+                B3pCatalog.createMde(data);
+            } else {
+                B3pCatalog.openErrorDialog(data);
+            }
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            B3pCatalog.openErrorDialog(textStatus + ": " + errorThrown);
         }
     });
+}
+
+B3pCatalog.basicMdeOptions = {
+    baseFullPath: B3pCatalog.contextPath + "/scripts/mde/",
+    profile: "nl_md_1.2_with_fc",
+    richTextMode: true
 }
 
 B3pCatalog.createMde = function(xmlDoc) {
     //log("data: " + data);
     $.mde.logMode = true;
-    $("#mde").mde({
+    $("#mde").mde("destroy").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xml: xmlDoc,
-        baseFullPath: B3pCatalog.contextPath + "/scripts/mde/",
-        profile: "nl_md_1.2_with_fc",
-        richTextMode: true,
         commentMode: true,
         commentPosted: function(comment) {
             var xhr = $.ajax({
@@ -58,7 +68,7 @@ B3pCatalog.createMde = function(xmlDoc) {
         changed: function(changed) {
             $("#saveMD").button("option", "disabled", !changed);
         }
-    });
+    }));
     $("#mde-toolbar").empty().append($("<span/>", {
         id: "saveMD",
         text: "Opslaan",
@@ -78,6 +88,16 @@ B3pCatalog.createMde = function(xmlDoc) {
         }
     }).button({disabled: false})
     );
+}
+
+B3pCatalog.createViewMde = function(xmlDoc) {
+    //log("data: " + data);
+    $.mde.logMode = true;
+    $("#mde").mde("destroy").mde($.extend({}, B3pCatalog.basicMdeOptions, {
+        xml: xmlDoc,
+        viewMode: true
+    }));
+    $("#mde-toolbar").empty();
 }
 
 B3pCatalog.saveMetadata = function(settings) {
@@ -109,10 +129,48 @@ B3pCatalog.saveMetadata = function(settings) {
             }
         },
         error: function(xhr, textStatus, errorThrown) {
-            B3pCatalog.openErrorDialog(errorThrown);
+            B3pCatalog.openErrorDialog(xhr.responseText);
         }
     });
 }
+
+B3pCatalog.saveDataUserConfirm = function(opts) {
+    var options = $.extend({
+        done: $.noop,
+        cancel: $.noop
+    }, opts);
+    if ($("#mde").mde("initialized") && $("#mde").mde("changed")) {
+        $("<div/>").text("Wilt u uw wijzigingen opslaan?").appendTo(document.body).dialog({
+            title: "Vraag",
+            modal: true,
+            buttons: [{
+                text: "Ja",
+                click: function(event) {
+                    B3pCatalog.saveMetadata();
+                    options.done();
+                    $(this).dialog("destroy").remove();
+                }
+            }, {
+                text: "Nee",
+                click: function(event) {
+                    options.done();
+                    $(this).dialog("destroy").remove();
+                }
+            }, {
+                text: "Annuleren",
+                click: function(event) {
+                    $(this).dialog("close");
+                }
+            }],
+            close: function(event) {
+                options.cancel();
+                $(this).dialog("destroy").remove();
+            }
+        });
+    } else {
+        options.done();
+    }
+};
 
 // http://simonwillison.net/2006/Jan/20/escape/
 // used for escaping the file/dirname in the "a" rel-attribute. So it can be put in the jQuery selector.
