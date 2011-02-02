@@ -63,7 +63,6 @@ body {
 .login-info-block {
     font-size: 12px;
     line-height: 1.5em; /* IE 7 fix */
-    float: right;
     position: absolute;
     right: 10px;
     bottom: 15px;
@@ -78,6 +77,45 @@ body {
     font-weight: bold;
     color: #fff;
     margin-left: 10px;
+}
+
+ul#main-tabs {
+    list-style: none outside none;
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+}
+
+ul#main-tabs > li {
+    list-style: none outside none;
+    float: left;
+    padding: 5px 10px;
+    margin-right: 5px;
+    font-size: 1.1em;
+    font-weight: bold;
+    font-family: Arial, Verdana, Tahoma, Helvetica, sans-serif;
+}
+
+ul#main-tabs > li > a {
+    text-decoration: none;
+    color: white;
+}
+
+ul#main-tabs > li.main-tab-selected {
+    background-color: #D6D7B2;
+}
+
+ul#main-tabs > li.main-tab-selected > a {
+    color: black;
+}
+
+ul#main-tabs > li.main-tab-hover {
+    background-color: #D6D7B2;
+}
+
+ul#main-tabs > li > a.main-tab-hover {
+    color: black;
+    text-decoration: underline;
 }
 
 .footer {
@@ -126,8 +164,8 @@ body {
     margin: 1em;
 }
 
-#filetree {
-    padding: 10px;
+#filetree, #search {
+    padding: 5px;
 }
 
 #borderLeft {

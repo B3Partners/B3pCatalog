@@ -120,4 +120,21 @@
         <param-value>D:\ArcCatalogRoot, Root1; D:\, Root2</param-value>
         <!--param-value>D:\, Oude Share</param-value-->
     </context-param>
+    <!-- CSW-server configuratie -->
+    <context-param>
+        <param-name>cswUrl</param-name>
+        <param-value>http://dev.b3p.nl/geonetwork/srv/en/csw</param-value>
+    </context-param>
+    <context-param>
+        <param-name>cswLoginUrl</param-name>
+        <param-value>http://dev.b3p.nl/geonetwork/srv/en/xml.user.login</param-value>
+    </context-param>
+    <context-param>
+        <param-name>cswUsername</param-name>
+        <param-value>admin</param-value>
+    </context-param>
+    <context-param>
+        <param-name>cswPassword</param-name>
+        <param-value>***REMOVED***</param-value>
+    </context-param>
 </web-app>

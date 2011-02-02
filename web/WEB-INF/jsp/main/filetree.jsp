@@ -79,7 +79,7 @@
                     log("dir clicked: " + dir);
                     var anchor = $('a[rel="' + RegExp.escape(dir) + '"]', "#filetree");
                     //anchor.blur();
-                    if (anchor.position() && anchor.position().top > 5) {
+                    if (anchor.position() && anchor.position().top > 1) {
                         $("#filetree").scrollTo(anchor, {
                             axis: "y",
                             duration: 1000,
@@ -110,4 +110,4 @@
     </script>
 </div>
 
-<div id="filetree" class="ui-layout-content"></div>
+<div id="filetree" class=""></div>
