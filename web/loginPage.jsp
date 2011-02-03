@@ -22,6 +22,9 @@
 	<link rel="stylesheet" href="${contextPath}/styles/print.css" type="text/css" media="print" />
 
 	<link rel="shortcut icon" href="${contextPath}/images/favicon.ico" type="image/x-icon" />
+
+    <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.js"></script>
+
 </head>
 <body id="login">
 

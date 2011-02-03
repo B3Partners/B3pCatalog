@@ -16,6 +16,10 @@ body {
 	font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
 }
 
+a {
+    color: #154273;
+}
+
 .header {
     background: url(skin/sh_top.png) left top repeat-x;
     background-position: -20px 0px;
@@ -165,7 +169,7 @@ ul#main-tabs > li > a.main-tab-hover {
 }
 
 #filetree, #search {
-    padding: 5px;
+    padding: 10px;
 }
 
 #searchResultsContainer {

@@ -54,20 +54,15 @@
                         }
                     });
                 },
-                dirExpandCallback: function(dir) {
-                    log("dir clicked: " + dir);
-                    var anchor = $('a[rel="' + RegExp.escape(dir) + '"]', "#filetree");
-                    //anchor.blur();
-                    if (anchor.position() && anchor.position().top > 1) {
-                        $("#filetree").scrollTo(anchor, {
-                            axis: "y",
-                            duration: 1000,
-                            easing: "easeOutBounce"
-                        });
-                    }
-                    //anchor.focus();
-                },
+                dirExpandCallback: function(dir) {},
                 readyCallback: function(root) {
+                    log("root");
+                    log(root);
+                    $("#filetree").scrollTo(root, {
+                        axis: "y",
+                        duration: 1000,
+                        easing: "easeOutBounce"
+                    });
                     if (selectedFilePath != null && !selectedFileFound) {
                         //log(root);
                         var selectedFile = root.find("input:radio[value='" + RegExp.escape(selectedFilePath) + "']");
