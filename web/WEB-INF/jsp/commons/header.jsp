@@ -53,7 +53,7 @@
                     <a href="#filetree">Bestanden verkennen</a>
                 </li>
                 <li class="ui-corner-top">
-                    <a href="#search">Zoeken in Catalog</a>
+                    <a href="#search">Catalog doorzoeken</a>
                 </li>
             </ul>
             <div class="login-info-block">

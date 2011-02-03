@@ -14,14 +14,18 @@
             $("#searchButton").button();
             $("#searchForm input:text, #searchForm select").width("200px");
             $("#searchForm").ajaxForm({
-                //target: "#searchResultsContainer",
+                beforeSerialize: function($form, options) {
+                    if ($.trim($("#searchStringBox").val()) === "") {
+                        $("#searchStringBox").val("*");
+                    }
+                },
                 success: function(data, textStatus, jqXHR) {
                     if ($.trim(jqXHR.getResponseHeader("Content-type")).startsWith("text/html")) {
                         $("#searchResultsContainer").html(data);
                     } else {
                         var text = data.wiki2html ? data.wiki2html() : (!!wiki2html ? wiki2html(data) : data);
                         $("#searchResultsContainer").html($("<div/>", {
-                            "className": "mod message_err",
+                            "className": "message_err",
                             html: text
                         }));
                     }
@@ -34,7 +38,7 @@
                         message = jqXHR.responseText;
                     log(message);
                     $("#searchResultsContainer").html($("<div/>", {
-                        "className": "mod message_err",
+                        "className": "message_err",
                         html: message
                     }));
                 }
@@ -57,7 +61,7 @@
             <tbody>
                 <tr>
                     <td>Zoekterm:</td>
-                    <td><stripes:text name="searchString" id="searchStringBox"/></td>
+                    <td><stripes:text name="searchString" id="searchStringBox" value=""/></td>
                 </tr>
                 <tr>
                     <td>Waar:</td>
@@ -72,7 +76,7 @@
                 </tr>
             </tbody>
         </table>
-        <stripes:submit name="search" id="searchButton">Zoek</stripes:submit>
+        <stripes:submit name="search" id="searchButton" value="Zoek"/>
     </stripes:form>
 
     <div id="searchResultsContainer"></div>

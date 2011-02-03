@@ -10,7 +10,11 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        $(".searchResult").click(function() {
+        $(".search-result-abstract").ThreeDots({
+            //max_rows: 2, // is default 2
+            alt_text_t: true
+        });
+        $(".search-result-title").click(function() {
             $.ajax({
                 url: B3pCatalog.catalogUrl,
                 data: {load: "", uuid: $(this).attr("uuid")},
@@ -37,14 +41,22 @@
 <div>
     <c:choose>
         <c:when test="${empty actionBean.metadataList}">
-            <div class="mod message_info">
+            <div class="message_info">
                 Geen resultaten gevonden
             </div>
         </c:when>
         <c:otherwise>
+            <div class="search-results-text">
+                Resultaten:
+            </div>
             <c:forEach items="${actionBean.metadataList}" var="mdDoc">
-                <div class="searchResult" uuid="<c:out value="${mdDoc.uuid}"/>" title="<c:out value="${mdDoc.abstractString}"/>">
-                    <c:out value="${mdDoc.title}"/>
+                <div class="search-result">
+                    <div class="search-result-title" uuid="<c:out value="${mdDoc.uuid}"/>">
+                        <c:out value="${mdDoc.title}"/>
+                    </div>
+                    <div class="search-result-abstract">
+                        <span class="ellipsis_text"><c:out value="${mdDoc.abstractString}"/></span>
+                    </div>
                 </div>
             </c:forEach>
         </c:otherwise>

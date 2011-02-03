@@ -42,6 +42,7 @@
         <!--script type="text/javascript" src="${contextPath}/scripts/jquery.scrollTo/jquery.scrollTo-min.js"></script-->
         <script type="text/javascript" src="${contextPath}/scripts/jquery.filetree/jquery.filetree-latest.js"></script>
         <script type="text/javascript" src="${contextPath}/scripts/jquery.easing/jquery.easing-latest.js"></script>
+        <script type="text/javascript" src="${contextPath}/scripts/jquery.ThreeDots/jquery.ThreeDots.js"></script>
 
         <!-- mde dependencies -->
         <script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa.js"></script>
