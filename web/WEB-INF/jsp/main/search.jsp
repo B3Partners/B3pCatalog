@@ -24,6 +24,7 @@
                     }));
                 },
                 success: function(data, textStatus, jqXHR) {
+                    // Geen nette test hier:
                     if ($.trim(jqXHR.getResponseHeader("Content-type")).startsWith("text/html")) {
                         $("#searchResultsContainer").html(data);
                     } else {

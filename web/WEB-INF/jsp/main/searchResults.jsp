@@ -15,25 +15,7 @@
             alt_text_t: true
         });
         $(".search-result-title").click(function() {
-            $.ajax({
-                url: B3pCatalog.catalogUrl,
-                data: {load: "", uuid: $(this).attr("uuid")},
-                type: "POST",
-                success: function(data, textStatus, jqXHR) {
-                    if ($.isXMLDoc(data)) {
-                        B3pCatalog.saveDataUserConfirm({
-                            done: function() {
-                                B3pCatalog.createViewMde(data);
-                            }
-                        });
-                    } else {
-                        B3pCatalog.openErrorDialog(data);
-                    }
-                },
-                error: function(xhr, textStatus, errorThrown) {
-                    B3pCatalog.openErrorDialog(textStatus + ": " + errorThrown);
-                }
-            });
+            B3pCatalog.loadMetadataByUUID($(this).attr("uuid"));
         });
     });
 </script>

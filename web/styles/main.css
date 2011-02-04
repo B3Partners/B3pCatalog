@@ -173,6 +173,10 @@ ul#main-tabs > li > a.main-tab-hover {
     position: relative; /* IE7 fix: necessary for jquery ui buttons inside (with pos: relative) */
 }
 
+#search .ui-button {
+    position: static; /* IE7 fix */
+}
+
 #filetree, #search {
     padding: 10px;
 }

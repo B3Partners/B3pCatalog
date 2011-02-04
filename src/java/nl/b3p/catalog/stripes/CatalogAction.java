@@ -85,7 +85,9 @@ public class CatalogAction extends DefaultAction {
             OutputById output = client.search(new InputById(uuid));
             //log.debug(new XMLOutputter().outputString(output.getXml()));
 
-            return new StreamingResolution("text/xml", output.getSearchResultString());
+            StreamingResolution res = new StreamingResolution("text/xml", output.getSearchResultString());
+            res.setCharacterEncoding("UTF-8");
+            return res;
         } catch (Exception e) {
             String message = "Fout bij het laden van de metadata.";
             log.error(message, e);

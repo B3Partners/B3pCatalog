@@ -79,7 +79,7 @@ public class MetadataAction extends DefaultAction {
             }
 
             StreamingResolution res = new StreamingResolution("text/xml", new BufferedInputStream(FileUtils.openInputStream(mdFile)));
-            //res.setCharacterEncoding("UTF-8");
+            res.setCharacterEncoding("UTF-8");
             return res;
         } catch (Exception ex) {
             String message = "Could not read file: " + mdFile == null ? "none" : mdFile.getAbsolutePath();
@@ -145,7 +145,9 @@ public class MetadataAction extends DefaultAction {
             new XMLOutputter(Format.getPrettyFormat()).output(doc, outputStream);
             outputStream.close();
 
-            return new StreamingResolution("text/xml", new BufferedInputStream(FileUtils.openInputStream(mdFile)));
+            StreamingResolution res = new StreamingResolution("text/xml", new BufferedInputStream(FileUtils.openInputStream(mdFile)));
+            res.setCharacterEncoding("UTF-8");
+            return res;
         } catch(Exception ex) {
             String message = "Het is niet gelukt om het commentaar (" + comment + ") te posten in file \"" + filename + METADATA_FILE_EXTENSION + "\"";
             log.error(message, ex);

@@ -44,13 +44,13 @@
 
                     B3pCatalog.saveDataUserConfirm({
                         done: function() {
-                            B3pCatalog.openFile(filename);
+                            B3pCatalog.loadMetadataFromFile(filename);
                         },
                         cancel: function() {
                             $("a[rel='" + RegExp.escape(filename) + "']", "#filetree")
                                 .removeClass(activeClass);
                             $("a[rel='" + RegExp.escape(B3pCatalog.currentFilename) + "']", "#filetree")
-                                .addClass(activeClass);
+                                .addClass(activeClass).focus();
                         }
                     });
                 },
