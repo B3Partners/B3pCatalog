@@ -164,12 +164,13 @@ ul#main-tabs > li > a.main-tab-hover {
     border: 1px solid #d6d7b2;/*#bbbbbb;*/
 }
 
-#mde-wrapper .ui-button {
-    position: static; /* necessary for IE (7 in any case). jquery UI sets position to relative*/
+#mde-wrapper {
+    position: relative; /* IE7 fix: necessary for all relative position elements within */
 }
 
 #mde-toolbar {
     margin: 1em;
+    position: relative; /* IE7 fix: necessary for jquery ui buttons inside (with pos: relative) */
 }
 
 #filetree, #search {
