@@ -10,7 +10,7 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#gebruikersnaam").select();
+            $("#gebruikersnaam").focus().select();
         });
     </script>
 

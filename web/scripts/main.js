@@ -20,6 +20,10 @@ B3pCatalog.openErrorDialog = function(message) {
 }
 
 B3pCatalog.openFile = function(filename) {
+    $("#mde-toolbar").empty();
+    $("#mde").html($("<img />", {
+        src: B3pCatalog.contextPath + "/styles/images/spinner.gif"
+    }));
     $.ajax({
         url: B3pCatalog.metadataUrl,
         type: "POST",
@@ -49,8 +53,9 @@ B3pCatalog.basicMdeOptions = {
 
 B3pCatalog.createMde = function(xmlDoc) {
     //log("data: " + data);
+    B3pCatalog.destroyMdeWrapper();
     $.mde.logMode = true;
-    $("#mde").mde("destroy").mde($.extend({}, B3pCatalog.basicMdeOptions, {
+    $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xml: xmlDoc,
         commentMode: true,
         commentPosted: function(comment) {
@@ -70,7 +75,7 @@ B3pCatalog.createMde = function(xmlDoc) {
             $("#saveMD").button("option", "disabled", !changed);
         }
     }));
-    $("#mde-toolbar").empty().append($("<span/>", {
+    $("#mde-toolbar").append($("<span/>", {
         id: "saveMD",
         text: "Opslaan",
         title: "Metadatadocument opslaan",
@@ -93,11 +98,16 @@ B3pCatalog.createMde = function(xmlDoc) {
 
 B3pCatalog.createViewMde = function(xmlDoc) {
     //log("data: " + data);
+    B3pCatalog.destroyMdeWrapper();
     $.mde.logMode = true;
-    $("#mde").mde("destroy").mde($.extend({}, B3pCatalog.basicMdeOptions, {
+    $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xml: xmlDoc,
         viewMode: true
     }));
+}
+
+B3pCatalog.destroyMdeWrapper = function() {
+    $("#mde").mde("destroy");
     $("#mde-toolbar").empty();
 }
 

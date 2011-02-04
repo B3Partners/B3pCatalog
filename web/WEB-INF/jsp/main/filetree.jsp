@@ -26,7 +26,7 @@
                 script: "${filetreeUrl}",
                 scriptEvent: "listDir",
                 root: "",
-                //spinnerImage: "${contextPath}/scripts/jquery.filetree/images/spinner.png",
+                spinnerImage: "${contextPath}/styles/images/spinner.gif",
                 expandEasing: "linear",
                 collapseEasing: "easeOutBounce",
                 dragAndDrop: false,
