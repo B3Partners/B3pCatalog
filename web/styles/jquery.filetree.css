@@ -27,6 +27,11 @@ ul.jqueryFileTree a:hover {
     color: #333;
 }
 
+ul.jqueryFileTree .selected {
+    background: #D6D7B2;
+    color: #333;
+}
+
 /* Core Styles */
 .jqueryFileTree li.directory { background: url(images/directory.png) left top no-repeat; }
 .jqueryFileTree li.expanded { background: url(images/folder_open.png) left top no-repeat; }

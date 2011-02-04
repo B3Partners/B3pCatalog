@@ -20,7 +20,7 @@
             </c:if>
             log("selectedFilePath: " + selectedFilePath);
 
-            var activeClass = "ui-state-active";
+            var activeClass = "selected";
 
             $("#filetree").fileTree({
                 script: "${filetreeUrl}",

@@ -164,6 +164,10 @@ ul#main-tabs > li > a.main-tab-hover {
     border: 1px solid #d6d7b2;/*#bbbbbb;*/
 }
 
+#mde-wrapper .ui-button {
+    position: static; /* necessary for IE (7 in any case). jquery UI sets position to relative*/
+}
+
 #mde-toolbar {
     margin: 1em;
 }
@@ -257,6 +261,12 @@ ul#main-tabs > li > a.main-tab-hover {
     background: url(skin/sh_bot_right.png);
     right: auto;
     left: 0px;
+}
+
+/* Fix voor IE 7; selected class moet dan dus ook geen border of padding/margin hebben */
+ul.jqueryFileTree a {
+    width: auto;
+    padding: 0;
 }
 
 /* Message + info box */

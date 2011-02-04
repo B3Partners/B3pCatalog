@@ -75,7 +75,8 @@ B3pCatalog.createMde = function(xmlDoc) {
             $("#saveMD").button("option", "disabled", !changed);
         }
     }));
-    $("#mde-toolbar").append($("<span/>", {
+    $("#mde-toolbar").append($("<a />", {
+        href: "#",
         id: "saveMD",
         text: "Opslaan",
         title: "Metadatadocument opslaan",
@@ -83,7 +84,8 @@ B3pCatalog.createMde = function(xmlDoc) {
             $(this).removeClass("ui-state-hover");
             B3pCatalog.saveMetadata();
         }
-    }).button({disabled: true})).append($("<span/>", {
+    }).button({disabled: true})).append($("<a />", {
+        href: "#",
         id: "resetMD",
         text: "Legen",
         title: "Metadatadocument volledig leeg maken. Wordt nog niet opgeslagen.",
@@ -183,10 +185,5 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
     }
 };
 
-// http://simonwillison.net/2006/Jan/20/escape/
-// used for escaping the file/dirname in the "a" rel-attribute. So it can be put in the jQuery selector.
-RegExp.escape = function(text) {
-    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-}
 
 
