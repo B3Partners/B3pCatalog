@@ -75,7 +75,7 @@ public class MetadataAction extends DefaultAction {
             mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
             if (!mdFile.exists()) {
                 // create new metadata on client side:
-                return new StreamingResolution("text/plain", "");
+                return new StreamingResolution("text/plain", "empty");
             }
 
             StreamingResolution res = new StreamingResolution("text/xml", new BufferedInputStream(FileUtils.openInputStream(mdFile)));

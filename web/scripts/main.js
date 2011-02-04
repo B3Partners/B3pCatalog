@@ -25,7 +25,8 @@ B3pCatalog.openFile = function(filename) {
         type: "POST",
         data: {"load" : "", "filename" : filename},
         success: function(data, textStatus, jqXHR) {
-            if ($.isXMLDoc(data)) {
+            log(data);
+            if ($.isXMLDoc(data) || data === "empty") {
                 B3pCatalog.currentFilename = filename;
                 document.title = "B3pCatalog | " + filename;
                 //log(B3pCatalog.currentFilename);

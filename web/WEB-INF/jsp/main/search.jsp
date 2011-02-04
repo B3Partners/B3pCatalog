@@ -18,6 +18,10 @@
                     if ($.trim($("#searchStringBox").val()) === "") {
                         $("#searchStringBox").val("*");
                     }
+                    log(B3pCatalog.contextPath);
+                    $("#searchResultsContainer").html($("<img />", {
+                        src: B3pCatalog.contextPath + "/styles/images/spinner.gif"
+                    }));
                 },
                 success: function(data, textStatus, jqXHR) {
                     if ($.trim(jqXHR.getResponseHeader("Content-type")).startsWith("text/html")) {
