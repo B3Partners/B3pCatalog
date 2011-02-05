@@ -16,6 +16,7 @@ import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.validation.Validate;
+import nl.b3p.catalog.HtmlErrorResolution;
 import nl.b3p.csw.client.CswClient;
 import nl.b3p.csw.client.CswRequestCreator;
 import nl.b3p.csw.client.CswSmartRequestCreator;
@@ -73,9 +74,9 @@ public class CatalogAction extends DefaultAction {
 
             return new ForwardResolution(SEARCH_RESULTS_JSP);
         } catch (Exception e) {
-            String message = "Fout bij het zoeken naar de metadata.";
+            String message = "Fout bij het zoeken naar de metadata";
             log.error(message, e);
-            return new StreamingResolution("text/plain", message + "\n\n" + e.getLocalizedMessage());
+            return new HtmlErrorResolution(message, e);
         }
     }
 
@@ -91,7 +92,7 @@ public class CatalogAction extends DefaultAction {
         } catch (Exception e) {
             String message = "Fout bij het laden van de metadata.";
             log.error(message, e);
-            return new StreamingResolution("text/plain", message + "\n\n" + e.getLocalizedMessage());
+            return new HtmlErrorResolution(message, e);
         }
     }
 

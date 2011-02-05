@@ -1,5 +1,28 @@
 if (typeof B3pCatalog == "undefined") B3pCatalog = {};
 
+$(document).ajaxError(function(event, xhr, ajaxOptions, thrownError) {
+    B3pCatalog.openErrorDialog(thrownError + "<br />" + xhr.responseText);
+});
+
+B3pCatalog.openErrorDialog = function(message) {
+    log("error: " + message);
+    $("<div/>").html(message).appendTo(document.body).dialog({
+        title: "Fout",
+        modal: true,
+        width: calculateDialogWidth(66),
+        height: calculateDialogHeight(80),
+        buttons: [{
+            text: "Ok",
+            click: function(event) {
+                $(this).dialog("close");
+            }
+        }],
+        close: function(event) {
+            $(this).dialog("destroy").remove();
+        }
+    });
+}
+
 B3pCatalog.currentFilename = "";
 
 B3pCatalog.loadMetadataFromFile = function(filename) {
@@ -14,18 +37,9 @@ B3pCatalog.loadMetadataFromFile = function(filename) {
         dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'
         success: function(data, textStatus, jqXHR) {
             //log(data);
-            // Een vrije zwakke test om te kijken of the xml is. Uitkijken met de inhoud van errors: Geen "<"'s erin stoppen!!
-            if ((data.indexOf && data.indexOf("<")) >= 0 || data === "empty") {
-                B3pCatalog.currentFilename = filename;
-                document.title = "B3pCatalog | " + filename;
-                //log(B3pCatalog.currentFilename);
-                B3pCatalog.createMde(data);
-            } else {
-                B3pCatalog.openErrorDialog(data);
-            }
-        },
-        error: function(xhr, textStatus, errorThrown) {
-            B3pCatalog.openErrorDialog(textStatus + ": " + errorThrown);
+            B3pCatalog.currentFilename = filename;
+            document.title = "B3pCatalog | " + filename;
+            B3pCatalog.createMde(data);
         }
     });
 }
@@ -37,19 +51,11 @@ B3pCatalog.loadMetadataByUUID = function(uuid) {
         type: "POST",
         dataType: "text",
         success: function(data, textStatus, jqXHR) {
-            // zwakke test:
-            if ((data.indexOf && data.indexOf("<")) >= 0) {
-                B3pCatalog.saveDataUserConfirm({
-                    done: function() {
-                        B3pCatalog.createViewMde(data);
-                    }
-                });
-            } else {
-                B3pCatalog.openErrorDialog(data);
-            }
-        },
-        error: function(xhr, textStatus, errorThrown) {
-            B3pCatalog.openErrorDialog(textStatus + ": " + errorThrown);
+            B3pCatalog.saveDataUserConfirm({
+                done: function() {
+                    B3pCatalog.createViewMde(data);
+                }
+            });
         }
     });
 }
@@ -73,17 +79,9 @@ B3pCatalog.saveMetadata = function(settings) {
         type: "POST",
         data: {save: "", filename: options.filename, metadata: xml},
         success: function(data, textStatus, xhr) {
-            if (data !== "success") {
-                log("metadata save error: " + data);
-                B3pCatalog.openErrorDialog(data);
-            } else {
-                log("metadata saved succesfully.");
-                if (options.updateUI)
-                    $("#saveMD").button("option", "disabled", true);
-            }
-        },
-        error: function(xhr, textStatus, errorThrown) {
-            B3pCatalog.openErrorDialog(xhr.responseText);
+            log("metadata saved succesfully.");
+            if (options.updateUI)
+                $("#saveMD").button("option", "disabled", true);
         }
     });
 }
@@ -196,20 +194,29 @@ B3pCatalog.destroyMdeWrapper = function() {
     $("#mde-toolbar").empty();
 }
 
-B3pCatalog.openErrorDialog = function(message) {
-    log("error: " + message);
-    $("<div/>").html(message).appendTo(document.body).dialog({
-        title: "Error",
-        modal: true,
-        buttons: [{
-            text: "Ok",
-            click: function(event) {
-                $(this).dialog("close");
+function calculateDialogWidth(percentageOfBodyWidth, minWidth, maxWidth) {
+    return _calculateDialogSize(percentageOfBodyWidth, minWidth, maxWidth, $("body").width());
+}
+
+function calculateDialogHeight(percentageOfBodyHeight, minHeight, maxHeight) {
+    return _calculateDialogSize(percentageOfBodyHeight, minHeight, maxHeight, $("body").height());
+}
+
+function _calculateDialogSize(percentage, minSize, maxSize, bodySize) {
+    var size = Math.floor(bodySize * percentage / 100.0);
+    if (!!minSize) {
+        if (size < minSize) {
+            if (minSize < bodySize) {
+                size = minSize;
+            } else {
+                size = bodySize;
             }
-        }],
-        close: function(event) {
-            $(this).dialog("destroy").remove();
         }
-    });
+    }
+    if (!!maxSize) {
+        if (size > maxSize)
+            size = maxSize;
+    }
+    return size;
 }
 

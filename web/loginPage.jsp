@@ -32,7 +32,7 @@
 
 		<div class="header">
 			<span></span>
-			<h1 class="branding"><img src="${contextPath}/images/RO_PL_Logo_Homepage_nl.png" alt="Ministerie van Algemenen Zaken" height="87" width="500" /></h1>
+            <%@include file="/WEB-INF/jsp/commons/branding.jsp" %>
 		</div>
 
 		<div class="content_wrapper1"><div class="content_wrapper2">

@@ -8,7 +8,6 @@ package nl.b3p.catalog.stripes;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,6 +20,8 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.B3PCatalogException;
+import nl.b3p.catalog.HtmlErrorResolution;
+import nl.b3p.catalog.XmlResolution;
 import nl.b3p.catalog.filetree.Rewrite;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -78,13 +79,11 @@ public class MetadataAction extends DefaultAction {
                 return new StreamingResolution("text/plain", "empty");
             }
 
-            StreamingResolution res = new StreamingResolution("text/xml", new BufferedInputStream(FileUtils.openInputStream(mdFile)));
-            res.setCharacterEncoding("UTF-8");
-            return res;
-        } catch (Exception ex) {
+            return new XmlResolution(new BufferedInputStream(FileUtils.openInputStream(mdFile)));
+        } catch (Exception e) {
             String message = "Could not read file: " + mdFile == null ? "none" : mdFile.getAbsolutePath();
-            log.error(message, ex);
-            return new StreamingResolution("text/plain", message + "\n\n" + ex.getLocalizedMessage());
+            log.error(message, e);
+            return new HtmlErrorResolution(message, e);
         }
     }
 
@@ -99,13 +98,13 @@ public class MetadataAction extends DefaultAction {
 
             Element comments = getComments(oldDoc);
             if (comments == null)
-                return new StreamingResolution("text/plain", "Xml Document is non-metadata xml. This is not allowed.");
+                throw new B3PCatalogException("Xml Document is non-metadata xml. This is not allowed.");
             Content safeComments = comments.detach();
 
             Document doc = new SAXBuilder().build(new StringReader(metadata));
             Element unsafeComments = getComments(doc);
             if (comments == null)
-                return new StreamingResolution("text/plain", "Xml Document is non-metadata xml. This is not allowed.");
+                throw new B3PCatalogException("Xml Document is non-metadata xml. This is not allowed.");
             Element b3pElem = unsafeComments.getParentElement();
             b3pElem.removeContent(unsafeComments);
             b3pElem.addContent(safeComments);
@@ -115,10 +114,10 @@ public class MetadataAction extends DefaultAction {
             outputStream.close();
             
             return new StreamingResolution("text/plain", "success");
-        } catch (Exception ex) {
+        } catch (Exception e) {
             String message = "Could not write file: " + mdFile == null ? "none" : mdFile.getAbsolutePath();
-            log.error(message, ex);
-            return new StreamingResolution("text/plain", message + "\n\n" + ex.getLocalizedMessage());
+            log.error(message, e);
+            return new HtmlErrorResolution(message, e);
         }
     }
 
@@ -132,7 +131,7 @@ public class MetadataAction extends DefaultAction {
 
             Element comments = getComments(doc);
             if (comments == null)
-                return new StreamingResolution("text/plain", "Xml Document is non-metadata xml. This is not allowed.");
+                throw new B3PCatalogException("Xml Document is non-metadata xml. This is not allowed.");
 
             Element newComment = new Element(COMMENT_NAME, B3P_NAMESPACE).addContent(Arrays.asList(
                 new Element(USERNAME_NAME, B3P_NAMESPACE).setText(getContext().getRequest().getRemoteUser()),
@@ -145,13 +144,11 @@ public class MetadataAction extends DefaultAction {
             new XMLOutputter(Format.getPrettyFormat()).output(doc, outputStream);
             outputStream.close();
 
-            StreamingResolution res = new StreamingResolution("text/xml", new BufferedInputStream(FileUtils.openInputStream(mdFile)));
-            res.setCharacterEncoding("UTF-8");
-            return res;
-        } catch(Exception ex) {
+            return new XmlResolution(new BufferedInputStream(FileUtils.openInputStream(mdFile)));
+        } catch(Exception e) {
             String message = "Het is niet gelukt om het commentaar (" + comment + ") te posten in file \"" + filename + METADATA_FILE_EXTENSION + "\"";
-            log.error(message, ex);
-            return new StreamingResolution("text/plain", message + "\n\n" + ex.getLocalizedMessage());
+            log.error(message, e);
+            return new HtmlErrorResolution(message, e);
         }
     }
 

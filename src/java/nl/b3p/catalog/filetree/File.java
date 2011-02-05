@@ -36,7 +36,7 @@ public class File {
     }
 
     public String getExtension() {
-        return name.substring(name.lastIndexOf(".") + 1);
+        return name.substring(name.lastIndexOf(".") + 1).toLowerCase();
     }
 
 }

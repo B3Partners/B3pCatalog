@@ -14,37 +14,21 @@
             $("#searchButton").button();
             $("#searchForm input:text, #searchForm select").width("200px");
             $("#searchForm").ajaxForm({
+                target: "#searchResultsContainer",
                 beforeSerialize: function($form, options) {
-                    if ($.trim($("#searchStringBox").val()) === "") {
-                        $("#searchStringBox").val("*");
-                    }
-                    log(B3pCatalog.contextPath);
                     $("#searchResultsContainer").html($("<img />", {
                         src: B3pCatalog.contextPath + "/styles/images/spinner.gif"
                     }));
-                },
-                success: function(data, textStatus, jqXHR) {
-                    // Geen nette test hier:
-                    if ($.trim(jqXHR.getResponseHeader("Content-type")).startsWith("text/html")) {
-                        $("#searchResultsContainer").html(data);
-                    } else {
-                        var text = data.wiki2html ? data.wiki2html() : (!!wiki2html ? wiki2html(data) : data);
-                        $("#searchResultsContainer").html($("<div/>", {
-                            "className": "message_err",
-                            html: text
-                        }));
+                    // wrong action is called when searchstring is empty (!?). Workaround:
+                    if ($.trim($("#searchStringBox").val()) === "") {
+                        $("#searchStringBox").val("*");
                     }
                 },
+                global: false,
                 error: function(jqXHR, textStatus, errorThrown) {
-                    var message = textStatus + ": " + errorThrown;
-                    if (jqXHR.responseXML)
-                        message = jqXHR.responseXML;
-                    else if (jqXHR.responseText)
-                        message = jqXHR.responseText;
-                    log(message);
                     $("#searchResultsContainer").html($("<div/>", {
-                        "className": "message_err",
-                        html: message
+                        "class": "message_err",
+                        html: textStatus + ": " + errorThrown + "<br />" + jqXHR.responseText
                     }));
                 }
             });
