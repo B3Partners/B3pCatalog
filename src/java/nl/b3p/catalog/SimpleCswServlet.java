@@ -143,7 +143,7 @@ public class SimpleCswServlet extends HttpServlet {
             log.error("Exception bij transformatie csw: " + cswUrl, e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Fout tijdens de transformatie van het antwoord: " + e.getClass() + ": " + e.getMessage());
         } catch (OwsException e) {
-            log.error("Exception bij transformatie csw: " + cswUrl, e);
+            log.error("Exception bij afhandelen csw: " + cswUrl, e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Fout tijdens het afhandelen van het antwoord: " + e.getClass() + ": " + e.getMessage());
         } finally {
             outputStream.close();

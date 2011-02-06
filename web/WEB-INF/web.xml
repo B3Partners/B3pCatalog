@@ -126,7 +126,7 @@
         <param-name>CatalogRoots</param-name>
         <!--param-value>D:\ArcCatalogRoot, Root</param-value-->
         <!--param-value>D:\ArcCatalogRoot, Root1; D:\B3pCatalogRootTest, Root2</param-value-->
-        <param-value>D:\ArcCatalogRoot, Root1; D:\, Root2</param-value>
+        <param-value>D:\Development\b3p\B3pCatalogRootTest1, Root1; D:\Development\b3p\B3pCatalogRootTest2, Root2</param-value>
         <!--param-value>D:\, Oude Share</param-value-->
     </context-param>
     <!-- SCC-servlet configuratie -->
