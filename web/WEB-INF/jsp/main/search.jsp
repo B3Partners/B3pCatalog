@@ -55,11 +55,12 @@
                 <tr>
                     <td>Waar:</td>
                     <td>
+                        <!-- Hoofdletters in values verplicht wanneer je verbindt met Deegree bijv.!! -->
                         <stripes:select name="searchType">
-                            <stripes:option value="anyText">Overal</stripes:option>
-                            <stripes:option value="title">Titel</stripes:option>
-                            <stripes:option value="abstract">Samenvatting</stripes:option>
-                            <stripes:option value="identifier">Metadata UUID</stripes:option>
+                            <stripes:option value="AnyText">Overal</stripes:option>
+                            <stripes:option value="Title">Titel</stripes:option>
+                            <stripes:option value="Abstract">Samenvatting</stripes:option>
+                            <stripes:option value="Identifier">Metadata UUID</stripes:option>
                         </stripes:select>
                     </td>
                 </tr>
