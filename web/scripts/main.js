@@ -129,7 +129,8 @@ B3pCatalog.basicMdeOptions = {
     profile: "nl_md_1.2_with_fc",
     richTextMode: true,
     dcMode: true,
-    dcPblMode: true
+    dcPblMode: true,
+    iso19115oneTab: true
 }
 
 B3pCatalog.createMde = function(xmlDoc) {
