@@ -130,7 +130,9 @@ B3pCatalog.basicMdeOptions = {
     richTextMode: true,
     dcMode: true,
     dcPblMode: true,
-    iso19115oneTab: true
+    iso19115oneTab: true,
+    geoTabsMinimizable: true,
+    geoTabsStartMinimized: true
 }
 
 B3pCatalog.createMde = function(xmlDoc) {
