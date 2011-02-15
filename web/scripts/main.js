@@ -127,7 +127,9 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
 B3pCatalog.basicMdeOptions = {
     baseFullPath: B3pCatalog.contextPath + "/scripts/mde/",
     profile: "nl_md_1.2_with_fc",
-    richTextMode: true
+    richTextMode: true,
+    dcMode: true,
+    dcPblMode: true
 }
 
 B3pCatalog.createMde = function(xmlDoc) {
@@ -146,11 +148,6 @@ B3pCatalog.createMde = function(xmlDoc) {
                 async: false
             });
             return xhr.responseText;
-            /*if (xhr.responseXML == null || typeof xhr.responseXML != "object") {
-                return xhr.responseText; // mde itself will deal with / show the error
-            } else {
-                return xhr.responseXML;
-            }*/
         },
         changed: function(changed) {
             $("#saveMD").button("option", "disabled", !changed);

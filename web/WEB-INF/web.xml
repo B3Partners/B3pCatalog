@@ -125,9 +125,10 @@
         </description>
         <param-name>CatalogRoots</param-name>
         <!--param-value>D:\ArcCatalogRoot, Root</param-value-->
-        <!--param-value>D:\ArcCatalogRoot, Root1; D:\B3pCatalogRootTest, Root2</param-value-->
-        <param-value>D:\Development\b3p\B3pCatalogRootTest1, Root1; D:\Development\b3p\B3pCatalogRootTest2, Root2</param-value>
+        <param-value>D:\ArcCatalogRoot, Root1; D:\B3pCatalogRootTest, Root2</param-value>
+        <!--param-value>D:\Development\b3p\B3pCatalogRootTest1, Root1; D:\Development\b3p\B3pCatalogRootTest2, Root2</param-value-->
         <!--param-value>D:\, Oude Share</param-value-->
+        <!--param-value>/opt/B3PCatalogRoot1, Root1; /opt/B3PCatalogRoot2, Root2</param-value-->
     </context-param>
     <!-- SCC-servlet configuratie -->
     <context-param>
@@ -151,4 +152,8 @@
         <param-name>cswPassword</param-name>
         <param-value>***REMOVED***</param-value>
     </context-param>
+    <!--context-param>
+        <param-name>cswUrl</param-name>
+        <param-value>http://inspire.idgis.eu:9080/services</param-value>
+    </context-param-->
 </web-app>

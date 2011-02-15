@@ -8,7 +8,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<div id="search">
+<div id="search" class="tab-definition">
     <script type="text/javaScript">
         $(document).ready(function() {
             $("#searchButton").button();

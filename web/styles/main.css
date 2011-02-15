@@ -122,6 +122,10 @@ ul#main-tabs > li > a.main-tab-hover {
     text-decoration: underline;
 }
 
+.tab-definition {
+    display: none;
+}
+
 .footer {
     background-color: #f3f5f6;
     position: relative;

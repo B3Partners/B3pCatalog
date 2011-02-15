@@ -84,4 +84,4 @@
     </script>
 </div>
 
-<div id="filetree" class=""></div>
+<div id="filetree" class="tab-definition"></div>
