@@ -99,3 +99,4 @@ ul.jqueryFileTree .selected {
 
 /* Extra added by EvdP */
 /*.jqueryFileTree li.ext_csv { background: url(images/csv.png) left top no-repeat; }*/
+.jqueryFileTree LI.ext_shp { background: url(images/shp.png) left top no-repeat; }
