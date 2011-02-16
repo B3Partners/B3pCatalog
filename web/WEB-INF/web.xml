@@ -170,4 +170,66 @@
         <param-name>geoExtensions</param-name>
         <param-value>shp;dxf</param-value>
     </context-param>
+
+    <!-- Voor PBL: alle security-filter dingen uit hierboven. Comment hieronder aan (is (op user beheerder na) een één op één kopie van secfilterconf.xml). -->
+
+    <!--security-constraint>
+        <web-resource-collection>
+            <web-resource-name>styles</web-resource-name>
+            <url-pattern>/styles/*</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>scripts</web-resource-name>
+            <url-pattern>/scripts/*</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>images</web-resource-name>
+            <url-pattern>/images/*</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>xsls</web-resource-name>
+            <url-pattern>/xsls/*</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>scc</web-resource-name>
+            <url-pattern>/scc*</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>all</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>*</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <form-login-config>
+            <form-login-page>/login.jsp</form-login-page>
+            <form-logout-page>/logout.jsp</form-logout-page>
+            <form-error-page>/loginError.jsp</form-error-page>
+            <form-default-page>/</form-default-page>
+        </form-login-config>
+    </login-config-->
 </web-app>
