@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
-        version="2.4">
+<web-app 
+		xmlns="http://java.sun.com/xml/ns/j2ee" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+        version="2.4"
+        >
     <filter>
         <display-name>Stripes Filter</display-name>
         <filter-name>StripesFilter</filter-name>
@@ -63,6 +67,14 @@
         <servlet-name>StripesDispatcher</servlet-name>
         <servlet-class>net.sourceforge.stripes.controller.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
+        <!--security-role-ref>
+			<role-name>viewer</role-name>
+			<role-link>viewer</role-link>
+		</security-role-ref>
+		<security-role-ref>
+			<role-name>editor</role-name>
+			<role-link>editor</role-link>
+		</security-role-ref-->
     </servlet>
     <servlet>
         <servlet-name>securityconfig</servlet-name>
@@ -171,7 +183,7 @@
         <param-value>shp;dxf</param-value>
     </context-param>
 
-    <!-- Voor PBL: alle security-filter dingen uit hierboven. Comment hieronder aan (is (op user beheerder na) een één op één kopie van secfilterconf.xml). -->
+    <!-- Voor PBL: alle security-filter dingen uit hierboven. Comment hieronder aan een één op één kopie van secfilterconf.xml). -->
 
     <!--security-constraint>
         <web-resource-collection>

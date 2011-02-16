@@ -16,6 +16,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.validation.Validate;
@@ -57,6 +59,9 @@ public class MetadataAction extends DefaultAction {
     private final static String CONTENT_NAME = "content";
     private final static String METADATA_PBL_NAME = "metadataPBL";
 
+    public final static String ROLE_EDITOR = "editor";
+    public final static String ROLE_VIEWER = "viewer";
+
 
     private final static DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
@@ -69,28 +74,36 @@ public class MetadataAction extends DefaultAction {
     @Validate(required=true, on="postComment")
     private String comment;
 
-    // TODO: check permissie om file te loaden!!
     public Resolution load() {
         File mdFile = null;
         try {
+            if (!getContext().getRequest().isUserInRole(ROLE_VIEWER))
+                throw new B3PCatalogException("Only viewers can view metadata files");
+
+            Map<String, String> extraHeaders = new HashMap<String, String>();
+            if (!getContext().getRequest().isUserInRole(ROLE_EDITOR))
+                extraHeaders.put("MDE_viewMode", "true");
+
             mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
             if (!mdFile.exists()) {
                 // create new metadata on client side:
-                return new StreamingResolution("text/plain", "empty");
+                return new XmlResolution("empty", extraHeaders);
+            } else {
+                return new XmlResolution(new BufferedInputStream(FileUtils.openInputStream(mdFile)), extraHeaders);
             }
-
-            return new XmlResolution(new BufferedInputStream(FileUtils.openInputStream(mdFile)));
         } catch (Exception e) {
-            String message = "Could not read file: " + mdFile == null ? "none" : mdFile.getAbsolutePath();
+            String message = "Could not read file: " + (mdFile == null ? "none" : mdFile.getAbsolutePath());
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }
     }
 
-    // TODO: check permissie om file te saven!!
     public Resolution save() {
         File mdFile = null;
         try {
+            if (!getContext().getRequest().isUserInRole(ROLE_EDITOR))
+                throw new B3PCatalogException("Only editors can save metadata files");
+
             mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
 
             // replace sent comments with (safe, untampered) comments on disk.
@@ -115,7 +128,7 @@ public class MetadataAction extends DefaultAction {
             
             return new StreamingResolution("text/plain", "success");
         } catch (Exception e) {
-            String message = "Could not write file: " + mdFile == null ? "none" : mdFile.getAbsolutePath();
+            String message = "Could not write file: " + (mdFile == null ? "none" : mdFile.getAbsolutePath());
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }
@@ -125,6 +138,10 @@ public class MetadataAction extends DefaultAction {
     // that has <metadata/> or <gmd:MD_Metadata/> as root. This is by design.
     public Resolution postComment() {
         try {
+            if (!getContext().getRequest().isUserInRole(ROLE_VIEWER) &&
+                !getContext().getRequest().isUserInRole(ROLE_EDITOR))
+                throw new B3PCatalogException("Only viewers or editors can pos comments in metadata files");
+
             File mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
 
             Document doc = getMetadataDocument(mdFile);

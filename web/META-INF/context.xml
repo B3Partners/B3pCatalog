@@ -3,6 +3,12 @@
     <!-- Voor PBL:
     * ldap server: ldap01.rivm.nl
     * search base: ou=intern,ou=users,o=rivm
+
+    bind mode; dus userPassword is onnodig
+
+    uniqueMember ipv member?
+
+    bijv. bij userSearch can cn iets anders zijn: bv "sAMAccountName"
     -->
     <!--Realm className="org.apache.catalina.realm.JNDIRealm"
         debug="99"

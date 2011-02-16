@@ -39,7 +39,8 @@ B3pCatalog.loadMetadataFromFile = function(filename, isGeo) {
             //log(data);
             B3pCatalog.currentFilename = filename;
             document.title = "B3pCatalog | " + filename;
-            B3pCatalog.createMde(data, isGeo);
+            var viewMode = jqXHR.getResponseHeader("MDE_viewMode") === "true";
+            B3pCatalog.createMde(data, isGeo, viewMode);
         }
     });
 }
@@ -133,7 +134,7 @@ B3pCatalog.basicMdeOptions = {
     iso19115oneTab: true
 }
 
-B3pCatalog.createMde = function(xmlDoc, isGeo) {
+B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
     log("isGeo: " + isGeo);
     //log("data: " + data);
     B3pCatalog.destroyMdeWrapper();
@@ -146,23 +147,11 @@ B3pCatalog.createMde = function(xmlDoc, isGeo) {
             geoTabsStartMinimized: true
         });
     }
-    log($.extend({}, B3pCatalog.basicMdeOptions, {
-        xml: xmlDoc,
-        commentMode: true,
-        commentPosted: function(comment) {
-            var xhr = $.ajax({
-                url: B3pCatalog.contextPath + "/Metadata.action",
-                data: {"postComment": "", "comment": comment, filename: B3pCatalog.currentFilename},
-                dataType: "text",
-                method: "POST",
-                async: false
-            });
-            return xhr.responseText;
-        },
-        changed: function(changed) {
-            $("#saveMD").button("option", "disabled", !changed);
-        }
-    }, extraOptions));
+    if (typeof viewMode === "boolean") {
+        $.extend(extraOptions, {
+            viewMode: viewMode
+        });
+    }
     $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xml: xmlDoc,
         commentMode: true,
