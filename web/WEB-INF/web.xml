@@ -156,4 +156,18 @@
         <param-name>cswUrl</param-name>
         <param-value>http://inspire.idgis.eu:9080/services</param-value>
     </context-param-->
+    <context-param>
+        <description>
+            Semicolon-separated (";") list of extensions that are to be considered geographical files.
+            Geographical metadata tabs will automatically be shown for them.
+            Geographical metadata tabs will also automatically be shown for FBGD directories.
+
+            E.g.:
+
+            shp;dxf
+            
+        </description>
+        <param-name>geoExtensions</param-name>
+        <param-value>shp;dxf</param-value>
+    </context-param>
 </web-app>

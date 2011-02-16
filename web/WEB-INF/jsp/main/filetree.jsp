@@ -36,19 +36,18 @@
                 activeClass: activeClass,
                 activateDirsOnClick: false,
                 expandOnFirstCallTo: selectedFilePath,
-                fileCallback: function(filename) {
+                fileCallback: function(filename, aElement) {
                     log("file clicked: " + filename);
-                    var anchor = $('a[rel="' + RegExp.escape(filename) + '"]', "#filetree");
+                    var anchor = $(aElement);
                     if (anchor.length > 0 && anchor.hasClass(activeClass))
                         return;
 
                     B3pCatalog.saveDataUserConfirm({
                         done: function() {
-                            B3pCatalog.loadMetadataFromFile(filename);
+                            B3pCatalog.loadMetadataFromFile(filename, anchor.attr("isgeo") === "true");
                         },
                         cancel: function() {
-                            $("a[rel='" + RegExp.escape(filename) + "']", "#filetree")
-                                .removeClass(activeClass);
+                            anchor.removeClass(activeClass);
                             $("a[rel='" + RegExp.escape(B3pCatalog.currentFilename) + "']", "#filetree")
                                 .addClass(activeClass).focus();
                         }

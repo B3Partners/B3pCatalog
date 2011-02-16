@@ -35,6 +35,8 @@ public class FiletreeAction extends DefaultAction {
     private final static Log log = LogFactory.getLog(FiletreeAction.class);
 
     protected final static String SHAPE_EXT = ".shp";
+
+    private static List<String> geoExtensions = null;
     
     /*protected final static String[] ALLOWED_CONTENT_TYPES = {
         ""
@@ -130,6 +132,7 @@ public class FiletreeAction extends DefaultAction {
                 nl.b3p.catalog.filetree.File newFile = new nl.b3p.catalog.filetree.File();
                 newFile.setName(file.getName());
                 newFile.setPath(Rewrite.getFileNameRelativeToRootDirPP(file, getContext()));
+                newFile.setIsGeo(isGeoFile(file));
                 filesList.add(newFile);
             }
         }
@@ -156,6 +159,19 @@ public class FiletreeAction extends DefaultAction {
         }
 
         return dc;
+    }
+
+    protected boolean isGeoFile(File file) {
+        if (geoExtensions == null) {
+            String geoExtensionsString = getContext().getServletContext().getInitParameter("geoExtensions");
+            String[] geoExtensionsArray = geoExtensionsString.split(";");
+            geoExtensions = new ArrayList<String>();
+            for (String geoExt : geoExtensionsArray) {
+                geoExtensions.add(geoExt.trim().toLowerCase());
+            }
+        }
+
+        return geoExtensions.contains(nl.b3p.catalog.filetree.File.getExtension(file.getName()));
     }
 
     protected void filterOutFilesToHide(DirContent dc) {

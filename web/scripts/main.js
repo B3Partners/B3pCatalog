@@ -25,7 +25,7 @@ B3pCatalog.openErrorDialog = function(message) {
 
 B3pCatalog.currentFilename = "";
 
-B3pCatalog.loadMetadataFromFile = function(filename) {
+B3pCatalog.loadMetadataFromFile = function(filename, isGeo) {
     $("#mde-toolbar").empty();
     $("#mde").html($("<img />", {
         src: B3pCatalog.contextPath + "/styles/images/spinner.gif"
@@ -39,7 +39,7 @@ B3pCatalog.loadMetadataFromFile = function(filename) {
             //log(data);
             B3pCatalog.currentFilename = filename;
             document.title = "B3pCatalog | " + filename;
-            B3pCatalog.createMde(data);
+            B3pCatalog.createMde(data, isGeo);
         }
     });
 }
@@ -130,15 +130,39 @@ B3pCatalog.basicMdeOptions = {
     richTextMode: true,
     dcMode: true,
     dcPblMode: true,
-    iso19115oneTab: true,
-    geoTabsMinimizable: true,
-    geoTabsStartMinimized: true
+    iso19115oneTab: true
 }
 
-B3pCatalog.createMde = function(xmlDoc) {
+B3pCatalog.createMde = function(xmlDoc, isGeo) {
+    log("isGeo: " + isGeo);
     //log("data: " + data);
     B3pCatalog.destroyMdeWrapper();
     $.mde.logMode = true;
+
+    var extraOptions = {};
+    if (typeof isGeo === "boolean" && !isGeo) {
+        $.extend(extraOptions, {
+            geoTabsMinimizable: true,
+            geoTabsStartMinimized: true
+        });
+    }
+    log($.extend({}, B3pCatalog.basicMdeOptions, {
+        xml: xmlDoc,
+        commentMode: true,
+        commentPosted: function(comment) {
+            var xhr = $.ajax({
+                url: B3pCatalog.contextPath + "/Metadata.action",
+                data: {"postComment": "", "comment": comment, filename: B3pCatalog.currentFilename},
+                dataType: "text",
+                method: "POST",
+                async: false
+            });
+            return xhr.responseText;
+        },
+        changed: function(changed) {
+            $("#saveMD").button("option", "disabled", !changed);
+        }
+    }, extraOptions));
     $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xml: xmlDoc,
         commentMode: true,
@@ -155,7 +179,7 @@ B3pCatalog.createMde = function(xmlDoc) {
         changed: function(changed) {
             $("#saveMD").button("option", "disabled", !changed);
         }
-    }));
+    }, extraOptions));
     $("#mde-toolbar").append($("<a />", {
         href: "#",
         id: "saveMD",
