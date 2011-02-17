@@ -2,6 +2,7 @@ if (typeof B3pCatalog == "undefined") B3pCatalog = {};
 
 $(document).ajaxError(function(event, xhr, ajaxOptions, thrownError) {
     B3pCatalog.openErrorDialog(thrownError + "<br />" + xhr.responseText);
+    return false;
 });
 
 B3pCatalog.openErrorDialog = function(message) {
@@ -11,6 +12,23 @@ B3pCatalog.openErrorDialog = function(message) {
         modal: true,
         width: calculateDialogWidth(66),
         height: calculateDialogHeight(80),
+        buttons: [{
+            text: "Ok",
+            click: function(event) {
+                $(this).dialog("close");
+            }
+        }],
+        close: function(event) {
+            $(this).dialog("destroy").remove();
+        }
+    });
+}
+
+B3pCatalog.openSimpleErrorDialog = function(message) {
+    log("error: " + message);
+    $("<div/>").html(message).appendTo(document.body).dialog({
+        title: "Fout",
+        modal: true,
         buttons: [{
             text: "Ok",
             click: function(event) {
@@ -33,7 +51,7 @@ B3pCatalog.loadMetadataFromFile = function(filename, isGeo) {
     $.ajax({
         url: B3pCatalog.metadataUrl,
         type: "POST",
-        data: {"load" : "", "filename" : filename},
+        data: {load : "", filename : filename},
         dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'
         success: function(data, textStatus, jqXHR) {
             //log(data);
@@ -46,6 +64,10 @@ B3pCatalog.loadMetadataFromFile = function(filename, isGeo) {
 }
 
 B3pCatalog.loadMetadataByUUID = function(uuid) {
+    $("#mde-toolbar").empty();
+    $("#mde").html($("<img />", {
+        src: B3pCatalog.contextPath + "/styles/images/spinner.gif"
+    }));
     $.ajax({
         url: B3pCatalog.catalogUrl,
         data: {load: "", uuid: uuid},
@@ -156,40 +178,48 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
         xml: xmlDoc,
         commentMode: true,
         commentPosted: function(comment) {
-            var xhr = $.ajax({
-                url: B3pCatalog.contextPath + "/Metadata.action",
-                data: {"postComment": "", "comment": comment, filename: B3pCatalog.currentFilename},
-                dataType: "text",
-                method: "POST",
-                async: false
-            });
-            return xhr.responseText;
+            if (!comment) {
+                B3pCatalog.openSimpleErrorDialog("Commentaar kan niet leeg zijn.");
+                return false;
+            } else {
+                var xhr = $.ajax({
+                    url: B3pCatalog.contextPath + "/Metadata.action",
+                    data: {postComment: "", comment: comment, filename: B3pCatalog.currentFilename},
+                    dataType: "text",
+                    method: "POST",
+                    async: false
+                });
+                return xhr.responseText;
+            }
         },
         changed: function(changed) {
             $("#saveMD").button("option", "disabled", !changed);
         }
     }, extraOptions));
-    $("#mde-toolbar").append($("<a />", {
-        href: "#",
-        id: "saveMD",
-        text: "Opslaan",
-        title: "Metadatadocument opslaan",
-        click: function(event) {
-            $(this).removeClass("ui-state-hover");
-            B3pCatalog.saveMetadata();
-        }
-    }).button({disabled: true})).append($("<a />", {
-        href: "#",
-        id: "resetMD",
-        text: "Legen",
-        title: "Metadatadocument volledig leeg maken. Wordt nog niet opgeslagen.",
-        click: function(event) {
-            // TODO: confirmation box: Weet u zeker dat u alle metadata en commentaren wilt wissen voor dit document? Dit wordt pas definitief als u op "Opslaan" klikt.
-            $(this).removeClass("ui-state-hover");
-            $("#mde").mde("reset");
-        }
-    }).button({disabled: false})
-    );
+
+    if (viewMode === false) {
+        $("#mde-toolbar").append($("<a />", {
+            href: "#",
+            id: "saveMD",
+            text: "Opslaan",
+            title: "Metadatadocument opslaan",
+            click: function(event) {
+                $(this).removeClass("ui-state-hover");
+                B3pCatalog.saveMetadata();
+            }
+        }).button({disabled: true})).append($("<a />", {
+            href: "#",
+            id: "resetMD",
+            text: "Legen",
+            title: "Metadatadocument volledig leeg maken. Wordt nog niet opgeslagen.",
+            click: function(event) {
+                // TODO: confirmation box: Weet u zeker dat u alle metadata en commentaren wilt wissen voor dit document? Dit wordt pas definitief als u op "Opslaan" klikt.
+                $(this).removeClass("ui-state-hover");
+                $("#mde").mde("reset");
+            }
+        }).button({disabled: false})
+        );
+    }
 }
 
 B3pCatalog.createViewMde = function(xmlDoc) {
