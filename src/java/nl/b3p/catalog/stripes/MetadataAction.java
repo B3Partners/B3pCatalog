@@ -59,8 +59,8 @@ public class MetadataAction extends DefaultAction {
     private final static String CONTENT_NAME = "content";
     private final static String METADATA_PBL_NAME = "metadataPBL";
 
+    //public final static String ROLE_VIEWER = "viewer";
     public final static String ROLE_EDITOR = "editor";
-    public final static String ROLE_VIEWER = "viewer";
 
 
     private final static DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -77,8 +77,8 @@ public class MetadataAction extends DefaultAction {
     public Resolution load() {
         File mdFile = null;
         try {
-            if (!getContext().getRequest().isUserInRole(ROLE_VIEWER))
-                throw new B3PCatalogException("Only viewers can view metadata files");
+            //if (!getContext().getRequest().isUserInRole(ROLE_VIEWER))
+            //    throw new B3PCatalogException("Only viewers can view metadata files");
 
             Map<String, String> extraHeaders = new HashMap<String, String>();
             if (!getContext().getRequest().isUserInRole(ROLE_EDITOR))
@@ -138,7 +138,7 @@ public class MetadataAction extends DefaultAction {
     // that has <metadata/> or <gmd:MD_Metadata/> as root. This is by design.
     public Resolution postComment() {
         try {
-            if (!getContext().getRequest().isUserInRole(ROLE_VIEWER) &&
+            if (/*!getContext().getRequest().isUserInRole(ROLE_VIEWER) &&*/
                 !getContext().getRequest().isUserInRole(ROLE_EDITOR))
                 throw new B3PCatalogException("Only viewers or editors can pos comments in metadata files");
 

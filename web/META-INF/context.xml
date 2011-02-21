@@ -1,30 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context antiJARLocking="true" path="/B3pCatalog">
-    <!-- Voor PBL:
-    * ldap server: ldap01.rivm.nl
-    * search base: ou=intern,ou=users,o=rivm
-
-    bind mode; dus userPassword is onnodig
-
-    uniqueMember ipv member?
-
-    bijv. bij userSearch can cn iets anders zijn: bv "sAMAccountName"
-    -->
+    <!-- PBL: -->
+    <Realm className="org.apache.catalina.realm.JNDIRealm"
+        debug="99"
+        allRolesMode="strictAuthOnly"
+        connectionURL="ldap://dc01-dmz.rivm.nl:389"
+        connectionName="CN=AA-LDAPBIND,OU=Privileged,OU=Users,OU=Administration,DC=alt,DC=rivm,DC=nl"
+        connectionPassword="celerra"
+        derefAliases="never"
+        userBase="dc=alt,dc=rivm,dc=nl"
+        userSubtree="true"
+        userSearch="cn={0}"
+        userRoleName="memberOf"
+        roleBase="dc=alt,dc=rivm,dc=nl"
+        roleSubtree="true"
+        roleName="cn"
+        roleSearch="(member={0})"
+        referrals="follow"/>
+    <!-- PBL: Test-pc Arjan van der Put -->
     <!--Realm className="org.apache.catalina.realm.JNDIRealm"
         debug="99"
         allRolesMode="strictAuthOnly"
-        connectionURL="ldap://ldap01.rivm.nl:389"
-        connectionName="ou=intern,ou=users,o=rivm"
-        connectionPassword=""
+        connectionURL="ldap://dc01-lan.rivm.nl:389"
+        connectionName="CN=AA-LDAPBIND,OU=Privileged,OU=Users,OU=Administration,DC=alt,DC=rivm,DC=nl"
+        connectionPassword="celerra"
         derefAliases="never"
-        userBase="o=rivm"
+        userBase="dc=alt,dc=rivm,dc=nl"
         userSubtree="true"
         userSearch="cn={0}"
-        userRoleName="groupMembership"
-        roleBase="o=rivm"
+        userRoleName="memberOf"
+        roleBase="dc=alt,dc=rivm,dc=nl"
         roleSubtree="true"
         roleName="cn"
-        roleSearch="(member={0})"/-->
+        roleSearch="(member={0})"
+        referrals="follow"/-->
     <!-- PUT -->
     <!--Realm className="org.apache.catalina.realm.JNDIRealm"
         debug="99"

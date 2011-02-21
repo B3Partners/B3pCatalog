@@ -26,19 +26,6 @@
             <param-value>UTF-8</param-value>
         </init-param>
     </filter>
-    <filter>
-        <display-name>Security Filter</display-name>
-        <filter-name>SecurityFilter</filter-name>
-        <filter-class>org.securityfilter.filter.SecurityFilter</filter-class>
-        <init-param>
-            <param-name>config</param-name>
-            <param-value>/WEB-INF/securityfilter-config.xml</param-value>
-        </init-param>
-        <init-param>
-            <param-name>validate</param-name>
-            <param-value>false</param-value>
-        </init-param>
-    </filter>
     <filter-mapping>
         <filter-name>StripesFilter</filter-name>
         <url-pattern>*.jsp</url-pattern>
@@ -59,45 +46,20 @@
         <filter-name>Request encoding filter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    <filter-mapping>
-        <filter-name>SecurityFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
     <servlet>
         <servlet-name>StripesDispatcher</servlet-name>
         <servlet-class>net.sourceforge.stripes.controller.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
-        <!--security-role-ref>
-			<role-name>viewer</role-name>
-			<role-link>viewer</role-link>
-		</security-role-ref>
+        <!-- PBL: -->
 		<security-role-ref>
 			<role-name>editor</role-name>
-			<role-link>editor</role-link>
-		</security-role-ref-->
+			<role-link>CN=STO_PBL_PBLNAS^Datalogistiek_RW,OU=PBLNAS,OU=STO,OU=Groups,OU=PBL,OU=ALT,DC=alt,DC=rivm,DC=nl</role-link>
+		</security-role-ref>
     </servlet>
-    <servlet>
-        <servlet-name>securityconfig</servlet-name>
-        <servlet-class>nl.b3p.catalog.security.ConfigServlet</servlet-class>
-        <init-param>
-            <param-name>kburl</param-name>
-            <param-value>http://www.kaartenbalie.nl/kaartenbalie/services/</param-value>
-        </init-param>
-        <init-param>
-            <param-name>anonymous_user</param-name>
-            <param-value>anoniem</param-value>
-        </init-param>
-        <load-on-startup>3</load-on-startup>
-    </servlet>
-    <servlet>
-        <servlet-name>xmlsecuritydatabase</servlet-name>
-        <servlet-class>nl.b3p.commons.security.XmlSecurityDatabase</servlet-class>
-        <init-param>
-            <param-name>config</param-name>
-            <param-value>/WEB-INF/users.xml</param-value>
-        </init-param>
-        <load-on-startup>4</load-on-startup>
-    </servlet>
+    <!-- PBL: -->
+    <security-role>
+        <role-name>CN=STO_PBL_PBLNAS^Datalogistiek_RW,OU=PBLNAS,OU=STO,OU=Groups,OU=PBL,OU=ALT,DC=alt,DC=rivm,DC=nl</role-name>
+    </security-role>
     <servlet>
         <servlet-name>SimpleCswServlet</servlet-name>
         <servlet-class>nl.b3p.catalog.SimpleCswServlet</servlet-class>
@@ -136,10 +98,14 @@
             N.B.: Windows drive-letters MOETEN een hoofdletter zijn.
         </description>
         <param-name>CatalogRoots</param-name>
+        <!-- PBL: -->
+        <param-value>/pblnas/DataPortaal, DataPortaal</param-value>
+        <!--param-value>C:\, Root</param-value-->
         <!--param-value>D:\ArcCatalogRoot, Root</param-value-->
-        <param-value>D:\ArcCatalogRoot, Root1; D:\B3pCatalogRootTest, Root2</param-value>
+        <!-- <param-value>D:\ArcCatalogRoot, Root1; D:\B3pCatalogRootTest, Root2</param-value> -->
         <!--param-value>D:\Development\b3p\B3pCatalogRootTest1, Root1; D:\Development\b3p\B3pCatalogRootTest2, Root2</param-value-->
         <!--param-value>D:\, Oude Share</param-value-->
+        <!-- x4: -->
         <!--param-value>/opt/B3PCatalogRoot1, Root1; /opt/B3PCatalogRoot2, Root2</param-value-->
     </context-param>
     <!-- SCC-servlet configuratie -->
@@ -148,13 +114,14 @@
         <param-value>simple-response.xsl</param-value>
     </context-param>
     <!-- CSW-server configuratie -->
+    <!-- PBL geonetwork test setup: -->
     <context-param>
         <param-name>cswUrl</param-name>
-        <param-value>http://dev.b3p.nl/geonetwork/srv/en/csw</param-value>
+        <param-value>http://pbl-gis2-mbz.rivm.nl/geonetwork/srv/en/csw</param-value>
     </context-param>
     <context-param>
         <param-name>cswLoginUrl</param-name>
-        <param-value>http://dev.b3p.nl/geonetwork/srv/en/xml.user.login</param-value>
+        <param-value>http://pbl-gis2-mbz.rivm.nl/geonetwork/srv/en/xml.user.login</param-value>
     </context-param>
     <context-param>
         <param-name>cswUsername</param-name>
@@ -162,8 +129,9 @@
     </context-param>
     <context-param>
         <param-name>cswPassword</param-name>
-        <param-value>***REMOVED***</param-value>
+        <param-value>admin</param-value>
     </context-param>
+    <!-- IDGis Inspire service (Deegree): -->
     <!--context-param>
         <param-name>cswUrl</param-name>
         <param-value>http://inspire.idgis.eu:9080/services</param-value>
@@ -183,9 +151,9 @@
         <param-value>shp;dxf</param-value>
     </context-param>
 
-    <!-- Voor PBL: alle security-filter dingen uit hierboven. Comment hieronder aan een één op één kopie van secfilterconf.xml). -->
+    <!-- Voor PBL: alle security-filter servlets en filters uit in web.xml. security-constraint's en login-config hieronder aan. (Is bijna één op één kopie van secfilterconf.xml). -->
 
-    <!--security-constraint>
+    <security-constraint>
         <web-resource-collection>
             <web-resource-name>styles</web-resource-name>
             <url-pattern>/styles/*</url-pattern>
@@ -239,9 +207,47 @@
         <auth-method>FORM</auth-method>
         <form-login-config>
             <form-login-page>/login.jsp</form-login-page>
-            <form-logout-page>/logout.jsp</form-logout-page>
             <form-error-page>/loginError.jsp</form-error-page>
-            <form-default-page>/</form-default-page>
         </form-login-config>
-    </login-config-->
+    </login-config>
+
+    <!--filter>
+        <display-name>Security Filter</display-name>
+        <filter-name>SecurityFilter</filter-name>
+        <filter-class>org.securityfilter.filter.SecurityFilter</filter-class>
+        <init-param>
+            <param-name>config</param-name>
+            <param-value>/WEB-INF/securityfilter-config.xml</param-value>
+        </init-param>
+        <init-param>
+            <param-name>validate</param-name>
+            <param-value>false</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>SecurityFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <servlet>
+        <servlet-name>securityconfig</servlet-name>
+        <servlet-class>nl.b3p.catalog.security.ConfigServlet</servlet-class>
+        <init-param>
+            <param-name>kburl</param-name>
+            <param-value>http://www.kaartenbalie.nl/kaartenbalie/services/</param-value>
+        </init-param>
+        <init-param>
+            <param-name>anonymous_user</param-name>
+            <param-value>anoniem</param-value>
+        </init-param>
+        <load-on-startup>3</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>xmlsecuritydatabase</servlet-name>
+        <servlet-class>nl.b3p.commons.security.XmlSecurityDatabase</servlet-class>
+        <init-param>
+            <param-name>config</param-name>
+            <param-value>/WEB-INF/users.xml</param-value>
+        </init-param>
+        <load-on-startup>4</load-on-startup>
+    </servlet-->
 </web-app>
