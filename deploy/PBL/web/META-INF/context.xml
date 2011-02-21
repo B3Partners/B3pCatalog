@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/B3pCatalog">
+    <Realm className="org.apache.catalina.realm.JNDIRealm"
+        debug="99"
+        allRolesMode="strictAuthOnly"
+        connectionURL="ldap://dc01-dmz.rivm.nl:389"
+        connectionName="CN=AA-LDAPBIND,OU=Privileged,OU=Users,OU=Administration,DC=alt,DC=rivm,DC=nl"
+        connectionPassword="celerra"
+        derefAliases="never"
+        userBase="dc=alt,dc=rivm,dc=nl"
+        userSubtree="true"
+        userSearch="cn={0}"
+        userRoleName="memberOf"
+        roleBase="dc=alt,dc=rivm,dc=nl"
+        roleSubtree="true"
+        roleName="cn"
+        roleSearch="(member={0})"
+        referrals="follow"/>
+</Context>
