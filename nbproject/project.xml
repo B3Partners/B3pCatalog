@@ -71,7 +71,7 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.arcobjects.jar}</file>
+                    <file>${libs.ArcObjects.classpath}</file>
                 </library>
             </web-module-libraries>
             <web-module-additional-libraries/>

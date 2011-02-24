@@ -5,6 +5,14 @@
 
 package nl.b3p.catalog.stripes;
 
+import com.esri.arcgis.datasourcesGDB.FgdbFeatureClassName;
+import com.esri.arcgis.datasourcesGDB.FileGDBWorkspaceFactory;
+import com.esri.arcgis.geodatabase.FeatureClass;
+import com.esri.arcgis.geodatabase.IDataset;
+import com.esri.arcgis.geodatabase.IEnumDataset;
+import com.esri.arcgis.geodatabase.Workspace;
+import com.esri.arcgis.geodatabase.XmlPropertySet;
+import com.esri.arcgis.geodatabase.esriDatasetType;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -77,6 +85,10 @@ public class MetadataAction extends DefaultAction {
     public Resolution load() {
         File mdFile = null;
         try {
+            //ArcObjects test:
+            log.debug("FileGDB metadata:");
+            log.debug(getFileGDBMetadata("D:\\ArcCatalogRoot\\usa\\usa.gdb", "wind"));
+
             //if (!getContext().getRequest().isUserInRole(ROLE_VIEWER))
             //    throw new B3PCatalogException("Only viewers can view metadata files");
 
@@ -96,6 +108,33 @@ public class MetadataAction extends DefaultAction {
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }
+    }
+
+    private String getFileGDBMetadata(String fileGDBPath, String layer) throws Exception {
+        XmlPropertySet xmlPropertySet = getFileGDBLayerXmlPropertySet(fileGDBPath, layer);
+        return xmlPropertySet.getXml("/");
+    }
+
+    private void setFileGDBMetadata(String fileGDBPath, String layer, String metadata) throws Exception {
+        XmlPropertySet xmlPropertySet = getFileGDBLayerXmlPropertySet(fileGDBPath, layer);
+        xmlPropertySet.setXml(metadata);
+    }
+
+    private XmlPropertySet getFileGDBLayerXmlPropertySet(String fileGDBPath, String layer) throws Exception {
+        FileGDBWorkspaceFactory factory = new FileGDBWorkspaceFactory();
+        Workspace workspace = new Workspace(factory.openFromFile(fileGDBPath, 0));
+
+        IEnumDataset enumDataset = workspace.getDatasets(esriDatasetType.esriDTFeatureClass);
+        IDataset ds = enumDataset.next();
+        while (ds != null) {
+            FeatureClass fClass = new FeatureClass(ds);
+            // alias name is geloof ik niet uniek. FullName gebruiken. iets regelen met display...
+            if (fClass.getAliasName().equals(layer)) {
+                FgdbFeatureClassName fclassName = (FgdbFeatureClassName) fClass.getFullName();
+                return (XmlPropertySet) fclassName.getMetadata();
+            }
+        }
+        throw new B3PCatalogException("Layer " + layer + " not found in FileGDB " + fileGDBPath);
     }
 
     public Resolution save() {
