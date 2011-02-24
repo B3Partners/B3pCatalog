@@ -87,7 +87,7 @@ public class MetadataAction extends DefaultAction {
         try {
             //ArcObjects test:
             log.debug("FileGDB metadata:");
-            log.debug(getFileGDBMetadata("D:\\ArcCatalogRoot\\usa\\usa.gdb", "wind"));
+            log.debug(getFileGDBMetadata("C:\\Users\\Erik\\Documents\\ArcCatalogRoot\\data\\usa\\usa.gdb", "wind"));
 
             //if (!getContext().getRequest().isUserInRole(ROLE_VIEWER))
             //    throw new B3PCatalogException("Only viewers can view metadata files");
@@ -125,10 +125,10 @@ public class MetadataAction extends DefaultAction {
         Workspace workspace = new Workspace(factory.openFromFile(fileGDBPath, 0));
 
         IEnumDataset enumDataset = workspace.getDatasets(esriDatasetType.esriDTFeatureClass);
-        IDataset ds = enumDataset.next();
-        while (ds != null) {
+        IDataset ds;
+        while ((ds = enumDataset.next()) != null) {
             FeatureClass fClass = new FeatureClass(ds);
-            // alias name is geloof ik niet uniek. FullName gebruiken. iets regelen met display...
+            // alias name is denk ik niet uniek. FullName gebruiken. iets regelen met display...
             if (fClass.getAliasName().equals(layer)) {
                 FgdbFeatureClassName fclassName = (FgdbFeatureClassName) fClass.getFullName();
                 return (XmlPropertySet) fclassName.getMetadata();
