@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
+import nl.b3p.catalog.fgdb.FGDBHelper;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirContent;
 import nl.b3p.catalog.filetree.Rewrite;
@@ -76,6 +77,7 @@ public class FiletreeAction extends DefaultAction {
                     dirContent = getDirContent(directory, subDirList);
                 }
             } catch(IOException ioex) {
+                log.error("Error filling dir content", ioex);
                 dirContent = getRootDirContent();
             }
         } else {
@@ -102,6 +104,14 @@ public class FiletreeAction extends DefaultAction {
     }
 
     protected DirContent getDirContent(File directory, List<String> subDirList) throws IOException {
+        if (FGDBHelper.isFGDBDir(directory)) {
+            return getFGDBDirContent(directory, subDirList);
+        } else {
+            return getNormalDirContent(directory, subDirList);
+        }
+    }
+
+    protected DirContent getNormalDirContent(File directory, List<String> subDirList) throws IOException {
         DirContent dc = new DirContent();
 
         File[] dirs = directory.listFiles(new FileFilter() {
@@ -122,6 +132,8 @@ public class FiletreeAction extends DefaultAction {
                 Dir newDir = new Dir();
                 newDir.setName(dir.getName());
                 newDir.setPath(Rewrite.getFileNameRelativeToRootDirPP(dir, getContext()));
+                // can be used to attach a different dir icon to it.
+                newDir.setIsFGDB(FGDBHelper.isFGDBDir(dir));
                 dirsList.add(newDir);
             }
         }
@@ -157,6 +169,23 @@ public class FiletreeAction extends DefaultAction {
                 }
             }
         }
+
+        return dc;
+    }
+
+    protected DirContent getFGDBDirContent(File directory, List<String> subDirList) throws IOException {
+        DirContent dc = new DirContent();
+        
+        List<Dir> dirsList =
+                FGDBHelper.getAllCollectionDatasets(directory.getCanonicalPath(), getContext());
+        List<nl.b3p.catalog.filetree.File> filesList =
+                FGDBHelper.getAllNonCollectionDatasets(directory.getCanonicalPath(), getContext());
+
+        Collections.sort(dirsList, new DirExtensionComparator());
+        Collections.sort(filesList, new FileExtensionComparator());
+
+        dc.setDirs(dirsList);
+        dc.setFiles(filesList);
 
         return dc;
     }

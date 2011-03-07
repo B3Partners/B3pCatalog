@@ -15,6 +15,7 @@ public class Dir {
     // Local dir name
     private String name;
     private DirContent content;
+    private boolean isFGDB;
 
     public Dir() {
         
@@ -42,6 +43,14 @@ public class Dir {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isIsFGDB() {
+        return isFGDB;
+    }
+
+    public void setIsFGDB(boolean isFGDB) {
+        this.isFGDB = isFGDB;
     }
 
 }
