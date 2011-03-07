@@ -70,6 +70,9 @@ public class MetadataAction extends DefaultAction {
     @Validate(required=true)
     private String filename;
 
+    @Validate(required=true)
+    private int esriType;
+
     @Validate(required=true, on="save")
     private String metadata;
 
@@ -79,25 +82,22 @@ public class MetadataAction extends DefaultAction {
     public Resolution load() {
         File mdFile = null;
         try {
-            //ArcObjects test:
-            FGDBHelper.logAllDatasets("C:\\Users\\Erik\\Documents\\ArcCatalogRoot\\data\\usa\\usa.gdb");
-            log.debug("FileGDB metadata:");
-            //log.debug(FGDBHelper.getMetadata("C:\\Users\\Erik\\Documents\\ArcCatalogRoot\\data\\usa\\usa.gdb", "highway", esriDatasetType.esriDTFeatureDataset));
-            log.debug(FGDBHelper.getMetadata("C:\\Users\\Erik\\Documents\\ArcCatalogRoot\\data\\usa\\usa.gdb", "wind", esriDatasetType.esriDTFeatureClass));
-
-            //if (!getContext().getRequest().isUserInRole(ROLE_VIEWER))
-            //    throw new B3PCatalogException("Only viewers can view metadata files");
-
             Map<String, String> extraHeaders = new HashMap<String, String>();
             if (!getContext().getRequest().isUserInRole(ROLE_EDITOR))
                 extraHeaders.put("MDE_viewMode", "true");
 
-            mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
-            if (!mdFile.exists()) {
-                // create new metadata on client side:
-                return new XmlResolution("empty", extraHeaders);
+            mdFile = new File(filename);
+            if (FGDBHelper.isFGDBDirOrInsideFGDBDir(mdFile)) {
+                return new XmlResolution(FGDBHelper.getMetadata(mdFile, esriType), extraHeaders);
             } else {
-                return new XmlResolution(new BufferedInputStream(FileUtils.openInputStream(mdFile)), extraHeaders);
+                mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
+
+                if (!mdFile.exists()) {
+                    // create new metadata on client side:
+                    return new XmlResolution("empty", extraHeaders);
+                } else {
+                    return new XmlResolution(new BufferedInputStream(FileUtils.openInputStream(mdFile)), extraHeaders);
+                }
             }
         } catch (Exception e) {
             String message = "Could not read file: " + (mdFile == null ? "none" : mdFile.getAbsolutePath());
@@ -246,6 +246,14 @@ public class MetadataAction extends DefaultAction {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public int getEsriType() {
+        return esriType;
+    }
+
+    public void setEsriType(int esriType) {
+        this.esriType = esriType;
     }
 
     public String getMetadata() {

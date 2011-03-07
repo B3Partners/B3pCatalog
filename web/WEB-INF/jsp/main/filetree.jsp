@@ -44,7 +44,10 @@
 
                     B3pCatalog.saveDataUserConfirm({
                         done: function() {
-                            B3pCatalog.loadMetadataFromFile(filename, anchor.attr("isgeo") === "true");
+                            B3pCatalog.loadMetadataFromFile(
+                                filename,
+                                parseInt(anchor.attr("esritype")),
+                                anchor.attr("isgeo") === "true");
                         },
                         cancel: function() {
                             anchor.removeClass(activeClass);

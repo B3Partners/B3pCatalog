@@ -40,7 +40,7 @@
     </c:forEach>
     <c:forEach var="file" items="${files}">
         <li class="file ext_${file.extension}">
-            <a href="#" rel="${file.path}" title="${file.name}" isgeo="${file.isGeo}">
+            <a href="#" rel="${file.path}" title="${file.name}" isgeo="${file.isGeo}" esritype="${file.esriType}">
                 ${file.name}
             </a>
         </li>

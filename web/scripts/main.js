@@ -43,7 +43,7 @@ B3pCatalog.openSimpleErrorDialog = function(message) {
 
 B3pCatalog.currentFilename = "";
 
-B3pCatalog.loadMetadataFromFile = function(filename, isGeo) {
+B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo) {
     $("#mde-toolbar").empty();
     $("#mde").html($("<img />", {
         src: B3pCatalog.contextPath + "/styles/images/spinner.gif"
@@ -51,7 +51,7 @@ B3pCatalog.loadMetadataFromFile = function(filename, isGeo) {
     $.ajax({
         url: B3pCatalog.metadataUrl,
         type: "POST",
-        data: {load : "", filename : filename},
+        data: {load : "", filename : filename, esriType : esriType},
         dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'
         success: function(data, textStatus, jqXHR) {
             //log(data);

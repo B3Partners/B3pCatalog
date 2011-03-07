@@ -21,6 +21,9 @@ public class File {
 
     private boolean isGeo;
 
+    private int esriType = 0;
+
+
     public File() {
         
     }
@@ -59,6 +62,14 @@ public class File {
 
     public void setIsGeo(boolean isGeo) {
         this.isGeo = isGeo;
+    }
+
+    public int getEsriType() {
+        return esriType;
+    }
+
+    public void setEsriType(int esriType) {
+        this.esriType = esriType;
     }
 
 }

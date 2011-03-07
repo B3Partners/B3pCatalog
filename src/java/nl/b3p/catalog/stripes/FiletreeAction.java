@@ -104,7 +104,7 @@ public class FiletreeAction extends DefaultAction {
     }
 
     protected DirContent getDirContent(File directory, List<String> subDirList) throws IOException {
-        if (FGDBHelper.isFGDBDir(directory)) {
+        if (FGDBHelper.isFGDBDirOrInsideFGDBDir(directory)) {
             return getFGDBDirContent(directory, subDirList);
         } else {
             return getNormalDirContent(directory, subDirList);
@@ -133,7 +133,7 @@ public class FiletreeAction extends DefaultAction {
                 newDir.setName(dir.getName());
                 newDir.setPath(Rewrite.getFileNameRelativeToRootDirPP(dir, getContext()));
                 // can be used to attach a different dir icon to it.
-                newDir.setIsFGDB(FGDBHelper.isFGDBDir(dir));
+                newDir.setIsFGDB(FGDBHelper.isFGDBDirOrInsideFGDBDir(dir));
                 dirsList.add(newDir);
             }
         }
@@ -177,9 +177,9 @@ public class FiletreeAction extends DefaultAction {
         DirContent dc = new DirContent();
         
         List<Dir> dirsList =
-                FGDBHelper.getAllCollectionDatasets(directory.getCanonicalPath(), getContext());
+                FGDBHelper.getAllDirDatasets(directory, getContext());
         List<nl.b3p.catalog.filetree.File> filesList =
-                FGDBHelper.getAllNonCollectionDatasets(directory.getCanonicalPath(), getContext());
+                FGDBHelper.getAllFileDatasets(directory, getContext());
 
         Collections.sort(dirsList, new DirExtensionComparator());
         Collections.sort(filesList, new FileExtensionComparator());
