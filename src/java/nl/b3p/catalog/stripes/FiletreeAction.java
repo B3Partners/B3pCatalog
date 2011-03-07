@@ -10,6 +10,7 @@ package nl.b3p.catalog.stripes;
  * @author Erik van de Pol
  */
 
+import com.esri.arcgis.system.Cleaner;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -105,7 +106,15 @@ public class FiletreeAction extends DefaultAction {
 
     protected DirContent getDirContent(File directory, List<String> subDirList) throws IOException {
         if (FGDBHelper.isFGDBDirOrInsideFGDBDir(directory)) {
-            return getFGDBDirContent(directory, subDirList);
+            try {
+                // recursief met expandTo gaat dit misschien nog verkeerd: wordt nu inet gebruikt.
+                log.debug("tracking arcobjects");
+                Cleaner.trackObjectsInCurrentThread();
+                return getFGDBDirContent(directory, subDirList);
+            } finally {
+                log.debug("releasing arcobjects");
+                Cleaner.releaseAllInCurrentThread();
+            }
         } else {
             return getNormalDirContent(directory, subDirList);
         }
@@ -174,6 +183,7 @@ public class FiletreeAction extends DefaultAction {
     }
 
     protected DirContent getFGDBDirContent(File directory, List<String> subDirList) throws IOException {
+        // recursief met expandTo werkt niet: wordt nu niet gebruikt.
         DirContent dc = new DirContent();
         
         List<Dir> dirsList =

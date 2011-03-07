@@ -51,7 +51,11 @@ B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo) {
     $.ajax({
         url: B3pCatalog.metadataUrl,
         type: "POST",
-        data: {load : "", filename : filename, esriType : esriType},
+        data: {
+            load : "",
+            filename : filename,
+            esriType : esriType
+        },
         dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'
         success: function(data, textStatus, jqXHR) {
             //log(data);
@@ -100,13 +104,22 @@ B3pCatalog.saveMetadata = function(settings) {
         url: B3pCatalog.metadataUrl,
         async: options.async,
         type: "POST",
-        data: {save: "", filename: options.filename, metadata: xml},
+        data: {
+            save: "",
+            filename: options.filename,
+            metadata: xml,
+            esriType: B3pCatalog.getCurrentEsriType()
+        },
         success: function(data, textStatus, xhr) {
             log("metadata saved succesfully.");
             if (options.updateUI)
                 $("#saveMD").button("option", "disabled", true);
         }
     });
+}
+
+B3pCatalog.getCurrentEsriType = function() {
+    return $("#filetree .jqueryFileTree a.selected").attr("esritype");
 }
 
 B3pCatalog.saveDataUserConfirm = function(opts) {
@@ -184,7 +197,12 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
             } else {
                 var xhr = $.ajax({
                     url: B3pCatalog.contextPath + "/Metadata.action",
-                    data: {postComment: "", comment: comment, filename: B3pCatalog.currentFilename},
+                    data: {
+                        postComment: "",
+                        comment: comment,
+                        filename: B3pCatalog.currentFilename,
+                        esriType: B3pCatalog.getCurrentEsriType()
+                    },
                     dataType: "text",
                     method: "POST",
                     async: false

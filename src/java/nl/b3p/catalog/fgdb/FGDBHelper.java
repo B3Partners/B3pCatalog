@@ -76,19 +76,19 @@ public class FGDBHelper {
         return null;
     }
 
-    public static String getMetadata(File fileGDBPath, int datasetType) throws IOException, B3PCatalogException {
-        XmlPropertySet xmlPropertySet = getXmlPropertySet(fileGDBPath, datasetType);
+    // dit save en load moet met dezelfde XmlPropertySet ?!?!
+    public static String getMetadata(XmlPropertySet xmlPropertySet, int datasetType) throws IOException, B3PCatalogException {
         return xmlPropertySet.getXml("/");
     }
 
-    public static void setMetadata(File fileGDBPath, int datasetType, String metadata) throws IOException, B3PCatalogException {
-        XmlPropertySet xmlPropertySet = getXmlPropertySet(fileGDBPath, datasetType);
+    public static void setMetadata(XmlPropertySet xmlPropertySet, int datasetType, String metadata) throws IOException, B3PCatalogException {
+        log.debug("before: " + xmlPropertySet.getXml("/"));
         xmlPropertySet.setXml(metadata);
+        log.debug("after: " + xmlPropertySet.getXml("/"));
     }
 
-    private static XmlPropertySet getXmlPropertySet(File fileGDBPath, int datasetType) throws IOException, B3PCatalogException {
+    public static XmlPropertySet getXmlPropertySet(File fileGDBPath, int datasetType) throws IOException, B3PCatalogException {
         IDataset ds = getTargetDataset(fileGDBPath, datasetType);
-        log.debug(ds);
         switch(datasetType) {
             case esriDatasetType.esriDTFeatureDataset: {
                 FeatureDataset fDataset = new FeatureDataset(ds);
