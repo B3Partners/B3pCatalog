@@ -9,6 +9,7 @@ import com.esri.arcgis.datasourcesGDB.FgdbFeatureClassName;
 import com.esri.arcgis.datasourcesGDB.FileGDBWorkspaceFactory;
 import com.esri.arcgis.geodatabase.FeatureClass;
 import com.esri.arcgis.geodatabase.FeatureDataset;
+import com.esri.arcgis.geodatabase.GeometricNetwork;
 import com.esri.arcgis.geodatabase.IDataset;
 import com.esri.arcgis.geodatabase.IEnumDataset;
 import com.esri.arcgis.geodatabase.IMetadata;
@@ -96,6 +97,8 @@ public class FGDBHelper {
                 return (IMetadata)new FeatureDataset(ds).getFullName();
             case esriDatasetType.esriDTFeatureClass:
                 return (IMetadata)new FeatureClass(ds).getFullName();
+            case esriDatasetType.esriDTGeometricNetwork:
+                return (IMetadata)new GeometricNetwork(ds).getFullName();
             default:
                 throw new B3PCatalogException("DatasetType " + datasetType + " not supported in a FGDB");
         }
