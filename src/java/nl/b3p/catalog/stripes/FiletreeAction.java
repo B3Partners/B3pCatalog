@@ -106,15 +106,8 @@ public class FiletreeAction extends DefaultAction {
 
     protected DirContent getDirContent(File directory, List<String> subDirList) throws IOException {
         if (FGDBHelper.isFGDBDirOrInsideFGDBDir(directory)) {
-            try {
-                // recursief met expandTo gaat dit misschien nog verkeerd: wordt nu inet gebruikt.
-                log.debug("tracking arcobjects");
-                Cleaner.trackObjectsInCurrentThread();
-                return getFGDBDirContent(directory, subDirList);
-            } finally {
-                log.debug("releasing arcobjects");
-                Cleaner.releaseAllInCurrentThread();
-            }
+            // recursief met expandTo gaat dit misschien nog verkeerd: wordt nu niet gebruikt.
+            return getFGDBDirContent(directory, subDirList);
         } else {
             return getNormalDirContent(directory, subDirList);
         }

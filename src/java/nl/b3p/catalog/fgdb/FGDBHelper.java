@@ -5,17 +5,32 @@
 
 package nl.b3p.catalog.fgdb;
 
+import com.esri.arcgis.addins.desktop.Tool;
 import com.esri.arcgis.datasourcesGDB.FgdbFeatureClassName;
 import com.esri.arcgis.datasourcesGDB.FileGDBWorkspaceFactory;
+import com.esri.arcgis.datasourcesraster.MosaicDataset;
+import com.esri.arcgis.datasourcesraster.RasterBand;
+import com.esri.arcgis.datasourcesraster.RasterDataset;
 import com.esri.arcgis.geodatabase.FeatureClass;
 import com.esri.arcgis.geodatabase.FeatureDataset;
 import com.esri.arcgis.geodatabase.GeometricNetwork;
 import com.esri.arcgis.geodatabase.IDataset;
 import com.esri.arcgis.geodatabase.IEnumDataset;
 import com.esri.arcgis.geodatabase.IMetadata;
+import com.esri.arcgis.geodatabase.NetworkDataset;
+import com.esri.arcgis.geodatabase.RasterCatalog;
+import com.esri.arcgis.geodatabase.RelationshipClass;
+import com.esri.arcgis.geodatabase.RepresentationClass;
+import com.esri.arcgis.geodatabase.Table;
+import com.esri.arcgis.geodatabase.Tin;
+import com.esri.arcgis.geodatabase.Topology;
 import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.geodatabase.XmlPropertySet;
 import com.esri.arcgis.geodatabase.esriDatasetType;
+import com.esri.arcgis.geodatabaseextensions.CadastralFabric;
+import com.esri.arcgis.geodatabaseextensions.Terrain;
+import com.esri.arcgis.geoprocessing.gen.ToolboxGenerator;
+import com.esri.arcgis.schematic.SchematicDataset;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -93,14 +108,55 @@ public class FGDBHelper {
     private static IMetadata getIMetadata(File fileGDBPath, int datasetType) throws IOException, B3PCatalogException {
         IDataset ds = getTargetDataset(fileGDBPath, datasetType);
         switch(datasetType) {
+            // most used 2:
+
             case esriDatasetType.esriDTFeatureDataset:
                 return (IMetadata)new FeatureDataset(ds).getFullName();
             case esriDatasetType.esriDTFeatureClass:
                 return (IMetadata)new FeatureClass(ds).getFullName();
+
+            // others (unsupported types commented out: could not find corresponding class):
+
+            //case esriDatasetType.esriDTCadDrawing:
+            case esriDatasetType.esriDTCadastralFabric:
+                return (IMetadata)new CadastralFabric(ds).getFullName();
+            //case esriDatasetType.esriDTContainer:
+            //case esriDatasetType.esriDTGeo:
             case esriDatasetType.esriDTGeometricNetwork:
                 return (IMetadata)new GeometricNetwork(ds).getFullName();
+            //case esriDatasetType.esriDTLayer:
+            //case esriDatasetType.esriDTLocator:
+            //case esriDatasetType.esriDTMap:
+            //case esriDatasetType.esriDTMosaicDataset:
+            case esriDatasetType.esriDTNetworkDataset:
+                return (IMetadata)new NetworkDataset(ds).getFullName();
+            //case esriDatasetType.esriDTPlanarGraph:
+            case esriDatasetType.esriDTRasterBand:
+                return (IMetadata)new RasterBand(ds).getFullName();
+            case esriDatasetType.esriDTRasterCatalog:
+                return (IMetadata)new RasterCatalog(ds).getFullName();
+            case esriDatasetType.esriDTRasterDataset:
+                return (IMetadata)new RasterDataset(ds).getFullName();
+            case esriDatasetType.esriDTRelationshipClass:
+                return (IMetadata)new RelationshipClass(ds).getFullName();
+            case esriDatasetType.esriDTRepresentationClass:
+                return (IMetadata)new RepresentationClass(ds).getFullName();
+            case esriDatasetType.esriDTSchematicDataset:
+                return (IMetadata)new SchematicDataset(ds).getFullName();
+            //case esriDatasetType.esriDTStyle:
+            case esriDatasetType.esriDTTable:
+                return (IMetadata)new Table(ds).getFullName();
+            case esriDatasetType.esriDTTerrain:
+                return (IMetadata)new Terrain(ds).getFullName();
+            //case esriDatasetType.esriDTText:
+            case esriDatasetType.esriDTTin:
+                return (IMetadata)new Tin(ds).getFullName();
+            //case esriDatasetType.esriDTTool:
+            //case esriDatasetType.esriDTToolbox:
+            case esriDatasetType.esriDTTopology:
+                return (IMetadata)new Topology(ds).getFullName();
             default:
-                throw new B3PCatalogException("DatasetType " + datasetType + " not supported in a FGDB");
+                throw new B3PCatalogException("DatasetType " + datasetType + " not supported in a leaf in a FGDB");
         }
     }
 
