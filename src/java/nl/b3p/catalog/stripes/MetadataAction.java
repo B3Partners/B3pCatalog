@@ -83,31 +83,6 @@ public class MetadataAction extends DefaultAction {
     @Validate(required=true, on="postComment")
     private String comment;
 
-    private HashMap<String, Object> getArcObjectsCache() {
-        ServletContext servletContext = getContext().getServletContext();
-        Object locksObject = servletContext.getAttribute("arcObjectsLocks");
-        HashMap<String, Object> locks = null;
-        if (locksObject == null) {
-            locks = new HashMap<String, Object>();
-            servletContext.setAttribute("arcObjectsLocks", locks);
-            log.debug("new hashmap");
-        } else {
-            locks = (HashMap<String, Object>)locksObject;
-            log.debug("using old hashmap: " + locks);
-        }
-        return locks;
-    }
-
-    private synchronized void setArcObjectsCache(String lock, Object object) {
-        HashMap<String, Object> locks = getArcObjectsCache();
-        locks.put(lock, object);
-    }
-
-    private synchronized Object getArcObjectsCache(String lock) {
-        HashMap<String, Object> locks = getArcObjectsCache();
-        return locks.get(lock);
-    }
-
     public Resolution load() {
         File mdFile = null;
         try {
@@ -117,16 +92,7 @@ public class MetadataAction extends DefaultAction {
 
             mdFile = Rewrite.getFileFromPPFileName(filename, getContext());
             if (FGDBHelper.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                try {
-                    log.debug("tracking arcobjects");
-                    Cleaner.trackObjectsInCurrentThread();
-
-                    XmlPropertySet xmlPropertySet = getXmlPropertySet(mdFile, esriType);
-                    return new XmlResolution(FGDBHelper.getMetadata(xmlPropertySet, esriType), extraHeaders);
-                } finally {
-                    log.debug("releasing arcobjects");
-                    Cleaner.releaseAllInCurrentThread();
-                }
+                return new XmlResolution(FGDBHelper.getMetadata(mdFile, esriType), extraHeaders);
             } else {
                 mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
 
@@ -144,20 +110,6 @@ public class MetadataAction extends DefaultAction {
         }
     }
 
-    private XmlPropertySet getXmlPropertySet(File mdFile, int esriType) throws IOException, B3PCatalogException {
-        XmlPropertySet xmlPropertySet;
-        Object cachedObject = getArcObjectsCache(mdFile.getCanonicalPath());
-        if (cachedObject != null) {
-            xmlPropertySet = (XmlPropertySet)cachedObject;
-            log.debug("using cached XmlPropertySet for: " + mdFile.getCanonicalPath());
-        } else {
-            xmlPropertySet = FGDBHelper.getXmlPropertySet(mdFile, esriType);
-            setArcObjectsCache(mdFile.getCanonicalPath(), xmlPropertySet);
-            log.debug("using new XmlPropertySet for: " + mdFile.getCanonicalPath());
-        }
-        return xmlPropertySet;
-    }
-
     public Resolution save() {
         File mdFile = null;
         try {
@@ -166,27 +118,11 @@ public class MetadataAction extends DefaultAction {
 
             mdFile = Rewrite.getFileFromPPFileName(filename, getContext());
             if (FGDBHelper.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                try {
-                    log.debug("tracking arcobjects");
-                    Cleaner.trackObjectsInCurrentThread();
+                Document oldDoc = getMetadataDocument(FGDBHelper.getMetadata(mdFile, esriType));
+                Document newDoc = sanitizeComments(oldDoc, metadata);
 
-                    XmlPropertySet xmlPropertySet = getXmlPropertySet(mdFile, esriType);
-
-                    Document oldDoc = getMetadataDocument(FGDBHelper.getMetadata(xmlPropertySet, esriType));
-                    Document newDoc = sanitizeComments(oldDoc, metadata);
-
-                    Format fgdbFormat = Format.getPrettyFormat();//.setOmitDeclaration(true); // auto omitted by ESRI
-
-                    String sanitizedMD = new XMLOutputter(fgdbFormat).outputString(newDoc);
-                    FGDBHelper.setMetadata(xmlPropertySet, esriType, "<metadata><MD_Metadata/></metadata>");
-                    log.debug("test md: " + FGDBHelper.getMetadata(xmlPropertySet, esriType));
-                    FGDBHelper.setMetadata(xmlPropertySet, esriType, sanitizedMD);
-                    log.debug("sanitizedMD md: " + sanitizedMD);
-                    log.debug("new md: " + FGDBHelper.getMetadata(xmlPropertySet, esriType));
-                } finally {
-                    log.debug("releasing arcobjects");
-                    Cleaner.releaseAllInCurrentThread();
-                }
+                String sanitizedMD = new XMLOutputter(Format.getPrettyFormat()).outputString(newDoc);
+                FGDBHelper.setMetadata(mdFile, esriType, sanitizedMD);
             } else {
                 mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
 
@@ -212,23 +148,14 @@ public class MetadataAction extends DefaultAction {
         try {
             File mdFile = Rewrite.getFileFromPPFileName(filename, getContext());
             if (FGDBHelper.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                try {
-                    log.debug("tracing arcobjects");
-                    Cleaner.trackObjectsInCurrentThread();
+                Document doc = getMetadataDocument(FGDBHelper.getMetadata(mdFile, esriType));
 
-                    XmlPropertySet xmlPropertySet = FGDBHelper.getXmlPropertySet(mdFile, esriType);
-                    Document doc = getMetadataDocument(FGDBHelper.getMetadata(xmlPropertySet, esriType));
+                addComment(doc, comment);
 
-                    addComment(doc, comment);
+                String commentedMD = new XMLOutputter(Format.getPrettyFormat()).outputString(doc);
+                FGDBHelper.setMetadata(mdFile, esriType, commentedMD);
 
-                    String commentedMD = new XMLOutputter(Format.getPrettyFormat()).outputString(doc);
-                    FGDBHelper.setMetadata(xmlPropertySet, esriType, commentedMD);
-
-                    return new XmlResolution(commentedMD);
-                } finally {
-                    log.debug("releasing arcobjects");
-                    Cleaner.releaseAllInCurrentThread();
-                }
+                return new XmlResolution(commentedMD);
             } else {
                 mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
 

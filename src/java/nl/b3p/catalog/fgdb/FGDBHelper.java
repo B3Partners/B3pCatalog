@@ -9,9 +9,9 @@ import com.esri.arcgis.datasourcesGDB.FgdbFeatureClassName;
 import com.esri.arcgis.datasourcesGDB.FileGDBWorkspaceFactory;
 import com.esri.arcgis.geodatabase.FeatureClass;
 import com.esri.arcgis.geodatabase.FeatureDataset;
-import com.esri.arcgis.geodatabase.FeatureDatasetName;
 import com.esri.arcgis.geodatabase.IDataset;
 import com.esri.arcgis.geodatabase.IEnumDataset;
+import com.esri.arcgis.geodatabase.IMetadata;
 import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.geodatabase.XmlPropertySet;
 import com.esri.arcgis.geodatabase.esriDatasetType;
@@ -76,30 +76,26 @@ public class FGDBHelper {
         return null;
     }
 
-    // dit save en load moet met dezelfde XmlPropertySet ?!?!
-    public static String getMetadata(XmlPropertySet xmlPropertySet, int datasetType) throws IOException, B3PCatalogException {
+    public static String getMetadata(File fileGDBPath, int datasetType) throws IOException, B3PCatalogException {
+        IMetadata iMetadata = getIMetadata(fileGDBPath, datasetType);
+        XmlPropertySet xmlPropertySet = (XmlPropertySet)iMetadata.getMetadata();
         return xmlPropertySet.getXml("/");
     }
 
-    public static void setMetadata(XmlPropertySet xmlPropertySet, int datasetType, String metadata) throws IOException, B3PCatalogException {
-        log.debug("before: " + xmlPropertySet.getXml("/"));
+    public static void setMetadata(File fileGDBPath, int datasetType, String metadata) throws IOException, B3PCatalogException {
+        IMetadata iMetadata = getIMetadata(fileGDBPath, datasetType);
+        XmlPropertySet xmlPropertySet = (XmlPropertySet)iMetadata.getMetadata();
         xmlPropertySet.setXml(metadata);
-        log.debug("after: " + xmlPropertySet.getXml("/"));
+        iMetadata.setMetadata(xmlPropertySet);
     }
 
-    public static XmlPropertySet getXmlPropertySet(File fileGDBPath, int datasetType) throws IOException, B3PCatalogException {
+    private static IMetadata getIMetadata(File fileGDBPath, int datasetType) throws IOException, B3PCatalogException {
         IDataset ds = getTargetDataset(fileGDBPath, datasetType);
         switch(datasetType) {
-            case esriDatasetType.esriDTFeatureDataset: {
-                FeatureDataset fDataset = new FeatureDataset(ds);
-                FeatureDatasetName fDatasetName = (FeatureDatasetName)fDataset.getFullName();
-                return (XmlPropertySet)fDatasetName.getMetadata();
-            }
-            case esriDatasetType.esriDTFeatureClass: {
-                FeatureClass fClass = new FeatureClass(ds);
-                FgdbFeatureClassName fclassName = (FgdbFeatureClassName)fClass.getFullName();
-                return (XmlPropertySet)fclassName.getMetadata();
-            }
+            case esriDatasetType.esriDTFeatureDataset:
+                return (IMetadata)new FeatureDataset(ds).getFullName();
+            case esriDatasetType.esriDTFeatureClass:
+                return (IMetadata)new FeatureClass(ds).getFullName();
             default:
                 throw new B3PCatalogException("DatasetType " + datasetType + " not supported in a FGDB");
         }
