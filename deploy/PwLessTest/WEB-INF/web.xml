@@ -112,17 +112,12 @@
     </context-param>
     <context-param>
         <param-name>cswUsername</param-name>
-        <param-value>admin</param-value>
+        <param-value>jantje</param-value>
     </context-param>
     <context-param>
         <param-name>cswPassword</param-name>
-        <param-value>***REMOVED***</param-value>
+        <param-value>pietje</param-value>
     </context-param>
-    <!-- IDGis Inspire service (Deegree): -->
-    <!--context-param>
-        <param-name>cswUrl</param-name>
-        <param-value>http://inspire.idgis.eu:9080/services</param-value>
-    </context-param-->
     <context-param>
         <description>
             Semicolon-separated (";") list of extensions that are to be considered geographical files.

@@ -5,8 +5,6 @@
 
 package nl.b3p.catalog.stripes;
 
-import com.esri.arcgis.geodatabase.XmlPropertySet;
-import com.esri.arcgis.system.Cleaner;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -19,16 +17,14 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import javax.servlet.ServletContext;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.HtmlErrorResolution;
 import nl.b3p.catalog.XmlResolution;
-import nl.b3p.catalog.fgdb.FGDBHelper;
+import nl.b3p.catalog.fgdb.FGDBHelperProxy;
 import nl.b3p.catalog.filetree.Rewrite;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -91,8 +87,8 @@ public class MetadataAction extends DefaultAction {
                 extraHeaders.put("MDE_viewMode", "true");
 
             mdFile = Rewrite.getFileFromPPFileName(filename, getContext());
-            if (FGDBHelper.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                return new XmlResolution(FGDBHelper.getMetadata(mdFile, esriType), extraHeaders);
+            if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
+                return new XmlResolution(FGDBHelperProxy.getMetadata(mdFile, esriType), extraHeaders);
             } else {
                 mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
 
@@ -117,12 +113,12 @@ public class MetadataAction extends DefaultAction {
                 throw new B3PCatalogException("Only editors can save metadata files");
 
             mdFile = Rewrite.getFileFromPPFileName(filename, getContext());
-            if (FGDBHelper.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                Document oldDoc = getMetadataDocument(FGDBHelper.getMetadata(mdFile, esriType));
+            if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
+                Document oldDoc = getMetadataDocument(FGDBHelperProxy.getMetadata(mdFile, esriType));
                 Document newDoc = sanitizeComments(oldDoc, metadata);
 
                 String sanitizedMD = new XMLOutputter(Format.getPrettyFormat()).outputString(newDoc);
-                FGDBHelper.setMetadata(mdFile, esriType, sanitizedMD);
+                FGDBHelperProxy.setMetadata(mdFile, esriType, sanitizedMD);
             } else {
                 mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
 
@@ -147,13 +143,13 @@ public class MetadataAction extends DefaultAction {
     public Resolution postComment() {
         try {
             File mdFile = Rewrite.getFileFromPPFileName(filename, getContext());
-            if (FGDBHelper.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                Document doc = getMetadataDocument(FGDBHelper.getMetadata(mdFile, esriType));
+            if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
+                Document doc = getMetadataDocument(FGDBHelperProxy.getMetadata(mdFile, esriType));
 
                 addComment(doc, comment);
 
                 String commentedMD = new XMLOutputter(Format.getPrettyFormat()).outputString(doc);
-                FGDBHelper.setMetadata(mdFile, esriType, commentedMD);
+                FGDBHelperProxy.setMetadata(mdFile, esriType, commentedMD);
 
                 return new XmlResolution(commentedMD);
             } else {

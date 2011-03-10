@@ -19,7 +19,7 @@
                     $("#searchResultsContainer").html($("<img />", {
                         src: B3pCatalog.contextPath + "/styles/images/spinner.gif"
                     }));
-                    // wrong action is called when searchstring is empty (!?). Workaround:
+                    // wrong Stripes action is called when searchstring is empty (!?). Workaround:
                     if ($.trim($("#searchStringBox").val()) === "") {
                         $("#searchStringBox").val("*");
                     }
@@ -28,7 +28,7 @@
                 error: function(jqXHR, textStatus, errorThrown) {
                     $("#searchResultsContainer").html($("<div/>", {
                         "class": "message_err",
-                        html: textStatus + ": " + errorThrown + "<br />" + jqXHR.responseText
+                        html: jqXHR.responseText
                     }));
                 }
             });

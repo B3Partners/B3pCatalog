@@ -10,7 +10,6 @@ package nl.b3p.catalog.stripes;
  * @author Erik van de Pol
  */
 
-import com.esri.arcgis.system.Cleaner;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -21,8 +20,10 @@ import java.util.LinkedList;
 import java.util.List;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
+import nl.b3p.catalog.ArcObjectsNotFoundException;
+import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.HtmlErrorResolution;
-import nl.b3p.catalog.fgdb.FGDBHelper;
+import nl.b3p.catalog.fgdb.FGDBHelperProxy;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirContent;
 import nl.b3p.catalog.filetree.Rewrite;
@@ -78,11 +79,10 @@ public class FiletreeAction extends DefaultAction {
 
                     dirContent = getDirContent(directory, subDirList);
                 }
-            } catch(IOException ioex) {
+            } catch(Exception ex) {
                 String message = "Niet gelukt directory inhoud te tonen";
-                log.error(message, ioex);
-                return new HtmlErrorResolution(message, ioex);
-                //dirContent = getRootDirContent();
+                log.error(message, ex);
+                return new HtmlErrorResolution(message, ex);
             }
         } else {
             dirContent = getRootDirContent();
@@ -107,8 +107,8 @@ public class FiletreeAction extends DefaultAction {
         return dc;
     }
 
-    protected DirContent getDirContent(File directory, List<String> subDirList) throws IOException {
-        if (FGDBHelper.isFGDBDirOrInsideFGDBDir(directory)) {
+    protected DirContent getDirContent(File directory, List<String> subDirList) throws IOException, B3PCatalogException {
+        if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(directory)) {
             // recursief met expandTo gaat dit misschien nog verkeerd: wordt nu niet gebruikt.
             return getFGDBDirContent(directory, subDirList);
         } else {
@@ -116,7 +116,7 @@ public class FiletreeAction extends DefaultAction {
         }
     }
 
-    protected DirContent getNormalDirContent(File directory, List<String> subDirList) throws IOException {
+    protected DirContent getNormalDirContent(File directory, List<String> subDirList) throws IOException, B3PCatalogException {
         DirContent dc = new DirContent();
 
         File[] dirs = directory.listFiles(new FileFilter() {
@@ -138,7 +138,7 @@ public class FiletreeAction extends DefaultAction {
                 newDir.setName(dir.getName());
                 newDir.setPath(Rewrite.getFileNameRelativeToRootDirPP(dir, getContext()));
                 // can be used to attach a different dir icon to it.
-                newDir.setIsFGDB(FGDBHelper.isFGDBDirOrInsideFGDBDir(dir));
+                newDir.setIsFGDB(FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dir));
                 dirsList.add(newDir);
             }
         }
@@ -178,14 +178,14 @@ public class FiletreeAction extends DefaultAction {
         return dc;
     }
 
-    protected DirContent getFGDBDirContent(File directory, List<String> subDirList) throws IOException {
+    protected DirContent getFGDBDirContent(File directory, List<String> subDirList) throws IOException, B3PCatalogException {
         // recursief met expandTo werkt niet: wordt nu niet gebruikt.
         DirContent dc = new DirContent();
-        
+
         List<Dir> dirsList =
-                FGDBHelper.getAllDirDatasets(directory, getContext());
+                FGDBHelperProxy.getAllDirDatasets(directory, getContext());
         List<nl.b3p.catalog.filetree.File> filesList =
-                FGDBHelper.getAllFileDatasets(directory, getContext());
+                FGDBHelperProxy.getAllFileDatasets(directory, getContext());
 
         Collections.sort(dirsList, new DirExtensionComparator());
         Collections.sort(filesList, new FileExtensionComparator());

@@ -5,10 +5,7 @@
 
 package nl.b3p.catalog.fgdb;
 
-import com.esri.arcgis.addins.desktop.Tool;
-import com.esri.arcgis.datasourcesGDB.FgdbFeatureClassName;
 import com.esri.arcgis.datasourcesGDB.FileGDBWorkspaceFactory;
-import com.esri.arcgis.datasourcesraster.MosaicDataset;
 import com.esri.arcgis.datasourcesraster.RasterBand;
 import com.esri.arcgis.datasourcesraster.RasterDataset;
 import com.esri.arcgis.geodatabase.FeatureClass;
@@ -29,10 +26,8 @@ import com.esri.arcgis.geodatabase.XmlPropertySet;
 import com.esri.arcgis.geodatabase.esriDatasetType;
 import com.esri.arcgis.geodatabaseextensions.CadastralFabric;
 import com.esri.arcgis.geodatabaseextensions.Terrain;
-import com.esri.arcgis.geoprocessing.gen.ToolboxGenerator;
 import com.esri.arcgis.schematic.SchematicDataset;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -51,41 +46,9 @@ import org.apache.commons.logging.LogFactory;
 public class FGDBHelper {
     private final static Log log = LogFactory.getLog(FGDBHelper.class);
 
-    public static boolean isFGDBDirOrInsideFGDBDir(File file) {
-        while (file != null) {
-            if (isFGDBDir(file)) {
-                return true;
-            } else {
-                file = file.getParentFile();
-            }
-        }
-        return false;
-    }
-
-    private static boolean isInsideFGDBDir(File file) {
-        if (file == null)
-            return false;
-
-        file = file.getParentFile();
-        return isFGDBDirOrInsideFGDBDir(file);
-    }
-
-    private static boolean isFGDBDir(File file) {
-        if (!file.exists() || !file.isDirectory())
-            return false;
-        String[] gdbFiles = file.list(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.equals("gdb");
-            }
-        });
-        if (gdbFiles == null)
-            return false;
-        return gdbFiles.length >= 1;
-    }
-
     private static File getRootFGDBDir(File file) throws IOException {
         while (file != null) {
-            if (isFGDBDir(file)) {
+            if (FGDBHelperProxy.isFGDBDir(file)) {
                 return file;
             } else {
                 file = file.getParentFile();
@@ -202,9 +165,9 @@ public class FGDBHelper {
 
     private static IDataset getTargetDataset(File fileGDBPath, int dataType) throws IOException {
         IDataset targetDataset = null;
-        if (isFGDBDir(fileGDBPath)) {
+        if (FGDBHelperProxy.isFGDBDir(fileGDBPath)) {
             targetDataset = getWorkspace(fileGDBPath.getCanonicalPath());
-        } else if (isInsideFGDBDir(fileGDBPath)) {
+        } else if (FGDBHelperProxy.isInsideFGDBDir(fileGDBPath)) {
             File fgdb = getRootFGDBDir(fileGDBPath);
             File currentDirFile = fileGDBPath;
             List<String> subDirList = new LinkedList<String>();
