@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
+import nl.b3p.catalog.HtmlErrorResolution;
 import nl.b3p.catalog.fgdb.FGDBHelper;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirContent;
@@ -78,8 +79,10 @@ public class FiletreeAction extends DefaultAction {
                     dirContent = getDirContent(directory, subDirList);
                 }
             } catch(IOException ioex) {
-                log.error("Error filling dir content", ioex);
-                dirContent = getRootDirContent();
+                String message = "Niet gelukt directory inhoud te tonen";
+                log.error(message, ioex);
+                return new HtmlErrorResolution(message, ioex);
+                //dirContent = getRootDirContent();
             }
         } else {
             dirContent = getRootDirContent();

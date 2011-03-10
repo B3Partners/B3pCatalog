@@ -101,7 +101,6 @@
         <param-value>simple-response.xsl</param-value>
     </context-param>
     <!-- CSW-server configuratie -->
-    <!-- PBL geonetwork test setup: -->
     <context-param>
         <param-name>cswUrl</param-name>
         <param-value>http://dev.b3p.nl/geonetwork/srv/en/csw</param-value>

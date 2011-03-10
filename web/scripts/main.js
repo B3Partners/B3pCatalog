@@ -1,12 +1,13 @@
 if (typeof B3pCatalog == "undefined") B3pCatalog = {};
 
 $(document).ajaxError(function(event, xhr, ajaxOptions, thrownError) {
-    B3pCatalog.openErrorDialog(thrownError + "<br />" + xhr.responseText);
+    B3pCatalog.openErrorDialog(xhr.responseText);
     return false;
 });
 
 B3pCatalog.openErrorDialog = function(message) {
     log("error: " + message);
+    $(".spinner").remove();
     $("<div/>").html(message).appendTo(document.body).dialog({
         title: "Fout",
         modal: true,
@@ -26,6 +27,7 @@ B3pCatalog.openErrorDialog = function(message) {
 
 B3pCatalog.openSimpleErrorDialog = function(message) {
     log("error: " + message);
+    $(".spinner").remove();
     $("<div/>").html(message).appendTo(document.body).dialog({
         title: "Fout",
         modal: true,
@@ -46,7 +48,8 @@ B3pCatalog.currentFilename = "";
 B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo) {
     $("#mde-toolbar").empty();
     $("#mde").html($("<img />", {
-        src: B3pCatalog.contextPath + "/styles/images/spinner.gif"
+        src: B3pCatalog.contextPath + "/styles/images/spinner.gif",
+        "class": "spinner"
     }));
     $.ajax({
         url: B3pCatalog.metadataUrl,
@@ -70,7 +73,8 @@ B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo) {
 B3pCatalog.loadMetadataByUUID = function(uuid) {
     $("#mde-toolbar").empty();
     $("#mde").html($("<img />", {
-        src: B3pCatalog.contextPath + "/styles/images/spinner.gif"
+        src: B3pCatalog.contextPath + "/styles/images/spinner.gif",
+        "class": "spinner"
     }));
     $.ajax({
         url: B3pCatalog.catalogUrl,

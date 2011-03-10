@@ -78,6 +78,8 @@ public class FGDBHelper {
                 return name.equals("gdb");
             }
         });
+        if (gdbFiles == null)
+            return false;
         return gdbFiles.length >= 1;
     }
 

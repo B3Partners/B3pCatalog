@@ -9,7 +9,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <div id="search" class="tab-definition">
-    <script type="text/javaScript">
+    <script type="text/javascript">
         $(document).ready(function() {
             $("#searchButton").button();
             $("#searchForm input:text, #searchForm select").width("200px");

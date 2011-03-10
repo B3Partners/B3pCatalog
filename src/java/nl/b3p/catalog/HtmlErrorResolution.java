@@ -42,6 +42,8 @@ public class HtmlErrorResolution extends StreamingResolution {
 
     private static String createHtmlString(String htmlMessage, Exception e, boolean printStackTrace) {
         StringBuilder sb = new StringBuilder();
+
+        sb.append("<div>");
         
         if (htmlMessage != null) {
             sb.append(htmlMessage);
@@ -52,8 +54,10 @@ public class HtmlErrorResolution extends StreamingResolution {
         if (e != null) {
             sb.append(e.getLocalizedMessage());
             if (printStackTrace) {
-                sb.append("<br />");
-                sb.append("<pre>");
+                sb.append("<br /><br />");
+                //sb.append("<script type='text/javascript'>$(document).ready(function(){ $('#advanced-error-button').button().click(function(){ $(\"#advanced-error\").toggle(); }); });</script>");
+                sb.append("<a href='#' id='advanced-error-button' onclick='$(\"#advanced-error\").toggle();'>Toon geavanceerde informatie</a>");
+                sb.append("<pre id='advanced-error' style='display: none; color: red; background-color: #F0F0F0'>");
                 StringWriter sw = new StringWriter();
                 e.printStackTrace(new PrintWriter(sw));
                 sb.append(sw.getBuffer());
@@ -63,6 +67,8 @@ public class HtmlErrorResolution extends StreamingResolution {
 
         if (htmlMessage == null && e == null)
             sb.append("An empty error was thrown.");
+        
+        sb.append("</div>");
 
         return sb.toString();
     }
