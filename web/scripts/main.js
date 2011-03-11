@@ -129,16 +129,18 @@ B3pCatalog.getCurrentEsriType = function() {
 B3pCatalog.saveDataUserConfirm = function(opts) {
     var options = $.extend({
         done: $.noop,
-        cancel: $.noop
+        cancel: $.noop,
+        text: "Wilt u uw wijzigingen opslaan?",
+        asyncSave: true
     }, opts);
     if ($("#mde").mde("initialized") && $("#mde").mde("changed")) {
-        $("<div/>").text("Wilt u uw wijzigingen opslaan?").appendTo(document.body).dialog({
+        $("<div/>").text(options.text).appendTo(document.body).dialog({
             title: "Vraag",
             modal: true,
             buttons: [{
                 text: "Ja",
                 click: function(event) {
-                    B3pCatalog.saveMetadata();
+                    B3pCatalog.saveMetadata({async: options.asyncSave});
                     options.done();
                     $(this).dialog("destroy").remove();
                 }
@@ -219,8 +221,9 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
         }
     }, extraOptions));
 
+    var mdeToolbar = $("#mde-toolbar");
     if (viewMode === false) {
-        $("#mde-toolbar").append($("<a />", {
+        mdeToolbar.append($("<a />", {
             href: "#",
             id: "saveMD",
             text: "Opslaan",
@@ -229,7 +232,8 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
                 $(this).removeClass("ui-state-hover");
                 B3pCatalog.saveMetadata();
             }
-        }).button({disabled: true})).append($("<a />", {
+        }).button({disabled: true}));
+        mdeToolbar.append($("<a />", {
             href: "#",
             id: "resetMD",
             text: "Legen",
@@ -239,9 +243,44 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
                 $(this).removeClass("ui-state-hover");
                 $("#mde").mde("reset");
             }
-        }).button({disabled: false})
-        );
+        }).button({disabled: false}));
+        mdeToolbar.append($("<a />", {
+            href: "#",
+            id: "importMD",
+            text: "Importeren",
+            title: "Metadatadocument importeren en over huidige metadatadocument heen kopiëren. Wordt nog niet opgeslagen.",
+            click: function(event) {
+                $(this).removeClass("ui-state-hover");
+                // TODO: import
+            }
+        }).button({disabled: false}));
     }
+    mdeToolbar.append($("<a />", {
+        href: "#",
+        id: "exportMD",
+        text: "Exporteren",
+        title: "Metadatadocument exporteren.",
+        click: function(event) {
+            $(this).removeClass("ui-state-hover ui-state-focus");
+            if ($("#mde").mde("changed")) {
+                B3pCatalog.saveDataUserConfirm({
+                    done: B3pCatalog.exportMd,
+                    text: "Wilt u uw wijzigingen opslaan alvorens de metadata te exporteren?",
+                    asyncSave: false // data needs to be saved already when we do our export request
+                });
+            } else {
+                B3pCatalog.exportMd();
+            }
+        }
+    }).button({disabled: false}));
+}
+
+B3pCatalog.exportMd = function() {
+    window.location = B3pCatalog.metadataUrl + "?" + $.param({
+        "export": "",
+        filename: B3pCatalog.currentFilename,
+        esriType: B3pCatalog.getCurrentEsriType()
+    });
 }
 
 B3pCatalog.createViewMde = function(xmlDoc) {

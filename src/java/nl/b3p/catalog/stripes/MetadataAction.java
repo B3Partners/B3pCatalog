@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.validation.Validate;
@@ -80,6 +82,10 @@ public class MetadataAction extends DefaultAction {
     private String comment;
 
     public Resolution load() {
+        return getMetadataResolution();
+    }
+
+    protected Resolution getMetadataResolution() {
         File mdFile = null;
         try {
             Map<String, String> extraHeaders = new HashMap<String, String>();
@@ -136,6 +142,25 @@ public class MetadataAction extends DefaultAction {
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }
+    }
+
+    public Resolution export() {
+        Resolution resolution = getMetadataResolution();
+        if (resolution instanceof XmlResolution) {
+            String exportName = null;
+            try {
+                File file = Rewrite.getFileFromPPFileName(filename, getContext());
+                exportName = file.getName();
+                if (!exportName.endsWith(".xml"))
+                    exportName = exportName + ".xml";
+            } catch (IOException ex) {
+                exportName = "metadata.xml";
+            }
+            XmlResolution xmlResolution = (XmlResolution)resolution;
+            xmlResolution.setAttachment(true);
+            xmlResolution.setFilename(exportName);
+        }
+        return resolution;
     }
 
     // Comments can be posted by anyone to any ".xml"-file that is a descendant of one of the roots.
