@@ -6,3 +6,4 @@
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 <c:set var="title" value="B3PCatalog"/>
+<c:set var="customer" value="PBL"/>

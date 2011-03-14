@@ -14,6 +14,7 @@
     <head>
         <meta http-equiv="Expires" content="-1" />
         <meta http-equiv="Cache-Control" content="max-age=0, no-store" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
         <title>${pageTitle}</title>
 

@@ -46,12 +46,7 @@ B3pCatalog.openSimpleErrorDialog = function(message) {
 B3pCatalog.currentFilename = "";
 
 B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo) {
-    $("#mde-toolbar").empty();
-    $("#mde").html($("<img />", {
-        src: B3pCatalog.contextPath + "/styles/images/spinner.gif",
-        "class": "spinner"
-    }));
-    $.ajax({
+    this._loadMetadata({
         url: B3pCatalog.metadataUrl,
         type: "POST",
         data: {
@@ -71,14 +66,12 @@ B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo) {
 }
 
 B3pCatalog.loadMetadataByUUID = function(uuid) {
-    $("#mde-toolbar").empty();
-    $("#mde").html($("<img />", {
-        src: B3pCatalog.contextPath + "/styles/images/spinner.gif",
-        "class": "spinner"
-    }));
-    $.ajax({
+    this._loadMetadata({
         url: B3pCatalog.catalogUrl,
-        data: {load: "", uuid: uuid},
+        data: {
+            load: "",
+            uuid: uuid
+        },
         type: "POST",
         dataType: "text",
         success: function(data, textStatus, jqXHR) {
@@ -89,6 +82,15 @@ B3pCatalog.loadMetadataByUUID = function(uuid) {
             });
         }
     });
+}
+
+B3pCatalog._loadMetadata = function(options) {
+    $("#mde-toolbar").empty();
+    $("#mde").html($("<img />", {
+        src: B3pCatalog.contextPath + "/styles/images/spinner.gif",
+        "class": "spinner"
+    }));
+    $.ajax(options);
 }
 
 B3pCatalog.saveMetadata = function(settings) {
@@ -251,7 +253,8 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
             title: "Metadatadocument importeren en over huidige metadatadocument heen kopiëren. Wordt nog niet opgeslagen.",
             click: function(event) {
                 $(this).removeClass("ui-state-hover");
-                // TODO: import
+                // test import
+                $("#mde").mde("option", "xml", "<blaat>\n\t<test/>\n</blaat>");
             }
         }).button({disabled: false}));
     }
