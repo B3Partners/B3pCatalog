@@ -273,13 +273,16 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
             }
         }
     }).button({disabled: false}));
+    mdeToolbar.append($("<input type='checkbox' checked='checked' value='strictISO19115' id='strictISO19115Checkbox' />"));
+    mdeToolbar.append($("<label for='strictISO19115Checkbox' title='Exporteer als ISO 19115 metadata volgens het Nederlands profiel versie 1.2. Tabs Algemeen, Attributen en Commentaar worden dan weggelaten.'>Exporteer strict</label>"));
 }
 
 B3pCatalog.exportMd = function() {
     window.location = B3pCatalog.metadataUrl + "?" + $.param({
         "export": "",
         filename: B3pCatalog.currentFilename,
-        esriType: B3pCatalog.getCurrentEsriType()
+        esriType: B3pCatalog.getCurrentEsriType(),
+        strictISO19115: $("#strictISO19115Checkbox").is(":checked")
     });
 }
 

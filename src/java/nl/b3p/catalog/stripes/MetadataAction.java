@@ -18,8 +18,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.validation.Validate;
@@ -81,6 +79,10 @@ public class MetadataAction extends DefaultAction {
     @Validate(required=true, on="postComment")
     private String comment;
 
+    @Validate(required=true, on="export")
+    private boolean strictISO19115 = false;
+
+
     public Resolution load() {
         return getMetadataResolution();
     }
@@ -94,15 +96,22 @@ public class MetadataAction extends DefaultAction {
 
             mdFile = Rewrite.getFileFromPPFileName(filename, getContext());
             if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                return new XmlResolution(FGDBHelperProxy.getMetadata(mdFile, esriType), extraHeaders);
+                String md = FGDBHelperProxy.getMetadata(mdFile, esriType);
+                if (strictISO19115)
+                    return new XmlResolution(extractMD_Metadata(md), extraHeaders);
+                else
+                    return new XmlResolution(md, extraHeaders);
             } else {
                 mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
 
                 if (!mdFile.exists()) {
-                    // create new metadata on client side:
+                    // create new metadata on client side or show this in exported file:
                     return new XmlResolution("empty", extraHeaders);
                 } else {
-                    return new XmlResolution(new BufferedInputStream(FileUtils.openInputStream(mdFile)), extraHeaders);
+                    if (strictISO19115)
+                        return new XmlResolution(extractMD_Metadata(mdFile), extraHeaders);
+                    else
+                        return new XmlResolution(new BufferedInputStream(FileUtils.openInputStream(mdFile)), extraHeaders);
                 }
             }
         } catch (Exception e) {
@@ -110,6 +119,24 @@ public class MetadataAction extends DefaultAction {
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }
+    }
+
+    protected String extractMD_Metadata(String md) throws JDOMException, IOException, B3PCatalogException {
+        Document doc = getMetadataDocument(md);
+        Element MD_Metadata = getMD_Metadata(doc);
+
+        //MD_Metadata.detach();
+
+        return new XMLOutputter().outputString(MD_Metadata);
+    }
+
+    protected String extractMD_Metadata(File mdFile) throws JDOMException, IOException, B3PCatalogException {
+        Document doc = getMetadataDocument(mdFile);
+        Element MD_Metadata = getMD_Metadata(doc);
+
+        //MD_Metadata.detach();
+
+        return new XMLOutputter().outputString(MD_Metadata);
     }
 
     public Resolution save() {
@@ -275,6 +302,10 @@ public class MetadataAction extends DefaultAction {
         return root;
     }
 
+    private Element getMD_Metadata(Document doc) throws B3PCatalogException {
+        return getOrCreateElement(getRoot(doc), MD_METADATA_NAME, GMD_NAMESPACE);
+    }
+
     private Element getB3Partners(Document doc) throws B3PCatalogException {
         return getOrCreateElement(getRoot(doc), B3PARTNERS_NAME, B3P_NAMESPACE);
     }
@@ -333,6 +364,14 @@ public class MetadataAction extends DefaultAction {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public boolean isStrictISO19115() {
+        return strictISO19115;
+    }
+
+    public void setStrictISO19115(boolean strictISO19115) {
+        this.strictISO19115 = strictISO19115;
     }
 
 }
