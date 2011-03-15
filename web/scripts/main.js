@@ -72,7 +72,7 @@ B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo, cancel) {
                 //log(data);
                 B3pCatalog.currentFilename = filename;
                 B3pCatalog.currentMode = B3pCatalog.modes.FILE_MODE;
-                document.title = "B3pCatalog | " + filename;
+                document.title = B3pCatalog.title + B3pCatalog.titleSeparator + filename;
                 var viewMode = jqXHR.getResponseHeader("MDE_viewMode") === "true";
                 B3pCatalog.createMde(data, isGeo, viewMode);
             }
@@ -99,7 +99,7 @@ B3pCatalog.loadMetadataByUUID = function(uuid) {
                 log("load by uuid success");
                 B3pCatalog.currentMode = B3pCatalog.modes.CSW_MODE;
                 // TODO: title kan geëxtract worden uit het xml
-                document.title = "B3pCatalog";
+                document.title = B3pCatalog.title;
                 B3pCatalog.createViewMde(data);
             }
         }
@@ -119,7 +119,7 @@ B3pCatalog._loadMetadata = function(opts) {
                 src: B3pCatalog.contextPath + "/styles/images/spinner.gif",
                 "class": "spinner"
             }));
-            document.title = "B3pCatalog";
+            document.title = B3pCatalog.title;
             options.done();
             $.ajax(options.ajaxOptions);
         },
@@ -278,7 +278,7 @@ B3pCatalog.exportMetadata = function() {
     switch(this.currentMode) {
         case this.modes.FILE_MODE:  this._exportMetadataFromFile(); break;
         case this.modes.CSW_MODE:   this._exportMetadataByUUID(); break;
-        default: openErrorDialog("B3pCatalog is in an illegal mode: " + this.currentMode);
+        default: openErrorDialog(B3pCatalog.title + " is in an illegal mode: " + this.currentMode);
     }
 }
 
@@ -295,6 +295,34 @@ B3pCatalog._exportMetadataByUUID = function() {
     window.location = this.catalogUrl + "?" + $.param({
         "export": "",
         uuid: $("#search-results .search-result-selected").attr("uuid")
+    });
+}
+
+B3pCatalog.importMetadata = function() {
+    $("<div/>").html($("<textarea></textarea>", {
+        id: "import-textarea",
+        cols: 50,
+        rows: 35, // IE 6/7 pakt 100% height niet
+        margin: 0,
+        padding: 0,
+        width: "99%", // nodig voor IE 6/7
+        height: "97%", // nodig voor FF (3.6)
+        text: "Plak uw te importeren metadata hier"
+    })).appendTo(document.body).dialog({
+        title: "Metadata importeren in " + B3pCatalog.currentFilename,
+        modal: true,
+        width: calculateDialogWidth(66),
+        height: calculateDialogHeight(80),
+        buttons: [{
+            text: "Importeer",
+            click: function(event) {
+                $("#mde").mde("option", "xml", $("#import-textarea").val());
+                $(this).dialog("close");
+            }
+        }],
+        close: function(event) {
+            $(this).dialog("destroy").remove();
+        }
     });
 }
 
@@ -330,8 +358,7 @@ B3pCatalog.createToolbar = function(viewMode) {
             title: "Metadatadocument importeren en over huidige metadatadocument heen kopiëren. Wordt nog niet opgeslagen.",
             click: function(event) {
                 $(this).removeClass("ui-state-hover");
-                // test import
-                $("#mde").mde("option", "xml", "<blaat>\n\t<test/>\n</blaat>");
+                B3pCatalog.importMetadata();
             }
         }).button({disabled: false}));
     }

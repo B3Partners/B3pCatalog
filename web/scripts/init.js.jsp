@@ -19,4 +19,5 @@ B3pCatalog.catalogUrl = "${catalogUrl}";
 B3pCatalog.username = "${pageContext.request.remoteUser}";
 
 B3pCatalog.title = "${title}";
+B3pCatalog.titleSeparator = " | ";
 B3pCatalog.customer = "${customer}";

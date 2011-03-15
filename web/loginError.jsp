@@ -1,7 +1,7 @@
 <%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
 <%@include file="/WEB-INF/jsp/commons/urls.jsp" %>
 
-<stripes:layout-render name="/loginPage.jsp" pageTitle="B3pCatalog | Loginfout!">
+<stripes:layout-render name="/loginPage.jsp" pageTitle="${title} | Loginfout!">
     <stripes:layout-component name="messages">
         <!--div class="mod message_err">
             <h2>U bent de volgende velden vergeten in te vullen</h2>

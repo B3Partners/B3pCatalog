@@ -5,7 +5,7 @@
 <% request.getSession().invalidate(); %>
 
 
-<stripes:layout-render name="/loginPage.jsp" pageTitle="B3pCatalog | Uitgelogd">
+<stripes:layout-render name="/loginPage.jsp" pageTitle="${title} | Uitgelogd">
     <stripes:layout-component name="messages">
         <div class="mod message_info">
             U bent uitgelogd.
