@@ -43,61 +43,95 @@ B3pCatalog.openSimpleErrorDialog = function(message) {
     });
 }
 
+B3pCatalog.modes = {
+    NO_MODE: 0,
+    FILE_MODE: 1,
+    CSW_MODE: 2
+}
+
+B3pCatalog.currentMode = B3pCatalog.modes.NO_MODE;
+
 B3pCatalog.currentFilename = "";
 
-B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo) {
+B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo, cancel) {
     this._loadMetadata({
-        url: B3pCatalog.metadataUrl,
-        type: "POST",
-        data: {
-            load : "",
-            filename : filename,
-            esriType : esriType
+        done: function() {
+            
         },
-        dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'
-        success: function(data, textStatus, jqXHR) {
-            //log(data);
-            B3pCatalog.currentFilename = filename;
-            document.title = "B3pCatalog | " + filename;
-            var viewMode = jqXHR.getResponseHeader("MDE_viewMode") === "true";
-            B3pCatalog.createMde(data, isGeo, viewMode);
+        cancel: cancel,
+        ajaxOptions: {
+            url: B3pCatalog.metadataUrl,
+            type: "POST",
+            data: {
+                load : "",
+                filename : filename,
+                esriType : esriType
+            },
+            dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'
+            success: function(data, textStatus, jqXHR) {
+                //log(data);
+                B3pCatalog.currentFilename = filename;
+                B3pCatalog.currentMode = B3pCatalog.modes.FILE_MODE;
+                document.title = "B3pCatalog | " + filename;
+                var viewMode = jqXHR.getResponseHeader("MDE_viewMode") === "true";
+                B3pCatalog.createMde(data, isGeo, viewMode);
+            }
         }
     });
 }
 
 B3pCatalog.loadMetadataByUUID = function(uuid) {
     this._loadMetadata({
-        url: B3pCatalog.catalogUrl,
-        data: {
-            load: "",
-            uuid: uuid
+        done: function() {
+            B3pCatalog.getCurrentFileAnchor().removeClass("selected").blur();
+            B3pCatalog.currentFilename = "";
+            // TODO: eigenlijk moet ook oldrel in jquery.filetree nog leeg gemaakt worden, maar dat vereist wat veranderingen in die plugin
         },
-        type: "POST",
-        dataType: "text",
-        success: function(data, textStatus, jqXHR) {
-            B3pCatalog.saveDataUserConfirm({
-                done: function() {
-                    B3pCatalog.createViewMde(data);
-                }
-            });
+        ajaxOptions: {
+            url: B3pCatalog.catalogUrl,
+            data: {
+                load: "",
+                uuid: uuid
+            },
+            type: "POST",
+            dataType: "text",
+            success: function(data, textStatus, jqXHR) {
+                log("load by uuid success");
+                B3pCatalog.currentMode = B3pCatalog.modes.CSW_MODE;
+                // TODO: title kan geëxtract worden uit het xml
+                document.title = "B3pCatalog";
+                B3pCatalog.createViewMde(data);
+            }
         }
     });
 }
 
-B3pCatalog._loadMetadata = function(options) {
-    $("#mde-toolbar").empty();
-    $("#mde").html($("<img />", {
-        src: B3pCatalog.contextPath + "/styles/images/spinner.gif",
-        "class": "spinner"
-    }));
-    $.ajax(options);
+B3pCatalog._loadMetadata = function(opts) {
+    var options = $.extend({
+        done: $.noop,
+        cancel: $.noop,
+        ajaxOptions: {}
+    }, opts);
+    B3pCatalog.saveDataUserConfirm({
+        done: function() {
+            $("#mde-toolbar").empty();
+            $("#mde").html($("<img />", {
+                src: B3pCatalog.contextPath + "/styles/images/spinner.gif",
+                "class": "spinner"
+            }));
+            document.title = "B3pCatalog";
+            options.done();
+            $.ajax(options.ajaxOptions);
+        },
+        cancel: options.cancel
+    });
 }
 
 B3pCatalog.saveMetadata = function(settings) {
     var options = $.extend({
         filename: B3pCatalog.currentFilename,
         updateUI: true,
-        async: true
+        async: false
     }, settings);
 
     if (!options.filename)
@@ -128,12 +162,16 @@ B3pCatalog.getCurrentEsriType = function() {
     return $("#filetree .jqueryFileTree a.selected").attr("esritype");
 }
 
+B3pCatalog.getCurrentFileAnchor = function() {
+    return $("a[rel='" + RegExp.escape(B3pCatalog.currentFilename) + "']", "#filetree");
+}
+
 B3pCatalog.saveDataUserConfirm = function(opts) {
     var options = $.extend({
         done: $.noop,
         cancel: $.noop,
         text: "Wilt u uw wijzigingen opslaan?",
-        asyncSave: true
+        asyncSave: false
     }, opts);
     if ($("#mde").mde("initialized") && $("#mde").mde("changed")) {
         $("<div/>").text(options.text).appendTo(document.body).dialog({
@@ -178,10 +216,10 @@ B3pCatalog.basicMdeOptions = {
 }
 
 B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
-    log("isGeo: " + isGeo);
+    //log("isGeo: " + isGeo);
     //log("data: " + data);
-    B3pCatalog.destroyMdeWrapper();
     $.mde.logMode = true;
+    $("#mde").mde("destroy");
 
     var extraOptions = {};
     if (typeof isGeo === "boolean" && !isGeo) {
@@ -222,8 +260,47 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
             $("#saveMD").button("option", "disabled", !changed);
         }
     }, extraOptions));
+    this.createToolbar(viewMode);
+}
 
+B3pCatalog.createViewMde = function(xmlDoc) {
+    //log("data: " + data);
+    $.mde.logMode = true;
+    $("#mde").mde("destroy");
+    $("#mde").mde($.extend({}, this.basicMdeOptions, {
+        xml: xmlDoc,
+        viewMode: true
+    }));
+    this.createToolbar(true);
+}
+
+B3pCatalog.exportMetadata = function() {
+    switch(this.currentMode) {
+        case this.modes.FILE_MODE:  this._exportMetadataFromFile(); break;
+        case this.modes.CSW_MODE:   this._exportMetadataByUUID(); break;
+        default: openErrorDialog("B3pCatalog is in an illegal mode: " + this.currentMode);
+    }
+}
+
+B3pCatalog._exportMetadataFromFile = function() {
+    window.location = this.metadataUrl + "?" + $.param({
+        "export": "",
+        filename: this.currentFilename,
+        esriType: this.getCurrentEsriType(),
+        strictISO19115: $("#strictISO19115Checkbox").is(":checked")
+    });
+}
+
+B3pCatalog._exportMetadataByUUID = function() {
+    window.location = this.catalogUrl + "?" + $.param({
+        "export": "",
+        uuid: $("#search-results .search-result-selected").attr("uuid")
+    });
+}
+
+B3pCatalog.createToolbar = function(viewMode) {
     var mdeToolbar = $("#mde-toolbar");
+    mdeToolbar.empty();
     if (viewMode === false) {
         mdeToolbar.append($("<a />", {
             href: "#",
@@ -267,41 +344,18 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
             $(this).removeClass("ui-state-hover ui-state-focus");
             if ($("#mde").mde("changed")) {
                 B3pCatalog.saveDataUserConfirm({
-                    done: B3pCatalog.exportMd,
+                    done: B3pCatalog.exportMetadata,
                     text: "Wilt u uw wijzigingen opslaan alvorens de metadata te exporteren?",
                     asyncSave: false // data needs to be saved already when we do our export request
                 });
             } else {
-                B3pCatalog.exportMd();
+                B3pCatalog.exportMetadata();
             }
         }
     }).button({disabled: false}));
     mdeToolbar.append($("<input type='checkbox' checked='checked' value='strictISO19115' id='strictISO19115Checkbox' />"));
-    mdeToolbar.append($("<label for='strictISO19115Checkbox' title='Exporteer als ISO 19115 metadata volgens het Nederlands profiel versie 1.2. Tabs Algemeen, Attributen en Commentaar worden dan weggelaten.'>Exporteer strict</label>"));
-}
-
-B3pCatalog.exportMd = function() {
-    window.location = B3pCatalog.metadataUrl + "?" + $.param({
-        "export": "",
-        filename: B3pCatalog.currentFilename,
-        esriType: B3pCatalog.getCurrentEsriType(),
-        strictISO19115: $("#strictISO19115Checkbox").is(":checked")
-    });
-}
-
-B3pCatalog.createViewMde = function(xmlDoc) {
-    //log("data: " + data);
-    B3pCatalog.destroyMdeWrapper();
-    $.mde.logMode = true;
-    $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
-        xml: xmlDoc,
-        viewMode: true
-    }));
-}
-
-B3pCatalog.destroyMdeWrapper = function() {
-    $("#mde").mde("destroy");
-    $("#mde-toolbar").empty();
+    if (this.currentMode === this.modes.FILE_MODE)
+        mdeToolbar.append($("<label for='strictISO19115Checkbox' title='Exporteer als ISO 19115 metadata volgens het Nederlands profiel versie 1.2. Tabs Algemeen, Attributen en Commentaar worden dan weggelaten.'>Exporteer strict</label>"));
 }
 
 function calculateDialogWidth(percentageOfBodyWidth, minWidth, maxWidth) {

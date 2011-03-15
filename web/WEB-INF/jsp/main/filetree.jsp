@@ -42,19 +42,15 @@
                     if (anchor.length > 0 && anchor.hasClass(activeClass))
                         return;
 
-                    B3pCatalog.saveDataUserConfirm({
-                        done: function() {
-                            B3pCatalog.loadMetadataFromFile(
-                                filename,
-                                parseInt(anchor.attr("esritype")),
-                                anchor.attr("isgeo") === "true");
-                        },
-                        cancel: function() {
+                    B3pCatalog.loadMetadataFromFile(
+                        filename, 
+                        parseInt(anchor.attr("esritype")),
+                        anchor.attr("isgeo") === "true",
+                        function() {
                             anchor.removeClass(activeClass);
-                            $("a[rel='" + RegExp.escape(B3pCatalog.currentFilename) + "']", "#filetree")
-                                .addClass(activeClass).focus();
+                            B3pCatalog.getCurrentFileAnchor().addClass(activeClass).focus();
                         }
-                    });
+                    );
                 },
                 dirExpandCallback: function(dir) {},
                 readyCallback: function(root) {

@@ -10,17 +10,19 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        $(".search-result-abstract").ThreeDots({
+        $("#search-results .search-result-abstract").ThreeDots({
             //max_rows: 2, // is default 2
             alt_text_t: true
         });
-        $(".search-result-title").click(function() {
+        $("#search-results .search-result-title").click(function() {
+            $("#search-results .search-result-title").removeClass("search-result-selected");
+            $(this).addClass("search-result-selected");
             B3pCatalog.loadMetadataByUUID($(this).attr("uuid"));
         });
     });
 </script>
 
-<div>
+<div id="search-results">
     <c:choose>
         <c:when test="${empty actionBean.metadataList}">
             <div class="message_info">

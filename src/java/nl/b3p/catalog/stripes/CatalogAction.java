@@ -14,9 +14,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.HtmlErrorResolution;
+import nl.b3p.catalog.XmlResolution;
 import nl.b3p.csw.client.CswClient;
 import nl.b3p.csw.client.CswRequestCreator;
 import nl.b3p.csw.client.CswSmartRequestCreator;
@@ -86,14 +86,24 @@ public class CatalogAction extends DefaultAction {
             OutputById output = client.search(new InputById(uuid));
             //log.debug(new XMLOutputter().outputString(output.getXml()));
 
-            StreamingResolution res = new StreamingResolution("text/xml", output.getSearchResultString());
-            res.setCharacterEncoding("UTF-8");
-            return res;
+            return new XmlResolution(output.getSearchResultString());
         } catch (Exception e) {
             String message = "Fout bij het laden van de metadata.";
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }
+    }
+
+    public Resolution export() {
+        Resolution resolution = load();
+        if (resolution instanceof XmlResolution) {
+            // je zou hier de title kunnen extracten en die als filename kunnen includen
+            String exportName = "metadata.xml";
+            XmlResolution xmlResolution = (XmlResolution)resolution;
+            xmlResolution.setAttachment(true);
+            xmlResolution.setFilename(exportName);
+        }
+        return resolution;
     }
 
     private CswClient getCswClient() {

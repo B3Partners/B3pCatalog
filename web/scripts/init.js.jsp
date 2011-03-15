@@ -17,3 +17,6 @@ B3pCatalog.filetreeUrl = "${filetreeUrl}";
 B3pCatalog.catalogUrl = "${catalogUrl}";
 
 B3pCatalog.username = "${pageContext.request.remoteUser}";
+
+B3pCatalog.title = "${title}";
+B3pCatalog.customer = "${customer}";
