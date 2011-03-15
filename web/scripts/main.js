@@ -100,7 +100,7 @@ B3pCatalog.loadMetadataByUUID = function(uuid) {
                 B3pCatalog.currentMode = B3pCatalog.modes.CSW_MODE;
                 // TODO: title kan geëxtract worden uit het xml
                 document.title = B3pCatalog.title;
-                B3pCatalog.createViewMde(data);
+                B3pCatalog.createCswMde(data);
             }
         }
     });
@@ -208,11 +208,9 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
 
 B3pCatalog.basicMdeOptions = {
     baseFullPath: B3pCatalog.contextPath + "/scripts/mde/",
-    profile: "nl_md_1.2_with_fc",
     richTextMode: true,
-    dcMode: true,
-    dcPblMode: true,
-    iso19115oneTab: true
+    extraTitleAboveTabs: false,
+    iso19115PreviewImageInsideGeotab: true
 }
 
 B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
@@ -235,6 +233,10 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
     }
     $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xml: xmlDoc,
+        profile: "nl_md_1.2_with_fc",
+        dcMode: true,
+        dcPblMode: true,
+        iso19115oneTab: true,
         commentMode: true,
         commentPosted: function(comment) {
             if (!comment) {
@@ -263,12 +265,13 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
     this.createToolbar(viewMode);
 }
 
-B3pCatalog.createViewMde = function(xmlDoc) {
+B3pCatalog.createCswMde = function(xmlDoc) {
     //log("data: " + data);
     $.mde.logMode = true;
     $("#mde").mde("destroy");
     $("#mde").mde($.extend({}, this.basicMdeOptions, {
         xml: xmlDoc,
+        profile: "nl_md_1.2",
         viewMode: true
     }));
     this.createToolbar(true);
@@ -380,9 +383,10 @@ B3pCatalog.createToolbar = function(viewMode) {
             }
         }
     }).button({disabled: false}));
-    mdeToolbar.append($("<input type='checkbox' checked='checked' value='strictISO19115' id='strictISO19115Checkbox' />"));
-    if (this.currentMode === this.modes.FILE_MODE)
+    if (this.currentMode === this.modes.FILE_MODE) {
+        mdeToolbar.append($("<input type='checkbox' checked='checked' value='strictISO19115' id='strictISO19115Checkbox' />"));
         mdeToolbar.append($("<label for='strictISO19115Checkbox' title='Exporteer als ISO 19115 metadata volgens het Nederlands profiel versie 1.2. Tabs Algemeen, Attributen en Commentaar worden dan weggelaten.'>Exporteer strict</label>"));
+    }
 }
 
 function calculateDialogWidth(percentageOfBodyWidth, minWidth, maxWidth) {
