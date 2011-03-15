@@ -57,7 +57,7 @@
                     <fmt:message key="loggedInAs"/>
                     ${pageContext.request.remoteUser}
                 </div>
-                <stripes:link href="/logout.jsp" class="logout-link">Uitloggen</stripes:link>
+                <a href="#" onclick="B3pCatalog.logout();" class="logout-link">Uitloggen</a>
             </div>
         </div>
     </div>

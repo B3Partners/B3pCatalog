@@ -152,6 +152,15 @@ B3pCatalog.saveMetadata = function(settings) {
         },
         success: function(data, textStatus, xhr) {
             log("metadata saved succesfully.");
+            var logMessage = $("<div/>", {
+                text: "Metadata successvol opgeslagen."
+            }).css({
+                position: "absolute",
+                bottom: 0,
+                "background-color": "#D6D7B2"
+            });
+            $("#mde-wrapper").append(logMessage);
+            logMessage.fadeOut(4000, function() { $(this).remove(); });
             if (options.updateUI)
                 $("#saveMD").button("option", "disabled", true);
         }
@@ -164,6 +173,14 @@ B3pCatalog.getCurrentEsriType = function() {
 
 B3pCatalog.getCurrentFileAnchor = function() {
     return $("a[rel='" + RegExp.escape(B3pCatalog.currentFilename) + "']", "#filetree");
+}
+
+B3pCatalog.logout = function() {
+    this.saveDataUserConfirm({
+        done: function() {
+            window.location = B3pCatalog.contextPath + "/logout.jsp";
+        }
+    });
 }
 
 B3pCatalog.saveDataUserConfirm = function(opts) {
