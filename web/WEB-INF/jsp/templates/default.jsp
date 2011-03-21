@@ -25,6 +25,8 @@
         <link rel="stylesheet" type="text/css" href="${contextPath}/styles/print.css" media="print" /-->
         <!-- Overige css -->
         <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/profiles/pbl/jquery-ui-latest.custom.css" />
+        <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit.css" />
+        <!-- PBL specific: -->
         <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/profiles/pbl/metadataEdit.css" />
         <!--[if IE]> <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit-ie.css" /> <![endif]-->
         <!--[if lte IE 7]> <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit-ie7.css" /> <![endif]-->
@@ -77,7 +79,8 @@
                     spacing_close: 0,
                     spacing_open: 0,
                     west__size: 30,
-                    east__size: 30
+                    east__size: 30,
+                    enableCursorHotkey: false
                 });
                 theLayout = $("#center-wrapper").layout({
                     // algemeen:
@@ -90,7 +93,8 @@
                     south__size: 75,
                     west__size: $("body").width() / 3,
                     west__resizable: true,
-                    west__spacing_open: 8
+                    west__spacing_open: 8,
+                    enableCursorHotkey: false
                 });
             });
         </script>

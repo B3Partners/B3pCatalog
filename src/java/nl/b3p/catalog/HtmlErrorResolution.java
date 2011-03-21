@@ -56,7 +56,7 @@ public class HtmlErrorResolution extends StreamingResolution {
             if (printStackTrace) {
                 sb.append("<br /><br />");
                 //sb.append("<script type='text/javascript'>$(document).ready(function(){ $('#advanced-error-button').button().click(function(){ $(\"#advanced-error\").toggle(); }); });</script>");
-                sb.append("<a href='#' id='advanced-error-button' onclick='$(\"#advanced-error\").toggle();'>Toon geavanceerde informatie</a>");
+                sb.append("<a href='#' id='advanced-error-button' onclick='jQuery(\"#advanced-error\").toggle();'>Toon geavanceerde informatie</a>");
                 sb.append("<pre id='advanced-error' style='display: none; color: red; background-color: #F0F0F0'>");
                 StringWriter sw = new StringWriter();
                 e.printStackTrace(new PrintWriter(sw));
