@@ -319,6 +319,7 @@ B3pCatalog._exportMetadataByUUID = function() {
 }
 
 B3pCatalog.importMetadata = function() {
+    // TODO: voeg textarea later toe, na dialog aangemaakt te hebben; doe width via hq width/clientwidth e.d.
     $("<div/>").html($("<textarea></textarea>", {
         id: "import-textarea",
         cols: 50,
