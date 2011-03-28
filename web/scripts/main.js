@@ -295,24 +295,24 @@ B3pCatalog.createCswMde = function(xmlDoc) {
 }
 
 B3pCatalog.exportMetadata = function() {
-    switch(this.currentMode) {
-        case this.modes.FILE_MODE:  this._exportMetadataFromFile(); break;
-        case this.modes.CSW_MODE:   this._exportMetadataByUUID(); break;
-        default: openErrorDialog(B3pCatalog.title + " is in an illegal mode: " + this.currentMode);
+    switch(B3pCatalog.currentMode) {
+        case B3pCatalog.modes.FILE_MODE:  B3pCatalog._exportMetadataFromFile(); break;
+        case B3pCatalog.modes.CSW_MODE:   B3pCatalog._exportMetadataByUUID(); break;
+        default: openErrorDialog(B3pCatalog.title + " is in an illegal mode: " + B3pCatalog.currentMode);
     }
 }
 
 B3pCatalog._exportMetadataFromFile = function() {
-    window.location = this.metadataUrl + "?" + $.param({
+    window.location = B3pCatalog.metadataUrl + "?" + $.param({
         "export": "",
-        filename: this.currentFilename,
-        esriType: this.getCurrentEsriType(),
+        filename: B3pCatalog.currentFilename,
+        esriType: B3pCatalog.getCurrentEsriType(),
         strictISO19115: $("#strictISO19115Checkbox").is(":checked")
     });
 }
 
 B3pCatalog._exportMetadataByUUID = function() {
-    window.location = this.catalogUrl + "?" + $.param({
+    window.location = B3pCatalog.catalogUrl + "?" + $.param({
         "export": "",
         uuid: $("#search-results .search-result-selected").attr("uuid")
     });
@@ -391,7 +391,9 @@ B3pCatalog.createToolbar = function(viewMode) {
             $(this).removeClass("ui-state-hover ui-state-focus");
             if ($("#mde").mde("changed")) {
                 B3pCatalog.saveDataUserConfirm({
-                    done: B3pCatalog.exportMetadata,
+                    done: function() {
+                        B3pCatalog.exportMetadata();
+                    },
                     text: "Wilt u uw wijzigingen opslaan alvorens de metadata te exporteren?",
                     asyncSave: false // data needs to be saved already when we do our export request
                 });
