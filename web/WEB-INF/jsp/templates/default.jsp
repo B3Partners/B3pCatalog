@@ -18,7 +18,7 @@
 
         <title>${pageTitle}</title>
 
-        <link rel="icon" href="${contextPath}/images/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="${contextPath}/images/favicon.ico" />
 
         <!-- Rijkshuisstijl PBL -->
         <!--link rel="stylesheet" type="text/css" href="${contextPath}/styles/screen.css" media="screen" />

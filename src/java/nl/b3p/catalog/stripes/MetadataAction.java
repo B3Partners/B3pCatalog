@@ -125,18 +125,20 @@ public class MetadataAction extends DefaultAction {
         Document doc = getMetadataDocument(md);
         Element MD_Metadata = getMD_Metadata(doc);
 
-        //MD_Metadata.detach();
+        MD_Metadata.detach();
+        Document extractedDoc = new Document(MD_Metadata);
 
-        return new XMLOutputter().outputString(MD_Metadata);
+        return new XMLOutputter(Format.getPrettyFormat()).outputString(extractedDoc);
     }
 
     protected String extractMD_Metadata(File mdFile) throws JDOMException, IOException, B3PCatalogException {
         Document doc = getMetadataDocument(mdFile);
         Element MD_Metadata = getMD_Metadata(doc);
 
-        //MD_Metadata.detach();
+        MD_Metadata.detach();
+        Document extractedDoc = new Document(MD_Metadata);
 
-        return new XMLOutputter().outputString(MD_Metadata);
+        return new XMLOutputter(Format.getPrettyFormat()).outputString(extractedDoc);
     }
 
     public Resolution save() {
