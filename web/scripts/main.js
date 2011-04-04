@@ -224,7 +224,7 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
 };
 
 B3pCatalog.basicMdeOptions = {
-    baseFullPath: B3pCatalog.contextPath + "/scripts/mde/",
+    //baseFullPath: B3pCatalog.contextPath + "/scripts/mde/",
     richTextMode: true,
     extraTitleAboveTabs: false,
     iso19115PreviewImageInsideGeotab: true
@@ -253,10 +253,11 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
         profile: "nl_md_1.2_with_fc",
         dcMode: true,
         dcPblMode: true,
+        synchroniseDC: true,
         iso19115oneTab: true,
         commentMode: true,
         commentPosted: function(comment) {
-            if (!comment) {
+            if (!$.trim(comment)) {
                 B3pCatalog.openSimpleErrorDialog("Commentaar kan niet leeg zijn.");
                 return false;
             } else {
