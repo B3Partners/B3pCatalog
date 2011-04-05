@@ -107,6 +107,7 @@ B3pCatalog.loadMetadataByUUID = function(uuid) {
 }
 
 B3pCatalog._loadMetadata = function(opts) {
+    log("Loading metadata...");
     var options = $.extend({
         done: $.noop,
         cancel: $.noop,
@@ -224,7 +225,6 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
 };
 
 B3pCatalog.basicMdeOptions = {
-    //baseFullPath: B3pCatalog.contextPath + "/scripts/mde/",
     richTextMode: true,
     extraTitleAboveTabs: false,
     iso19115PreviewImageInsideGeotab: true
@@ -391,17 +391,13 @@ B3pCatalog.createToolbar = function(viewMode) {
         title: "Metadatadocument exporteren.",
         click: function(event) {
             $(this).removeClass("ui-state-hover ui-state-focus");
-            if ($("#mde").mde("changed")) {
-                B3pCatalog.saveDataUserConfirm({
-                    done: function() {
-                        B3pCatalog.exportMetadata();
-                    },
-                    text: "Wilt u uw wijzigingen opslaan alvorens de metadata te exporteren?",
-                    asyncSave: false // data needs to be saved already when we do our export request
-                });
-            } else {
-                B3pCatalog.exportMetadata();
-            }
+            B3pCatalog.saveDataUserConfirm({
+                done: function() {
+                    B3pCatalog.exportMetadata();
+                },
+                text: "Wilt u uw wijzigingen opslaan alvorens de metadata te exporteren?",
+                asyncSave: false // data needs to be saved already when we do our export request
+            });
         }
     }).button({disabled: false}));
     if (this.currentMode === this.modes.FILE_MODE) {
