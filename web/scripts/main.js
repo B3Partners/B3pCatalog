@@ -11,8 +11,8 @@ B3pCatalog.openErrorDialog = function(message) {
     $("<div/>").html(message).appendTo(document.body).dialog({
         title: "Fout",
         modal: true,
-        width: calculateDialogWidth(66),
-        height: calculateDialogHeight(80),
+        width: $("body").calculateDialogWidth(66),
+        height: $("body").calculateDialogHeight(80),
         buttons: [{
             text: "Ok",
             click: function(event) {
@@ -23,7 +23,7 @@ B3pCatalog.openErrorDialog = function(message) {
             $(this).dialog("destroy").remove();
         }
     });
-}
+};
 
 B3pCatalog.openSimpleErrorDialog = function(message) {
     log("error: " + message);
@@ -41,13 +41,13 @@ B3pCatalog.openSimpleErrorDialog = function(message) {
             $(this).dialog("destroy").remove();
         }
     });
-}
+};
 
 B3pCatalog.modes = {
     NO_MODE: 0,
     FILE_MODE: 1,
     CSW_MODE: 2
-}
+};
 
 B3pCatalog.currentMode = B3pCatalog.modes.NO_MODE;
 
@@ -78,7 +78,7 @@ B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo, cancel) {
             }
         }
     });
-}
+};
 
 B3pCatalog.loadMetadataByUUID = function(uuid) {
     this._loadMetadata({
@@ -104,7 +104,7 @@ B3pCatalog.loadMetadataByUUID = function(uuid) {
             }
         }
     });
-}
+};
 
 B3pCatalog._loadMetadata = function(opts) {
     log("Loading metadata...");
@@ -126,7 +126,7 @@ B3pCatalog._loadMetadata = function(opts) {
         },
         cancel: options.cancel
     });
-}
+};
 
 B3pCatalog.saveMetadata = function(settings) {
     var options = $.extend({
@@ -166,15 +166,15 @@ B3pCatalog.saveMetadata = function(settings) {
                 $("#saveMD").button("option", "disabled", true);
         }
     });
-}
+};
 
 B3pCatalog.getCurrentEsriType = function() {
     return $("#filetree .jqueryFileTree a.selected").attr("esritype");
-}
+};
 
 B3pCatalog.getCurrentFileAnchor = function() {
     return $("a[rel='" + RegExp.escape(B3pCatalog.currentFilename) + "']", "#filetree");
-}
+};
 
 B3pCatalog.logout = function() {
     this.saveDataUserConfirm({
@@ -182,7 +182,7 @@ B3pCatalog.logout = function() {
             window.location = B3pCatalog.contextPath + "/logout.jsp";
         }
     });
-}
+};
 
 B3pCatalog.saveDataUserConfirm = function(opts) {
     var options = $.extend({
@@ -192,31 +192,17 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
         asyncSave: false
     }, opts);
     if ($("#mde").mde("initialized") && $("#mde").mde("changed")) {
-        $("<div/>").text(options.text).appendTo(document.body).dialog({
-            title: "Vraag",
-            modal: true,
-            buttons: [{
-                text: "Ja",
-                click: function(event) {
-                    B3pCatalog.saveMetadata({async: options.asyncSave});
-                    options.done();
-                    $(this).dialog("destroy").remove();
-                }
-            }, {
-                text: "Nee",
-                click: function(event) {
-                    options.done();
-                    $(this).dialog("destroy").remove();
-                }
-            }, {
-                text: "Annuleren",
-                click: function(event) {
-                    $(this).dialog("close");
-                }
-            }],
-            close: function(event) {
+        $.yesNoCancel({
+            text: options.text,
+            yes: function() {
+                B3pCatalog.saveMetadata({async: options.asyncSave});
+                options.done();
+            },
+            no: function() {
+                options.done();
+            },
+            cancel: function() {
                 options.cancel();
-                $(this).dialog("destroy").remove();
             }
         });
     } else {
@@ -228,7 +214,7 @@ B3pCatalog.basicMdeOptions = {
     richTextMode: true,
     extraTitleAboveTabs: false,
     iso19115PreviewImageInsideGeotab: true
-}
+};
 
 B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
     //log("isGeo: " + isGeo);
@@ -280,20 +266,20 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
             $("#saveMD").button("option", "disabled", !changed);
         }
     }, extraOptions));
-    this.createToolbar(viewMode);
-}
+    B3pCatalog.createToolbar(viewMode);
+};
 
 B3pCatalog.createCswMde = function(xmlDoc) {
     //log("data: " + data);
     $.mde.logMode = true;
     $("#mde").mde("destroy");
-    $("#mde").mde($.extend({}, this.basicMdeOptions, {
+    $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xml: xmlDoc,
         profile: "nl_md_1.2",
         viewMode: true
     }));
-    this.createToolbar(true);
-}
+    B3pCatalog.createToolbar(true);
+};
 
 B3pCatalog.exportMetadata = function() {
     switch(B3pCatalog.currentMode) {
@@ -301,7 +287,7 @@ B3pCatalog.exportMetadata = function() {
         case B3pCatalog.modes.CSW_MODE:   B3pCatalog._exportMetadataByUUID(); break;
         default: openErrorDialog(B3pCatalog.title + " is in an illegal mode: " + B3pCatalog.currentMode);
     }
-}
+};
 
 B3pCatalog._exportMetadataFromFile = function() {
     window.location = B3pCatalog.metadataUrl + "?" + $.param({
@@ -310,14 +296,14 @@ B3pCatalog._exportMetadataFromFile = function() {
         esriType: B3pCatalog.getCurrentEsriType(),
         strictISO19115: $("#strictISO19115Checkbox").is(":checked")
     });
-}
+};
 
 B3pCatalog._exportMetadataByUUID = function() {
     window.location = B3pCatalog.catalogUrl + "?" + $.param({
         "export": "",
         uuid: $("#search-results .search-result-selected").attr("uuid")
     });
-}
+};
 
 B3pCatalog.importMetadata = function() {
     // TODO: voeg textarea later toe, na dialog aangemaakt te hebben; doe width via hq width/clientwidth e.d.
@@ -333,8 +319,8 @@ B3pCatalog.importMetadata = function() {
     })).appendTo(document.body).dialog({
         title: "Metadata importeren in " + B3pCatalog.currentFilename,
         modal: true,
-        width: calculateDialogWidth(66),
-        height: calculateDialogHeight(80),
+        width: $("body").calculateDialogWidth(66),
+        height: $("body").calculateDialogHeight(80),
         buttons: [{
             text: "Importeer",
             click: function(event) {
@@ -346,7 +332,7 @@ B3pCatalog.importMetadata = function() {
             $(this).dialog("destroy").remove();
         }
     });
-}
+};
 
 B3pCatalog.createToolbar = function(viewMode) {
     var mdeToolbar = $("#mde-toolbar");
@@ -368,9 +354,13 @@ B3pCatalog.createToolbar = function(viewMode) {
             text: "Legen",
             title: "Metadatadocument volledig leeg maken. Wordt nog niet opgeslagen.",
             click: function(event) {
-                // TODO: confirmation box: Weet u zeker dat u alle metadata en commentaren wilt wissen voor dit document? Dit wordt pas definitief als u op "Opslaan" klikt.
                 $(this).removeClass("ui-state-hover");
-                $("#mde").mde("reset");
+                $.okCancel({
+                    text: "Weet u zeker dat u alle metadata en commentaren wilt wissen voor dit document? Dit wordt pas definitief als u op \"Opslaan\" klikt.",
+                    ok: function() {
+                        $("#mde").mde("reset");
+                    }
+                });
             }
         }).button({disabled: false}));
         mdeToolbar.append($("<a />", {
@@ -390,7 +380,7 @@ B3pCatalog.createToolbar = function(viewMode) {
         text: "Exporteren",
         title: "Metadatadocument exporteren.",
         click: function(event) {
-            $(this).removeClass("ui-state-hover ui-state-focus");
+            $(this).removeClass("ui-state-hover");
             B3pCatalog.saveDataUserConfirm({
                 done: function() {
                     B3pCatalog.exportMetadata();
@@ -400,35 +390,100 @@ B3pCatalog.createToolbar = function(viewMode) {
             });
         }
     }).button({disabled: false}));
-    if (this.currentMode === this.modes.FILE_MODE) {
+    if (B3pCatalog.currentMode === B3pCatalog.modes.FILE_MODE) {
         mdeToolbar.append($("<input type='checkbox' checked='checked' value='strictISO19115' id='strictISO19115Checkbox' />"));
         mdeToolbar.append($("<label for='strictISO19115Checkbox' title='Exporteer als ISO 19115 metadata volgens het Nederlands profiel versie 1.2. Tabs Algemeen, Attributen en Commentaar worden dan weggelaten.'>Exporteer strict</label>"));
     }
-}
+};
 
-function calculateDialogWidth(percentageOfBodyWidth, minWidth, maxWidth) {
-    return _calculateDialogSize(percentageOfBodyWidth, minWidth, maxWidth, $("body").width());
-}
+// dialogs:
+(function($) {
+    $.yesNoCancel = function(opts) {
+        var options = $.extend({
+            text: "Lege vraag",
+            yes: $.noop,
+            no: $.noop,
+            cancel: $.noop
+        }, opts);
+        $("<div/>").text(options.text).appendTo(document.body).dialog($.extend({
+            title: "Vraag",
+            modal: true,
+            buttons: [{
+                text: "Ja",
+                click: function(event) {
+                    options.yes();
+                    $(this).dialog("destroy").remove();
+                }
+            }, {
+                text: "Nee",
+                click: function(event) {
+                    options.no();
+                    $(this).dialog("destroy").remove();
+                }
+            }, {
+                text: "Annuleren",
+                click: function(event) {
+                    $(this).dialog("close"); // close does cancel
+                }
+            }],
+            close: function(event) {
+                options.cancel();
+                $(this).dialog("destroy").remove();
+            }
+        }, options));
+    }
 
-function calculateDialogHeight(percentageOfBodyHeight, minHeight, maxHeight) {
-    return _calculateDialogSize(percentageOfBodyHeight, minHeight, maxHeight, $("body").height());
-}
+    $.okCancel = function(opts) {
+        var options = $.extend({
+            text: "Lege vraag",
+            ok: $.noop,
+            cancel: $.noop
+        }, opts);
+        $("<div/>").text(options.text).appendTo(document.body).dialog($.extend({
+            title: "Vraag",
+            modal: true,
+            buttons: [{
+                text: "OK",
+                click: function(event) {
+                    options.ok();
+                    $(this).dialog("destroy").remove();
+                }
+            }, {
+                text: "Annuleren",
+                click: function(event) {
+                    $(this).dialog("close"); // close does cancel
+                }
+            }],
+            close: function(event) {
+                options.cancel();
+                $(this).dialog("destroy").remove();
+            }
+        }, options));
+    }
 
-function _calculateDialogSize(percentage, minSize, maxSize, bodySize) {
-    var size = Math.floor(bodySize * percentage / 100.0);
-    if (!!minSize) {
-        if (size < minSize) {
-            if (minSize < bodySize) {
-                size = minSize;
-            } else {
-                size = bodySize;
+    $.fn.calculateDialogWidth = function(percentageOfElementWidth, minWidth, maxWidth) {
+        return calculateDialogSize(percentageOfElementWidth, minWidth, maxWidth, this.width());
+    }
+
+    $.fn.calculateDialogHeight = function(percentageOfElementHeight, minHeight, maxHeight) {
+        return calculateDialogSize(percentageOfElementHeight, minHeight, maxHeight, this.height());
+    }
+
+    function calculateDialogSize(percentage, minSize, maxSize, bodySize) {
+        var size = Math.floor(bodySize * percentage / 100.0);
+        if (!!minSize) {
+            if (size < minSize) {
+                if (minSize < bodySize) {
+                    size = minSize;
+                } else {
+                    size = bodySize;
+                }
             }
         }
+        if (!!maxSize) {
+            if (size > maxSize)
+                size = maxSize;
+        }
+        return size;
     }
-    if (!!maxSize) {
-        if (size > maxSize)
-            size = maxSize;
-    }
-    return size;
-}
-
+})(jQuery);
