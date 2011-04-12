@@ -21,10 +21,10 @@ a {
 }
 
 .header {
-    background: url(skin/sh_top.png) left top repeat-x;
+    /*background: url(skin/sh_top.png) left top repeat-x;
     background-position: -20px 0px;
     background-color: #ffffff;
-    padding-top: 8px;
+    padding-top: 8px;*/
     text-align: center;
 }
 
@@ -133,13 +133,13 @@ ul#main-tabs > li > a.main-tab-hover {
 
 .footer .ref {
     border: 0;
-    padding: 0 0 6px;
+    /*padding: 0 0 6px;*/
     text-align: center;
-    background: url(skin/sh_bot.png) left bottom repeat-x;
-    background-position: -20px 40px;
+    /*background: url(skin/sh_bot.png) left bottom repeat-x;
+    background-position: -20px 40px;*/
     background-color: #ffffff;
     border-top: 10px solid #D6D7B2;
-    height: 50px;
+    /*height: 50px;*/
 }
 
 .footer .ref img {

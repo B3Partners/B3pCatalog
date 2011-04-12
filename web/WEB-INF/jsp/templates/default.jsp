@@ -73,7 +73,7 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                $("body").layout({
+                /*$("body").layout({
                     resizable: false,
                     closable: false,
                     spacing_close: 0,
@@ -81,8 +81,8 @@
                     west__size: 30,
                     east__size: 30,
                     enableCursorHotkey: false
-                });
-                theLayout = $("#center-wrapper").layout({
+                });*/
+                theLayout = $("body").layout({//$("#center-wrapper").layout({
                     // algemeen:
                     resizable: false,
                     closable: false,
@@ -90,7 +90,7 @@
                     spacing_open: 0,
                     // per pane:
                     //north__size: 200,
-                    south__size: 75,
+                    //south__size: 75,
                     west__size: $("body").width() / 3,
                     west__resizable: true,
                     west__spacing_open: 8,
@@ -101,7 +101,7 @@
 
     </head>
     <body>
-        <div class="ui-layout-west" id="border-left">
+        <%--div class="ui-layout-west" id="border-left">
             <stripes:layout-component name="borderLeft">
                 <jsp:include page="/WEB-INF/jsp/commons/borderLeft.jsp"/>
             </stripes:layout-component>
@@ -113,7 +113,7 @@
             </stripes:layout-component>
         </div>
 
-        <div class="ui-layout-center" id="center-wrapper">
+        <div class="ui-layout-center" id="center-wrapper"--%>
             <div class="ui-layout-north" id="north">
                 <stripes:layout-component name="header">
                     <jsp:include page="/WEB-INF/jsp/commons/header.jsp"/>
@@ -135,7 +135,7 @@
             <div class="ui-layout-center" id="center">
                 <stripes:layout-component name="content"/>
             </div>
-        </div>
+        <%--/div--%>
 
 
     </body>
