@@ -43,6 +43,18 @@
         <div class="nav-bar">
             <div class="title-bar">
                 <h1>${title}</h1>
+                <div class="login-info-block">
+                    <div class="logged-in">
+                        <fmt:message key="loggedIn"/>
+                    </div>
+                    <div class="logged-in-as">
+                        <fmt:message key="loggedInAs"/>:
+                    </div>
+                    <div class="logged-in-as-user">
+                        ${pageContext.request.remoteUser}
+                    </div>
+                    <a href="#" onclick="B3pCatalog.logout();" class="logout-link">Uitloggen</a>
+                </div>
             </div>
             <ul id="main-tabs" class="ui-helper-reset">
                 <li class="ui-corner-top">
@@ -52,13 +64,6 @@
                     <a href="#search">Catalog doorzoeken</a>
                 </li>
             </ul>
-            <div class="login-info-block">
-                <div class="logged-in-as">
-                    <fmt:message key="loggedInAs"/>
-                    ${pageContext.request.remoteUser}
-                </div>
-                <a href="#" onclick="B3pCatalog.logout();" class="logout-link">Uitloggen</a>
-            </div>
         </div>
     </div>
 </div>

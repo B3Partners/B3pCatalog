@@ -46,13 +46,13 @@ a {
     padding: 0;/*2.8em 0 0;*/
     text-align: left;
     /*position: relative;*/
-    background-color: #777c00;
-    border-bottom: 10px solid #d6d7b2; /* #ebebd9 */
-    height: 70px;
+    background-color: #a8cad2;
+    border-bottom: 10px solid #deebe3; /* #ebebd9 */
+    height: 80px;
 }
 
 .nav-bar .title-bar {
-    background-color: #d6d7b2;
+    background-color: #deebe3;
     height: 30px;
 }
 
@@ -69,17 +69,26 @@ a {
     line-height: 1.5em; /* IE 7 fix */
     position: absolute;
     right: 10px;
-    bottom: 15px;
+    top: 8px;
+    color: black;
+}
+
+.logged-in {
+    font-style: italic;
+    display: inline;
 }
 
 .logged-in-as {
     display: inline;
-    color: #fff;
+}
+
+.logged-in-as-user {
+    font-weight: bold;
+    display: inline;
 }
 
 .logout-link {
-    font-weight: bold;
-    color: #fff;
+    color: black;
     margin-left: 10px;
 }
 
@@ -102,11 +111,11 @@ ul#main-tabs > li {
 
 ul#main-tabs > li > a {
     text-decoration: none;
-    color: white;
+    color: black;
 }
 
 ul#main-tabs > li.main-tab-selected {
-    background-color: #D6D7B2;
+    background-color: #deebe3;
 }
 
 ul#main-tabs > li.main-tab-selected > a {
@@ -114,7 +123,7 @@ ul#main-tabs > li.main-tab-selected > a {
 }
 
 ul#main-tabs > li.main-tab-hover {
-    background-color: #D6D7B2;
+    background-color: #deebe3;
 }
 
 ul#main-tabs > li > a.main-tab-hover {
@@ -138,7 +147,7 @@ ul#main-tabs > li > a.main-tab-hover {
     /*background: url(skin/sh_bot.png) left bottom repeat-x;
     background-position: -20px 40px;*/
     background-color: #ffffff;
-    border-top: 10px solid #D6D7B2;
+    border-top: 10px solid #deebe3;
     /*height: 50px;*/
 }
 
@@ -164,8 +173,8 @@ ul#main-tabs > li > a.main-tab-hover {
 }
 
 .ui-layout-resizer {
-    background-color: #d6d7b2;
-    border: 1px solid #d6d7b2;/*#bbbbbb;*/
+    background-color: #deebe3;
+    border: 1px solid #deebe3;/*#bbbbbb;*/
 }
 
 #mde-wrapper {

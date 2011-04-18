@@ -23,12 +23,12 @@ ul.jqueryFileTree a {
 }
 
 ul.jqueryFileTree a:hover {
-	background: #D6D7B2;/*url("../scripts/mde/includes/jquery-ui/images/ui-bg_glass_65_d6d7b2_1x400.png") repeat-x scroll 50% 50% #D6D7B2;*/
+	background: #a8cad2;
     color: #333;
 }
 
 ul.jqueryFileTree .selected {
-    background: #D6D7B2;
+    background: #a8cad2;
     color: #333;
 }
 
