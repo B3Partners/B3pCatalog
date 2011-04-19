@@ -94,7 +94,8 @@
                     west__size: $("body").width() / 3,
                     west__resizable: true,
                     west__spacing_open: 8,
-                    enableCursorHotkey: false
+                    enableCursorHotkey: false,
+                    onresize: B3pCatalog.resizeTabsAndToolbar
                 });
             });
         </script>

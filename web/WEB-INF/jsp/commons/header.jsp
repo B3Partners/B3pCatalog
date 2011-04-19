@@ -64,6 +64,10 @@
                     <a href="#search">Catalog doorzoeken</a>
                 </li>
             </ul>
+            <div id="mde-tabs-and-toolbar" class="ui-helper-reset">
+                <div id="mde-toolbar" class="ui-helper-reset">&nbsp;</div>
+                <div id="mde-tabs" class="ui-helper-reset">&nbsp;</div>
+            </div>
         </div>
     </div>
 </div>

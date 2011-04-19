@@ -116,6 +116,7 @@ B3pCatalog._loadMetadata = function(opts) {
     B3pCatalog.saveDataUserConfirm({
         done: function() {
             $("#mde-toolbar").empty();
+            $("#mde").mde("destroy");
             $("#mde").html($("<img />", {
                 src: B3pCatalog.contextPath + "/styles/images/spinner.gif",
                 "class": "spinner"
@@ -154,11 +155,8 @@ B3pCatalog.saveMetadata = function(settings) {
         success: function(data, textStatus, xhr) {
             log("metadata saved succesfully.");
             var logMessage = $("<div/>", {
-                text: "Metadata successvol opgeslagen."
-            }).css({
-                position: "absolute",
-                bottom: 0,
-                "background-color": "#D6D7B2"
+                text: "Metadata successvol opgeslagen.",
+                "class": "mde-save-message"
             });
             $("#mde-wrapper").append(logMessage);
             logMessage.fadeOut(4000, function() { $(this).remove(); });
@@ -213,7 +211,8 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
 B3pCatalog.basicMdeOptions = {
     richTextMode: true,
     extraTitleAboveTabs: false,
-    iso19115PreviewImageInsideGeotab: true
+    iso19115PreviewImageInsideGeotab: true,
+    tabContainerSelector: "#mde-tabs"
 };
 
 B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
@@ -394,6 +393,11 @@ B3pCatalog.createToolbar = function(viewMode) {
         mdeToolbar.append($("<input type='checkbox' checked='checked' value='strictISO19115' id='strictISO19115Checkbox' />"));
         mdeToolbar.append($("<label for='strictISO19115Checkbox' title='Exporteer als ISO 19115 metadata volgens het Nederlands profiel versie 1.2. Tabs Algemeen, Attributen en Commentaar worden dan weggelaten.'>Exporteer strict</label>"));
     }
+    B3pCatalog.resizeTabsAndToolbar();
+};
+
+B3pCatalog.resizeTabsAndToolbar = function() {
+    $("#mde-tabs-and-toolbar").css("left", $("#sidebar").width());
 };
 
 // dialogs:

@@ -48,7 +48,7 @@ a {
     /*position: relative;*/
     background-color: #a8cad2;
     border-bottom: 10px solid #deebe3; /* #ebebd9 */
-    height: 80px;
+    height: 100px;
 }
 
 .nav-bar .title-bar {
@@ -181,9 +181,33 @@ ul#main-tabs > li > a.main-tab-hover {
     position: relative; /* IE7 fix: necessary for all relative position elements within */
 }
 
+#mde-tabs-and-toolbar {
+    height: 60px;
+    right: 0;
+    position: absolute;
+    bottom: 10px;
+    left: 400px;
+    /*margin: 1em;
+    position: relative;*/ /* IE7 fix: necessary for jquery ui buttons inside (with pos: relative) */
+}
+
 #mde-toolbar {
-    margin: 1em;
-    position: relative; /* IE7 fix: necessary for jquery ui buttons inside (with pos: relative) */
+    position: absolute;
+    bottom: 35px;
+    left: 20px;
+}
+
+#mde-tabs {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.mde-save-message {
+    position: absolute;
+    bottom: 0;
+    background-color: #A8CAD2;
 }
 
 #search .ui-button {
