@@ -322,3 +322,19 @@ ul.jqueryFileTree a {
 
 .message_err p,
 .message_info p { margin-bottom: 0.1em; }
+
+.ui-button .ui-icon.ui-icon-b3p-save_16 {
+    background-image: url(../images/save_16.png);
+}
+
+.ui-button .ui-icon.ui-icon-b3p-delete_16 {
+    background-image: url(../images/delete_16.png);
+}
+
+.ui-button .ui-icon.ui-icon-b3p-up_16 {
+    background-image: url(../images/up_16.png);
+}
+
+.ui-button .ui-icon.ui-icon-b3p-down_16 {
+    background-image: url(../images/down_16.png);
+}

@@ -337,58 +337,78 @@ B3pCatalog.createToolbar = function(viewMode) {
     var mdeToolbar = $("#mde-toolbar");
     mdeToolbar.empty();
     if (viewMode === false) {
-        mdeToolbar.append($("<a />", {
+        mdeToolbar.append(
+            $("<a />", {
+                href: "#",
+                id: "saveMD",
+                text: "Opslaan",
+                title: "Metadatadocument opslaan",
+                click: function(event) {
+                    $(this).removeClass("ui-state-hover");
+                    B3pCatalog.saveMetadata();
+                }
+            }).button({
+                disabled: true,
+                icons: {primary: "ui-icon-b3p-save_16"}
+            })
+        );
+        mdeToolbar.append(
+            $("<a />", {
+                href: "#",
+                id: "resetMD",
+                text: "Legen",
+                title: "Metadatadocument volledig leeg maken. Wordt nog niet opgeslagen.",
+                click: function(event) {
+                    $(this).removeClass("ui-state-hover");
+                    $.okCancel({
+                        text: "Weet u zeker dat u alle metadata en commentaren wilt wissen voor dit document? Dit wordt pas definitief als u op \"Opslaan\" klikt.",
+                        ok: function() {
+                            $("#mde").mde("reset");
+                        }
+                    });
+                }
+            }).button({
+                disabled: false,
+                icons: {primary: "ui-icon-b3p-delete_16"}
+            })
+        );
+        mdeToolbar.append(
+            $("<a />", {
+                href: "#",
+                id: "importMD",
+                text: "Importeren",
+                title: "Metadatadocument importeren en over huidige metadatadocument heen kopiëren. Wordt nog niet opgeslagen.",
+                click: function(event) {
+                    $(this).removeClass("ui-state-hover");
+                    B3pCatalog.importMetadata();
+                }
+            }).button({
+                disabled: false,
+                icons: {primary: "ui-icon-b3p-down_16"}
+            })
+        );
+    }
+    mdeToolbar.append(
+        $("<a />", {
             href: "#",
-            id: "saveMD",
-            text: "Opslaan",
-            title: "Metadatadocument opslaan",
+            id: "exportMD",
+            text: "Exporteren",
+            title: "Metadatadocument exporteren.",
             click: function(event) {
                 $(this).removeClass("ui-state-hover");
-                B3pCatalog.saveMetadata();
-            }
-        }).button({disabled: true}));
-        mdeToolbar.append($("<a />", {
-            href: "#",
-            id: "resetMD",
-            text: "Legen",
-            title: "Metadatadocument volledig leeg maken. Wordt nog niet opgeslagen.",
-            click: function(event) {
-                $(this).removeClass("ui-state-hover");
-                $.okCancel({
-                    text: "Weet u zeker dat u alle metadata en commentaren wilt wissen voor dit document? Dit wordt pas definitief als u op \"Opslaan\" klikt.",
-                    ok: function() {
-                        $("#mde").mde("reset");
-                    }
+                B3pCatalog.saveDataUserConfirm({
+                    done: function() {
+                        B3pCatalog.exportMetadata();
+                    },
+                    text: "Wilt u uw wijzigingen opslaan alvorens de metadata te exporteren?",
+                    asyncSave: false // data needs to be saved already when we do our export request
                 });
             }
-        }).button({disabled: false}));
-        mdeToolbar.append($("<a />", {
-            href: "#",
-            id: "importMD",
-            text: "Importeren",
-            title: "Metadatadocument importeren en over huidige metadatadocument heen kopiëren. Wordt nog niet opgeslagen.",
-            click: function(event) {
-                $(this).removeClass("ui-state-hover");
-                B3pCatalog.importMetadata();
-            }
-        }).button({disabled: false}));
-    }
-    mdeToolbar.append($("<a />", {
-        href: "#",
-        id: "exportMD",
-        text: "Exporteren",
-        title: "Metadatadocument exporteren.",
-        click: function(event) {
-            $(this).removeClass("ui-state-hover");
-            B3pCatalog.saveDataUserConfirm({
-                done: function() {
-                    B3pCatalog.exportMetadata();
-                },
-                text: "Wilt u uw wijzigingen opslaan alvorens de metadata te exporteren?",
-                asyncSave: false // data needs to be saved already when we do our export request
-            });
-        }
-    }).button({disabled: false}));
+        }).button({
+            disabled: false,
+            icons: {primary: "ui-icon-b3p-up_16"}
+        })
+    );
     if (B3pCatalog.currentMode === B3pCatalog.modes.FILE_MODE) {
         mdeToolbar.append($("<input type='checkbox' checked='checked' value='strictISO19115' id='strictISO19115Checkbox' />"));
         mdeToolbar.append($("<label for='strictISO19115Checkbox' title='Exporteer als ISO 19115 metadata volgens het Nederlands profiel versie 1.2. Tabs Algemeen, Attributen en Commentaar worden dan weggelaten.'>Exporteer strict</label>"));
