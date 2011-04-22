@@ -65,7 +65,7 @@
         <welcome-file>/index.jsp</welcome-file>
     </welcome-file-list>
     <listener>
-        <listener-class>nl.b3p.commons.arcgis.ArcGISConnector</listener-class>
+        <listener-class>nl.b3p.gis.arcgis.ArcGISConnector</listener-class>
     </listener>
     <!-- See http://www.stripesframework.org/display/stripes/Localization (bottom of the page) -->
     <context-param>
