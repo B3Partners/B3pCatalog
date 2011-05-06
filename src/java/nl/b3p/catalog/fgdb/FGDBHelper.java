@@ -71,6 +71,10 @@ public class FGDBHelper {
     }
 
     private static IMetadata getIMetadata(File fileGDBPath, int datasetType) throws IOException, B3PCatalogException {
+        if (datasetType <= 0) {
+            // we at least try to make something of this:
+            datasetType = esriDatasetType.esriDTFeatureDataset;
+        }
         IDataset ds = getTargetDataset(fileGDBPath, datasetType);
         switch(datasetType) {
             // most used 2:

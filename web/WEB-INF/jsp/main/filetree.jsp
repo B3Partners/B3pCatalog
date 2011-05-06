@@ -20,8 +20,6 @@
             </c:if>
             log("selectedFilePath: " + selectedFilePath);
 
-            var activeClass = "selected";
-
             $("#filetree").fileTree({
                 script: "${filetreeUrl}",
                 scriptEvent: "listDir",
@@ -33,24 +31,27 @@
                 /*extraAjaxOptions: {
                     global: false
                 },*/
-                activeClass: activeClass,
+                activeClass: "selected",
                 activateDirsOnClick: false,
                 expandOnFirstCallTo: selectedFilePath,
                 fileCallback: function(filename, aElement) {
                     log("file clicked: " + filename);
-                    var anchor = $(aElement);
-                    if (anchor.length > 0 && anchor.hasClass(activeClass))
+                    var anchor = B3pCatalog.clickedFileAnchor = $(aElement);
+                    if (anchor.length > 0 && anchor.hasClass("selected"))
                         return;
 
-                    B3pCatalog.loadMetadataFromFile(
-                        filename, 
-                        parseInt(anchor.attr("esritype")),
-                        anchor.attr("isgeo") === "true",
-                        function() {
-                            anchor.removeClass(activeClass);
-                            B3pCatalog.getCurrentFileAnchor().addClass(activeClass).focus();
-                        }
-                    );
+                    var newState = {filename: filename}
+
+                    var esriType = parseInt(anchor.attr("esritype"));
+                    if (!isNaN(esriType) && esriType !== 0) {
+                        newState.type = anchor.attr("esritype");
+                    }
+                    var isGeo = anchor.attr("isgeo");
+                    if (isGeo !== "true") {
+                        newState.isgeo = isGeo;
+                    }
+
+                    $.bbq.pushState(newState, 2);
                 },
                 dirExpandCallback: function(dir) {},
                 readyCallback: function(root) {
@@ -68,7 +69,7 @@
                         if (selectedFile.length > 0) {
                             selectedFileFound = true;
                             selectedFile.attr("checked", true);
-                            selectedFile.siblings("a").addClass(activeClass);
+                            selectedFile.siblings("a").addClass("selected");
                             $("#filetree").parent().scrollTo(selectedFile, {
                                 duration: 1000,
                                 easing: "easeOutBounce"

@@ -46,6 +46,8 @@
         <script type="text/javascript" src="${contextPath}/scripts/jquery.filetree/jquery.filetree-latest.js"></script>
         <script type="text/javascript" src="${contextPath}/scripts/jquery.easing/jquery.easing-latest.js"></script>
         <script type="text/javascript" src="${contextPath}/scripts/jquery.ThreeDots/jquery.ThreeDots.js"></script>
+        <script type="text/javascript" src="${contextPath}/scripts/jquery.bbq/jquery.ba-bbq.js"></script>
+        <!--script type="text/javascript" src="${contextPath}/scripts/jquery.bbq/jquery.ba-bbq.min.js"></script-->
 
         <!-- mde dependencies -->
         <script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa.js"></script>
@@ -97,6 +99,28 @@
                     enableCursorHotkey: false,
                     onresize: B3pCatalog.resizeTabsAndToolbar
                 });
+
+                // metadata files are always loaded via hash changes:
+                $(window).bind("hashchange", function(event) {
+                    log("state:");
+                    log(event.getState());
+                    if (event.getState("filename")) {
+                        // bad user input is dealt with internally:
+                        B3pCatalog.loadMetadataFromFile(
+                            event.getState("filename"),
+                            event.getState("type", true),
+                            event.getState("isgeo", true),
+                            function() {
+                                B3pCatalog.clickedFileAnchor.removeClass("selected");
+                                B3pCatalog.getCurrentFileAnchor().addClass("selected").focus();
+                            }
+                        );
+                    }
+                });
+
+                // Since the event is only triggered when the hash changes, we need to trigger
+                // the event now, to handle the hash the page may have loaded with.
+                $(window).trigger("hashchange");
             });
         </script>
 

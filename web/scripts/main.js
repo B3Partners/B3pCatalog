@@ -53,6 +53,8 @@ B3pCatalog.currentMode = B3pCatalog.modes.NO_MODE;
 
 B3pCatalog.currentFilename = "";
 
+B3pCatalog.clickedFileAnchor = $();
+
 B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo, cancel) {
     this._loadMetadata({
         done: function() {
@@ -65,7 +67,7 @@ B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo, cancel) {
             data: {
                 load : "",
                 filename : filename,
-                esriType : esriType
+                esriType : typeof esriType == "number" ? esriType : -1
             },
             dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'
             success: function(data, textStatus, jqXHR) {
