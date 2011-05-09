@@ -9,15 +9,21 @@
 <stripes:layout-definition>
 
     <script type="text/javascript">
+        /*console.log("hash 1: " + window.location.hash);
+        window.location.hash = window.location.hash;
+        console.log("hash 2: " + window.location.hash);*/
         $(document).ready(function() {
             $("#gebruikersnaam").focus().select();
+            $("#login-form").submit(function() {
+                $.cookie("mdeLoginHash", location.hash);
+            });
         });
     </script>
 
     <h2>Inloggen bij ${title}</h2>
     <p>U dient in te loggen bij ${title} met uw gewone ${customer} gebruikersnaam en wachtwoord. Dit is nodig om te bepalen of u enkel commentaar kunt leveren op metadata of dat u metadata ook kan aanpassen en aanmaken.</p>
 
-    <form method="post" action="j_security_check" class="form_ll">
+    <form id="login-form" method="post" action="j_security_check" class="form_ll">
 
         <p class="mandatory">Verplichte velden zijn gemarkeerd met een <em title="verplicht veld">*</em></p>
 

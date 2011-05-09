@@ -18,7 +18,7 @@
             <c:if test="${not empty actionBean.selectedFilePath}">
                 selectedFilePath = "<c:out value="${actionBean.selectedFilePath}"/>";
             </c:if>
-            log("selectedFilePath: " + selectedFilePath);
+            //log("selectedFilePath: " + selectedFilePath);
 
             $("#filetree").fileTree({
                 script: "${filetreeUrl}",
@@ -35,7 +35,7 @@
                 activateDirsOnClick: false,
                 expandOnFirstCallTo: selectedFilePath,
                 fileCallback: function(filename, aElement) {
-                    log("file clicked: " + filename);
+                    //log("file clicked: " + filename);
                     var anchor = B3pCatalog.clickedFileAnchor = $(aElement);
                     if (anchor.length > 0 && anchor.hasClass("selected"))
                         return;
@@ -55,8 +55,8 @@
                 },
                 dirExpandCallback: function(dir) {},
                 readyCallback: function(root) {
-                    log("root");
-                    log(root);
+                    //log("root");
+                    //log(root);
                     $("#filetree").scrollTo(root, {
                         axis: "y",
                         duration: 1000,
@@ -65,7 +65,7 @@
                     if (selectedFilePath != null && !selectedFileFound) {
                         //log(root);
                         var selectedFile = root.find("input:radio[value='" + RegExp.escape(selectedFilePath) + "']");
-                        log(selectedFile);
+                        //log(selectedFile);
                         if (selectedFile.length > 0) {
                             selectedFileFound = true;
                             selectedFile.attr("checked", true);

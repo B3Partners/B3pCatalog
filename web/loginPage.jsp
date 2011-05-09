@@ -24,6 +24,7 @@
 	<link rel="shortcut icon" href="${contextPath}/images/favicon.ico" type="image/x-icon" />
 
     <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.js"></script>
+    <script type="text/javascript" src="${contextPath}/scripts/jquery.cookie/jquery.cookie.js"></script>
 
 </head>
 <body id="login">

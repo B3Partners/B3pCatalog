@@ -48,6 +48,7 @@
         <script type="text/javascript" src="${contextPath}/scripts/jquery.ThreeDots/jquery.ThreeDots.js"></script>
         <script type="text/javascript" src="${contextPath}/scripts/jquery.bbq/jquery.ba-bbq.js"></script>
         <!--script type="text/javascript" src="${contextPath}/scripts/jquery.bbq/jquery.ba-bbq.min.js"></script-->
+        <script type="text/javascript" src="${contextPath}/scripts/jquery.cookie/jquery.cookie.js"></script>
 
         <!-- mde dependencies -->
         <script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa.js"></script>
@@ -102,8 +103,8 @@
 
                 // metadata files are always loaded via hash changes:
                 $(window).bind("hashchange", function(event) {
-                    log("state:");
-                    log(event.getState());
+                    //log("state:");
+                    //log(event.getState());
                     if (event.getState("filename")) {
                         // bad user input is dealt with internally:
                         B3pCatalog.loadMetadataFromFile(
@@ -115,6 +116,15 @@
                                 B3pCatalog.getCurrentFileAnchor().addClass("selected").focus();
                             }
                         );
+                    } else {
+                        var loginHash = $.cookie("mdeLoginHash");
+                        if (loginHash && $.trim(loginHash) !== "#") {
+                            // delete cookie first (prevent perpetual loops):
+                            $.cookie("mdeLoginHash", null);
+                            // we just logged in. get login hash from cookie.
+                            // this will trigger this event again ("hashchange")
+                            location.hash = loginHash;
+                        }
                     }
                 });
 

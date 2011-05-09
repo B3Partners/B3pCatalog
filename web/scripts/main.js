@@ -75,6 +75,8 @@ B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo, cancel) {
                 B3pCatalog.currentFilename = filename;
                 B3pCatalog.currentMode = B3pCatalog.modes.FILE_MODE;
                 document.title = B3pCatalog.title + B3pCatalog.titleSeparator + filename;
+                // TODO: on demand van PBL bv: laatst geopende doc opslaan
+                //$.cookie();
                 var viewMode = jqXHR.getResponseHeader("MDE_viewMode") === "true";
                 B3pCatalog.createMde(data, isGeo, viewMode);
             }
@@ -98,7 +100,7 @@ B3pCatalog.loadMetadataByUUID = function(uuid) {
             type: "POST",
             dataType: "text",
             success: function(data, textStatus, jqXHR) {
-                log("load by uuid success");
+                //log("load by uuid success");
                 B3pCatalog.currentMode = B3pCatalog.modes.CSW_MODE;
                 // TODO: title kan geëxtract worden uit het xml
                 document.title = B3pCatalog.title;
@@ -109,7 +111,7 @@ B3pCatalog.loadMetadataByUUID = function(uuid) {
 };
 
 B3pCatalog._loadMetadata = function(opts) {
-    log("Loading metadata...");
+    //log("Loading metadata...");
     var options = $.extend({
         done: $.noop,
         cancel: $.noop,
@@ -155,7 +157,7 @@ B3pCatalog.saveMetadata = function(settings) {
             esriType: B3pCatalog.getCurrentEsriType()
         },
         success: function(data, textStatus, xhr) {
-            log("metadata saved succesfully.");
+            //log("metadata saved succesfully.");
             var logMessage = $("<div/>", {
                 text: "Metadata successvol opgeslagen.",
                 "class": "mde-save-message"
