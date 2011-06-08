@@ -7,6 +7,7 @@
 <%@page contentType="text/javascript" pageEncoding="UTF-8"%>
 
 <%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
+<%@include file="/WEB-INF/jsp/commons/customization.jsp" %>
 <%@include file="/WEB-INF/jsp/commons/urls.jsp" %>
 
 if (typeof B3pCatalog == "undefined") B3pCatalog = {};

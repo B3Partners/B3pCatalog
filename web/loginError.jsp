@@ -1,4 +1,5 @@
 <%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
+<%@include file="/WEB-INF/jsp/commons/customization.jsp" %>
 <%@include file="/WEB-INF/jsp/commons/urls.jsp" %>
 
 <stripes:layout-render name="/loginPage.jsp" pageTitle="${title} | Loginfout!">
