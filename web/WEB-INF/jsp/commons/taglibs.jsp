@@ -5,5 +5,3 @@
 <%@taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld" %>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
-<c:set var="title" value="B3PCatalog"/>
-<c:set var="customer" value="PBL"/>

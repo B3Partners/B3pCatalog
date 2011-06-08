@@ -5,6 +5,8 @@
 --%>
 
 <%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
+<%@include file="/WEB-INF/jsp/commons/customization.jsp" %>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <stripes:layout-definition>
