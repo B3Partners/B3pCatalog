@@ -68,6 +68,7 @@
 
         <!-- B3pCatalog main js -->
         <script type="text/javascript" src="${contextPath}/scripts/init.js.jsp"></script>
+        <script type="text/javascript" src="${contextPath}/scripts/mdeOptions.js"></script>
         <script type="text/javascript" src="${contextPath}/scripts/main.js"></script>
 
 

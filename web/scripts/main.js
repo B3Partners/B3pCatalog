@@ -212,39 +212,14 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
     }
 };
 
-B3pCatalog.basicMdeOptions = {
-    richTextMode: true,
-    extraTitleAboveTabs: false,
-    iso19115PreviewImageInsideGeotab: true,
-    tabContainerSelector: "#mde-tabs"
-};
-
 B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
     //log("isGeo: " + isGeo);
     //log("data: " + data);
     $.mde.logMode = true;
     $("#mde").mde("destroy");
 
-    var extraOptions = {};
-    if (typeof isGeo === "boolean" && !isGeo) {
-        $.extend(extraOptions, {
-            geoTabsMinimizable: true,
-            geoTabsStartMinimized: true
-        });
-    }
-    if (typeof viewMode === "boolean") {
-        $.extend(extraOptions, {
-            viewMode: viewMode
-        });
-    }
     $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xml: xmlDoc,
-        profile: "nl_md_1.2_with_fc",
-        dcMode: true,
-        dcPblMode: true,
-        synchroniseDC: true,
-        iso19115oneTab: true,
-        commentMode: true,
         commentPosted: function(comment) {
             if (!$.trim(comment)) {
                 B3pCatalog.openSimpleErrorDialog("Commentaar kan niet leeg zijn.");
@@ -268,7 +243,7 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
         changed: function(changed) {
             $("#saveMD").button("option", "disabled", !changed);
         }
-    }, extraOptions));
+    }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)));
     B3pCatalog.createToolbar(viewMode);
 };
 
