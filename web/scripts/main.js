@@ -244,7 +244,6 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
             $("#saveMD").button("option", "disabled", !changed);
         }
     }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)));
-    B3pCatalog.afterInit(isGeo, viewMode);
     
     B3pCatalog.createToolbar(viewMode);
 };

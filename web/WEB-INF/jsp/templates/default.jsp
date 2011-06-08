@@ -64,6 +64,7 @@
         <script type="text/javascript" src="${contextPath}/scripts/mde/picklists/organisations.js"></script>
         <!-- mde -->
         <script type="text/javascript" src="${contextPath}/scripts/mde/includes/metadataEditor.js"></script>
+        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/commonOptions.js"></script>
 
         <!-- B3p libs: -->
         <script type="text/javascript" src="${contextPath}/scripts/log.js"></script>

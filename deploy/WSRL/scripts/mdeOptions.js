@@ -14,15 +14,16 @@ B3pCatalog.basicMdeOptions = {
 B3pCatalog.getExtraMdeOptions = function(isGeo, viewMode) {
     var extraOptions = {
         profile: "nl_md_1.2_with_fc",
-        dcMode: true,
-        dcPblMode: true,
-        synchroniseDC: true,
+        //synchroniseDC: true,
         iso19115oneTab: true,
-        commentMode: true
+        commentMode: true,
+        afterInit: B3pMde.afterInit
     };
     
     if (typeof isGeo === "boolean" && !isGeo) {
         $.extend(extraOptions, {
+            dcMode: true,
+            dcPblMode: true,
             geoTabsMinimizable: true,
             geoTabsStartMinimized: true
         });
@@ -31,6 +32,13 @@ B3pCatalog.getExtraMdeOptions = function(isGeo, viewMode) {
         $.extend(extraOptions, {
             viewMode: viewMode
         });
+        if (!viewMode) {
+            $.extend(extraOptions, {
+                extraPreprocessors: [
+                    "preprocessors/preprocessorWSRL.xsl"
+                ]
+            });
+        }
     }
     
     return extraOptions;
