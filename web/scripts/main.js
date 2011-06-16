@@ -143,9 +143,7 @@ B3pCatalog.saveMetadata = function(settings) {
     if (!options.filename)
         return;
 
-    var xml = $("#mde").mde("save", {
-        profile: "nl_md_1.2_with_fc"
-    });
+    var xml = $("#mde").mde("save");
     $.ajax({
         url: B3pCatalog.metadataUrl,
         async: options.async,
@@ -193,7 +191,7 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
         text: "Wilt u uw wijzigingen opslaan?",
         asyncSave: false
     }, opts);
-    if ($("#mde").mde("initialized") && $("#mde").mde("changed")) {
+    if ($("#mde .ui-mde-element").length > 0 && $("#mde").mde("option", "changed")) {
         $.yesNoCancel({
             text: options.text,
             yes: function() {
@@ -215,9 +213,9 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
 B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
     //log("isGeo: " + isGeo);
     //log("data: " + data);
-    $.mde.logMode = true;
     $("#mde").mde("destroy");
 
+    log("creating mde...");
     $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xml: xmlDoc,
         commentPosted: function(comment) {
@@ -240,10 +238,11 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
                 return xhr.responseText;
             }
         },
-        changed: function(changed) {
+        change: function(changed) {
             $("#saveMD").button("option", "disabled", !changed);
         }
     }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)));
+    B3pCatalog.afterInit(isGeo, viewMode);
     
     B3pCatalog.createToolbar(viewMode);
 };
@@ -254,7 +253,6 @@ B3pCatalog.createCswMde = function(xmlDoc) {
     $("#mde").mde("destroy");
     $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xml: xmlDoc,
-        profile: "nl_md_1.2",
         viewMode: true
     }));
     B3pCatalog.createToolbar(true);
@@ -286,14 +284,21 @@ B3pCatalog._exportMetadataByUUID = function() {
 
 B3pCatalog.importMetadata = function() {
     // TODO: voeg textarea later toe, na dialog aangemaakt te hebben; doe width via hq width/clientwidth e.d.
-    $("<div/>").html($("<textarea></textarea>", {
+    $("<div/>", {
+        "class": "ui-mde-textarea-wrapper",
+        css: {
+            overflow: "hidden"
+        }
+    }).html($("<textarea></textarea>", {
         id: "import-textarea",
         cols: 50,
         rows: 35, // IE 6/7 pakt 100% height niet
-        margin: 0,
-        padding: 0,
-        width: "99%", // nodig voor IE 6/7
-        height: "97%", // nodig voor FF (3.6)
+        css: {
+            width: "100%",
+            height: "100%",
+            margin: 0,
+            padding: 0
+        },
         text: "Plak uw te importeren metadata hier"
     })).appendTo(document.body).dialog({
         title: "Metadata importeren in " + B3pCatalog.currentFilename,
@@ -305,6 +310,7 @@ B3pCatalog.importMetadata = function() {
             click: function(event) {
                 $("#mde").mde("option", "xml", $("#import-textarea").val());
                 $(this).dialog("close");
+                return false;
             }
         }],
         close: function(event) {
@@ -326,6 +332,7 @@ B3pCatalog.createToolbar = function(viewMode) {
                 click: function(event) {
                     $(this).removeClass("ui-state-hover");
                     B3pCatalog.saveMetadata();
+                    return false;
                 }
             }).button({
                 disabled: true,
@@ -346,6 +353,7 @@ B3pCatalog.createToolbar = function(viewMode) {
                             $("#mde").mde("reset");
                         }
                     });
+                    return false;
                 }
             }).button({
                 disabled: false,
@@ -361,6 +369,7 @@ B3pCatalog.createToolbar = function(viewMode) {
                 click: function(event) {
                     $(this).removeClass("ui-state-hover");
                     B3pCatalog.importMetadata();
+                    return false;
                 }
             }).button({
                 disabled: false,
@@ -383,6 +392,7 @@ B3pCatalog.createToolbar = function(viewMode) {
                     text: "Wilt u uw wijzigingen opslaan alvorens de metadata te exporteren?",
                     asyncSave: false // data needs to be saved already when we do our export request
                 });
+                return false;
             }
         }).button({
             disabled: false,

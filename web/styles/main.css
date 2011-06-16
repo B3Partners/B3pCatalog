@@ -338,3 +338,12 @@ ul.jqueryFileTree a {
 .ui-button .ui-icon.ui-icon-b3p-down_16 {
     background-image: url(../images/down_16.png);
 }
+
+textarea {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    width: 100%;
+    height: 200px;
+}

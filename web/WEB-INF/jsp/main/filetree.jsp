@@ -57,7 +57,7 @@
                 readyCallback: function(root) {
                     //log("root");
                     //log(root);
-                    $("#filetree").scrollTo(root, {
+                    $("#sidebar").scrollTo(root, {
                         axis: "y",
                         duration: 1000,
                         easing: "easeOutBounce"

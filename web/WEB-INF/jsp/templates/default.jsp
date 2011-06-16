@@ -17,7 +17,9 @@
         <meta http-equiv="Expires" content="-1" />
         <meta http-equiv="Cache-Control" content="max-age=0, no-store" />
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
+        <!-- Sarissa is niet compatible met IE9: emuleer IE8 totdat er een fix in Sarissa zit -->
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" /> 
+        
         <title>${pageTitle}</title>
 
         <link rel="shortcut icon" href="${contextPath}/images/favicon.ico" />
@@ -97,7 +99,7 @@
                     spacing_open: 0,
                     // per pane:
                     //north__size: 200,
-                    //south__size: 75,
+                    south__size: 61,
                     west__size: $("body").width() / 3,
                     west__resizable: true,
                     west__spacing_open: 8,
@@ -107,8 +109,8 @@
 
                 // metadata files are always loaded via hash changes:
                 $(window).bind("hashchange", function(event) {
-                    //log("state:");
-                    //log(event.getState());
+                    log("state:");
+                    log(event.getState());
                     if (event.getState("filename")) {
                         // bad user input is dealt with internally:
                         B3pCatalog.loadMetadataFromFile(
