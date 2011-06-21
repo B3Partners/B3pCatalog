@@ -121,10 +121,19 @@ B3pCatalog._loadMetadata = function(opts) {
         done: function() {
             $("#mde-toolbar").empty();
             $("#mde").mde("destroy");
-            $("#mde").html($("<img />", {
+            var spinner = $("<img />", {
                 src: B3pCatalog.contextPath + "/styles/images/spinner.gif",
                 "class": "spinner"
-            }));
+            });
+            $("#mde").html(spinner);
+            var scrollable = $("#mde").closest(":scrollable");
+            var parent = scrollable.length > 0 ? scrollable : $(window);
+            spinner.position({
+                of: parent,
+                my: "center center",
+                at: "center center"
+            });
+
             document.title = B3pCatalog.title;
             options.done();
             $.ajax(options.ajaxOptions);
