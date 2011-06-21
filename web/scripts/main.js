@@ -65,7 +65,7 @@ B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo, cancel) {
             url: B3pCatalog.metadataUrl,
             type: "POST",
             data: {
-                load : "",
+                load : "t",
                 filename : filename,
                 esriType : typeof esriType == "number" ? esriType : -1
             },
@@ -94,7 +94,7 @@ B3pCatalog.loadMetadataByUUID = function(uuid) {
         ajaxOptions: {
             url: B3pCatalog.catalogUrl,
             data: {
-                load: "",
+                load: "t",
                 uuid: uuid
             },
             type: "POST",
@@ -127,9 +127,8 @@ B3pCatalog._loadMetadata = function(opts) {
             });
             $("#mde").html(spinner);
             var scrollable = $("#mde").closest(":scrollable");
-            var parent = scrollable.length > 0 ? scrollable : $(window);
             spinner.position({
-                of: parent,
+                of: scrollable.length > 0 ? scrollable : $(window),
                 my: "center center",
                 at: "center center"
             });
@@ -158,7 +157,7 @@ B3pCatalog.saveMetadata = function(settings) {
         async: options.async,
         type: "POST",
         data: {
-            save: "",
+            save: "t",
             filename: options.filename,
             metadata: xml,
             esriType: B3pCatalog.getCurrentEsriType()
@@ -251,7 +250,6 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
             $("#saveMD").button("option", "disabled", !changed);
         }
     }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)));
-    B3pCatalog.afterInit(isGeo, viewMode);
     
     B3pCatalog.createToolbar(viewMode);
 };
@@ -277,7 +275,7 @@ B3pCatalog.exportMetadata = function() {
 
 B3pCatalog._exportMetadataFromFile = function() {
     window.location = B3pCatalog.metadataUrl + "?" + $.param({
-        "export": "",
+        "export": "t",
         filename: B3pCatalog.currentFilename,
         esriType: B3pCatalog.getCurrentEsriType(),
         strictISO19115: $("#strictISO19115Checkbox").is(":checked")
@@ -286,7 +284,7 @@ B3pCatalog._exportMetadataFromFile = function() {
 
 B3pCatalog._exportMetadataByUUID = function() {
     window.location = B3pCatalog.catalogUrl + "?" + $.param({
-        "export": "",
+        "export": "t",
         uuid: $("#search-results .search-result-selected").attr("uuid")
     });
 };

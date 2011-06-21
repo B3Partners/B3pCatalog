@@ -20,7 +20,8 @@ B3pCatalog.getExtraMdeOptions = function(isGeo, viewMode) {
         dcPblMode: true,
         synchroniseDC: true,
         iso19115oneTab: true,
-        commentMode: true
+        commentMode: true,
+        afterInit: B3pMde.afterInit
     };
     
     if (typeof isGeo === "boolean" && !isGeo) {
@@ -38,7 +39,3 @@ B3pCatalog.getExtraMdeOptions = function(isGeo, viewMode) {
     return extraOptions;
 }
 
-// called after a non-csw editor/viewer is created
-B3pCatalog.afterInit = function(isGeo, viewMode) {
-    
-}

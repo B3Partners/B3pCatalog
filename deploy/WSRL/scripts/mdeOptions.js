@@ -4,17 +4,18 @@ if (typeof B3pCatalog == "undefined") B3pCatalog = {};
 
 // used for all mde types (view/edit/etc.) for all users.
 B3pCatalog.basicMdeOptions = {
+    logMode: true,
     richTextMode: true,
     extraTitleAboveTabs: false,
     iso19115PreviewImageInsideGeotab: true,
-    tabContainerSelector: "#mde-tabs"
+    tabContainerSelector: "#mde-tabs",
+    organisations: organisations
 };
 
 // used for a non-csw editor/viewer
 B3pCatalog.getExtraMdeOptions = function(isGeo, viewMode) {
     var extraOptions = {
-        profile: "nl_md_1.2_with_fc",
-        //synchroniseDC: true,
+        fcMode: true,
         iso19115oneTab: true,
         commentMode: true,
         afterInit: B3pMde.afterInit
@@ -25,7 +26,7 @@ B3pCatalog.getExtraMdeOptions = function(isGeo, viewMode) {
             dcMode: true,
             dcPblMode: true,
             geoTabsMinimizable: true,
-            geoTabsStartMinimized: true
+            geoTabsMinimized: true
         });
     }
     if (typeof viewMode === "boolean") {
