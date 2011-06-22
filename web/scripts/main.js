@@ -1,11 +1,15 @@
 if (typeof B3pCatalog == "undefined") B3pCatalog = {};
 
 $(document).ajaxError(function(event, xhr, ajaxOptions, thrownError) {
-    B3pCatalog.openErrorDialog(xhr.responseText);
+    var message = xhr.responseText;
+    if (!!thrownError)
+        message = thrownError + "<br /><br/>" + message;
+    B3pCatalog.openErrorDialog(message);
     return false;
 });
 
 B3pCatalog.openErrorDialog = function(message) {
+    message = !!message ? message : "Fouttekst is leeg.";
     log("error: " + message);
     $(".spinner").remove();
     $("<div/>").html(message).appendTo(document.body).dialog({
@@ -26,6 +30,7 @@ B3pCatalog.openErrorDialog = function(message) {
 };
 
 B3pCatalog.openSimpleErrorDialog = function(message) {
+    message = !!message ? message : "Fouttekst is leeg.";
     log("error: " + message);
     $(".spinner").remove();
     $("<div/>").html(message).appendTo(document.body).dialog({
