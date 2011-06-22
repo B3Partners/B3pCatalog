@@ -24,18 +24,14 @@
 
         <link rel="shortcut icon" href="${contextPath}/images/favicon.ico" />
 
-        <!-- Rijkshuisstijl PBL -->
-        <!--link rel="stylesheet" type="text/css" href="${contextPath}/styles/screen.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="${contextPath}/styles/print.css" media="print" /-->
-        <!-- Overige css -->
-        <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/profiles/pbl/jquery-ui-latest.custom.css" />
+        <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/jquery-ui-latest.custom.css" />
         <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit.css" />
-        <!-- PBL specific: -->
-        <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/profiles/pbl/metadataEdit.css" />
+        <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/deploy.css" />
         <!--[if IE]> <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit-ie.css" /> <![endif]-->
         <!--[if lte IE 7]> <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit-ie7.css" /> <![endif]-->
         <link rel="stylesheet" type="text/css" href="${contextPath}/styles/jquery.filetree.css" />
         <link rel="stylesheet" type="text/css" href="${contextPath}/styles/main.css" />
+        <link rel="stylesheet" type="text/css" href="${contextPath}/styles/deploy.css" />
 
         <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.js"></script>
         <!--script type="text/javascript" src="${contextPath}/scripts/jquery/jquery-latest.min.js"></script-->

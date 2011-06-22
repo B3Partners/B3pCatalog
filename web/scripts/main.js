@@ -74,7 +74,7 @@ B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo, cancel) {
                 filename : filename,
                 esriType : typeof esriType == "number" ? esriType : -1
             },
-            dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'
+            dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
             success: function(data, textStatus, jqXHR) {
                 //log(data);
                 B3pCatalog.currentFilename = filename;
