@@ -19,17 +19,11 @@ ul.jqueryFileTree a {
 	text-decoration: none;
 	display: inline;
 	padding: 0px 2px;
-    width: 99%;
 }
 
-ul.jqueryFileTree a:hover {
+ul.jqueryFileTree a:hover, ul.jqueryFileTree .selected {
 	background: #1962a0;
-    color: #333;
-}
-
-ul.jqueryFileTree .selected {
-    background: #1962a0;
-    color: #333;
+    color: white;
 }
 
 /* Core Styles */

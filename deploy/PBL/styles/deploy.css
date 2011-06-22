@@ -1,5 +1,55 @@
 /* Override deze file in een deploy structuur met klantspecifieke opmaak */
 
 ul.jqueryFileTree a:hover, ul.jqueryFileTree .selected {
-	background: #a8cad2;
+	background: #deebe3;
+    color: #333;
+}
+
+.ui-layout-resizer {
+    background-color: #deebe3;
+    border: 1px solid #deebe3;
+}
+
+.nav-bar {
+    border-bottom: 10px solid #deebe3;
+}
+
+.nav-bar .title-bar {
+    background-color: #deebe3;
+}
+
+ul#main-tabs > li.main-tab-selected {
+    background-color: #deebe3;
+}
+
+ul#main-tabs > li.main-tab-hover {
+    background-color: #deebe3;
+}
+
+.footer .ref {
+    border: 0;
+    /*padding: 0 0 6px;*/
+    text-align: center;
+    /*background: url(skin/sh_bot.png) left bottom repeat-x;
+    background-position: -20px 40px;*/
+    background-color: #ffffff;
+    border-top: 10px solid #deebe3;
+    /*height: 50px;*/
+}
+
+.footer .ref img {
+    margin: 0;
+    margin-top: 23px;
+    background-color: #fff;
+}
+
+.footer-text {
+    color: #7891A5;
+    font-size: 11px;
+}
+
+#footer-text-left {
+    position: absolute;
+    left: 10px;
+    top: 35px;
 }

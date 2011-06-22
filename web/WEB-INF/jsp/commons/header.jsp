@@ -21,6 +21,11 @@
             });
 
             showTab($("#main-tabs > li > a").first());
+            
+            $(".logout-link").click(function() {
+                B3pCatalog.logout();
+                return false;
+            });
         });
 
         function showTab(aElem) {
@@ -53,7 +58,7 @@
                     <div class="logged-in-as-user">
                         ${pageContext.request.remoteUser}
                     </div>
-                    <a href="#" onclick="B3pCatalog.logout();" class="logout-link">Uitloggen</a>
+                    <a href="#" class="logout-link">Uitloggen</a>
                 </div>
             </div>
             <ul id="main-tabs" class="ui-helper-reset">

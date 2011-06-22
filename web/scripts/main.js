@@ -239,7 +239,7 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
                 var xhr = $.ajax({
                     url: B3pCatalog.contextPath + "/Metadata.action",
                     data: {
-                        postComment: "",
+                        postComment: "t",
                         comment: comment,
                         filename: B3pCatalog.currentFilename,
                         esriType: B3pCatalog.getCurrentEsriType()
