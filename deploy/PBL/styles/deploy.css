@@ -63,6 +63,7 @@ ul#main-tabs > li.main-tab-selected > a, ul#main-tabs > li > a.main-tab-hover {
 
 .footer .footer-logo img {
     margin-top: 23px;
+    background-color: white;
 }
 
 .footer-text {
@@ -72,7 +73,6 @@ ul#main-tabs > li.main-tab-selected > a, ul#main-tabs > li > a.main-tab-hover {
 #footer-text-left {
     top: 35px;
 }
-
 
 /* 
  * Login screen 
