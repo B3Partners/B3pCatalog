@@ -11,7 +11,7 @@
             </ul>
         </div-->
         <div class="mod message_err">
-            <h2>Loginfout!</h2>
+            Loginfout!
         </div>
     </stripes:layout-component>
     <stripes:layout-component name="content">

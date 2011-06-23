@@ -10,14 +10,25 @@
 body {
 	margin: 0px;
     padding: 0px;
-    background: #f3f5f6;
-    border-top: 1px solid #535353;
+    background-color: #fff;
 	font-size: 11px;
 	font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
 }
 
 a {
     color: #154273;
+}
+
+.left-background {
+    background-image: url(../images/leftBackground.gif);
+    background-position: top left;
+    background-repeat: repeat-y;
+}
+
+.right-background {
+    background-image: url(../images/rightBackground.gif);
+    background-position: top right;
+    background-repeat: repeat-y;
 }
 
 .header {
@@ -37,6 +48,12 @@ a {
     border: none;
 }
 
+.header-logo {
+    background-image: url(../images/headerLogo.gif);
+    background-position: top left;
+    background-repeat: no-repeat;
+}
+
 .nav-bar {
     margin: 0;
     padding: 0;
@@ -47,14 +64,14 @@ a {
     height: 120px;
 }
 
-.nav-bar .title-bar {
+.title-bar {
     height: 50px;
     width: 100%;
     background-image: url(../images/headerBar.gif);
     background-repeat: repeat-x;
 }
 
-.nav-bar .title-bar h1 {
+.title-bar h1 {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 18px;
     margin: 0px;
@@ -173,10 +190,6 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
     right: 150px;
 }
 
-#north, #south, #west, #east, #center {
-    background: #fff;
-}
-
 .ui-layout-resizer {
     background-color: #1962a0;
     border: 1px solid #1962a0;
@@ -262,6 +275,37 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
 
 .message_err p,
 .message_info p { margin-bottom: 0.1em; }
+
+/**
+ * Uit RHS forms.css
+ *
+ * Two column setup form
+ *
+ * @section			Lables left and inputs right aligned, grey background, two column specific style definitions
+ */
+
+form.form_ll label { 
+    display: inline-block; 
+    width: 12.2em;
+}/*vertical-align: top; }*/
+
+form.form_ll fieldset li { 
+    background: #f5f5f5; 
+    border-bottom: 0.2em solid #fff; 
+    list-style: none; 
+    margin-left: -3em;
+    padding: 0.4em 1em 0.4em 1em; 
+}
+
+form.form_ll input.text,
+form.form_ll textarea { 
+    width: 22.2em; 
+}
+
+p.mandatory {
+    font-size: 0.8em;
+}
+
 
 /* Fix voor IE 7; selected class moet dan dus ook geen border of padding/margin hebben */
 ul.jqueryFileTree a {

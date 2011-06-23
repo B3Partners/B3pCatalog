@@ -1,69 +1,62 @@
 <%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
-
+<%@include file="/WEB-INF/jsp/commons/customization.jsp" %>
 
 <stripes:layout-definition>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="nl" lang="nl">
-<head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<title>${pageTitle}</title>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>${pageTitle}</title>
 
-	<meta name="description" content="" />
-	<meta name="keywords" content="" />
-	<meta name="distribution" content="global" />
-	<meta name="robots" content="index, follow" />
-	<meta name="language" content="nl" />
+        <link rel="stylesheet" href="${contextPath}/scripts/mde/styles/jquery-ui-latest.custom.css" type="text/css" media="screen" />
+        <link rel="stylesheet" href="${contextPath}/styles/main.css" type="text/css" media="screen" />
 
-	<link rel="stylesheet" href="${contextPath}/scripts/mde/styles/jquery-ui-latest.custom.css" type="text/css" media="screen" />
-	<link rel="stylesheet" href="${contextPath}/styles/screen.css" type="text/css" media="screen" />
-	<!--[if IE 8]><link rel="stylesheet" href="${contextPath}/styles/ie/ie8.css" type="text/css" media="screen" /><![endif]-->
-	<!--[if lte IE 7]><link rel="stylesheet" href="${contextPath}/styles/ie/ie7.css" type="text/css" media="screen" /><![endif]-->
-	<!--[if lte IE 6]><link rel="stylesheet" href="${contextPath}/styles/ie/ie6.css" type="text/css" media="screen" /><![endif]-->
-	<link rel="stylesheet" href="${contextPath}/styles/print.css" type="text/css" media="print" />
+        <link rel="shortcut icon" href="${contextPath}/images/favicon.ico" type="image/x-icon" />
 
-	<link rel="shortcut icon" href="${contextPath}/images/favicon.ico" type="image/x-icon" />
+        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.js"></script>
+        <!--script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.min.js"></script-->
+        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.js"></script>
+        <!--script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.min.js"></script-->
+        <script type="text/javascript" src="${contextPath}/scripts/jquery.layout/jquery.layout-latest.js"></script>
+        <script type="text/javascript" src="${contextPath}/scripts/jquery.cookie/jquery.cookie.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                theLayout = $("body").layout({
+                    north__size: 50,
+                    west__size: 100,
+                    east__size: 100,
+                    /*south__size: 60,*/
+                    resizable: false,
+                    closable: false,
+                    spacing_close: 0,
+                    spacing_open: 0,
+                    enableCursorHotkey: false
+                });
+                
+                $(".submit").button();
+            });
+        </script>
 
-    <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.js"></script>
-    <script type="text/javascript" src="${contextPath}/scripts/jquery.cookie/jquery.cookie.js"></script>
-
-</head>
-<body id="login">
-
-	<div class="container equalize">
-
-		<div class="header">
-			<span></span>
+    </head>
+    <body>
+        <div class="ui-layout-north title-bar" id="north">
             <%@include file="/WEB-INF/jsp/commons/branding.jsp" %>
-		</div>
+            <%@include file="/WEB-INF/jsp/commons/titlebar.jsp" %>
+        </div>
+        <div class="ui-layout-west left-background" id="west">
 
-		<div class="content_wrapper1"><div class="content_wrapper2">
+        </div>
+        <div class="ui-layout-center" id="center">
+            <stripes:layout-component name="messages"/>
+            <stripes:layout-component name="content"/>
+        </div>
+        <div class="ui-layout-east right-background" id="east">
 
-			<div class="content">
-
-			<!-- START : CONTENT -->
-
-                <stripes:layout-component name="messages"/>
-
-				<div class="content_main">
-
-                    <stripes:layout-component name="content"/>
-
-				</div>
-
-			<!-- END : CONTENT -->
-
-			</div>
-
-		</div></div>
-
-		<div class="footer">
-				&nbsp; <!-- this 'space' is necessary to display the bottom border shadow!!! -->
-			<span></span>
-		</div>
-
-	</div>
-
-</body>
+        </div>
+        <div class="ui-layout-south" id="south">
+            <%@include file="/WEB-INF/jsp/commons/footer.jsp" %>
+        </div>
+    </body>
 </html>
 
 </stripes:layout-definition>

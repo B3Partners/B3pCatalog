@@ -1,5 +1,10 @@
 /* Override deze file in een deploy structuur met klantspecifieke opmaak */
 
+body {
+    background: #f3f5f6;
+    border-top: 1px solid #535353;
+}
+
 ul.jqueryFileTree a:hover, ul.jqueryFileTree .selected {
 	background: #deebe3;
     color: #333;
