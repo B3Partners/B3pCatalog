@@ -17,7 +17,7 @@ ul.jqueryFileTree li {
 ul.jqueryFileTree a {
 	color: #333;
 	text-decoration: none;
-	display: inline;
+	display: block;
 	padding: 0px 2px;
 }
 

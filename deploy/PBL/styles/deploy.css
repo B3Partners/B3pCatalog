@@ -74,6 +74,16 @@ ul#main-tabs > li.main-tab-selected > a, ul#main-tabs > li > a.main-tab-hover {
     top: 35px;
 }
 
+.search-result-title {
+    color: #154273;
+}
+
+.mde-save-message {
+    background-color: #A8CAD2;
+}
+
+
+
 /* 
  * Login screen 
  */

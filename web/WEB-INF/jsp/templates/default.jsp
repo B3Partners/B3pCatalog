@@ -78,29 +78,22 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                /*$("body").layout({
-                    resizable: false,
-                    closable: false,
-                    spacing_close: 0,
-                    spacing_open: 0,
-                    west__size: 30,
-                    east__size: 30,
-                    enableCursorHotkey: false
-                });*/
-                theLayout = $("body").layout({//$("#center-wrapper").layout({
+                theLayout = $("body").layout({
                     // algemeen:
                     resizable: false,
                     closable: false,
                     spacing_close: 0,
                     spacing_open: 0,
                     // per pane:
-                    //north__size: 200,
-                    //south__size: 61,
-                    west__size: $("body").width() / 3,
+                    west__size: getWestSize(),
                     west__resizable: true,
                     west__spacing_open: 8,
                     enableCursorHotkey: false,
                     onresize: B3pCatalog.resizeTabsAndToolbar
+                });
+                
+                $(window).resize(function() {
+                    theLayout.sizePane("west", getWestSize());
                 });
 
                 // metadata files are always loaded via hash changes:
@@ -134,6 +127,10 @@
                 // the event now, to handle the hash the page may have loaded with.
                 $(window).trigger("hashchange");
             });
+            
+            function getWestSize() {
+                return $("body").width() / 3;
+            }
         </script>
 
     </head>

@@ -147,7 +147,7 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
     height: 50px;
     width: 100%;
     background-image: url(../images/footerLogo.gif);
-    background-position: bottom left;
+    background-position: bottom right;
     background-repeat: no-repeat;
 }
 
@@ -170,7 +170,7 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
 }
 
 #footer-text-right {
-    left: 750px;
+    right: 150px;
 }
 
 #north, #south, #west, #east, #center {
@@ -192,6 +192,7 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
     position: absolute;
     bottom: 10px;
     left: 400px;
+    white-space: nowrap;
     /*margin: 1em;
     position: relative;*/ /* IE7 fix: necessary for jquery ui buttons inside (with pos: relative) */
 }
@@ -212,7 +213,7 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
 .mde-save-message {
     position: absolute;
     bottom: 0;
-    background-color: #A8CAD2;
+    background-color: #fff0c5;
 }
 
 #search .ui-button {
@@ -247,7 +248,7 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
 }
 
 .search-result-abstract {
-
+    color: #1962a0;
 }
 
 /* Message + info box */
