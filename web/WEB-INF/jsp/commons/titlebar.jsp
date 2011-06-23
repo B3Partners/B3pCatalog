@@ -6,6 +6,6 @@
 <%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
 
 <%-- can be overriden in deploy script --%>
-<img alt="B3pCatalog logo" src="<stripes:url value="${contextPath}/images/b3pcatalog.gif"/>"/>
+<img alt="B3pCatalog logo" src="<stripes:url value="${contextPath}/images/headerLogo.gif"/>"/>
 
 

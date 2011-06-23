@@ -6,4 +6,4 @@
 
 <%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
 
-<img src="<stripes:url value="${contextPath}/images/RO_footer.png"/>" alt="Footer logo" />
+<%--img src="<stripes:url value="${contextPath}/images/footerLogo.gif"/>" alt="Footer logo" /--%>

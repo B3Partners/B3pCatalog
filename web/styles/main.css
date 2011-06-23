@@ -50,7 +50,7 @@ a {
 .nav-bar .title-bar {
     height: 50px;
     width: 100%;
-    background-image: url(../images/bovenbalk.gif);
+    background-image: url(../images/headerBar.gif);
     background-repeat: repeat-x;
 }
 
@@ -133,23 +133,26 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
 }
 
 .footer {
-    height: 50px;
+    height: 60px;
     width: 100%;
-    background-image: url(../images/onderbalk.gif);
+    background-image: url(../images/footerBar.gif);
+    background-position: bottom right;
     background-repeat: repeat-x;
     position: relative;
 }
 
 .footer .footer-logo {
     border: 0px solid white;
-    text-align: center;
-    background-color: white;
     border-top: 10px solid #1962a0;
+    height: 50px;
+    width: 100%;
+    background-image: url(../images/footerLogo.gif);
+    background-position: bottom left;
+    background-repeat: no-repeat;
 }
 
 .footer .footer-logo img {
     margin: 0;
-    margin-top: 23px;
     background-color: white;
 }
 
@@ -165,7 +168,7 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
 #footer-text-left {
     position: absolute;
     left: 10px;
-    top: 35px;
+    top: 27px;
 }
 
 #north, #south, #west, #east, #center {
@@ -245,72 +248,6 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
 
 }
 
-#borderLeft {
-    position: absolute;
-    right: 0px;
-    width: 8px;
-}
-
-#borderRight {
-    position: absolute;
-    left: 0px;
-    width: 8px;
-}
-
-#borderLeftTop, #borderRightTop {
-    background: url(skin/sh_top_left.png);
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    height: 8px;
-    width: 8px;
-    z-index: 30;
-}
-
-#borderLeftMiddle, #borderRightMiddle {
-    background: url(skin/sh_left_small.png);
-    position: absolute;
-    top: 8px;
-    bottom: 17px;
-    right: 0px;
-    width: 8px;
-    z-index: 29;
-}
-
-#borderLeftBottom, #borderRightBottom {
-    background: url(skin/sh_bot_left.png);
-    position: absolute;
-    right: 0px;
-    bottom: 9px;
-    height: 8px;
-    width: 8px;
-    z-index: 30;
-}
-
-#borderRightTop {
-    background: url(skin/sh_top_right.png);
-    right: auto;
-    left: 0px;
-}
-
-#borderRightMiddle {
-    background: url(skin/sh_right_small.png);
-    right: auto;
-    left: 0px;
-}
-
-#borderRightBottom {
-    background: url(skin/sh_bot_right.png);
-    right: auto;
-    left: 0px;
-}
-
-/* Fix voor IE 7; selected class moet dan dus ook geen border of padding/margin hebben */
-ul.jqueryFileTree a {
-    width: auto;
-    padding: 0;
-}
-
 /* Message + info box */
 .message_err,
 .message_info { background-position: 0.5em 0.5em; background-repeat: no-repeat; margin-top: 1em; margin-bottom: -1em; padding: 8px 10px 5px 34px; line-height: 150%; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px;}
@@ -322,6 +259,12 @@ ul.jqueryFileTree a {
 
 .message_err p,
 .message_info p { margin-bottom: 0.1em; }
+
+/* Fix voor IE 7; selected class moet dan dus ook geen border of padding/margin hebben */
+ul.jqueryFileTree a {
+    width: auto;
+    padding: 0;
+}
 
 .ui-button .ui-icon.ui-icon-b3p-save_16 {
     background-image: url(../images/save_16.png);

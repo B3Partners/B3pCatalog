@@ -51,37 +51,91 @@ ul#main-tabs > li.main-tab-selected > a, ul#main-tabs > li > a.main-tab-hover {
 }
 
 .footer {
+    height: 50px;
     background-color: #f3f5f6;
 }
 
-.footer-text {
-    color: #7891A5;
-}
-
-.footer .ref {
-    border: 0;
-    /*padding: 0 0 6px;*/
+.footer .footer-logo {
     text-align: center;
-    /*background: url(skin/sh_bot.png) left bottom repeat-x;
-    background-position: -20px 40px;*/
-    background-color: #ffffff;
+    background-color: white;
     border-top: 10px solid #deebe3;
-    /*height: 50px;*/
 }
 
-.footer .ref img {
-    margin: 0;
+.footer .footer-logo img {
     margin-top: 23px;
-    background-color: #fff;
 }
 
 .footer-text {
     color: #7891A5;
-    font-size: 11px;
 }
 
 #footer-text-left {
-    position: absolute;
-    left: 10px;
     top: 35px;
 }
+
+
+/* 
+ * Login screen 
+ */
+
+#borderLeft {
+    position: absolute;
+    right: 0px;
+    width: 8px;
+}
+
+#borderRight {
+    position: absolute;
+    left: 0px;
+    width: 8px;
+}
+
+#borderLeftTop, #borderRightTop {
+    background: url(skin/sh_top_left.png);
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    height: 8px;
+    width: 8px;
+    z-index: 30;
+}
+
+#borderLeftMiddle, #borderRightMiddle {
+    background: url(skin/sh_left_small.png);
+    position: absolute;
+    top: 8px;
+    bottom: 17px;
+    right: 0px;
+    width: 8px;
+    z-index: 29;
+}
+
+#borderLeftBottom, #borderRightBottom {
+    background: url(skin/sh_bot_left.png);
+    position: absolute;
+    right: 0px;
+    bottom: 9px;
+    height: 8px;
+    width: 8px;
+    z-index: 30;
+}
+
+#borderRightTop {
+    background: url(skin/sh_top_right.png);
+    right: auto;
+    left: 0px;
+}
+
+#borderRightMiddle {
+    background: url(skin/sh_right_small.png);
+    right: auto;
+    left: 0px;
+}
+
+#borderRightBottom {
+    background: url(skin/sh_bot_right.png);
+    right: auto;
+    left: 0px;
+}
+
+

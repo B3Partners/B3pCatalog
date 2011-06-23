@@ -95,7 +95,7 @@
                     spacing_open: 0,
                     // per pane:
                     //north__size: 200,
-                    south__size: 61,
+                    //south__size: 61,
                     west__size: $("body").width() / 3,
                     west__resizable: true,
                     west__spacing_open: 8,
