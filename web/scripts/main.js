@@ -12,6 +12,7 @@ B3pCatalog.openErrorDialog = function(message) {
     message = !!message ? message : "Fouttekst is leeg.";
     log("error: " + message);
     $(".spinner").remove();
+    $(".wait").removeClass("wait");
     $("<div/>").html(message).appendTo(document.body).dialog({
         title: "Fout",
         modal: true,
@@ -33,6 +34,7 @@ B3pCatalog.openSimpleErrorDialog = function(message) {
     message = !!message ? message : "Fouttekst is leeg.";
     log("error: " + message);
     $(".spinner").remove();
+    $(".wait").removeClass("wait");
     $("<div/>").html(message).appendTo(document.body).dialog({
         title: "Fout",
         modal: true,
@@ -48,6 +50,10 @@ B3pCatalog.openSimpleErrorDialog = function(message) {
     });
 };
 
+// kan niet zomaar checken op zichtbaarheid van file of csw tab. 
+// bij switchen van tab blijft metadata rechts in het scherm namelijk zichtbaar (by design).
+// de modus hier beschreven is dus de modus van de metadata rechts in het scherm.
+// het zou wellicht in een data veld in #mde-wrapper kunnen worden opgeslagen. weinig verschil met status quo.
 B3pCatalog.modes = {
     NO_MODE: 0,
     FILE_MODE: 1,
@@ -224,8 +230,6 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
 };
 
 B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
-    //log("isGeo: " + isGeo);
-    //log("data: " + data);
     $("#mde").mde("destroy");
 
     log("creating mde...");
@@ -260,8 +264,6 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
 };
 
 B3pCatalog.createCswMde = function(xmlDoc) {
-    //log("data: " + data);
-    $.mde.logMode = true;
     $("#mde").mde("destroy");
     $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xml: xmlDoc,

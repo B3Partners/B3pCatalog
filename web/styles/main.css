@@ -42,14 +42,16 @@ a {
     padding: 0;
     text-align: left;
     /*position: relative;*/
-    background-color: #a8cad2;
+    background-color: #fff0c5;
     border-bottom: 10px solid #1962a0;
-    height: 100px;
+    height: 120px;
 }
 
 .nav-bar .title-bar {
-    background-color: #1962a0;
-    height: 30px;
+    height: 50px;
+    width: 100%;
+    background-image: url(../images/bovenbalk.gif);
+    background-repeat: repeat-x;
 }
 
 .nav-bar .title-bar h1 {
@@ -65,8 +67,8 @@ a {
     line-height: 1.5em; /* IE 7 fix */
     position: absolute;
     right: 10px;
-    top: 8px;
-    color: black;
+    top: 28px;
+    color: white;
 }
 
 .logged-in {
@@ -84,7 +86,7 @@ a {
 }
 
 .logout-link {
-    color: black;
+    color: white;
     margin-left: 10px;
 }
 
@@ -114,16 +116,15 @@ ul#main-tabs > li.main-tab-selected {
     background-color: #1962a0;
 }
 
-ul#main-tabs > li.main-tab-selected > a {
-    color: black;
+ul#main-tabs > li.main-tab-selected > a, ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
+    color: white;
 }
 
 ul#main-tabs > li.main-tab-hover {
     background-color: #1962a0;
 }
 
-ul#main-tabs > li > a.main-tab-hover {
-    color: black;
+ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
     text-decoration: underline;
 }
 
@@ -132,30 +133,33 @@ ul#main-tabs > li > a.main-tab-hover {
 }
 
 .footer {
-    background-color: #f3f5f6;
+    height: 50px;
+    width: 100%;
+    background-image: url(../images/onderbalk.gif);
+    background-repeat: repeat-x;
     position: relative;
 }
 
-.footer .ref {
-    border: 0;
-    /*padding: 0 0 6px;*/
+.footer .footer-logo {
+    border: 0px solid white;
     text-align: center;
-    /*background: url(skin/sh_bot.png) left bottom repeat-x;
-    background-position: -20px 40px;*/
-    background-color: #ffffff;
+    background-color: white;
     border-top: 10px solid #1962a0;
-    /*height: 50px;*/
 }
 
-.footer .ref img {
+.footer .footer-logo img {
     margin: 0;
     margin-top: 23px;
-    background-color: #fff;
+    background-color: white;
 }
 
 .footer-text {
     color: #7891A5;
     font-size: 11px;
+}
+
+.footer-text a {
+    color: #7891A5;
 }
 
 #footer-text-left {

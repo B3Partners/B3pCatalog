@@ -11,11 +11,31 @@ ul.jqueryFileTree a:hover, ul.jqueryFileTree .selected {
 }
 
 .nav-bar {
+    background-color: #a8cad2;
     border-bottom: 10px solid #deebe3;
+    height: 100px;
 }
 
 .nav-bar .title-bar {
     background-color: #deebe3;
+    height: 30px;
+}
+
+.nav-bar .title-bar h1 {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    margin: 0px;
+    padding-top: 4px;
+    padding-left: 10px;
+}
+
+.login-info-block {
+    top: 8px;
+    color: black;
+}
+
+.logout-link {
+    color: black;
 }
 
 ul#main-tabs > li.main-tab-selected {
@@ -24,6 +44,18 @@ ul#main-tabs > li.main-tab-selected {
 
 ul#main-tabs > li.main-tab-hover {
     background-color: #deebe3;
+}
+
+ul#main-tabs > li.main-tab-selected > a, ul#main-tabs > li > a.main-tab-hover {
+    color: black;
+}
+
+.footer {
+    background-color: #f3f5f6;
+}
+
+.footer-text {
+    color: #7891A5;
 }
 
 .footer .ref {

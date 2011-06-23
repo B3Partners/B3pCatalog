@@ -8,9 +8,9 @@
 
 <div class="ui-layout-content footer">
     <div id="footer-text-left" class="footer-text">
-        &copy; 2010, 2011 B3Partners BV
+        This program is distributed under the terms of the <a class="gpl_link" href="http://www.gnu.org/licenses/gpl.html">GNU General Public License</a>
     </div>
-    <div class="ref">
-        <img src="<stripes:url value="${contextPath}/images/RO_footer.png"/>" alt="Footer logo" />
+    <div class="footer-logo">
+        <%@include file="/WEB-INF/jsp/commons/footerLogo.jsp" %>
     </div>
 </div>

@@ -6,4 +6,4 @@
 
 <%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
 
-<%-- branding is empty --%>
+<%-- empty; can be overriden in deploy script --%>

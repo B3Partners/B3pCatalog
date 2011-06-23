@@ -47,7 +47,7 @@
         <%@include file="branding.jsp" %>
         <div class="nav-bar">
             <div class="title-bar">
-                <h1>${title}</h1>
+                <%@include file="titlebar.jsp" %>
                 <div class="login-info-block">
                     <div class="logged-in">
                         <fmt:message key="loggedIn"/>
