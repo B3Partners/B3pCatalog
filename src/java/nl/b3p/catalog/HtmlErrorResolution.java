@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.stripes.action.StreamingResolution;
+import org.apache.commons.httpclient.HttpStatus;
 
 /**
  *
@@ -17,7 +18,6 @@ import net.sourceforge.stripes.action.StreamingResolution;
 public class HtmlErrorResolution extends StreamingResolution {
 
     protected final static String DEFAULT_CONTENT_TYPE = "text/html";
-    protected final static int DEFAULT_CUSTOM_ERROR_CODE = 1000;
 
     public HtmlErrorResolution(Exception e) {
         this(null, e);
@@ -75,7 +75,7 @@ public class HtmlErrorResolution extends StreamingResolution {
 
     @Override
     protected void stream(HttpServletResponse response) throws Exception {
+        response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
         super.stream(response);
-        response.setStatus(DEFAULT_CUSTOM_ERROR_CODE);
     }
 }

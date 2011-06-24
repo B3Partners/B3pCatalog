@@ -7,6 +7,7 @@ package nl.b3p.catalog;
 
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.stripes.action.StreamingResolution;
+import org.apache.commons.httpclient.HttpStatus;
 
 /**
  *
@@ -15,7 +16,6 @@ import net.sourceforge.stripes.action.StreamingResolution;
 public class DefaultErrorResolution extends StreamingResolution {
     
     protected final static String DEFAULT_CONTENT_TYPE = "text/plain";
-    protected final static int DEFAULT_CUSTOM_ERROR_CODE = 1000;
 
     public DefaultErrorResolution(String errorMessage) {
         super(DEFAULT_CONTENT_TYPE, errorMessage == null ? "No error message." : errorMessage);
@@ -24,7 +24,7 @@ public class DefaultErrorResolution extends StreamingResolution {
 
     @Override
     protected void stream(HttpServletResponse response) throws Exception {
+        response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
         super.stream(response);
-        response.setStatus(DEFAULT_CUSTOM_ERROR_CODE);
     }
 }
