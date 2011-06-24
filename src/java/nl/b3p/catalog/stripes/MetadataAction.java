@@ -234,8 +234,9 @@ public class MetadataAction extends DefaultAction {
         if (comments == null)
             throw new B3PCatalogException("Xml Document is non-metadata xml. This is not allowed.");
         Content safeComments = comments.detach();
-
+        //log.debug("metadata1:\n\n" + md);
         Document doc = new SAXBuilder().build(new StringReader(md));
+        //log.debug("metadata2:\n\n" + new XMLOutputter().outputString(doc));
         Element unsafeComments = getComments(doc);
         if (comments == null)
             throw new B3PCatalogException("Xml Document is non-metadata xml. This is not allowed.");
