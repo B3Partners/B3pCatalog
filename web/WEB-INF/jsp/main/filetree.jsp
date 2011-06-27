@@ -57,28 +57,34 @@
                 readyCallback: function(root) {
                     //log("root");
                     //log(root);
-                    $("#sidebar").scrollTo(root, {
-                        axis: "y",
-                        duration: 1000,
-                        easing: "easeOutBounce"
-                    });
                     if (selectedFilePath != null && !selectedFileFound) {
                         //log(root);
                         var selectedFile = root.find("input:radio[value='" + RegExp.escape(selectedFilePath) + "']");
                         //log(selectedFile);
                         if (selectedFile.length > 0) {
                             selectedFileFound = true;
-                            selectedFile.attr("checked", true);
+                            $("#filetree").find("input:radio").prop("checked", false);
+                            $("#filetree").find(".selected").removeClass("selected");
+                            selectedFile.prop("checked", true);
                             selectedFile.siblings("a").addClass("selected");
-                            $("#filetree").parent().scrollTo(selectedFile, {
-                                duration: 1000,
-                                easing: "easeOutBounce"
-                            });
+                            $("#sidebar").scrollTo(selectedFile, filetreeScrollToOptions);
                         }
+                    } else {
+                        $("#sidebar").scrollTo(root, filetreeScrollToOptions);
                     }
                 }
             });
         });
+        
+        filetreeScrollToOptions = {
+            axis: "y",
+            duration: 1000,
+            easing: "easeOutBounce",
+            onAfter: function() {
+                // workaround voor scrollbar bug bij Gemeente Harderwijk (niet reproduceerbaar)
+                theLayout.sizePane("west", theLayout.state.west.size);
+            }
+        }
 
     </script>
 </div>
