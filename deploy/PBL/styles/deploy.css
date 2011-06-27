@@ -22,6 +22,7 @@ ul.jqueryFileTree a:hover, ul.jqueryFileTree .selected {
 }
 
 .nav-bar .title-bar {
+    background-image: none;
     background-color: #deebe3;
     height: 30px;
 }
@@ -56,14 +57,16 @@ ul#main-tabs > li.main-tab-selected > a, ul#main-tabs > li > a.main-tab-hover {
 }
 
 .footer {
-    height: 50px;
+    background-image: none;
     background-color: #f3f5f6;
+    height: 50px;
 }
 
 .footer .footer-logo {
-    text-align: center;
+    background-image: none;
     background-color: white;
     border-top: 10px solid #deebe3;
+    text-align: center;
 }
 
 .footer .footer-logo img {
