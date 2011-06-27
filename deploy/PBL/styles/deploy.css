@@ -65,12 +65,13 @@ ul#main-tabs > li.main-tab-selected > a, ul#main-tabs > li > a.main-tab-hover {
 .footer .footer-logo {
     background-image: none;
     background-color: white;
+    height: auto;
     border-top: 10px solid #deebe3;
     text-align: center;
 }
 
 .footer .footer-logo img {
-    margin-top: 23px;
+    margin-top: 13px;
     background-color: white;
 }
 
@@ -78,8 +79,8 @@ ul#main-tabs > li.main-tab-selected > a, ul#main-tabs > li > a.main-tab-hover {
     color: #7891A5;
 }
 
-#footer-text-left {
-    top: 35px;
+.footer-text-vertical-center {
+    top: 22px;
 }
 
 .search-result-title {
