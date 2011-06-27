@@ -92,7 +92,8 @@
             N.B.: Windows drive-letters MOETEN een hoofdletter zijn.
         </description>
         <param-name>CatalogRoots</param-name>
-        <param-value>\\wsrl.local\wsrl\Kerndata\GEODATA, GEODATA; \\wsrl.local\wsrl\Kerndata\INFOWATERKERING, INFOWATERKERING</param-value>    </context-param>
+        <param-value>\\wsrl.local\wsrl\Kerndata\GEODATA, GEODATA; \\wsrl.local\wsrl\Kerndata\INFOWATERKERING, INFOWATERKERING</param-value>    
+    </context-param>
     <!-- SCC-servlet configuratie -->
     <context-param>
         <param-name>defaultXsl</param-name>
