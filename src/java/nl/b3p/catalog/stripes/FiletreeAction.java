@@ -58,40 +58,45 @@ public class FiletreeAction extends DefaultAction {
         log.debug("Directory requested: " + dir);
         log.debug("expandTo: " + expandTo);
 
-        if (dir != null) {
-            try {
+        try {
+            if (dir != null && expandTo == null) {
                 File directory = Rewrite.getFileFromPPFileName(dir, getContext());
                 log.debug("dir: " + directory);
+                dirContent = getDirContent(directory, null);
+            } else if (expandTo != null) {
+                File expandToFile = Rewrite.getFileFromPPFileName(expandTo, getContext());
+                selectedFilePath = expandToFile.getAbsolutePath();
+                log.debug("selectedFilePath/expandTo: " + selectedFilePath);
+                
+                File root = Rewrite.getRoot(selectedFilePath, getContext());
+                log.debug("root directory: " + root.getAbsolutePath());
 
-                if (expandTo == null) {
-                    dirContent = getDirContent(directory, null);
-                } else {
-                    selectedFilePath = expandTo.trim().replace("\n", "").replace("\r", "");
-                    log.debug("selectedFilePath/expandTo: " + selectedFilePath);
+                List<String> subDirList = new LinkedList<String>();
 
-                    List<String> subDirList = new LinkedList<String>();
-
-                    File currentDirFile = Rewrite.getFileFromPPFileName(selectedFilePath, getContext());
-                    while (!currentDirFile.getAbsolutePath().equals(directory.getAbsolutePath())) {
-                        subDirList.add(0, currentDirFile.getName());
-                        currentDirFile = currentDirFile.getParentFile();
-                    }
-
-                    dirContent = getDirContent(directory, subDirList);
+                File currentDirFile = expandToFile;
+                while (!currentDirFile.getAbsolutePath().equals(root.getAbsolutePath())) {
+                    subDirList.add(0, currentDirFile.getName());
+                    currentDirFile = currentDirFile.getParentFile();
                 }
-            } catch(Exception ex) {
-                String message = "Niet gelukt directory inhoud te tonen";
-                log.error(message, ex);
-                return new HtmlErrorResolution(message, ex);
+                log.debug("subDirList: " + subDirList);
+
+                dirContent = getRootDirContent(); 
+                for (Dir rootDir : dirContent.getDirs()) {
+                    if (rootDir.getPath().equals(root.getAbsolutePath())) {
+                        rootDir.setContent(getDirContent(root, subDirList));
+                        break;
+                    }
+                }
+            } else {
+                dirContent = getRootDirContent();
             }
-        } else {
-            dirContent = getRootDirContent();
+            
+            return new ForwardResolution(DIRCONTENTS_JSP);
+        } catch(Exception ex) {
+            String message = "Niet gelukt directory inhoud te tonen";
+            log.error(message, ex);
+            return new HtmlErrorResolution(message, ex);
         }
-
-        //log.debug("dirs: " + directories.size());
-        //log.debug("files: " + files.size());
-
-        return new ForwardResolution(DIRCONTENTS_JSP);
     }
 
     protected DirContent getRootDirContent() {

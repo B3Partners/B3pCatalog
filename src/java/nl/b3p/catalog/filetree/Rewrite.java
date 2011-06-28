@@ -59,22 +59,27 @@ public class Rewrite {
     }
 
     public static boolean startsWithARoot(String fullPath, ActionBeanContext context) {
+        java.io.File root = getRoot(fullPath, context);
+
+        if (root == null)
+            throw new SecurityException("Attempt to access a file not situated under a root: " + fullPath);
+
+        return root != null;
+    }
+    
+    public static java.io.File getRoot(String fullPath, ActionBeanContext context) {
         if (fullPath == null)
-            return false;
+            return null;
 
         List<Root> roots = getRoots(context);
-        boolean startsWithARoot = false;
+        java.io.File theRoot = null;
         for (Root root : roots) {
             if (fullPath.startsWith(root.getPath())) {
-                startsWithARoot = true; 
+                theRoot = new java.io.File(root.getPath());
                 break;
             }
         }
-
-        if (!startsWithARoot)
-            throw new SecurityException("Attempt to access a file not situated under a root: " + fullPath);
-
-        return startsWithARoot;
+        return theRoot;
     }
 
     public static List<Root> getRoots(ActionBeanContext context) {

@@ -13,79 +13,14 @@
 <div class="ui-layout-ignore">
     <script type="text/javascript">
         $(document).ready(function() {
-            selectedFilePath = null;
-            selectedFileFound = false;
+            var selectedFilePath = null;
             <c:if test="${not empty actionBean.selectedFilePath}">
                 selectedFilePath = "<c:out value="${actionBean.selectedFilePath}"/>";
             </c:if>
             //log("selectedFilePath: " + selectedFilePath);
-
-            $("#filetree").fileTree({
-                script: "${filetreeUrl}",
-                scriptEvent: "listDir",
-                root: "",
-                spinnerImage: "${contextPath}/styles/images/spinner.gif",
-                expandEasing: "linear",
-                collapseEasing: "easeOutBounce",
-                dragAndDrop: false,
-                /*extraAjaxOptions: {
-                    global: false
-                },*/
-                activeClass: "selected",
-                activateDirsOnClick: false,
-                expandOnFirstCallTo: selectedFilePath,
-                fileCallback: function(filename, aElement) {
-                    //log("file clicked: " + filename);
-                    var anchor = B3pCatalog.clickedFileAnchor = $(aElement);
-                    if (anchor.length > 0 && anchor.hasClass("selected"))
-                        return;
-
-                    var newState = {filename: filename}
-
-                    var esriType = parseInt(anchor.attr("esritype"));
-                    if (!isNaN(esriType) && esriType !== 0) {
-                        newState.type = anchor.attr("esritype");
-                    }
-                    var isGeo = anchor.attr("isgeo");
-                    if (isGeo !== "true") {
-                        newState.isgeo = isGeo;
-                    }
-
-                    $.bbq.pushState(newState, 2);
-                },
-                dirExpandCallback: function(dir) {},
-                readyCallback: function(root) {
-                    //log("root");
-                    //log(root);
-                    if (selectedFilePath != null && !selectedFileFound) {
-                        //log(root);
-                        var selectedFile = root.find("input:radio[value='" + RegExp.escape(selectedFilePath) + "']");
-                        //log(selectedFile);
-                        if (selectedFile.length > 0) {
-                            selectedFileFound = true;
-                            $("#filetree").find("input:radio").prop("checked", false);
-                            $("#filetree").find(".selected").removeClass("selected");
-                            selectedFile.prop("checked", true);
-                            selectedFile.siblings("a").addClass("selected");
-                            $("#sidebar").scrollTo(selectedFile, filetreeScrollToOptions);
-                        }
-                    } else {
-                        $("#sidebar").scrollTo(root, filetreeScrollToOptions);
-                    }
-                }
-            });
+            
+            B3pCatalog.loadFiletree(selectedFilePath);
         });
-        
-        filetreeScrollToOptions = {
-            axis: "y",
-            duration: 1000,
-            easing: "easeOutBounce",
-            onAfter: function() {
-                // workaround voor scrollbar bug bij Gemeente Harderwijk
-                theLayout.sizePane("west", theLayout.state.west.size + 1);
-            }
-        }
-
     </script>
 </div>
 

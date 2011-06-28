@@ -15,6 +15,10 @@
                 $(this).add("a", this).removeClass("main-tab-hover");
             });
 
+            $("#main-tabs > li").click(function() {
+                showTab($(this).find("a"));
+                return false;
+            });
             $("#main-tabs > li > a").click(function() {
                 showTab(this);
                 return false;

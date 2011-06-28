@@ -1,5 +1,113 @@
 if (typeof B3pCatalog == "undefined") B3pCatalog = {};
 
+B3pCatalog.hashchange = function(event) {
+    log("state:");
+    log(event.getState());
+    var filename = event.getState("filename");
+    if (filename) {
+        var selectedFile = $("a[rel=\"" + RegExp.escape(filename) + "\"]", "#filetree");
+        if (selectedFile.length == 0) {
+            B3pCatalog.loadFiletree(filename);
+        } else {
+            // highlight selected
+            $(".selected", "#filetree").removeClass("selected");
+            selectedFile.addClass("selected");
+            $("#sidebar").scrollTo(selectedFile, B3pCatalog.filetreeScrollToOptions);
+        }
+        // bad user input is dealt with internally:
+        B3pCatalog.loadMetadataFromFile(
+            filename,
+            event.getState("type", true),
+            event.getState("isgeo", true),
+            function() {
+                B3pCatalog.clickedFileAnchor.removeClass("selected");
+                B3pCatalog.getCurrentFileAnchor().addClass("selected").focus();
+            }
+        );
+    } else {
+        var loginHash = $.cookie("mdeLoginHash");
+        if (loginHash && $.trim(loginHash) !== "#") {
+            // delete cookie first (prevent perpetual loops):
+            $.cookie("mdeLoginHash", null);
+            // we just logged in. get login hash from cookie.
+            // this will trigger this event again ("hashchange")
+            location.hash = loginHash;
+        }
+    }
+};
+
+B3pCatalog.loadingFiletree = false;
+
+// Deze functie wordt maar één keer aangeroepen per aanroep van de B3PCatalog pagina, vandaar de boolean.
+// De boolean B3pCatalog.loadingFiletree voorkomt het voor een tweede keer starten van de filetree (met alleen de roots)
+B3pCatalog.loadFiletree = function(selectedFilePath) {
+    if (B3pCatalog.loadingFiletree)
+        return;
+    B3pCatalog.loadingFiletree = true;
+    
+    var selectedFileFound = false;
+    
+    $("#filetree").fileTree({
+        script: B3pCatalog.filetreeUrl,
+        scriptEvent: "listDir",
+        root: "",
+        spinnerImage: B3pCatalog.contextPath + "/styles/images/spinner.gif",
+        expandEasing: "linear",
+        collapseEasing: "easeOutBounce",
+        dragAndDrop: false,
+        /*extraAjaxOptions: {
+            global: false
+        },*/
+        activeClass: "selected",
+        activateDirsOnClick: false,
+        expandOnFirstCallTo: selectedFilePath,
+        fileCallback: function(filename, aElement) {
+            //log("file clicked: " + filename);
+            var anchor = B3pCatalog.clickedFileAnchor = $(aElement);
+            if (anchor.length > 0 && anchor.hasClass("selected"))
+                return;
+
+            var newState = {filename: filename}
+
+            var esriType = parseInt(anchor.attr("esritype"));
+            if (!isNaN(esriType) && esriType !== 0) {
+                newState.type = anchor.attr("esritype");
+            }
+            var isGeo = anchor.attr("isgeo");
+            if (isGeo !== "true") {
+                newState.isgeo = isGeo;
+            }
+
+            $.bbq.pushState(newState, 2);
+        },
+        dirExpandCallback: function(dir) {},
+        readyCallback: function(root) {
+            if (selectedFilePath && !selectedFileFound) {
+                var selectedFile = $("a[rel=\"" + RegExp.escape(selectedFilePath) + "\"]", root);
+                //log(selectedFile);
+                if (selectedFile.length > 0) {
+                    selectedFileFound = true;
+                    $(".selected", root).removeClass("selected");
+                    selectedFile.addClass("selected");
+                    $("#sidebar").scrollTo(selectedFile, B3pCatalog.filetreeScrollToOptions);
+                }
+            } else {
+                $("#sidebar").scrollTo(root, B3pCatalog.filetreeScrollToOptions);
+            }
+        }
+    });
+}
+
+B3pCatalog.filetreeScrollToOptions = {
+    axis: "y",
+    duration: 1000,
+    easing: "easeOutBounce",
+    onAfter: function() {
+        // workaround voor IE9 scrollbar bug
+        theLayout.sizePane("west", theLayout.state.west.size + 1);
+    }
+}
+
 $(document).ajaxError(function(event, xhr, ajaxOptions, thrownError) {
     var message = xhr.responseText;
     if (!!thrownError)

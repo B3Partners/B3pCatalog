@@ -139,6 +139,8 @@ ul#main-tabs > li.main-tab-selected > a, ul#main-tabs > li.main-tab-hover > a.ma
 
 ul#main-tabs > li.main-tab-hover {
     background-color: #1962a0;
+    cursor: pointer;
+    cursor: hand;
 }
 
 ul#main-tabs > li.main-tab-hover > a.main-tab-hover {

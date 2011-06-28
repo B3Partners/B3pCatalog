@@ -97,31 +97,7 @@
                 });
 
                 // metadata files are always loaded via hash changes:
-                $(window).bind("hashchange", function(event) {
-                    log("state:");
-                    log(event.getState());
-                    if (event.getState("filename")) {
-                        // bad user input is dealt with internally:
-                        B3pCatalog.loadMetadataFromFile(
-                            event.getState("filename"),
-                            event.getState("type", true),
-                            event.getState("isgeo", true),
-                            function() {
-                                B3pCatalog.clickedFileAnchor.removeClass("selected");
-                                B3pCatalog.getCurrentFileAnchor().addClass("selected").focus();
-                            }
-                        );
-                    } else {
-                        var loginHash = $.cookie("mdeLoginHash");
-                        if (loginHash && $.trim(loginHash) !== "#") {
-                            // delete cookie first (prevent perpetual loops):
-                            $.cookie("mdeLoginHash", null);
-                            // we just logged in. get login hash from cookie.
-                            // this will trigger this event again ("hashchange")
-                            location.hash = loginHash;
-                        }
-                    }
-                });
+                $(window).bind("hashchange", B3pCatalog.hashchange);
 
                 // Since the event is only triggered when the hash changes, we need to trigger
                 // the event now, to handle the hash the page may have loaded with.
@@ -135,42 +111,27 @@
 
     </head>
     <body>
-        <%--div class="ui-layout-west" id="border-left">
-            <stripes:layout-component name="borderLeft">
-                <jsp:include page="/WEB-INF/jsp/commons/borderLeft.jsp"/>
+        <div class="ui-layout-north" id="north">
+            <stripes:layout-component name="header">
+                <jsp:include page="/WEB-INF/jsp/commons/header.jsp"/>
             </stripes:layout-component>
         </div>
 
-        <div class="ui-layout-east" id="border-right">
-            <stripes:layout-component name="borderRight">
-                <jsp:include page="/WEB-INF/jsp/commons/borderRight.jsp"/>
+        <div class="ui-layout-west" id="west">
+            <stripes:layout-component name="west">
+                <jsp:include page="/WEB-INF/jsp/commons/west.jsp"/>
             </stripes:layout-component>
         </div>
 
-        <div class="ui-layout-center" id="center-wrapper"--%>
-            <div class="ui-layout-north" id="north">
-                <stripes:layout-component name="header">
-                    <jsp:include page="/WEB-INF/jsp/commons/header.jsp"/>
-                </stripes:layout-component>
-            </div>
+        <div class="ui-layout-center" id="center">
+            <stripes:layout-component name="content"/>
+        </div>
 
-            <div class="ui-layout-south" id="south">
-                <stripes:layout-component name="footer">
-                    <jsp:include page="/WEB-INF/jsp/commons/footer.jsp"/>
-                </stripes:layout-component>
-            </div>
-
-            <div class="ui-layout-west" id="west">
-                <stripes:layout-component name="west">
-                    <jsp:include page="/WEB-INF/jsp/commons/west.jsp"/>
-                </stripes:layout-component>
-            </div>
-
-            <div class="ui-layout-center" id="center">
-                <stripes:layout-component name="content"/>
-            </div>
-        <%--/div--%>
-
+        <div class="ui-layout-south" id="south">
+            <stripes:layout-component name="footer">
+                <jsp:include page="/WEB-INF/jsp/commons/footer.jsp"/>
+            </stripes:layout-component>
+        </div>
 
     </body>
 </html>
