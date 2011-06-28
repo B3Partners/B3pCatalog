@@ -81,8 +81,8 @@
             duration: 1000,
             easing: "easeOutBounce",
             onAfter: function() {
-                // workaround voor scrollbar bug bij Gemeente Harderwijk (niet reproduceerbaar)
-                theLayout.sizePane("west", theLayout.state.west.size);
+                // workaround voor scrollbar bug bij Gemeente Harderwijk
+                theLayout.sizePane("west", theLayout.state.west.size + 1);
             }
         }
 
