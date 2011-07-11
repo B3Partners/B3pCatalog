@@ -146,7 +146,7 @@
             
         </description>
         <param-name>geoExtensions</param-name>
-        <param-value>shp;dxf</param-value>
+        <param-value>shp;dxf;lyr</param-value>
     </context-param>
     <filter>
         <display-name>Security Filter</display-name>
