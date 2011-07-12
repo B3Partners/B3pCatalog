@@ -101,11 +101,7 @@ B3pCatalog.loadFiletree = function(selectedFilePath) {
 B3pCatalog.filetreeScrollToOptions = {
     axis: "y",
     duration: 1000,
-    easing: "easeOutBounce",
-    onAfter: function() {
-        // workaround voor IE9 scrollbar bug
-        theLayout.sizePane("west", theLayout.state.west.size + 1);
-    }
+    easing: "easeOutBounce"
 }
 
 $(document).ajaxError(function(event, xhr, ajaxOptions, thrownError) {

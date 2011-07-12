@@ -17,8 +17,6 @@
         <meta http-equiv="Expires" content="-1" />
         <meta http-equiv="Cache-Control" content="max-age=0, no-store" />
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <!-- Sarissa is niet compatible met IE9: emuleer IE8 totdat er een fix in Sarissa zit -->
-        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" /> 
         
         <title>${pageTitle}</title>
 
