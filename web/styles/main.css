@@ -226,9 +226,16 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
 }
 
 .mde-save-message {
+    background-color: #1962A0;
+    color: white;
+    font-size: 1.4em;
     position: absolute;
-    bottom: 0;
-    background-color: #fff0c5;
+    bottom: .5em;
+    right: .5em;
+    padding: 1em;
+    border-radius: 4px; 
+    -moz-border-radius: 4px; 
+    -webkit-border-radius: 4px;
 }
 
 #search .ui-button {

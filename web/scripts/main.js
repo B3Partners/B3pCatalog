@@ -280,11 +280,15 @@ B3pCatalog.saveMetadata = function(settings) {
         success: function(data, textStatus, xhr) {
             //log("metadata saved succesfully.");
             var logMessage = $("<div/>", {
-                text: "Metadata successvol opgeslagen.",
+                text: "Metadata succesvol opgeslagen.",
                 "class": "mde-save-message"
             });
-            $("#mde-wrapper").append(logMessage);
-            logMessage.fadeOut(4000, function() { $(this).remove(); });
+            $("#center").append(logMessage);
+            setTimeout(function() {
+                logMessage.fadeOut(2000, function() { 
+                    $(this).remove(); 
+                });
+            }, 4000);
             if (options.updateUI)
                 $("#saveMD").button("option", "disabled", true);
         }
