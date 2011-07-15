@@ -347,6 +347,11 @@ textarea {
     height: 200px;
 }
 
+.dialog-submit {
+    display: block;
+    margin: 1em 0;
+}
+
 /* MDE overrides */
 ul#ui-mde-tabs > li {
     background-color: transparent;

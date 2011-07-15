@@ -18,8 +18,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import net.sourceforge.stripes.action.Before;
+import net.sourceforge.stripes.action.DefaultHandler;
+import net.sourceforge.stripes.action.FileBean;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
+import net.sourceforge.stripes.controller.LifecycleStage;
+import net.sourceforge.stripes.controller.StripesRequestWrapper;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.HtmlErrorResolution;
@@ -67,10 +72,10 @@ public class MetadataAction extends DefaultAction {
 
     private final static DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
-    @Validate(required=true)
+    @Validate(required=true, on="!importMD")
     private String filename;
 
-    @Validate(required=true)
+    @Validate(required=true, on="!importMD")
     private int esriType;
 
     @Validate(required=true, on="save")
@@ -81,7 +86,8 @@ public class MetadataAction extends DefaultAction {
 
     @Validate(required=true, on="export")
     private boolean strictISO19115 = false;
-
+    
+    private FileBean filedata;
 
     public Resolution load() {
         return getMetadataResolution();
@@ -168,6 +174,35 @@ public class MetadataAction extends DefaultAction {
             return new StreamingResolution("text/plain", "success");
         } catch (Exception e) {
             String message = "Could not write file: " + (mdFile == null ? "none" : mdFile.getAbsolutePath());
+            log.error(message, e);
+            return new HtmlErrorResolution(message, e);
+        }
+    }
+    
+    @SuppressWarnings("unused")
+    @Before(stages = LifecycleStage.BindingAndValidation)
+    private void rehydrate() {
+        log.debug("in rehydrate");
+        StripesRequestWrapper req = StripesRequestWrapper.findStripesWrapper(getContext().getRequest());
+        try {
+            if (req.isMultipart()) {
+                filedata = req.getFileParameterValue("uploader");
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+    
+    @DefaultHandler
+    public Resolution importMD() {
+        log.debug("in importMD");
+        try {
+            if (filedata == null) {
+                throw new Exception("Error during file upload.");
+            }
+            return new XmlResolution(filedata.getInputStream());
+        } catch(Exception e) {
+            String message = "Could not import file.";
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }

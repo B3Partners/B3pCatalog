@@ -164,11 +164,22 @@ B3pCatalog.modes = {
     CSW_MODE: 2
 };
 
+// dit kan wat consistenter:
 B3pCatalog.currentMode = B3pCatalog.modes.NO_MODE;
 
 B3pCatalog.currentFilename = "";
 
 B3pCatalog.clickedFileAnchor = $();
+
+B3pCatalog.getCurrentEsriType = function() {
+    return $("#filetree .jqueryFileTree a.selected").attr("esritype");
+};
+
+B3pCatalog.getCurrentFileAnchor = function() {
+    return $("a[rel='" + RegExp.escape(B3pCatalog.currentFilename) + "']", "#filetree");
+};
+
+
 
 B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo, cancel) {
     this._loadMetadata({
@@ -288,19 +299,11 @@ B3pCatalog.saveMetadata = function(settings) {
                 logMessage.fadeOut(2000, function() { 
                     $(this).remove(); 
                 });
-            }, 4000);
+            }, 2000);
             if (options.updateUI)
                 $("#saveMD").button("option", "disabled", true);
         }
     });
-};
-
-B3pCatalog.getCurrentEsriType = function() {
-    return $("#filetree .jqueryFileTree a.selected").attr("esritype");
-};
-
-B3pCatalog.getCurrentFileAnchor = function() {
-    return $("a[rel='" + RegExp.escape(B3pCatalog.currentFilename) + "']", "#filetree");
 };
 
 B3pCatalog.logout = function() {
@@ -382,9 +385,9 @@ B3pCatalog.createCswMde = function(xmlDoc) {
 
 B3pCatalog.exportMetadata = function() {
     switch(B3pCatalog.currentMode) {
-        case B3pCatalog.modes.FILE_MODE:  B3pCatalog._exportMetadataFromFile(); break;
-        case B3pCatalog.modes.CSW_MODE:   B3pCatalog._exportMetadataByUUID(); break;
-        default: openErrorDialog(B3pCatalog.title + " is in an illegal mode: " + B3pCatalog.currentMode);
+        case B3pCatalog.modes.FILE_MODE:B3pCatalog._exportMetadataFromFile();break;
+        case B3pCatalog.modes.CSW_MODE:B3pCatalog._exportMetadataByUUID();break;
+        default:openErrorDialog(B3pCatalog.title + " is in an illegal mode: " + B3pCatalog.currentMode);
     }
 };
 
@@ -405,36 +408,88 @@ B3pCatalog._exportMetadataByUUID = function() {
 };
 
 B3pCatalog.importMetadata = function() {
-    // TODO: voeg textarea later toe, na dialog aangemaakt te hebben; doe width via hq width/clientwidth e.d.
-    $("<div/>", {
-        "class": "ui-mde-textarea-wrapper",
-        css: {
-            overflow: "hidden"
-        }
-    }).html($("<textarea></textarea>", {
+    var $form = $("<form />", {
+        method: "POST",
+        action: B3pCatalog.metadataUrl // enctype and encoding set by form plugin
+    });
+    
+    var $fileInput = $("<input type='file' name='uploader' size='50' style='width: 100%' />");
+    
+    var $textarea = $("<textarea></textarea>", {
         id: "import-textarea",
         cols: 50,
         rows: 35, // IE 6/7 pakt 100% height niet
         css: {
             width: "100%",
-            height: "100%",
+            height: "200px",//"100%",
             margin: 0,
             padding: 0
-        },
-        text: "Plak uw te importeren metadata hier"
-    })).appendTo(document.body).dialog({
+        }
+    })
+    var placeholderText = "Plak uw te importeren metadata hier";
+    if ("placeholder" in $textarea[0]) {
+        $textarea.attr("placeholder", placeholderText);
+    } else {
+        $textarea.text(placeholderText);
+    }
+    
+    var $orDiv = $("<div />", {
+        text: "of",
+        css: {"margin-top": "1em", "margin-bottom": "1em"}
+    })
+    
+    var $uuidCheckbox = $("<input type='checkbox' id='new-uuid-checkbox' name='new-uuid' />");
+    $uuidCheckbox.prop("checked", true);
+    
+    var $submitEventInput = $("<input type='submit' name='importMD' value='Importeren' class='dialog-submit'/>");
+
+    
+    var $dialogDiv = $("<div/>", {
+        "class": "ui-mde-textarea-wrapper",
+        css: {
+            overflow: "hidden"
+        }
+    });
+    
+    $form.append($fileInput);
+    $form.append($orDiv);
+    $form.append($textarea);
+    $form.append($("<hr style='margin-top: 2em' />"));
+    //$form.append($uuidCheckbox);
+    $form.append("Genereer nieuwe unieke identifiers (UUID's) voor de metadata en de bron.");
+    $form.append($submitEventInput);
+    
+    $form.submit(function() {
+        if (!$fileInput.val()) {
+            log("import via textarea");
+            $("#mde").mde("option", "xml", $textarea.val());
+            $dialogDiv.dialog("close");
+        } else {
+            log("import via fileInput submit");
+            $(this).ajaxSubmit({
+                async: false,
+                data: { importMD: "t" },
+                dataType: "text", // werkt niet!?! jquery returns non-Sarissa-doc and the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
+                success: function(data) {
+                    log("import success");
+                    log(data);
+                    // fix jquery form plugin dataType bug (kan ook anders): hij autorecognized xml (? https://github.com/malsup/form/issues/111 ?)
+                    data = $.isXMLDoc(data) ? new XMLSerializer().serializeToString(data) : data;
+                    $("#mde").mde("option", "xml", data);
+                    $dialogDiv.dialog("close");
+                }
+            });
+        }
+        //$dialogDiv.dialog("close");
+        return false;
+    });
+    
+    $dialogDiv.append($form);
+    $dialogDiv.appendTo(document.body).dialog({
         title: "Metadata importeren in " + B3pCatalog.currentFilename,
         modal: true,
         width: $("body").calculateDialogWidth(66),
-        height: $("body").calculateDialogHeight(80),
-        buttons: [{
-            text: "Importeer",
-            click: function(event) {
-                $("#mde").mde("option", "xml", $("#import-textarea").val());
-                $(this).dialog("close");
-                return false;
-            }
-        }],
+        //height: $("body").calculateDialogHeight(80), // auto
         close: function(event) {
             $(this).dialog("destroy").remove();
         }
