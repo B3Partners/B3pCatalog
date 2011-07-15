@@ -32,6 +32,8 @@ import nl.b3p.catalog.XmlResolution;
 import nl.b3p.catalog.fgdb.FGDBHelperProxy;
 import nl.b3p.catalog.filetree.Rewrite;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -200,7 +202,14 @@ public class MetadataAction extends DefaultAction {
             if (filedata == null) {
                 throw new Exception("Error during file upload.");
             }
-            return new XmlResolution(filedata.getInputStream());
+            //return new XmlResolution(filedata.getInputStream());
+            String xml = IOUtils.toString(filedata.getInputStream(), "UTF-8");
+            // jquery form plugin extracts the value from the textarea. unescaping done afterwards in js success callback
+            String hackhackXml = "<textarea>" + StringEscapeUtils.escapeXml(xml) + "</textarea>";
+            // must be text/html for IE
+            StreamingResolution sr = new StreamingResolution("text/html", hackhackXml);
+            sr.setCharacterEncoding("UTF-8");
+            return sr;
         } catch(Exception e) {
             String message = "Could not import file.";
             log.error(message, e);

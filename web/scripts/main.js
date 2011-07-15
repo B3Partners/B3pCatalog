@@ -455,7 +455,7 @@ B3pCatalog.importMetadata = function() {
     $form.append($orDiv);
     $form.append($textarea);
     $form.append($("<hr style='margin-top: 2em' />"));
-    //$form.append($uuidCheckbox);
+    $form.append($uuidCheckbox);
     $form.append("Genereer nieuwe unieke identifiers (UUID's) voor de metadata en de bron.");
     $form.append($submitEventInput);
     
@@ -468,19 +468,15 @@ B3pCatalog.importMetadata = function() {
             log("import via fileInput submit");
             $(this).ajaxSubmit({
                 async: false,
-                data: { importMD: "t" },
-                dataType: "text", // werkt niet!?! jquery returns non-Sarissa-doc and the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
-                success: function(data) {
+                data: {importMD: "t"},
+                dataType: "text", // text from textarea must not be treated as xml immediately
+                success: function(data, status, xhr) {
                     log("import success");
-                    log(data);
-                    // fix jquery form plugin dataType bug (kan ook anders): hij autorecognized xml (? https://github.com/malsup/form/issues/111 ?)
-                    data = $.isXMLDoc(data) ? new XMLSerializer().serializeToString(data) : data;
-                    $("#mde").mde("option", "xml", data);
+                    $("#mde").mde("option", "xml", Sarissa.unescape(data));
                     $dialogDiv.dialog("close");
                 }
             });
         }
-        //$dialogDiv.dialog("close");
         return false;
     });
     
