@@ -441,6 +441,8 @@ B3pCatalog.importMetadata = function() {
     var $uuidCheckbox = $("<input type='checkbox' id='new-uuid-checkbox' name='new-uuid' />");
     $uuidCheckbox.prop("checked", true);
     
+    var $uuidLabel = $("<label for='new-uuid-checkbox'>Genereer nieuwe unieke identifiers (UUID's) voor de metadata en de bron.</label>");
+    
     var $submitEventInput = $("<input type='submit' name='importMD' value='Importeren' class='dialog-submit'/>");
 
     
@@ -456,14 +458,21 @@ B3pCatalog.importMetadata = function() {
     $form.append($textarea);
     $form.append($("<hr style='margin-top: 2em' />"));
     $form.append($uuidCheckbox);
-    $form.append("Genereer nieuwe unieke identifiers (UUID's) voor de metadata en de bron.");
+    $form.append($uuidLabel);
     $form.append($submitEventInput);
+    
+    function importMD(xml) {
+        $("#mde").mde("option", {
+            overwriteUUIDs: $uuidCheckbox.prop("checked"), // moet eerst
+            xml: xml // start de mde opnieuw met deze xml
+        });
+        $dialogDiv.dialog("close");
+    }
     
     $form.submit(function() {
         if (!$fileInput.val()) {
             log("import via textarea");
-            $("#mde").mde("option", "xml", $textarea.val());
-            $dialogDiv.dialog("close");
+            importMD($textarea.val());
         } else {
             log("import via fileInput submit");
             $(this).ajaxSubmit({
@@ -472,8 +481,7 @@ B3pCatalog.importMetadata = function() {
                 dataType: "text", // text from textarea must not be treated as xml immediately
                 success: function(data, status, xhr) {
                     log("import success");
-                    $("#mde").mde("option", "xml", Sarissa.unescape(data));
-                    $dialogDiv.dialog("close");
+                    importMD(Sarissa.unescape(data));
                 }
             });
         }
