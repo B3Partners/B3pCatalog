@@ -470,10 +470,7 @@ B3pCatalog.importMetadata = function() {
     }
     
     $form.submit(function() {
-        if (!$fileInput.val()) {
-            log("import via textarea");
-            importMD($textarea.val());
-        } else {
+        if ($fileInput.val()) {
             log("import via fileInput submit");
             $(this).ajaxSubmit({
                 async: false,
@@ -483,6 +480,13 @@ B3pCatalog.importMetadata = function() {
                     log("import success");
                     importMD(Sarissa.unescape(data));
                 }
+            });
+        } else if ($textarea.val() && $textarea.val() !== placeholderText) {
+            log("import via textarea");
+            importMD($textarea.val());
+        } else {
+            $.ok({ 
+                text: "Kies een bestand of plak xml in het tekstvak om metadata te importeren."
             });
         }
         return false;
@@ -651,6 +655,27 @@ B3pCatalog.resizeTabsAndToolbar = function() {
             }],
             close: function(event) {
                 options.cancel();
+                $(this).dialog("destroy").remove();
+            }
+        }, options));
+    }
+
+    $.ok = function(opts) {
+        var options = $.extend({
+            text: "Lege opmerking",
+            ok: $.noop
+        }, opts);
+        $("<div/>").text(options.text).appendTo(document.body).dialog($.extend({
+            title: "Opmerking",
+            modal: true,
+            buttons: [{
+                text: "OK",
+                click: function(event) {
+                    $(this).dialog("close"); // close does ok
+                }
+            }],
+            close: function(event) {
+                options.ok();
                 $(this).dialog("destroy").remove();
             }
         }, options));
