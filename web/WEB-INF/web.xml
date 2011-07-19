@@ -148,6 +148,17 @@
         <param-name>geoExtensions</param-name>
         <param-value>shp;dxf;lyr</param-value>
     </context-param>
+    <context-param>
+        <description>
+            name
+            
+            or
+            
+            extension            
+        </description>
+        <param-name>filetreeSortBy</param-name>
+        <param-value>name</param-value>
+    </context-param>
     <filter>
         <display-name>Security Filter</display-name>
         <filter-name>SecurityFilter</filter-name>

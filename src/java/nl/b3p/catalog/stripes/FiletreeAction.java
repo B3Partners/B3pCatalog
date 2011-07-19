@@ -165,8 +165,8 @@ public class FiletreeAction extends DefaultAction {
         filterOutFilesToHide(dc);
 
         // sort just at the end, because filters (above) could have needed sorting (of a different kind).
-        Collections.sort(dirsList, new DirExtensionComparator());
-        Collections.sort(filesList, new FileExtensionComparator());
+        Collections.sort(dirsList, new DirnameComparator());
+        sortFiles(filesList);
 
         if (subDirList != null && subDirList.size() > 0) {
             String subDirString = subDirList.remove(0);
@@ -192,13 +192,22 @@ public class FiletreeAction extends DefaultAction {
         List<nl.b3p.catalog.filetree.File> filesList =
                 FGDBHelperProxy.getAllFileDatasets(directory, getContext());
 
-        Collections.sort(dirsList, new DirExtensionComparator());
-        Collections.sort(filesList, new FileExtensionComparator());
+        Collections.sort(dirsList, new DirnameComparator());
+        sortFiles(filesList);
 
         dc.setDirs(dirsList);
         dc.setFiles(filesList);
 
         return dc;
+    }
+    
+    protected void sortFiles(List<nl.b3p.catalog.filetree.File> files) {
+        String sortBy = getContext().getServletContext().getInitParameter("filetreeSortBy");
+        if (sortBy.equalsIgnoreCase("name")) {
+            Collections.sort(files, new FilenameComparator());
+        } else { // "extension"
+            Collections.sort(files, new FileExtensionComparator());
+        }
     }
 
     protected boolean isGeoFile(File file) {
@@ -306,11 +315,20 @@ public class FiletreeAction extends DefaultAction {
         if ((s1Dot == -1) == (s2Dot == -1)) { // both or neither
             s1 = s1.substring(s1Dot + 1);
             s2 = s2.substring(s2Dot + 1);
-            return s1.compareTo(s2);
+            return s1.compareToIgnoreCase(s2);
         } else if (s1Dot == -1) { // only s2 has an extension, so s1 goes first
             return -1;
         } else { // only s1 has an extension, so s1 goes second
             return 1;
+        }
+    }
+
+    private class DirnameComparator implements Comparator<Dir> {
+        @Override
+        public int compare(Dir d1, Dir d2) {
+            String s1 = d1.getName();
+            String s2 = d2.getName();
+            return s1.compareToIgnoreCase(s2);
         }
     }
 
@@ -337,7 +355,7 @@ public class FiletreeAction extends DefaultAction {
         public int compare(nl.b3p.catalog.filetree.File f1, nl.b3p.catalog.filetree.File f2) {
             String s1 = f1.getName();
             String s2 = f2.getName();
-            return s1.compareTo(s2);
+            return s1.compareToIgnoreCase(s2);
         }
     }
 // </editor-fold>
