@@ -111,7 +111,7 @@ ul#main-tabs {
     list-style: none outside none;
     position: absolute;
     bottom: 10px;
-    left: 20px;
+    left: 5px;
 }
 
 ul#main-tabs > li {
@@ -215,7 +215,7 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
 #mde-toolbar {
     position: absolute;
     bottom: 35px;
-    left: 20px;
+    left: 15px;
 }
 
 #mde-tabs {
@@ -353,6 +353,10 @@ textarea {
 }
 
 /* MDE overrides */
+ul#ui-mde-tabs {
+    left: 15px;
+}
+
 ul#ui-mde-tabs > li {
     background-color: transparent;
 }

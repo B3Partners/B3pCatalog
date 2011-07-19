@@ -72,6 +72,11 @@
                 <li class="ui-corner-top">
                     <a href="#search">Catalog doorzoeken</a>
                 </li>
+                <c:if test="${pageContext.request.isUserInRole('admin')}">
+                    <li class="ui-corner-top">
+                        <a href="#admin">Beheer</a>
+                    </li>
+                </c:if>
             </ul>
             <div id="mde-tabs-and-toolbar" class="ui-helper-reset">
                 <div id="mde-toolbar" class="ui-helper-reset">&nbsp;</div>
