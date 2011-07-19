@@ -392,25 +392,33 @@ B3pCatalog.exportMetadata = function() {
 };
 
 B3pCatalog._exportMetadataFromFile = function() {
+    $("#mde").mde("option", "pageLeaveWarning", false);
     window.location = B3pCatalog.metadataUrl + "?" + $.param({
         "export": "t",
         filename: B3pCatalog.currentFilename,
         esriType: B3pCatalog.getCurrentEsriType(),
         strictISO19115: $("#strictISO19115Checkbox").is(":checked")
     });
+    $("#mde").mde("option", "pageLeaveWarning", true);
 };
 
 B3pCatalog._exportMetadataByUUID = function() {
+    $("#mde").mde("option", "pageLeaveWarning", false);
     window.location = B3pCatalog.catalogUrl + "?" + $.param({
         "export": "t",
         uuid: $("#search-results .search-result-selected").attr("uuid")
     });
+    $("#mde").mde("option", "pageLeaveWarning", true);
 };
 
 B3pCatalog.importMetadata = function() {
     var $form = $("<form />", {
         method: "POST",
         action: B3pCatalog.metadataUrl // enctype and encoding set by form plugin
+    });
+    
+    var $chooseXmlDiv = $("<div />", {
+        text: "Kies een xml metadata bestand:"
     });
     
     var $fileInput = $("<input type='file' name='uploader' size='50' style='width: 100%' />");
@@ -453,6 +461,7 @@ B3pCatalog.importMetadata = function() {
         }
     });
     
+    $form.append($chooseXmlDiv);
     $form.append($fileInput);
     $form.append($orDiv);
     $form.append($textarea);
