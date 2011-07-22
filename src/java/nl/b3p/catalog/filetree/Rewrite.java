@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
 public class Rewrite {
     private final static Log log = LogFactory.getLog(Rewrite.class);
 
-    protected final static String PRETTY_DIR_SEPARATOR = "\\";
+    public final static String PRETTY_DIR_SEPARATOR = "\\";
     
     public static java.io.File getFileFromPPFileName(String fileName, ActionBeanContext context) throws IOException {
         if (fileName == null || context == null)

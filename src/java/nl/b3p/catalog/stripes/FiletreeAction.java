@@ -23,7 +23,7 @@ import net.sourceforge.stripes.action.Resolution;
 import nl.b3p.catalog.ArcObjectsNotFoundException;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.HtmlErrorResolution;
-import nl.b3p.catalog.fgdb.FGDBHelperProxy;
+import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirContent;
 import nl.b3p.catalog.filetree.Rewrite;

@@ -31,44 +31,44 @@
         <link rel="stylesheet" type="text/css" href="${contextPath}/styles/main.css" />
         <link rel="stylesheet" type="text/css" href="${contextPath}/styles/deploy.css" />
 
-        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.js"></script>
-        <!--script type="text/javascript" src="${contextPath}/scripts/jquery/jquery-latest.min.js"></script-->
-        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.js"></script>
-        <!--script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.min.js"></script-->
-        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery.ui.datepicker-nl/jquery.ui.datepicker-nl.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.js"></script>
+        <!--script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/jquery/jquery-latest.min.js"></script-->
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.js"></script>
+        <!--script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.min.js"></script-->
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/jquery.ui.datepicker-nl/jquery.ui.datepicker-nl.js"></script>
 
-        <script type="text/javascript" src="${contextPath}/scripts/jquery.layout/jquery.layout-latest.js"></script>
-        <script type="text/javascript" src="${contextPath}/scripts/jquery.form/jquery.form.js"></script>
-        <script type="text/javascript" src="${contextPath}/scripts/jquery.scrollTo/jquery.scrollTo.js"></script>
-        <!--script type="text/javascript" src="${contextPath}/scripts/jquery.scrollTo/jquery.scrollTo-min.js"></script-->
-        <script type="text/javascript" src="${contextPath}/scripts/jquery.filetree/jquery.filetree-latest.js"></script>
-        <script type="text/javascript" src="${contextPath}/scripts/jquery.easing/jquery.easing-latest.js"></script>
-        <script type="text/javascript" src="${contextPath}/scripts/jquery.ThreeDots/jquery.ThreeDots.js"></script>
-        <script type="text/javascript" src="${contextPath}/scripts/jquery.bbq/jquery.ba-bbq.js"></script>
-        <!--script type="text/javascript" src="${contextPath}/scripts/jquery.bbq/jquery.ba-bbq.min.js"></script-->
-        <script type="text/javascript" src="${contextPath}/scripts/jquery.cookie/jquery.cookie.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/jquery.layout/jquery.layout-latest.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/jquery.form/jquery.form.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/jquery.scrollTo/jquery.scrollTo.js"></script>
+        <!--script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/jquery.scrollTo/jquery.scrollTo-min.js"></script-->
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/jquery.filetree/jquery.filetree-latest.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/jquery.easing/jquery.easing-latest.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/jquery.ThreeDots/jquery.ThreeDots.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/jquery.bbq/jquery.ba-bbq.js"></script>
+        <!--script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/jquery.bbq/jquery.ba-bbq.min.js"></script-->
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/jquery.cookie/jquery.cookie.js"></script>
 
         <!-- mde dependencies -->
-        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa.js"></script>
-        <!--script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa-compressed.js"></script-->
-        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa_ieemu_xpath.js"></script>
-        <!--script type="text/javascript" src="${contextPath}/scripts/mde/includes/sarissa/sarissa_ieemu_xpath-compressed.js"></script-->
-        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/Math.uuid.js"></script>
-        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/wiki2html.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/sarissa/sarissa.js"></script>
+        <!--script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/sarissa/sarissa-compressed.js"></script-->
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/sarissa/sarissa_ieemu_xpath.js"></script>
+        <!--script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/sarissa/sarissa_ieemu_xpath-compressed.js"></script-->
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/Math.uuid.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/wiki2html.js"></script>
 
         <!-- organisations database. should be filled by customer data. -->
-        <script type="text/javascript" src="${contextPath}/scripts/mde/picklists/organisations.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/picklists/organisations.js"></script>
         <!-- mde -->
-        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/metadataEditor.js"></script>
-        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/commonOptions.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/metadataEditor.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/commonOptions.js"></script>
 
         <!-- B3p libs: -->
-        <script type="text/javascript" src="${contextPath}/scripts/log.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/log.js"></script>
 
         <!-- B3pCatalog main js -->
-        <script type="text/javascript" src="${contextPath}/scripts/init.js.jsp"></script>
-        <script type="text/javascript" src="${contextPath}/scripts/mdeOptions.js"></script>
-        <script type="text/javascript" src="${contextPath}/scripts/main.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/init.js.jsp"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mdeOptions.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/main.js"></script>
 
 
 

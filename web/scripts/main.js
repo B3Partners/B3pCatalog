@@ -513,6 +513,27 @@ B3pCatalog.importMetadata = function() {
     });
 };
 
+B3pCatalog.synchronizeWithData = function() {
+    B3pCatalog.saveDataUserConfirm({
+        text: "Wilt u uw wijzigingen opslaan alvorens uw metadata te synchroniseren? Als u \"Nee\" kiest gaan uw wijzigingen verloren.",
+        done: function() {
+            $.ajax({
+                url: B3pCatalog.contextPath + "/Metadata.action",
+                data: {
+                    synchronize: "t",
+                    filename: B3pCatalog.currentFilename,
+                    esriType: B3pCatalog.getCurrentEsriType()
+                },
+                method: "POST",
+                async: false,
+                success: function(data) {
+                    $("#mde").mde("setXPathValuePairs", data);
+                }
+            });
+        }
+    });
+}
+
 B3pCatalog.createToolbar = function(viewMode) {
     var mdeToolbar = $("#mde-toolbar");
     mdeToolbar.empty();
@@ -552,6 +573,22 @@ B3pCatalog.createToolbar = function(viewMode) {
             }).button({
                 disabled: false,
                 icons: {primary: "ui-icon-b3p-delete_16"}
+            })
+        );
+        mdeToolbar.append(
+            $("<a />", {
+                href: "#",
+                id: "synchronizeMD",
+                text: "Synchroniseren",
+                title: "Metadatadocument synchroniseren met bijbehorend data-document. Wijzigingen in de data, zoals bijvoorbeeld een andere omgrenzende rechthoek, worden doorgevoerd in de metadata.",
+                click: function(event) {
+                    $(this).removeClass("ui-state-hover");
+                    B3pCatalog.synchronizeWithData();
+                    return false;
+                }
+            }).button({
+                disabled: false,
+                icons: {primary: "ui-icon-b3p-down_16"}
             })
         );
         mdeToolbar.append(

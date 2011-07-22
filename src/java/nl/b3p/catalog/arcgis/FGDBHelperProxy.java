@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package nl.b3p.catalog.fgdb;
+package nl.b3p.catalog.arcgis;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -28,6 +28,26 @@ public class FGDBHelperProxy {
         String message = "ArcGIS is niet (of niet correct) geïnstalleerd. Om metadata te bekijken en weg te schrijven in deze ESRI File based Geodatabase (FGDB) is dit nodig.";
         log.warn(message, ncdfex);
         throw new ArcObjectsNotFoundException(message, ncdfex);
+    }
+    
+    public static File getRootFGDBDir(File file) {
+        while (file != null) {
+            if (isFGDBDir(file)) {
+                return file;
+            } else {
+                file = file.getParentFile();
+            }
+        }
+        return null;
+    }
+
+    public static String getRootFGDBDirname(File file) {
+        File root = getRootFGDBDir(file);
+        if (root == null) {
+            return null;
+        } else {
+            return root.getAbsolutePath();
+        }
     }
 
     public static boolean isFGDBDirOrInsideFGDBDir(File file) {

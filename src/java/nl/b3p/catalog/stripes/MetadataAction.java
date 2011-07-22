@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import net.sf.json.JSONObject;
 import net.sourceforge.stripes.action.Before;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.FileBean;
@@ -29,7 +30,8 @@ import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.HtmlErrorResolution;
 import nl.b3p.catalog.XmlResolution;
-import nl.b3p.catalog.fgdb.FGDBHelperProxy;
+import nl.b3p.catalog.arcgis.ArcGISSynchronizer;
+import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.filetree.Rewrite;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -54,9 +56,13 @@ public class MetadataAction extends DefaultAction {
     private final static Log log = LogFactory.getLog(MetadataAction.class);
 
     private final static String METADATA_FILE_EXTENSION = ".xml";
+    private final static String SHAPE_FILE_EXTENSION = ".shp";
 
     private final static Namespace GMD_NAMESPACE = Namespace.getNamespace("gmd", "http://www.isotc211.org/2005/gmd");
+    private final static Namespace GCO_NAMESPACE = Namespace.getNamespace("gco", "http://www.isotc211.org/2005/gco");
     private final static Namespace B3P_NAMESPACE = Namespace.getNamespace("b3p", "http://www.b3partners.nl/xsd/metadata");
+    
+    private final static String XPATH_TITLE = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString";
 
     private final static String METADATA_NAME = "metadata";
     private final static String MD_METADATA_NAME = "MD_Metadata";
@@ -179,6 +185,59 @@ public class MetadataAction extends DefaultAction {
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }
+    }
+    
+    public Resolution synchronize() {
+        File dataFile = null;
+        try {
+            dataFile = Rewrite.getFileFromPPFileName(filename, getContext());
+
+            JSONObject syncedKeyValuePairs;
+            if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dataFile)) {
+                // only instantiate ArcGISSynchronizer here, since a NoClassDefFoundError can occur
+                ArcGISSynchronizer arcGISSynchronizer = new ArcGISSynchronizer();
+                syncedKeyValuePairs = arcGISSynchronizer.synchronizeFGDB(dataFile, esriType);
+            } else {
+                if (filename.endsWith(SHAPE_FILE_EXTENSION)) {
+                    try {
+                        // only instantiate ArcGISSynchronizer here, since a NoClassDefFoundError can occur
+                        ArcGISSynchronizer arcGISSynchronizer = new ArcGISSynchronizer();
+                        syncedKeyValuePairs = arcGISSynchronizer.synchronizeShapeFile(dataFile);
+                    } catch(NoClassDefFoundError ncdfe) {
+                        // ArcGIS not installed / incorrectly installed
+                        syncedKeyValuePairs = synchronizeRegularMetadata();
+                    }
+                } else {
+                    syncedKeyValuePairs = synchronizeRegularMetadata();
+                }
+            }
+            return new StreamingResolution("application/json", syncedKeyValuePairs.toString());
+        } catch (NoClassDefFoundError e) {
+            String message = "Could not synchronize file: " + (dataFile == null ? "none" : dataFile.getAbsolutePath());
+            log.error(message, e);
+            return new HtmlErrorResolution(message);
+        } catch (Exception e) {
+            String message = "Could not synchronize file: " + (dataFile == null ? "none" : dataFile.getAbsolutePath());
+            log.error(message, e);
+            return new HtmlErrorResolution(message, e);
+        }
+    }
+    
+    private JSONObject synchronizeRegularMetadata() {
+        JSONObject syncedKeyValuePairs = new JSONObject();
+        
+        String title = filename.substring(1 + filename.lastIndexOf(Rewrite.PRETTY_DIR_SEPARATOR));
+        int dotIndex = title.lastIndexOf(".");
+        if (dotIndex > 0) {
+            title = title.substring(0, dotIndex);
+        } else if (dotIndex == 0) {
+            title = title.substring(1);
+        }
+        syncedKeyValuePairs.put(XPATH_TITLE, title);
+        
+        //TODO: file type in md opslaan?
+        
+        return syncedKeyValuePairs;
     }
     
     @SuppressWarnings("unused")

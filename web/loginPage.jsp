@@ -15,12 +15,12 @@
 
         <link rel="shortcut icon" href="${contextPath}/images/favicon.ico" type="image/x-icon" />
 
-        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.js"></script>
-        <!--script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.min.js"></script-->
-        <script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.js"></script>
-        <!--script type="text/javascript" src="${contextPath}/scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.min.js"></script-->
-        <script type="text/javascript" src="${contextPath}/scripts/jquery.layout/jquery.layout-latest.js"></script>
-        <script type="text/javascript" src="${contextPath}/scripts/jquery.cookie/jquery.cookie.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.js"></script>
+        <!--script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.min.js"></script-->
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.js"></script>
+        <!--script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.min.js"></script-->
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/jquery.layout/jquery.layout-latest.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/jquery.cookie/jquery.cookie.js"></script>
         <script type="text/javascript">
             $(document).ready(function() {
                 theLayout = $("body").layout({

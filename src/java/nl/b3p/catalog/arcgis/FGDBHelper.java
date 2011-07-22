@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package nl.b3p.catalog.fgdb;
+package nl.b3p.catalog.arcgis;
 
 import com.esri.arcgis.datasourcesGDB.FileGDBWorkspaceFactory;
 import com.esri.arcgis.datasourcesraster.RasterBand;
@@ -46,17 +46,6 @@ import org.apache.commons.logging.LogFactory;
 public class FGDBHelper {
     private final static Log log = LogFactory.getLog(FGDBHelper.class);
 
-    private static File getRootFGDBDir(File file) throws IOException {
-        while (file != null) {
-            if (FGDBHelperProxy.isFGDBDir(file)) {
-                return file;
-            } else {
-                file = file.getParentFile();
-            }
-        }
-        return null;
-    }
-
     public static String getMetadata(File fileGDBPath, int datasetType) throws IOException, B3PCatalogException {
         IMetadata iMetadata = getIMetadata(fileGDBPath, datasetType);
         XmlPropertySet xmlPropertySet = (XmlPropertySet)iMetadata.getMetadata();
@@ -76,6 +65,10 @@ public class FGDBHelper {
             datasetType = esriDatasetType.esriDTFeatureDataset;
         }
         IDataset ds = getTargetDataset(fileGDBPath, datasetType);
+        return getIMetadata(ds, datasetType);
+    }
+    
+    private static IMetadata getIMetadata(IDataset ds, int datasetType) throws IOException, B3PCatalogException {
         switch(datasetType) {
             // most used 2:
 
@@ -167,12 +160,12 @@ public class FGDBHelper {
         return files;
     }
 
-    private static IDataset getTargetDataset(File fileGDBPath, int dataType) throws IOException {
+    public static IDataset getTargetDataset(File fileGDBPath, int dataType) throws IOException {
         IDataset targetDataset = null;
         if (FGDBHelperProxy.isFGDBDir(fileGDBPath)) {
             targetDataset = getWorkspace(fileGDBPath.getCanonicalPath());
         } else if (FGDBHelperProxy.isInsideFGDBDir(fileGDBPath)) {
-            File fgdb = getRootFGDBDir(fileGDBPath);
+            File fgdb = FGDBHelperProxy.getRootFGDBDir(fileGDBPath);
             File currentDirFile = fileGDBPath;
             List<String> subDirList = new LinkedList<String>();
             while (!currentDirFile.getCanonicalFile().equals(fgdb.getCanonicalFile())) {
