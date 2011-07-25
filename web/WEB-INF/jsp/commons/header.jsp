@@ -10,9 +10,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $("#main-tabs > li").hover(function() {
-                $(this).add("a", this).addClass("main-tab-hover");
-            }, function() {
-                $(this).add("a", this).removeClass("main-tab-hover");
+                $(this).add("a", this).toggleClass("main-tab-hover");
             });
 
             $("#main-tabs > li").click(function() {
@@ -72,11 +70,11 @@
                 <li class="ui-corner-top">
                     <a href="#search">Catalog doorzoeken</a>
                 </li>
-                <c:if test="${pageContext.request.isUserInRole('admin')}">
+                <%--c:if test="${pageContext.request.isUserInRole('admin')}">
                     <li class="ui-corner-top">
                         <a href="#admin">Beheer</a>
                     </li>
-                </c:if>
+                </c:if--%>
             </ul>
             <div id="mde-tabs-and-toolbar" class="ui-helper-reset">
                 <div id="mde-toolbar" class="ui-helper-reset">&nbsp;</div>

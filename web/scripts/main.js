@@ -575,7 +575,7 @@ B3pCatalog.createToolbar = function(viewMode) {
                 icons: {primary: "ui-icon-b3p-delete_16"}
             })
         );
-        mdeToolbar.append(
+        /*mdeToolbar.append(
             $("<a />", {
                 href: "#",
                 id: "synchronizeMD",
@@ -590,7 +590,7 @@ B3pCatalog.createToolbar = function(viewMode) {
                 disabled: false,
                 icons: {primary: "ui-icon-b3p-down_16"}
             })
-        );
+        );*/
         mdeToolbar.append(
             $("<a />", {
                 href: "#",
