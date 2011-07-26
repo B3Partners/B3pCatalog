@@ -12,7 +12,7 @@
         $(document).ready(function() {
             $("#gebruikersnaam").focus().select();
             $("#login-form").submit(function() {
-                // mislukte poging om direct laden van url ook in IE te krijgen: (Workaround: na inloggen nogmaals url pasten in address bar.)
+                // In IE is location.hash leeg. (Workaround: na inloggen nogmaals url pasten in address bar.)
                 $.cookie("mdeLoginHash", location.hash);
             });
         });

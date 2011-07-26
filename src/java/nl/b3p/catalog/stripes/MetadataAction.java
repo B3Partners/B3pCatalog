@@ -63,6 +63,10 @@ public class MetadataAction extends DefaultAction {
     private final static Namespace B3P_NAMESPACE = Namespace.getNamespace("b3p", "http://www.b3partners.nl/xsd/metadata");
     
     private final static String XPATH_TITLE = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString";
+    private final static String XPATH_URL_DATASET = "/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[1]/gmd:CI_OnlineResource/gmd:linkage/gmd:URL";
+    private final static String XPATH_NAME_DATASET = "/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[1]/gmd:CI_OnlineResource/gmd:name/gco:CharacterString";
+    private final static String XPATH_PROTOCOL_DATASET = "/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[1]/gmd:CI_OnlineResource/gmd:protocol/gco:CharacterString";
+    private final static String XPATH_DESC_DATASET = "/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[1]/gmd:CI_OnlineResource/gmd:description/gco:CharacterString";
 
     private final static String METADATA_NAME = "metadata";
     private final static String MD_METADATA_NAME = "MD_Metadata";
@@ -197,19 +201,17 @@ public class MetadataAction extends DefaultAction {
                 // only instantiate ArcGISSynchronizer here, since a NoClassDefFoundError can occur
                 ArcGISSynchronizer arcGISSynchronizer = new ArcGISSynchronizer();
                 syncedKeyValuePairs = arcGISSynchronizer.synchronizeFGDB(dataFile, esriType);
-            } else {
-                if (filename.endsWith(SHAPE_FILE_EXTENSION)) {
-                    try {
-                        // only instantiate ArcGISSynchronizer here, since a NoClassDefFoundError can occur
-                        ArcGISSynchronizer arcGISSynchronizer = new ArcGISSynchronizer();
-                        syncedKeyValuePairs = arcGISSynchronizer.synchronizeShapeFile(dataFile);
-                    } catch(NoClassDefFoundError ncdfe) {
-                        // ArcGIS not installed / incorrectly installed
-                        syncedKeyValuePairs = synchronizeRegularMetadata();
-                    }
-                } else {
+            } else if (filename.endsWith(SHAPE_FILE_EXTENSION)) {
+                try {
+                    // only instantiate ArcGISSynchronizer here, since a NoClassDefFoundError can occur
+                    ArcGISSynchronizer arcGISSynchronizer = new ArcGISSynchronizer();
+                    syncedKeyValuePairs = arcGISSynchronizer.synchronizeShapeFile(dataFile);
+                } catch(NoClassDefFoundError ncdfe) {
+                    // ArcGIS not installed / incorrectly installed
                     syncedKeyValuePairs = synchronizeRegularMetadata();
                 }
+            } else {
+                syncedKeyValuePairs = synchronizeRegularMetadata();
             }
             return new StreamingResolution("application/json", syncedKeyValuePairs.toString());
         } catch (NoClassDefFoundError e) {
@@ -223,7 +225,7 @@ public class MetadataAction extends DefaultAction {
         }
     }
     
-    private JSONObject synchronizeRegularMetadata() {
+    private JSONObject synchronizeRegularMetadata() throws IOException {
         JSONObject syncedKeyValuePairs = new JSONObject();
         
         String title = filename.substring(1 + filename.lastIndexOf(Rewrite.PRETTY_DIR_SEPARATOR));
@@ -234,6 +236,11 @@ public class MetadataAction extends DefaultAction {
             title = title.substring(1);
         }
         syncedKeyValuePairs.put(XPATH_TITLE, title);
+        
+        syncedKeyValuePairs.put(XPATH_URL_DATASET, Rewrite.getFileNameFromPPFileName(filename, getContext()));
+        syncedKeyValuePairs.put(XPATH_NAME_DATASET, "");
+        syncedKeyValuePairs.put(XPATH_PROTOCOL_DATASET, "download");
+        syncedKeyValuePairs.put(XPATH_DESC_DATASET, "");
         
         //TODO: file type in md opslaan?
         

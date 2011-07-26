@@ -4,6 +4,7 @@ if (typeof B3pCatalog == "undefined") B3pCatalog = {};
 
 // used for all mde types (view/edit/etc.) for all users.
 B3pCatalog.basicMdeOptions = {
+    synchroniseEsri: false,
     logMode: true,
     richTextMode: true,
     extraTitleAboveTabs: false,

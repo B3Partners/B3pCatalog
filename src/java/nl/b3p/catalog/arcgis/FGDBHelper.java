@@ -65,63 +65,9 @@ public class FGDBHelper {
             datasetType = esriDatasetType.esriDTFeatureDataset;
         }
         IDataset ds = getTargetDataset(fileGDBPath, datasetType);
-        return getIMetadata(ds, datasetType);
+        return (IMetadata)DatasetHelper.getIDataset(ds).getFullName();
     }
     
-    private static IMetadata getIMetadata(IDataset ds, int datasetType) throws IOException, B3PCatalogException {
-        switch(datasetType) {
-            // most used 2:
-
-            case esriDatasetType.esriDTFeatureDataset:
-                return (IMetadata)new FeatureDataset(ds).getFullName();
-            case esriDatasetType.esriDTFeatureClass:
-                return (IMetadata)new FeatureClass(ds).getFullName();
-
-            // others (unsupported types commented out: could not find corresponding class):
-
-            //case esriDatasetType.esriDTCadDrawing:
-            case esriDatasetType.esriDTCadastralFabric:
-                return (IMetadata)new CadastralFabric(ds).getFullName();
-            //case esriDatasetType.esriDTContainer:
-            //case esriDatasetType.esriDTGeo:
-            case esriDatasetType.esriDTGeometricNetwork:
-                return (IMetadata)new GeometricNetwork(ds).getFullName();
-            //case esriDatasetType.esriDTLayer:
-            //case esriDatasetType.esriDTLocator:
-            //case esriDatasetType.esriDTMap:
-            //case esriDatasetType.esriDTMosaicDataset:
-            case esriDatasetType.esriDTNetworkDataset:
-                return (IMetadata)new NetworkDataset(ds).getFullName();
-            //case esriDatasetType.esriDTPlanarGraph:
-            case esriDatasetType.esriDTRasterBand:
-                return (IMetadata)new RasterBand(ds).getFullName();
-            case esriDatasetType.esriDTRasterCatalog:
-                return (IMetadata)new RasterCatalog(ds).getFullName();
-            case esriDatasetType.esriDTRasterDataset:
-                return (IMetadata)new RasterDataset(ds).getFullName();
-            case esriDatasetType.esriDTRelationshipClass:
-                return (IMetadata)new RelationshipClass(ds).getFullName();
-            case esriDatasetType.esriDTRepresentationClass:
-                return (IMetadata)new RepresentationClass(ds).getFullName();
-            case esriDatasetType.esriDTSchematicDataset:
-                return (IMetadata)new SchematicDataset(ds).getFullName();
-            //case esriDatasetType.esriDTStyle:
-            case esriDatasetType.esriDTTable:
-                return (IMetadata)new Table(ds).getFullName();
-            case esriDatasetType.esriDTTerrain:
-                return (IMetadata)new Terrain(ds).getFullName();
-            //case esriDatasetType.esriDTText:
-            case esriDatasetType.esriDTTin:
-                return (IMetadata)new Tin(ds).getFullName();
-            //case esriDatasetType.esriDTTool:
-            //case esriDatasetType.esriDTToolbox:
-            case esriDatasetType.esriDTTopology:
-                return (IMetadata)new Topology(ds).getFullName();
-            default:
-                throw new B3PCatalogException("DatasetType " + datasetType + " not supported in a leaf in a FGDB");
-        }
-    }
-
     public static List<Dir> getAllDirDatasets(File fileGDBPath, ActionBeanContext context) throws IOException {
         List<Dir> files = new ArrayList<Dir>();
 
@@ -175,26 +121,15 @@ public class FGDBHelper {
             targetDataset = getWorkspace(fgdb.getCanonicalPath());
             for (String subDir : subDirList) {
                 if (!subDir.equals(subDirList.get(subDirList.size() - 1))) {
-                    targetDataset = getDataset(targetDataset, subDir, esriDatasetType.esriDTFeatureDataset);
+                    targetDataset = DatasetHelper.getDataSubset(targetDataset, subDir, esriDatasetType.esriDTFeatureDataset);
                 } else {
-                    targetDataset = getDataset(targetDataset, subDir, dataType);
+                    targetDataset = DatasetHelper.getDataSubset(targetDataset, subDir, dataType);
                 }
             }
         } else {
             throw new IOException("Not a FGDB or inside a FGDB: " + fileGDBPath.getAbsolutePath());
         }
         return targetDataset;
-    }
-
-    private static IDataset getDataset(IDataset dataset, String name, int datasetType) throws IOException {
-        IEnumDataset enumDataset = dataset.getSubsets();
-        IDataset ds;
-        while ((ds = enumDataset.next()) != null) {
-            if (ds.getType() == datasetType && ds.getName().equals(name)) {
-                return ds;
-            }
-        }
-        return null;
     }
 
     private static Workspace getWorkspace(String fileGDBPath) throws IOException {

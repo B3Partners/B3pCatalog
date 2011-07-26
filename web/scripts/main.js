@@ -25,6 +25,7 @@ B3pCatalog.hashchange = function(event) {
             }
         );
     } else {
+        // get possible cookie set by login page:
         var loginHash = $.cookie("mdeLoginHash");
         if (loginHash && $.trim(loginHash) !== "#") {
             // delete cookie first (prevent perpetual loops):
@@ -32,19 +33,25 @@ B3pCatalog.hashchange = function(event) {
             // we just logged in. get login hash from cookie.
             // this will trigger this event again ("hashchange")
             location.hash = loginHash;
+        } else {
+            // first run:
+            B3pCatalog.loadFiletree();
         }
     }
 };
 
+// zou niet meer nodig moeten zijn nu.
 B3pCatalog.loadingFiletree = false;
 
 // Deze functie wordt maar één keer aangeroepen per aanroep van de B3PCatalog pagina, vandaar de boolean.
 // De boolean B3pCatalog.loadingFiletree voorkomt het voor een tweede keer starten van de filetree (met alleen de roots)
 B3pCatalog.loadFiletree = function(selectedFilePath) {
+    log("loadFiletree");
     if (B3pCatalog.loadingFiletree)
         return;
     B3pCatalog.loadingFiletree = true;
-    
+
+    // used to indicate that the selected file does not need to be selected in readyCallback
     var selectedFileFound = false;
     
     $("#filetree").fileTree({
@@ -67,7 +74,7 @@ B3pCatalog.loadFiletree = function(selectedFilePath) {
             if (anchor.length > 0 && anchor.hasClass("selected"))
                 return;
 
-            var newState = {filename: filename}
+            var newState = {filename: filename};
 
             var esriType = parseInt(anchor.attr("esritype"));
             if (!isNaN(esriType) && esriType !== 0) {
@@ -92,6 +99,7 @@ B3pCatalog.loadFiletree = function(selectedFilePath) {
                     $("#sidebar").scrollTo(selectedFile, B3pCatalog.filetreeScrollToOptions);
                 }
             } else {
+                // no selected file or a directory (root) was clicked
                 $("#sidebar").scrollTo(root, B3pCatalog.filetreeScrollToOptions);
             }
         }
