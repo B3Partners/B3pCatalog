@@ -525,17 +525,21 @@ B3pCatalog.synchronizeWithData = function() {
     B3pCatalog.saveDataUserConfirm({
         text: "Wilt u uw wijzigingen opslaan alvorens uw metadata te synchroniseren? Als u \"Nee\" kiest gaan uw wijzigingen verloren.",
         done: function() {
+            log("111111111");
+            log($("#mde").mde("save", {postprocess: false}));
             $.ajax({
                 url: B3pCatalog.contextPath + "/Metadata.action",
                 data: {
                     synchronize: "t",
                     filename: B3pCatalog.currentFilename,
-                    esriType: B3pCatalog.getCurrentEsriType()
+                    esriType: B3pCatalog.getCurrentEsriType(),
+                    metadata: $("#mde").mde("save", {postprocess: false})
                 },
-                method: "POST",
+                type: "POST",
                 async: false,
+                dataType: "text",
                 success: function(data) {
-                    $("#mde").mde("setXPathValuePairs", data);
+                    $("#mde").mde("option", "xml", data);
                 }
             });
         }

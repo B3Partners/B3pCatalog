@@ -10,6 +10,8 @@ import java.io.Reader;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.stripes.action.StreamingResolution;
+import org.jdom.Document;
+import org.jdom.output.XMLOutputter;
 
 /**
  *
@@ -33,6 +35,10 @@ public class XmlResolution extends StreamingResolution {
         this(string, null);
     }
 
+    public XmlResolution(Document doc) {
+        this(doc, null);
+    }
+
     public XmlResolution(InputStream inputStream, Map<String, String> extraHeaders) {
         super(DEFAULT_CONTENT_TYPE, inputStream);
         init(extraHeaders);
@@ -45,6 +51,11 @@ public class XmlResolution extends StreamingResolution {
 
     public XmlResolution(String string, Map<String, String> extraHeaders) {
         super(DEFAULT_CONTENT_TYPE, string);
+        init(extraHeaders);
+    }
+
+    public XmlResolution(Document doc, Map<String, String> extraHeaders) {
+        super(DEFAULT_CONTENT_TYPE, new XMLOutputter().outputString(doc));
         init(extraHeaders);
     }
 

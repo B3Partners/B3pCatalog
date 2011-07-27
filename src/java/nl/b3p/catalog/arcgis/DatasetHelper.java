@@ -32,8 +32,10 @@ import org.apache.commons.logging.LogFactory;
  * @author Erik van de Pol
  */
 public class DatasetHelper {
+
     private final static Log log = LogFactory.getLog(DatasetHelper.class);
-    
+
+    // if datasetType < 0: skip dataset type equals check.
     public static IDataset getDataSubset(IDataset dataset, String name, int datasetType) throws IOException {
         IEnumDataset enumDataset = dataset.getSubsets();
         IDataset ds;
@@ -46,59 +48,58 @@ public class DatasetHelper {
     }
 
     // wat een rampen-API
-    public static IDataset getIDataset(IDataset ds) throws IOException, B3PCatalogException {
-        switch(ds.getType()) {
+    public static IDataset getIDataset(IDataset dataset) throws IOException, B3PCatalogException {
+        switch (dataset.getType()) {
             // most used 2:
 
             case esriDatasetType.esriDTFeatureDataset:
-                return (IDataset)new FeatureDataset(ds);
+                return (IDataset) new FeatureDataset(dataset);
             case esriDatasetType.esriDTFeatureClass:
-                return (IDataset)new FeatureClass(ds);
+                return (IDataset) new FeatureClass(dataset);
 
             // others (unsupported types commented out: could not find corresponding class):
 
             //case esriDatasetType.esriDTCadDrawing:
             case esriDatasetType.esriDTCadastralFabric:
-                return (IDataset)new CadastralFabric(ds);
+                return (IDataset) new CadastralFabric(dataset);
             //case esriDatasetType.esriDTContainer:
             //case esriDatasetType.esriDTGeo:
             case esriDatasetType.esriDTGeometricNetwork:
-                return (IDataset)new GeometricNetwork(ds);
+                return (IDataset) new GeometricNetwork(dataset);
             //case esriDatasetType.esriDTLayer:
             //case esriDatasetType.esriDTLocator:
             //case esriDatasetType.esriDTMap:
             //case esriDatasetType.esriDTMosaicDataset:
             case esriDatasetType.esriDTNetworkDataset:
-                return (IDataset)new NetworkDataset(ds);
+                return (IDataset) new NetworkDataset(dataset);
             //case esriDatasetType.esriDTPlanarGraph:
             case esriDatasetType.esriDTRasterBand:
-                return (IDataset)new RasterBand(ds);
+                return (IDataset) new RasterBand(dataset);
             case esriDatasetType.esriDTRasterCatalog:
-                return (IDataset)new RasterCatalog(ds);
+                return (IDataset) new RasterCatalog(dataset);
             case esriDatasetType.esriDTRasterDataset:
-                return (IDataset)new RasterDataset(ds);
+                return (IDataset) new RasterDataset(dataset);
             case esriDatasetType.esriDTRelationshipClass:
-                return (IDataset)new RelationshipClass(ds);
+                return (IDataset) new RelationshipClass(dataset);
             case esriDatasetType.esriDTRepresentationClass:
-                return (IDataset)new RepresentationClass(ds);
+                return (IDataset) new RepresentationClass(dataset);
             case esriDatasetType.esriDTSchematicDataset:
-                return (IDataset)new SchematicDataset(ds);
+                return (IDataset) new SchematicDataset(dataset);
             //case esriDatasetType.esriDTStyle:
             case esriDatasetType.esriDTTable:
-                return (IDataset)new Table(ds);
+                return (IDataset) new Table(dataset);
             case esriDatasetType.esriDTTerrain:
-                return (IDataset)new Terrain(ds);
+                return (IDataset) new Terrain(dataset);
             //case esriDatasetType.esriDTText:
             case esriDatasetType.esriDTTin:
-                return (IDataset)new Tin(ds);
+                return (IDataset) new Tin(dataset);
             //case esriDatasetType.esriDTTool:
             //case esriDatasetType.esriDTToolbox:
             case esriDatasetType.esriDTTopology:
-                return (IDataset)new Topology(ds);
+                return (IDataset) new Topology(dataset);
             default:
-                throw new B3PCatalogException("DatasetType " + ds.getType() + " not supported.");
+                throw new B3PCatalogException("DatasetType " + dataset.getType() + " not supported.");
         }
     }
-
 
 }

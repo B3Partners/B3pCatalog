@@ -6,6 +6,7 @@ package nl.b3p.catalog.arcgis;
 
 import com.esri.arcgis.datasourcesfile.ShapefileWorkspaceFactory;
 import com.esri.arcgis.geodatabase.IDataset;
+import com.esri.arcgis.geodatabase.IFeatureClass;
 import com.esri.arcgis.geodatabase.IGeoDataset;
 import com.esri.arcgis.geodatabase.IObjectClass;
 import com.esri.arcgis.geodatabase.IWorkspace;
@@ -17,8 +18,11 @@ import java.io.File;
 import java.io.IOException;
 import net.sf.json.JSONObject;
 import nl.b3p.catalog.B3PCatalogException;
+import nl.b3p.catalog.xml.XPathHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jdom.Document;
+import org.jdom.JDOMException;
 
 /**
  *
@@ -29,16 +33,6 @@ public class ArcGISSynchronizer {
     
     private final static String SHAPE_FILE_EXTENSION = ".shp";
 
-    private final static String XPATH_TITLE = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString";
-    private final static String XPATH_ALT_TITLE = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle/gco:CharacterString";
-    private final static String XPATH_BBOX_WEST = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal";
-    private final static String XPATH_BBOX_EAST = "/*//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal";
-    private final static String XPATH_BBOX_NORTH = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal";
-    private final static String XPATH_BBOX_SOUTH = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal";
-    private final static String XPATH_REF_CODESPACE = "/*/gmd:MD_Metadata/gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:codeSpace/gco:CharacterString";
-    private final static String XPATH_REF_CODE = "/*/gmd:MD_Metadata/gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code/gco:CharacterString";
-    private final static String XPATH_SPATIAL_REPR = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode";
-    
     public ArcGISSynchronizer() {
     }
     
@@ -49,12 +43,12 @@ public class ArcGISSynchronizer {
      * @return
      * @throws IOException 
      */
-    public JSONObject synchronizeFGDB(File fgdbFile, int esriType) throws IOException, B3PCatalogException {
+    public void synchronizeFGDB(Document xmlDoc, File fgdbFile, int esriType) throws IOException, B3PCatalogException, JDOMException {
         // We don't use the FGDBHelperProxy below. A test whether a ArcGIS connection existsmust must be done beforehand.
-        return sync(FGDBHelper.getTargetDataset(fgdbFile, esriType));
+        sync(xmlDoc, FGDBHelper.getTargetDataset(fgdbFile, esriType));
     }
     
-    public JSONObject synchronizeShapeFile(File shapeFile) throws IOException, B3PCatalogException {
+    public void synchronizeShapeFile(Document xmlDoc, File shapeFile) throws IOException, B3PCatalogException, JDOMException {
         ShapefileWorkspaceFactory shapefileWorkspaceFactory = new ShapefileWorkspaceFactory();
         IWorkspace iWorkspace = shapefileWorkspaceFactory.openFromFile(shapeFile.getParent(), 0);
         IDataset dataset = new Workspace(iWorkspace);
@@ -65,32 +59,34 @@ public class ArcGISSynchronizer {
         
         // shape file names are unique per directory; therefore type is irrelevant (== -1)
         String shapeFilename = shapefileFullname.substring(0, shapefileFullname.lastIndexOf('.'));
-        return sync(DatasetHelper.getDataSubset(dataset, shapeFilename, -1));
+        sync(xmlDoc, DatasetHelper.getDataSubset(dataset, shapeFilename, -1));
     }
     
-    protected JSONObject sync(IDataset dataset) throws IOException, B3PCatalogException {
-        JSONObject syncedXPathValuePairs = new JSONObject();
+    protected void sync(Document xmlDoc, IDataset dataset) throws IOException, B3PCatalogException, JDOMException {
         dataset = DatasetHelper.getIDataset(dataset); // tja, ArcGIS; dataset is in den beginne slechts een IDatasetProxy. Zie verder getIDataset
         
         IObjectClass objectClass = (IObjectClass)dataset;
         
-        syncedXPathValuePairs.put(XPATH_TITLE, dataset.getBrowseName());
-        syncedXPathValuePairs.put(XPATH_ALT_TITLE, objectClass.getAliasName());
-        syncedXPathValuePairs.put(XPATH_SPATIAL_REPR, getSpatialRepresentation(dataset));
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, dataset.getBrowseName());
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.ALT_TITLE, objectClass.getAliasName());
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.SPATIAL_REPR, getSpatialRepresentation(dataset));
         
         IGeoDataset geoDataset = (IGeoDataset)dataset;
         
         IEnvelopeGEN envelope = (IEnvelopeGEN)geoDataset.getExtent();
-        syncedXPathValuePairs.put(XPATH_BBOX_WEST, envelope.getXMin());
-        syncedXPathValuePairs.put(XPATH_BBOX_EAST, envelope.getXMax());
-        syncedXPathValuePairs.put(XPATH_BBOX_SOUTH, envelope.getYMin());
-        syncedXPathValuePairs.put(XPATH_BBOX_NORTH, envelope.getYMax());
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_WEST, "" + envelope.getXMin());
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_EAST, "" + envelope.getXMax());
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_SOUTH, "" + envelope.getYMin());
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_NORTH, "" + envelope.getYMax());
         
         ISpatialReferenceInfo spatialRef = (ISpatialReferenceInfo)geoDataset.getSpatialReference();
-        syncedXPathValuePairs.put(XPATH_REF_CODESPACE, "EPSG");
-        syncedXPathValuePairs.put(XPATH_REF_CODE, spatialRef.getFactoryCode());
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.REF_CODESPACE, "EPSG");
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.REF_CODE, "" + spatialRef.getFactoryCode()); // is 0 voor edam/volendam voorbeeld?!?
         
-        return syncedXPathValuePairs;
+        for (IFeatureClass featureClass : new IFeatureClassList(dataset)) {
+            log.debug("featureClass visited");
+        }
+        
     }
     
     private String getSpatialRepresentation(IDataset dataset) throws IOException {
