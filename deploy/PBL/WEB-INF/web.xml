@@ -99,7 +99,19 @@
             N.B.: Windows drive-letters MOETEN een hoofdletter zijn.
         </description>
         <param-name>CatalogRoots</param-name>
-        <param-value>/pblnas/DataPortaal, DataPortaal</param-value>
+        <param-value>
+			/pblnas/DataPortaal, DataPortaal;
+			/pblnas/data/DO, DO;
+			/pblnas/data/KLE, KLE;
+			/pblnas/data/NLG, NLG;
+			/pblnas/data/ROL, ROL;
+			/pblnas/data/VenM, VenM;
+			/pblnas/data/WLV, WLV;
+			/pblnas/data/PBLbase, PBLbase;
+			/pblnas/data/PBLbase_restricted, PBLbase_restricted;
+			/pblnas/ontwdata/mnpbase, ontwdata/mnpbase;
+			/pblnas/project, Project
+        </param-value>
     </context-param>
     <!-- SCC-servlet configuratie -->
     <context-param>
