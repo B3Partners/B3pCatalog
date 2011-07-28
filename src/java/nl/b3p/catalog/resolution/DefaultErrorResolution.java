@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package nl.b3p.catalog;
+package nl.b3p.catalog.resolution;
 
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.stripes.action.StreamingResolution;

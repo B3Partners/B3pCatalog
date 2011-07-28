@@ -20,8 +20,7 @@ import nl.b3p.csw.client.OutputBySearch;
 import nl.b3p.csw.client.OwsException;
 import nl.b3p.csw.server.CswServable;
 import nl.b3p.csw.server.GeoNetworkCswServer;
-import nl.b3p.catalog.util.ConfigUtil;
-import nl.b3p.catalog.util.Xml;
+import nl.b3p.catalog.xml.XslHelper;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.output.XMLOutputter;
@@ -111,7 +110,7 @@ public class SimpleCswServlet extends HttpServlet {
 
             if (metadataXsl != null && metadataXsl.trim().length() > 0) {
                 log.debug("Starting second xsl transformation");
-                transformedXmlDoc = Xml.transform(transformedXmlDoc,
+                transformedXmlDoc = XslHelper.transform(transformedXmlDoc,
                         metadataEditorPath + metadataXsl,
                         "baseURL", metadataEditorContextPath);
 

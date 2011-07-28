@@ -3,7 +3,9 @@
  * and open the template in the editor.
  */
 
-package nl.b3p.catalog;
+package nl.b3p.catalog.arcgis;
+
+import nl.b3p.catalog.B3PCatalogException;
 
 /**
  *

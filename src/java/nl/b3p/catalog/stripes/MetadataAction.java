@@ -26,9 +26,9 @@ import net.sourceforge.stripes.controller.LifecycleStage;
 import net.sourceforge.stripes.controller.StripesRequestWrapper;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.B3PCatalogException;
-import nl.b3p.catalog.HtmlErrorResolution;
+import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.Roles;
-import nl.b3p.catalog.XmlResolution;
+import nl.b3p.catalog.resolution.XmlResolution;
 import nl.b3p.catalog.arcgis.ArcGISSynchronizer;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.filetree.Extensions;
@@ -211,7 +211,8 @@ public class MetadataAction extends DefaultAction {
             title = title.substring(1);
         }
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, title);
-        
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.FC_TITLE, title);
+
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.URL_DATASET, Rewrite.getFileNameFromPPFileName(filename, getContext()));
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.NAME_DATASET, "");
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.PROTOCOL_DATASET, "download");
@@ -335,10 +336,10 @@ public class MetadataAction extends DefaultAction {
         if (comments == null)
             throw new B3PCatalogException("Xml Document is non-metadata xml. This is not allowed.");
 
-        Element newComment = new Element(Names.COMMENT, Namespaces.B3P).addContent(Arrays.asList(
-            new Element(Names.USERNAME, Namespaces.B3P).setText(getContext().getRequest().getRemoteUser()),
-            new Element(Names.DATE_TIME, Namespaces.B3P).setText(DATETIME_FORMAT.format(new Date())),
-            new Element(Names.CONTENT, Namespaces.B3P).setText(comment)
+        Element newComment = new Element(Names.B3P_COMMENT, Namespaces.B3P).addContent(Arrays.asList(
+            new Element(Names.B3P_USERNAME, Namespaces.B3P).setText(getContext().getRequest().getRemoteUser()),
+            new Element(Names.B3P_DATE_TIME, Namespaces.B3P).setText(DATETIME_FORMAT.format(new Date())),
+            new Element(Names.B3P_CONTENT, Namespaces.B3P).setText(comment)
         ));
         comments.addContent(newComment);
     }

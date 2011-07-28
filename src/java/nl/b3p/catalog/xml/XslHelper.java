@@ -1,4 +1,4 @@
-package nl.b3p.catalog.util;
+package nl.b3p.catalog.xml;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ import org.jdom.transform.JDOMResult;
 import org.jdom.transform.JDOMSource;
 //=============================================================================
 
-public class Xml {
+public class XslHelper {
 
     public static Document transform(Document xmlDocument, String styleSheetPath) throws TransformerException {
         return transform(xmlDocument, styleSheetPath, null);

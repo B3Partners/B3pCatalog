@@ -21,7 +21,7 @@ import java.util.List;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import nl.b3p.catalog.B3PCatalogException;
-import nl.b3p.catalog.HtmlErrorResolution;
+import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirContent;

@@ -32,6 +32,7 @@ public class XPathHelper {
     public final static String DESC_DATASET = "/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[1]/gmd:CI_OnlineResource/gmd:description/gco:CharacterString";
 
     public final static String FEATURE_CATALOG = "/*/gfc:FC_FeatureCatalogue";
+    public final static String FC_TITLE = "/*/gfc:FC_FeatureCatalogue/gmx:name/gco:CharacterString";
 
     public static void applyXPathValuePair(Object context, String xpathString, String value) throws JDOMException {
         Element element = selectSingleElement(context, xpathString);
@@ -57,6 +58,7 @@ public class XPathHelper {
         xpath.addNamespace(Namespaces.GMD);
         xpath.addNamespace(Namespaces.GCO);
         xpath.addNamespace(Namespaces.GFC);
+        xpath.addNamespace(Namespaces.GMX);
         return xpath;
     }
 

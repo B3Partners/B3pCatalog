@@ -3,7 +3,7 @@
  * 
  */
 
-package nl.b3p.catalog.util;
+package nl.b3p.catalog;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;

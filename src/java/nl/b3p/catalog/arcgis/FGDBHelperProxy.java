@@ -10,7 +10,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.List;
 import net.sourceforge.stripes.action.ActionBeanContext;
-import nl.b3p.catalog.ArcObjectsNotFoundException;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.filetree.Dir;
 import org.apache.commons.logging.Log;

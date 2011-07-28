@@ -54,7 +54,7 @@ public class DocumentHelper {
         Element root = doc.getRootElement();
 
         boolean rootIsWrapper = root.getName().equals(Names.METADATA) && root.getNamespace().equals(Namespace.NO_NAMESPACE);
-        boolean rootIs19139 = root.getName().equals(Names.MD_METADATA) && root.getNamespace().equals(Namespaces.GMD);
+        boolean rootIs19139 = root.getName().equals(Names.GMD_MD_METADATA) && root.getNamespace().equals(Namespaces.GMD);
         if (!rootIsWrapper && !rootIs19139)
             throw new B3PCatalogException("Root element must be either <metadata/> (no ns) or <MD_Metadata/> (from ns \"http://www.isotc211.org/2005/gmd\"). Root name is: " + root.getName());
 
@@ -70,19 +70,19 @@ public class DocumentHelper {
     }
 
     public static Element getMD_Metadata(Document doc) throws B3PCatalogException {
-        return getOrCreateElement(getRoot(doc), Names.MD_METADATA, Namespaces.GMD);
+        return getOrCreateElement(getRoot(doc), Names.GMD_MD_METADATA, Namespaces.GMD);
     }
 
     public static Element getB3Partners(Document doc) throws B3PCatalogException {
-        return getOrCreateElement(getRoot(doc), Names.B3PARTNERS, Namespaces.B3P);
+        return getOrCreateElement(getRoot(doc), Names.B3P_B3PARTNERS, Namespaces.B3P);
     }
 
     public static Element getComments(Document doc) throws B3PCatalogException {
-        return getOrCreateElement(getB3Partners(doc), Names.COMMENTS, Namespaces.B3P);
+        return getOrCreateElement(getB3Partners(doc), Names.B3P_COMMENTS, Namespaces.B3P);
     }
 
     public static Element getMetadataPBL(Document doc) throws B3PCatalogException {
-        return getOrCreateElement(getB3Partners(doc), Names.METADATA_PBL);
+        return getOrCreateElement(getB3Partners(doc), Names.PBL_METADATA_PBL, Namespaces.PBL);
     }
 
     public static Element getOrCreateElement(Element parent, String name) throws B3PCatalogException {

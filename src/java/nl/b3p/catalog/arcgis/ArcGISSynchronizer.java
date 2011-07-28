@@ -15,6 +15,7 @@ import com.esri.arcgis.geodatabase.IObjectClass;
 import com.esri.arcgis.geodatabase.IWorkspace;
 import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.geodatabase.esriDatasetType;
+import com.esri.arcgis.geodatabase.esriFieldType;
 import com.esri.arcgis.geometry.IEnvelopeGEN;
 import com.esri.arcgis.geometry.ISpatialReferenceInfo;
 import com.esri.arcgis.geometry.esriGeometryType;
@@ -30,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.Namespace;
 import org.jdom.output.XMLOutputter;
 
 /**
@@ -95,43 +97,54 @@ public class ArcGISSynchronizer {
     }
     
     protected void syncFeatureCatalog(Document xmlDoc, IDataset dataset) throws JDOMException, IOException {
-        Element featureCatalog = XPathHelper.selectSingleElement(xmlDoc, XPathHelper.FEATURE_CATALOG);
-        featureCatalog.removeChildren(Names.FEATURE_TYPE, Namespaces.GFC);
+        Element gfc_FC_FeatureCatalogue = XPathHelper.selectSingleElement(xmlDoc, XPathHelper.FEATURE_CATALOG);
+        gfc_FC_FeatureCatalogue.removeChildren(Names.GFC_FEATURE_TYPE, Namespaces.GFC);
+        
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.FC_TITLE, dataset.getBrowseName());
+        
         for (IFeatureClass iFeatureClass : new IFeatureClassList(dataset)) {
             FeatureClass featureClass = new FeatureClass(iFeatureClass);
-            Element featureType = new Element(Names.FEATURE_TYPE, Namespaces.GFC);
-            Element fcFeatureType = new Element(Names.FC_FEATURE_TYPE, Namespaces.GFC);
+            Element gfc_featureType = new Element(Names.GFC_FEATURE_TYPE, Namespaces.GFC);
+            Element gfc_FC_FeatureType = new Element(Names.GFC_FC_FEATURE_TYPE, Namespaces.GFC);
             
-            Element typeName = new Element(Names.TYPE_NAME, Namespaces.GFC);
-            Element localName = new Element(Names.LOCAL_NAME, Namespaces.GCO);
-            localName.setText(getFeatureClassShapeType(featureClass));
-            typeName.addContent(localName);
+            // is niet correct: dit moet de user invullen
+            /*Element gfc_typeName = new Element(Names.GFC_TYPE_NAME, Namespaces.GFC);
+            Element gco_LocalName = new Element(Names.GCO_LOCAL_NAME, Namespaces.GCO);
+            gco_LocalName.setText(getFeatureClassShapeType(featureClass));
+            gfc_typeName.addContent(gco_LocalName);
             
-            fcFeatureType.addContent(typeName);
+            gfc_FC_FeatureType.addContent(gfc_typeName);*/
             
             IFields fields = featureClass.getFields();
             for (int i = 0; i < fields.getFieldCount(); i++) {
                 IField field = fields.getField(i);
-                Element carrierOfCharacteristics = new Element(Names.CARRIER_OF_CHARACTERISTICS, Namespaces.GFC);
-                Element fcFeatureAttribute = new Element(Names.FC_FEATURE_ATTRIBUTE, Namespaces.GFC);
+                Element gfc_carrierOfCharacteristics = new Element(Names.GFC_CARRIER_OF_CHARACTERISTICS, Namespaces.GFC);
+                Element gfc_FC_FeatureAttribute = new Element(Names.GFC_FC_FEATURE_ATTRIBUTE, Namespaces.GFC);
 
-                Element memberName = new Element(Names.MEMBER_NAME, Namespaces.GFC);
-                Element fieldLocalName = new Element(Names.LOCAL_NAME, Namespaces.GCO);
-                fieldLocalName.setText(field.getAliasName());
-                memberName.addContent(fieldLocalName);
+                Element gfc_memberName = new Element(Names.GFC_MEMBER_NAME, Namespaces.GFC);
+                Element field_gco_LocalName = new Element(Names.GCO_LOCAL_NAME, Namespaces.GCO);
+                field_gco_LocalName.setText(field.getAliasName());
+                gfc_memberName.addContent(field_gco_LocalName);
                 
-                fcFeatureAttribute.addContent(memberName);
+                gfc_FC_FeatureAttribute.addContent(gfc_memberName);
                 
-                // TODO: hier is nog veel meer uit te halen! 
-                // Als de nieuwe specs van de NL metadata standaard 1.3 het toelaten, 
-                // kan nog veel meer gesyncd worden.
+                Element gfc_valueType = new Element(Names.GFC_VALUE_TYPE, Namespaces.GFC);
+                Element gco_TypeName = new Element(Names.GCO_TYPE_NAME, Namespaces.GCO);
+                Element gco_aName = new Element(Names.GCO_A_NAME, Namespaces.GCO);
+                Element gco_CharacterString = new Element(Names.GCO_CHARACTER_STRING, Namespaces.GCO);
+                gco_CharacterString.setText(getValueType(field.getType(), featureClass));
+                gco_aName.addContent(gco_CharacterString);
+                gco_TypeName.addContent(gco_aName);
+                gfc_valueType.addContent(gco_TypeName);
                 
-                carrierOfCharacteristics.addContent(fcFeatureAttribute);
-                fcFeatureType.addContent(carrierOfCharacteristics);
+                gfc_FC_FeatureAttribute.addContent(gfc_valueType);
+                
+                gfc_carrierOfCharacteristics.addContent(gfc_FC_FeatureAttribute);
+                gfc_FC_FeatureType.addContent(gfc_carrierOfCharacteristics);
             }
             
-            featureType.addContent(fcFeatureType);
-            featureCatalog.addContent(featureType);
+            gfc_featureType.addContent(gfc_FC_FeatureType);
+            gfc_FC_FeatureCatalogue.addContent(gfc_featureType);
         }
     }
     
@@ -230,6 +243,39 @@ public class ArcGISSynchronizer {
                 return "Triangles";
             default:
                 return "Unknown"; // dunno
+        }
+    }
+
+    private String getValueType(int varType, IFeatureClass featureClass) throws IOException {
+        switch(varType) {
+            case esriFieldType.esriFieldTypeBlob:
+                return "Blob";
+            case esriFieldType.esriFieldTypeDate:
+                return "Date";
+            case esriFieldType.esriFieldTypeDouble:
+                return "Double";
+            case esriFieldType.esriFieldTypeGUID:
+                return "GUID";
+            case esriFieldType.esriFieldTypeGeometry:
+                return getFeatureClassShapeType(featureClass);
+            case esriFieldType.esriFieldTypeGlobalID:
+                return "GlobalID";
+            case esriFieldType.esriFieldTypeInteger:
+                return "Integer 32bit";
+            case esriFieldType.esriFieldTypeOID:
+                return "Object ID";
+            case esriFieldType.esriFieldTypeRaster:
+                return "Raster";
+            case esriFieldType.esriFieldTypeSingle:
+                return "Float";
+            case esriFieldType.esriFieldTypeSmallInteger:
+                return "Integer 16bit";
+            case esriFieldType.esriFieldTypeString:
+                return "String";
+            case esriFieldType.esriFieldTypeXML:
+                return "XML";
+            default:
+                return "";
         }
     }
     
