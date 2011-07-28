@@ -92,12 +92,15 @@ public class Rewrite {
                 String prettyName = catalogRootSplit.length > 1 ? catalogRootSplit[1].trim() : "";
                 if (new java.io.File(path).exists()) {
                     roots.add(new Root(path, prettyName));
-                } else {
+                } else if (!rootNonExistenceReported) {
                     log.error("Root does not exist: " + path + ". See web.xml.");
+                    rootNonExistenceReported = true;
                 }
             }
         }
         return roots;
     }
+    
+    private static boolean rootNonExistenceReported = false;
 
 }

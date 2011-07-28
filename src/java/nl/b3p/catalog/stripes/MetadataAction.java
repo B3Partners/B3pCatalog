@@ -224,7 +224,7 @@ public class MetadataAction extends DefaultAction {
     @SuppressWarnings("unused")
     @Before(stages = LifecycleStage.BindingAndValidation)
     private void rehydrate() {
-        log.debug("in rehydrate");
+        //log.debug("in rehydrate");
         StripesRequestWrapper req = StripesRequestWrapper.findStripesWrapper(getContext().getRequest());
         try {
             if (req.isMultipart()) {
