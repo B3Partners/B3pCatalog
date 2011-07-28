@@ -9,7 +9,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.text.DateFormat;
@@ -28,9 +27,11 @@ import net.sourceforge.stripes.controller.StripesRequestWrapper;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.HtmlErrorResolution;
+import nl.b3p.catalog.Roles;
 import nl.b3p.catalog.XmlResolution;
 import nl.b3p.catalog.arcgis.ArcGISSynchronizer;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
+import nl.b3p.catalog.filetree.Extensions;
 import nl.b3p.catalog.filetree.Rewrite;
 import nl.b3p.catalog.xml.DocumentHelper;
 import nl.b3p.catalog.xml.Names;
@@ -56,15 +57,6 @@ import org.jdom.output.XMLOutputter;
 public class MetadataAction extends DefaultAction {
     private final static Log log = LogFactory.getLog(MetadataAction.class);
     
-    private final static String PREPROCESSOR_RELATIVE_PATH = "/scripts/mde/preprocessors/metadataEditorPreprocessor_merged.xsl";
-
-    private final static String METADATA_FILE_EXTENSION = ".xml";
-    private final static String SHAPE_FILE_EXTENSION = ".shp";
-
-    //public final static String ROLE_VIEWER = "viewer";
-    public final static String ROLE_EDITOR = "editor";
-
-
     private final static DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     @Validate(required=true, on={"!importMD"})
@@ -92,7 +84,7 @@ public class MetadataAction extends DefaultAction {
         File mdFile = null;
         try {
             Map<String, String> extraHeaders = new HashMap<String, String>();
-            if (!getContext().getRequest().isUserInRole(ROLE_EDITOR))
+            if (!getContext().getRequest().isUserInRole(Roles.EDITOR))
                 extraHeaders.put("MDE_viewMode", "true");
 
             mdFile = Rewrite.getFileFromPPFileName(filename, getContext());
@@ -103,7 +95,7 @@ public class MetadataAction extends DefaultAction {
                 else
                     return new XmlResolution(md, extraHeaders);
             } else {
-                mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
+                mdFile = Rewrite.getFileFromPPFileName(filename + Extensions.METADATA, getContext());
 
                 if (!mdFile.exists()) {
                     // create new metadata on client side or show this in exported file:
@@ -145,7 +137,7 @@ public class MetadataAction extends DefaultAction {
     public Resolution save() {
         File mdFile = null;
         try {
-            if (!getContext().getRequest().isUserInRole(ROLE_EDITOR))
+            if (!getContext().getRequest().isUserInRole(Roles.EDITOR))
                 throw new B3PCatalogException("Only editors can save metadata files");
 
             mdFile = Rewrite.getFileFromPPFileName(filename, getContext());
@@ -156,7 +148,7 @@ public class MetadataAction extends DefaultAction {
                 String sanitizedMD = new XMLOutputter(Format.getPrettyFormat()).outputString(newDoc);
                 FGDBHelperProxy.setMetadata(mdFile, esriType, sanitizedMD);
             } else {
-                mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
+                mdFile = Rewrite.getFileFromPPFileName(filename + Extensions.METADATA, getContext());
 
                 Document oldDoc = DocumentHelper.getMetadataDocument(mdFile);
                 Document newDoc = sanitizeComments(oldDoc, metadata);
@@ -179,14 +171,14 @@ public class MetadataAction extends DefaultAction {
         try {
             dataFile = Rewrite.getFileFromPPFileName(filename, getContext());
             
-            log.debug(metadata);
+            //log.debug(metadata);
             // metadata string must already have been preprocessed on the clientside
             Document xmlDoc = new SAXBuilder().build(new StringReader(metadata));
             if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dataFile)) {
                 // only instantiate ArcGISSynchronizer here, since a NoClassDefFoundError can occur if ArcGIS is not installed / incorrectly installed
                 ArcGISSynchronizer arcGISSynchronizer = new ArcGISSynchronizer();
                 arcGISSynchronizer.synchronizeFGDB(xmlDoc, dataFile, esriType);
-            } else if (filename.endsWith(SHAPE_FILE_EXTENSION)) {
+            } else if (filename.endsWith(Extensions.SHAPE)) {
                 try {
                     // only instantiate ArcGISSynchronizer here, since a NoClassDefFoundError can occur if ArcGIS is not installed / incorrectly installed
                     ArcGISSynchronizer arcGISSynchronizer = new ArcGISSynchronizer();
@@ -298,7 +290,7 @@ public class MetadataAction extends DefaultAction {
 
                 return new XmlResolution(commentedMD);
             } else {
-                mdFile = Rewrite.getFileFromPPFileName(filename + METADATA_FILE_EXTENSION, getContext());
+                mdFile = Rewrite.getFileFromPPFileName(filename + Extensions.METADATA, getContext());
 
                 Document doc = DocumentHelper.getMetadataDocument(mdFile);
 
@@ -311,7 +303,7 @@ public class MetadataAction extends DefaultAction {
                 return new XmlResolution(new BufferedInputStream(FileUtils.openInputStream(mdFile)));
             }
         } catch(Exception e) {
-            String message = "Het is niet gelukt om het commentaar (" + comment + ") te posten in file \"" + filename + METADATA_FILE_EXTENSION + "\"";
+            String message = "Het is niet gelukt om het commentaar (" + comment + ") te posten in file \"" + filename + Extensions.METADATA + "\"";
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }

@@ -28,12 +28,12 @@ public class IFeatureClassList implements Iterable<IFeatureClass> {
 
     public Iterator<IFeatureClass> iterator() {
         try {
-            if (dataset instanceof IFeatureClass) {
-                log.debug("dataset instanceof IFeatureClass");
-                return new IFeatureClassIterator((IFeatureClass)dataset);
-            } else if (dataset instanceof IFeatureClassContainer) {
+            if (dataset instanceof IFeatureClassContainer) {
                 log.debug("dataset instanceof IFeatureClassContainer");
                 return new IFeatureClassContainerIterator((IFeatureClassContainer)dataset);
+            } else if (dataset instanceof IFeatureClass) {
+                log.debug("dataset instanceof IFeatureClass");
+                return new IFeatureClassIterator((IFeatureClass)dataset);
             } else {
                 throw new IOException("Unrecognized dataset type. Does it contain FeatureClasses?");
             }

@@ -4,7 +4,7 @@
  */
 package nl.b3p.catalog.xml;
 
-import org.jdom.Document;
+import java.util.List;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
@@ -31,15 +31,33 @@ public class XPathHelper {
     public final static String PROTOCOL_DATASET = "/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[1]/gmd:CI_OnlineResource/gmd:protocol/gco:CharacterString";
     public final static String DESC_DATASET = "/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[1]/gmd:CI_OnlineResource/gmd:description/gco:CharacterString";
 
+    public final static String FEATURE_CATALOG = "/*/gfc:FC_FeatureCatalogue";
 
-    public static void applyXPathValuePair(Document doc, String xpathString, String value) throws JDOMException {
-        XPath xpath = XPath.newInstance(xpathString);
-        xpath.addNamespace(Namespaces.GMD);
-        xpath.addNamespace(Namespaces.GCO);
-        Element element = (Element)xpath.selectSingleNode(doc);
+    public static void applyXPathValuePair(Object context, String xpathString, String value) throws JDOMException {
+        Element element = selectSingleElement(context, xpathString);
         if (element != null) {
             element.setText(value);
         }
+    }
+
+    public static Element selectSingleElement(Object context, String xpathString) throws JDOMException {
+        return (Element)selectSingleNode(context, xpathString);
+    }
+    
+    public static Object selectSingleNode(Object context, String xpathString) throws JDOMException {
+        return getXPath(xpathString).selectSingleNode(context);
+    }
+
+    public static List selectNodes(Object context, String xpathString) throws JDOMException {
+        return getXPath(xpathString).selectNodes(context);
+    }
+
+    public static XPath getXPath(String xpathString) throws JDOMException {
+        XPath xpath = XPath.newInstance(xpathString);
+        xpath.addNamespace(Namespaces.GMD);
+        xpath.addNamespace(Namespaces.GCO);
+        xpath.addNamespace(Namespaces.GFC);
+        return xpath;
     }
 
 }

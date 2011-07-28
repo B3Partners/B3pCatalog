@@ -20,12 +20,12 @@ import java.util.LinkedList;
 import java.util.List;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
-import nl.b3p.catalog.ArcObjectsNotFoundException;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.HtmlErrorResolution;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirContent;
+import nl.b3p.catalog.filetree.Extensions;
 import nl.b3p.catalog.filetree.Rewrite;
 import nl.b3p.catalog.filetree.Root;
 import org.apache.commons.logging.Log;
@@ -37,8 +37,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public class FiletreeAction extends DefaultAction {
     private final static Log log = LogFactory.getLog(FiletreeAction.class);
-
-    protected final static String SHAPE_EXT = ".shp";
 
     private static List<String> geoExtensions = null;
     
@@ -253,15 +251,15 @@ public class FiletreeAction extends DefaultAction {
     protected void filterOutShapeExtraFiles(DirContent dc) {
         List<String> shapeNames = new ArrayList<String>();
         for (nl.b3p.catalog.filetree.File file : dc.getFiles()) {
-            if (file.getName().endsWith(SHAPE_EXT)) {
-                shapeNames.add(file.getName().substring(0, file.getName().length() - SHAPE_EXT.length()));
+            if (file.getName().endsWith(Extensions.SHAPE)) {
+                shapeNames.add(file.getName().substring(0, file.getName().length() - Extensions.SHAPE.length()));
             }
         }
 
         for (String shapeName : shapeNames) {
             List<nl.b3p.catalog.filetree.File> toBeIgnoredFiles = new ArrayList<nl.b3p.catalog.filetree.File>();
             for (nl.b3p.catalog.filetree.File file : dc.getFiles()) {
-                if (file.getName().startsWith(shapeName) && !file.getName().endsWith(SHAPE_EXT)) {
+                if (file.getName().startsWith(shapeName) && !file.getName().endsWith(Extensions.SHAPE)) {
                     toBeIgnoredFiles.add(file);
                 }
             }
