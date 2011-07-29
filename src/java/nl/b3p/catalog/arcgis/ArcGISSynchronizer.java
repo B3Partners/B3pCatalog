@@ -50,22 +50,37 @@ public class ArcGISSynchronizer {
      * @throws IOException 
      */
     public void synchronizeFGDB(Document xmlDoc, File fgdbFile, int esriType) throws IOException, B3PCatalogException, JDOMException {
+        IDataset dataset = FGDBHelper.getTargetDataset(fgdbFile, esriType);
+        Workspace workspace = new Workspace(dataset.getWorkspace());
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_NAME, "ESRI File based Geo DataBase (FGDB)");
+        // Als distribute formaat naam is ingevuld, moet ook de versie ingevuld staan, anders is de xml niet correct volgens het xsd.
+        // hmmm, dit geeft 2.2 bij sample FGDB's van ArcGIS 10 ?!?
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_VERSION, workspace.getMajorVersion() + "." + workspace.getMinorVersion());
+
         // We don't use the FGDBHelperProxy below. A test whether a ArcGIS connection existsmust must be done beforehand.
-        sync(xmlDoc, FGDBHelper.getTargetDataset(fgdbFile, esriType));
+        sync(xmlDoc, dataset);
     }
     
     public void synchronizeShapeFile(Document xmlDoc, File shapeFile) throws IOException, B3PCatalogException, JDOMException {
         ShapefileWorkspaceFactory shapefileWorkspaceFactory = new ShapefileWorkspaceFactory();
         IWorkspace iWorkspace = shapefileWorkspaceFactory.openFromFile(shapeFile.getParent(), 0);
-        IDataset dataset = new Workspace(iWorkspace);
+        Workspace workspace = new Workspace(iWorkspace);
         
         String shapefileFullname = shapeFile.getName();
         if (!shapefileFullname.endsWith(Extensions.SHAPE) || shapefileFullname.length() == Extensions.SHAPE.length())
             throw new B3PCatalogException("File is not a shape file");
         
-        // shape file names are unique per directory; therefore type is irrelevant (== -1)
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_NAME, "ESRI Shape file");
+        // Bug in ArcObjects. Hij zegt bij de volgende regel:
+        // AutomationException: No such interface supported 
+        // Dit gaat dan om de IGeodatabaseRelease interface die toch echt supported hoort te zijn.
+        //XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_VERSION, workspace.getMajorVersion() + "." + workspace.getMinorVersion());
+        // Als distribute formaat naam is ingevuld, moet ook de versie ingevuld staan, anders is de xml niet correct volgens het xsd.
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_VERSION, "Onbekend");
+        
         String shapeFilename = shapefileFullname.substring(0, shapefileFullname.lastIndexOf('.'));
-        sync(xmlDoc, DatasetHelper.getDataSubset(dataset, shapeFilename, -1));
+        // shape file names are unique per directory; therefore type is irrelevant (== -1)
+        sync(xmlDoc, DatasetHelper.getDataSubset(workspace, shapeFilename, -1));
     }
     
     protected void sync(Document xmlDoc, IDataset dataset) throws IOException, B3PCatalogException, JDOMException {

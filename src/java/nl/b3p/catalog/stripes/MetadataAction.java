@@ -40,6 +40,7 @@ import nl.b3p.catalog.xml.XPathHelper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Content;
@@ -203,15 +204,27 @@ public class MetadataAction extends DefaultAction {
     }
     
     private void synchronizeRegularMetadata(Document xmlDoc) throws IOException, JDOMException {
-        String title = filename.substring(1 + filename.lastIndexOf(Rewrite.PRETTY_DIR_SEPARATOR));
-        int dotIndex = title.lastIndexOf(".");
+        String localFilename = filename.substring(1 + filename.lastIndexOf(Rewrite.PRETTY_DIR_SEPARATOR));
+        
+        String title = "";
+        String fileFormat = "";
+        int dotIndex = localFilename.lastIndexOf(".");
         if (dotIndex > 0) {
-            title = title.substring(0, dotIndex);
+            title = localFilename.substring(0, dotIndex);
+            if (dotIndex < localFilename.length()) {
+                fileFormat = localFilename.substring(dotIndex + 1);
+                fileFormat = StringUtils.capitalize(fileFormat);
+            }
         } else if (dotIndex == 0) {
-            title = title.substring(1);
+            title = localFilename.substring(1);
         }
+        
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, title);
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.FC_TITLE, title);
+
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_NAME, fileFormat);
+        // Als distribute formaat naam is ingevuld, moet ook de versie ingevuld staan, anders is de xml niet correct volgens het xsd.
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_VERSION, "Onbekend");
 
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.URL_DATASET, Rewrite.getFileNameFromPPFileName(filename, getContext()));
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.NAME_DATASET, "");
