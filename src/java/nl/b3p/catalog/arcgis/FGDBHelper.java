@@ -6,27 +6,12 @@
 package nl.b3p.catalog.arcgis;
 
 import com.esri.arcgis.datasourcesGDB.FileGDBWorkspaceFactory;
-import com.esri.arcgis.datasourcesraster.RasterBand;
-import com.esri.arcgis.datasourcesraster.RasterDataset;
-import com.esri.arcgis.geodatabase.FeatureClass;
-import com.esri.arcgis.geodatabase.FeatureDataset;
-import com.esri.arcgis.geodatabase.GeometricNetwork;
 import com.esri.arcgis.geodatabase.IDataset;
 import com.esri.arcgis.geodatabase.IEnumDataset;
 import com.esri.arcgis.geodatabase.IMetadata;
-import com.esri.arcgis.geodatabase.NetworkDataset;
-import com.esri.arcgis.geodatabase.RasterCatalog;
-import com.esri.arcgis.geodatabase.RelationshipClass;
-import com.esri.arcgis.geodatabase.RepresentationClass;
-import com.esri.arcgis.geodatabase.Table;
-import com.esri.arcgis.geodatabase.Tin;
-import com.esri.arcgis.geodatabase.Topology;
 import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.geodatabase.XmlPropertySet;
 import com.esri.arcgis.geodatabase.esriDatasetType;
-import com.esri.arcgis.geodatabaseextensions.CadastralFabric;
-import com.esri.arcgis.geodatabaseextensions.Terrain;
-import com.esri.arcgis.schematic.SchematicDataset;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

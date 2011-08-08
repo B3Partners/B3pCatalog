@@ -5,14 +5,14 @@ B3pCatalog.hashchange = function(event) {
     log(event.getState());
     var filename = event.getState("filename");
     if (filename) {
-        var selectedFile = $("a[rel=\"" + RegExp.escape(filename) + "\"]", "#filetree");
-        if (selectedFile.length == 0) {
+        var $selectedFile = $("a[rel=\"" + RegExp.escape(filename) + "\"]", "#filetree");
+        if ($selectedFile.length == 0) {
             B3pCatalog.loadFiletree(filename);
         } else {
             // highlight selected
             $(".selected", "#filetree").removeClass("selected");
-            selectedFile.addClass("selected");
-            $("#sidebar").scrollTo(selectedFile, B3pCatalog.filetreeScrollToOptions);
+            $selectedFile.addClass("selected");
+            B3pCatalog.fileTreeScrollTo($selectedFile);
         }
         // bad user input is dealt with internally:
         B3pCatalog.loadMetadataFromFile(
@@ -40,6 +40,9 @@ B3pCatalog.hashchange = function(event) {
     }
 };
 
+
+/////////////////////////////// Filetree ///////////////////////////////////////
+
 // zou niet meer nodig moeten zijn nu.
 B3pCatalog.loadingFiletree = false;
 
@@ -59,8 +62,10 @@ B3pCatalog.loadFiletree = function(selectedFilePath) {
         scriptEvent: "listDir",
         root: "",
         spinnerImage: B3pCatalog.contextPath + "/styles/images/spinner.gif",
-        expandEasing: "linear",
-        collapseEasing: "easeOutBounce",
+        expandEasing: "", //"linear",
+        collapseEasing: "", //"linear", //"easeOutBounce",
+        expandSpeed: 0,
+        collapseSpeed: 0,
         dragAndDrop: false,
         /*extraAjaxOptions: {
             global: false
@@ -89,18 +94,19 @@ B3pCatalog.loadFiletree = function(selectedFilePath) {
         },
         dirExpandCallback: function(dir) {},
         readyCallback: function(root) {
+            var $sidebar = $("#sidebar");
             if (selectedFilePath && !selectedFileFound) {
-                var selectedFile = $("a[rel=\"" + RegExp.escape(selectedFilePath) + "\"]", root);
+                var $selectedFile = $("a[rel=\"" + RegExp.escape(selectedFilePath) + "\"]", root);
                 //log(selectedFile);
-                if (selectedFile.length > 0) {
+                if ($selectedFile.length > 0) {
                     selectedFileFound = true;
                     $(".selected", root).removeClass("selected");
-                    selectedFile.addClass("selected");
-                    $("#sidebar").scrollTo(selectedFile, B3pCatalog.filetreeScrollToOptions);
+                    $selectedFile.addClass("selected");
+                    B3pCatalog.fileTreeScrollTo($selectedFile);
                 }
             } else {
                 // no selected file or a directory (root) was clicked
-                $("#sidebar").scrollTo(root, B3pCatalog.filetreeScrollToOptions);
+                B3pCatalog.fileTreeScrollTo(root);
             }
         }
     });
@@ -108,9 +114,50 @@ B3pCatalog.loadFiletree = function(selectedFilePath) {
 
 B3pCatalog.filetreeScrollToOptions = {
     axis: "y",
-    duration: 1000,
-    easing: "easeOutBounce"
+    duration: 0, //200, //1000,
+    easing: "" //"linear" //"easeOutBounce"
 }
+
+B3pCatalog.fileTreeScrollTo = function(elem) {
+    var $elem = $(elem),
+        $pane = $("#sidebar"),
+
+        paneHeight = $pane.height(),
+        paneTop = $pane.offset().top,
+        paneBottom = paneTop + paneHeight,
+
+        elemHeight = $elem.height(),
+        elemTop = $elem.offset().top,
+        elemBottom = elemTop + elemHeight;
+    
+    var isScrolledIntoPane = ((elemBottom >= paneTop) && (elemTop <= paneBottom)
+      && (elemBottom <= paneBottom) &&  (elemTop >= paneTop) );
+
+    if (!isScrolledIntoPane) {
+        if (elemBottom > paneBottom && elemTop <= paneBottom &&
+            elemTop > paneTop && elemHeight < paneHeight) {
+            // element is partly out of range at the bottom of the pane: 
+            // make sure the element bottom is visible at the bottom of the pane.
+            $pane.scrollTo($pane.scrollTop() + elemBottom - paneBottom, B3pCatalog.filetreeScrollToOptions);
+        } else {
+            // element is completely out of range
+            $pane.scrollTo($elem, B3pCatalog.filetreeScrollToOptions);
+        }
+    }
+}
+
+function scrollbarWidth() {
+    var div = $('<div style="width:50px;height:50px;overflow:hidden;position:absolute;top:-200px;left:-200px;"><div style="height:100px;"></div>');
+    // Append our div, do our calculation and then remove it
+    $('body').append(div);
+    var w1 = $('div', div).innerWidth();
+    div.css('overflow-y', 'scroll');
+    var w2 = $('div', div).innerWidth();
+    div.remove();
+    return (w1 - w2);
+}
+
+////////////////////////////// Algemeen ////////////////////////////////////////
 
 $(document).ajaxError(function(event, xhr, ajaxOptions, thrownError) {
     var message = xhr.responseText;
@@ -162,6 +209,9 @@ B3pCatalog.openSimpleErrorDialog = function(message) {
     });
 };
 
+
+/////////////////////////////////// Status /////////////////////////////////////
+
 // kan niet zomaar checken op zichtbaarheid van file of csw tab. 
 // bij switchen van tab blijft metadata rechts in het scherm namelijk zichtbaar (by design).
 // de modus hier beschreven is dus de modus van de metadata rechts in het scherm.
@@ -188,6 +238,7 @@ B3pCatalog.getCurrentFileAnchor = function() {
 };
 
 
+/////////////////////////////// Functies ///////////////////////////////////////
 
 B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo, cancel) {
     this._loadMetadata({
@@ -652,6 +703,8 @@ B3pCatalog.createToolbar = function(viewMode) {
 B3pCatalog.resizeTabsAndToolbar = function() {
     $("#mde-tabs-and-toolbar").css("left", $("#sidebar").width());
 };
+
+
 
 // dialogs:
 (function($) {
