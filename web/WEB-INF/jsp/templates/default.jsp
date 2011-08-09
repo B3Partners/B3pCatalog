@@ -5,6 +5,7 @@
 --%>
 
 <%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
+<%@include file="/WEB-INF/jsp/commons/urls.jsp" %>
 <%@include file="/WEB-INF/jsp/commons/customization.jsp" %>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -56,8 +57,7 @@
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/Math.uuid.js"></script>
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/wiki2html.js"></script>
 
-        <!-- organisations database. should be filled by customer data. -->
-        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/picklists/organisations.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${orgsUrl}"></script>
         <!-- mde -->
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/metadataEditor.js"></script>
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/commonOptions.js"></script>

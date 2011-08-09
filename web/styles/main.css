@@ -197,11 +197,11 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
     border: 1px solid #1962a0;
 }
 
-#mde-wrapper {
+#center-wrapper {
     position: relative; /* IE7 fix: necessary for all relative position elements within */
 }
 
-#mde-tabs-and-toolbar {
+#page-tabs-and-toolbar {
     height: 60px;
     right: 0;
     position: absolute;
@@ -212,20 +212,20 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
     position: relative;*/ /* IE7 fix: necessary for jquery ui buttons inside (with pos: relative) */
 }
 
-#mde-toolbar {
+#toolbar {
     position: absolute;
     bottom: 35px;
     left: 15px;
 }
 
-#mde-tabs {
+#page-tabs {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
 }
 
-.mde-save-message {
+.fade-message {
     background-color: #1962A0;
     color: white;
     font-size: 1.4em;
@@ -242,7 +242,7 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
     position: static; /* IE7 fix */
 }
 
-#filetree, #search {
+#filetree, #search, #admin {
     padding: 10px;
 }
 

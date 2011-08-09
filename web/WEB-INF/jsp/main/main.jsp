@@ -10,6 +10,6 @@
         <jsp:include page="/WEB-INF/jsp/main/sidebar.jsp"/>
     </stripes:layout-component>
     <stripes:layout-component name="content">
-        <jsp:include page="/WEB-INF/jsp/main/mde.jsp"/>
+        <jsp:include page="/WEB-INF/jsp/main/center.jsp"/>
     </stripes:layout-component>
 </stripes:layout-render>

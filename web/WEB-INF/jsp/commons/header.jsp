@@ -22,7 +22,8 @@
                 return false;
             });
 
-            showTab($("#main-tabs > li > a").first());
+            if ($("#main-tabs > li.main-tab-selected").length == 0)
+                showTab($("#main-tabs > li > a").first());
             
             $(".logout-link").click(function() {
                 B3pCatalog.logout();
@@ -70,15 +71,15 @@
                 <li class="ui-corner-top">
                     <a href="#search">Catalog doorzoeken</a>
                 </li>
-                <%--c:if test="${pageContext.request.isUserInRole('admin')}">
+                <c:if test="${pageContext.request.isUserInRole('admin')}">
                     <li class="ui-corner-top">
                         <a href="#admin">Beheer</a>
                     </li>
-                </c:if--%>
+                </c:if>
             </ul>
-            <div id="mde-tabs-and-toolbar" class="ui-helper-reset">
-                <div id="mde-toolbar" class="ui-helper-reset">&nbsp;</div>
-                <div id="mde-tabs" class="ui-helper-reset">&nbsp;</div>
+            <div id="page-tabs-and-toolbar" class="ui-helper-reset">
+                <div id="toolbar" class="ui-helper-reset">&nbsp;</div>
+                <div id="page-tabs" class="ui-helper-reset">&nbsp;</div>
             </div>
         </div>
     </div>

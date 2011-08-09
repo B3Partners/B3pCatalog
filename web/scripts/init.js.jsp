@@ -13,9 +13,11 @@
 if (typeof B3pCatalog == "undefined") B3pCatalog = {};
 
 B3pCatalog.contextPath = "${contextPath}";
+
 B3pCatalog.metadataUrl = "${metadataUrl}";
 B3pCatalog.filetreeUrl = "${filetreeUrl}";
 B3pCatalog.catalogUrl = "${catalogUrl}";
+B3pCatalog.adminUrl = "${adminUrl}";
 
 B3pCatalog.username = "${pageContext.request.remoteUser}";
 

@@ -3,8 +3,9 @@ if (typeof B3pCatalog == "undefined") B3pCatalog = {};
 B3pCatalog.hashchange = function(event) {
     log("state:");
     log(event.getState());
+    var page = event.getState("page");
     var filename = event.getState("filename");
-    if (filename) {
+    if (!page && filename) {
         var $selectedFile = $("a[rel=\"" + RegExp.escape(filename) + "\"]", "#filetree");
         if ($selectedFile.length == 0) {
             B3pCatalog.loadFiletree(filename);
@@ -24,6 +25,10 @@ B3pCatalog.hashchange = function(event) {
                 B3pCatalog.getCurrentFileAnchor().addClass("selected").focus();
             }
         );
+    } else if (page === "organisations") {
+        B3pCatalog.loadOrganisations();
+    } else if (page === "csw") {
+        showTab($("#main-tabs a[href='#search']"));
     } else {
         // get possible cookie set by login page:
         var loginHash = $.cookie("mdeLoginHash");
@@ -33,10 +38,13 @@ B3pCatalog.hashchange = function(event) {
             // we just logged in. get login hash from cookie.
             // this will trigger this event again ("hashchange")
             location.hash = loginHash;
-        } else {
-            // first run:
-            B3pCatalog.loadFiletree();
+            return; // stop the rest of the function (unnecessary loadFiletree)
         }
+    }
+    
+    if ($("#filetree").children().length == 0) {
+        // first run:
+        B3pCatalog.loadFiletree();
     }
 };
 
@@ -94,7 +102,6 @@ B3pCatalog.loadFiletree = function(selectedFilePath) {
         },
         dirExpandCallback: function(dir) {},
         readyCallback: function(root) {
-            var $sidebar = $("#sidebar");
             if (selectedFilePath && !selectedFileFound) {
                 var $selectedFile = $("a[rel=\"" + RegExp.escape(selectedFilePath) + "\"]", root);
                 //log(selectedFile);
@@ -219,7 +226,8 @@ B3pCatalog.openSimpleErrorDialog = function(message) {
 B3pCatalog.modes = {
     NO_MODE: 0,
     FILE_MODE: 1,
-    CSW_MODE: 2
+    CSW_MODE: 2,
+    ADMIN_MODE: 3
 };
 
 // dit kan wat consistenter:
@@ -304,7 +312,7 @@ B3pCatalog._loadMetadata = function(opts) {
     }, opts);
     B3pCatalog.saveDataUserConfirm({
         done: function() {
-            $("#mde-toolbar").empty();
+            $("#toolbar").empty();
             $("#mde").mde("destroy");
             var spinner = $("<img />", {
                 src: B3pCatalog.contextPath + "/styles/images/spinner.gif",
@@ -349,20 +357,27 @@ B3pCatalog.saveMetadata = function(settings) {
         },
         success: function(data, textStatus, xhr) {
             //log("metadata saved succesfully.");
-            var logMessage = $("<div/>", {
-                text: "Metadata succesvol opgeslagen.",
-                "class": "mde-save-message"
-            });
-            $("#center").append(logMessage);
-            setTimeout(function() {
-                logMessage.fadeOut(2000, function() { 
-                    $(this).remove(); 
-                });
-            }, 2000);
+            B3pCatalog.fadeMessage("Metadata succesvol opgeslagen");
             if (options.updateUI)
                 $("#saveMD").button("option", "disabled", true);
         }
     });
+};
+
+B3pCatalog.fadeMessage = function(message) {
+    log("fadeMessage: " + message);
+    var $message = $("<div/>", {
+        text: message,
+        "class": "fade-message",
+        "z-index": 2000
+    });
+    $("#center").append($message);
+    setTimeout(function() {
+        $message.fadeOut(2000, function() { 
+            $(this).remove(); 
+            log("123: " + message);
+        });
+    }, 2000);
 };
 
 B3pCatalog.logout = function() {
@@ -401,6 +416,9 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
 
 B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
     $("#mde").mde("destroy");
+    $("#center-wrapper").html($("<div>", {
+        id: "mde"
+    }));
 
     log("creating mde...");
     $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
@@ -430,16 +448,21 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
         }
     }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)));
     
-    B3pCatalog.createToolbar(viewMode);
+    B3pCatalog.createMdeToolbar(viewMode);
 };
 
 B3pCatalog.createCswMde = function(xmlDoc) {
+    $.bbq.pushState({page: "csw"}, 2);
     $("#mde").mde("destroy");
+    $("#center-wrapper").html($("<div>", {
+        id: "mde"
+    }));
+
     $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xml: xmlDoc,
         viewMode: true
     }));
-    B3pCatalog.createToolbar(true);
+    B3pCatalog.createMdeToolbar(true);
 };
 
 B3pCatalog.exportMetadata = function() {
@@ -576,8 +599,7 @@ B3pCatalog.synchronizeWithData = function() {
     B3pCatalog.saveDataUserConfirm({
         text: "Wilt u uw wijzigingen opslaan alvorens uw metadata te synchroniseren? Als u \"Nee\" kiest gaan uw wijzigingen verloren.",
         done: function() {
-            log("111111111");
-            log($("#mde").mde("save", {postprocess: false}));
+            //log($("#mde").mde("save", {postprocess: false}));
             $.ajax({
                 url: B3pCatalog.contextPath + "/Metadata.action",
                 data: {
@@ -591,17 +613,41 @@ B3pCatalog.synchronizeWithData = function() {
                 dataType: "text",
                 success: function(data) {
                     $("#mde").mde("option", "xml", data);
+                    B3pCatalog.fadeMessage("Synchronisatie succesvol");
                 }
             });
         }
     });
 }
 
-B3pCatalog.createToolbar = function(viewMode) {
-    var mdeToolbar = $("#mde-toolbar");
-    mdeToolbar.empty();
+B3pCatalog.createAdminOrganisationsToolbar = function() {
+    var toolbar = $("#toolbar");
+    toolbar.empty();
+
+    toolbar.append(
+        $("<a />", {
+            href: "#",
+            id: "saveOrgs",
+            text: "Opslaan",
+            title: "Organisaties en contactpersonen opslaan",
+            click: function(event) {
+                $(this).removeClass("ui-state-hover");
+                B3pCatalog.saveOrganisations();
+                return false;
+            }
+        }).button({
+            icons: {primary: "ui-icon-b3p-save_16"}
+        })
+    );
+    
+    B3pCatalog.resizeTabsAndToolbar();
+}
+
+B3pCatalog.createMdeToolbar = function(viewMode) {
+    var toolbar = $("#toolbar");
+    toolbar.empty();
     if (viewMode === false) {
-        mdeToolbar.append(
+        toolbar.append(
             $("<a />", {
                 href: "#",
                 id: "saveMD",
@@ -617,7 +663,7 @@ B3pCatalog.createToolbar = function(viewMode) {
                 icons: {primary: "ui-icon-b3p-save_16"}
             })
         );
-        mdeToolbar.append(
+        toolbar.append(
             $("<a />", {
                 href: "#",
                 id: "resetMD",
@@ -638,7 +684,7 @@ B3pCatalog.createToolbar = function(viewMode) {
                 icons: {primary: "ui-icon-b3p-delete_16"}
             })
         );
-        mdeToolbar.append(
+        toolbar.append(
             $("<a />", {
                 href: "#",
                 id: "synchronizeMD",
@@ -654,7 +700,7 @@ B3pCatalog.createToolbar = function(viewMode) {
                 icons: {primary: "ui-icon-b3p-sync_16"}
             })
         );
-        mdeToolbar.append(
+        toolbar.append(
             $("<a />", {
                 href: "#",
                 id: "importMD",
@@ -671,7 +717,7 @@ B3pCatalog.createToolbar = function(viewMode) {
             })
         );
     }
-    mdeToolbar.append(
+    toolbar.append(
         $("<a />", {
             href: "#",
             id: "exportMD",
@@ -694,14 +740,52 @@ B3pCatalog.createToolbar = function(viewMode) {
         })
     );
     if (B3pCatalog.currentMode === B3pCatalog.modes.FILE_MODE) {
-        mdeToolbar.append($("<input type='checkbox' checked='checked' value='strictISO19115' id='strictISO19115Checkbox' />"));
-        mdeToolbar.append($("<label for='strictISO19115Checkbox' title='Exporteer als ISO 19115 metadata volgens het Nederlands profiel versie 1.2. Tabs Algemeen, Attributen en Commentaar worden dan weggelaten.'>Exporteer strict</label>"));
+        toolbar.append($("<input type='checkbox' checked='checked' value='strictISO19115' id='strictISO19115Checkbox' />"));
+        toolbar.append($("<label for='strictISO19115Checkbox' title='Exporteer als ISO 19115 metadata volgens het Nederlands profiel versie 1.2. Tabs Algemeen, Attributen en Commentaar worden dan weggelaten.'>Exporteer strict</label>"));
     }
     B3pCatalog.resizeTabsAndToolbar();
 };
 
 B3pCatalog.resizeTabsAndToolbar = function() {
-    $("#mde-tabs-and-toolbar").css("left", $("#sidebar").width());
+    $("#page-tabs-and-toolbar").css("left", $("#sidebar").width());
+};
+
+B3pCatalog.loadOrganisations = function() {
+    B3pCatalog.saveDataUserConfirm({
+        done: function() {
+            $.ajax({
+                url: B3pCatalog.adminUrl,
+                data: {
+                    loadOrganisations: "t"
+                },
+                success: function(data) {
+                    showTab($("#main-tabs a[href='#admin']"));
+                    $("#mde").mde("destroy"); // if it exists
+                    document.title = B3pCatalog.title + B3pCatalog.titleSeparator + "Beheer organisaties";
+                    B3pCatalog.currentMode = B3pCatalog.modes.ADMIN_MODE;
+                    B3pCatalog.createAdminOrganisationsToolbar();
+                    $("#center-wrapper").html(data);
+                }
+            });
+        }
+    });
+};
+
+B3pCatalog.saveOrganisations = function() {
+    var orgs = $("#organisationsJSON").val();
+    $.ajax({
+        url: B3pCatalog.adminUrl,
+        data: {
+            saveOrganisations: "t",
+            organisations: orgs
+        },
+        type: "POST",
+        success: function(data) {
+            $.globalEval(orgs);
+            B3pCatalog.basicMdeOptions.organisations = organisations;
+            B3pCatalog.fadeMessage("Organisaties en contacten succesvol opgeslagen");
+        }
+    });
 };
 
 

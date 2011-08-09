@@ -9,7 +9,7 @@ B3pCatalog.basicMdeOptions = {
     richTextMode: true,
     extraTitleAboveTabs: false,
     iso19115PreviewImageInsideGeotab: true,
-    tabContainerSelector: "#mde-tabs",
+    tabContainerSelector: "#page-tabs",
     organisations: organisations
 };
 

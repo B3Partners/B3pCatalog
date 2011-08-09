@@ -6,6 +6,8 @@
 
 <%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
 
+<stripes:url var="orgsUrl" beanclass="nl.b3p.catalog.stripes.OrganisationsAction"/>
 <stripes:url var="filetreeUrl" beanclass="nl.b3p.catalog.stripes.FiletreeAction"/>
 <stripes:url var="metadataUrl" beanclass="nl.b3p.catalog.stripes.MetadataAction"/>
 <stripes:url var="catalogUrl" beanclass="nl.b3p.catalog.stripes.CatalogAction"/>
+<stripes:url var="adminUrl" beanclass="nl.b3p.catalog.stripes.AdminAction"/>

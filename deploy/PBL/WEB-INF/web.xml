@@ -161,6 +161,13 @@
         <param-name>filetreeSortBy</param-name>
         <param-value>name</param-value>
     </context-param>
+    <context-param>
+        <description>
+            Full absolute path to the config file that contains the allowed organisations and contacts in the MDE.
+        </description>
+        <param-name>organisationsJSONFilePath</param-name>
+        <param-value>/opt/B3pCatalog/config/organisations.json</param-value>
+    </context-param>
 
     <security-constraint>
         <web-resource-collection>
