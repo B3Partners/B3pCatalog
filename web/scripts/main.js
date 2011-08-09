@@ -365,7 +365,6 @@ B3pCatalog.saveMetadata = function(settings) {
 };
 
 B3pCatalog.fadeMessage = function(message) {
-    log("fadeMessage: " + message);
     var $message = $("<div/>", {
         text: message,
         "class": "fade-message",
@@ -375,7 +374,6 @@ B3pCatalog.fadeMessage = function(message) {
     setTimeout(function() {
         $message.fadeOut(2000, function() { 
             $(this).remove(); 
-            log("123: " + message);
         });
     }, 2000);
 };
