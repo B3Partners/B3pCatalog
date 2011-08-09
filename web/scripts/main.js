@@ -558,6 +558,7 @@ B3pCatalog.importMetadata = function() {
             xml: xml // start de mde opnieuw met deze xml
         });
         $dialogDiv.dialog("close");
+        B3pCatalog.fadeMessage("Importeren succesvol");
     }
     
     $form.submit(function() {
