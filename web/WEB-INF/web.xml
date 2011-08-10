@@ -99,6 +99,18 @@
             C:\Users\Erik\Documents\ArcCatalogRoot, Root
         </param-value>
     </context-param>
+    <context-param>
+        <description>
+            Puntkomma gescheiden ArcSDE connecties
+            Elke root kan weer een displayname (label) bevatten na een komma.
+            Voorbeeld:
+            
+        </description>
+        <param-name>ArcSDERoots</param-name>
+        <param-value>
+            
+        </param-value>
+    </context-param>
     <!-- SCC-servlet configuratie -->
     <context-param>
         <param-name>defaultXsl</param-name>

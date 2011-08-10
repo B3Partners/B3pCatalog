@@ -11,6 +11,6 @@ package nl.b3p.catalog;
 public class Roles {
     public final static String VIEWER = "viewer";
     public final static String EDITOR = "editor";
-    public final static String ADMIN = "beheerder";
+    public final static String ADMIN = "admin";
 
 }

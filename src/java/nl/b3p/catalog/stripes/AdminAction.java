@@ -8,6 +8,8 @@ import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
+import nl.b3p.catalog.B3PCatalogException;
+import nl.b3p.catalog.Roles;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -22,13 +24,27 @@ public class AdminAction extends DefaultAction {
     
     @DefaultHandler
     public Resolution loadOrganisations() {
-        organisations = OrganisationsAction.getOrganisations(getContext());
+        try {
+            if (!getContext().getRequest().isUserInRole(Roles.ADMIN))
+                throw new B3PCatalogException("User is not an admin");
+            organisations = OrganisationsAction.getOrganisations(getContext());
+        } catch (Exception ex) {
+            log.error("Cannot read organisations config file", ex);
+            organisations = "";
+        }
         return new ForwardResolution("/WEB-INF/jsp/main/organisations.jsp");
     }
     
     public Resolution saveOrganisations() {
-        OrganisationsAction.setOrganisations(getContext(), organisations);
-        return new StreamingResolution("text/plain", "success");
+        try {
+            if (!getContext().getRequest().isUserInRole(Roles.ADMIN))
+                throw new B3PCatalogException("User is not an admin");
+            OrganisationsAction.setOrganisations(getContext(), organisations);
+            return new StreamingResolution("text/plain", "success");
+        } catch (Exception ex) {
+            log.error("Cannot read organisations config file", ex);
+            return new StreamingResolution("text/plain", "fail");
+        }
     }
 
     public String getOrganisations() {

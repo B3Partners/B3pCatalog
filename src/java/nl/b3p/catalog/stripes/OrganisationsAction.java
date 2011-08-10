@@ -5,7 +5,6 @@
 package nl.b3p.catalog.stripes;
 
 import java.io.File;
-import java.io.IOException;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.Resolution;
@@ -30,7 +29,7 @@ public class OrganisationsAction extends DefaultAction {
     public static String getOrganisations(ActionBeanContext context) {
         try {
             return FileUtils.readFileToString(getOrganisationsConfigFile(context), "utf-8");
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             log.error("Cannot read organisations config file", ex);
             return "";
         }
@@ -39,7 +38,7 @@ public class OrganisationsAction extends DefaultAction {
     public static void setOrganisations(ActionBeanContext context, String organisations) {
         try {
             FileUtils.writeStringToFile(getOrganisationsConfigFile(context), organisations, "utf-8");
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             log.error("Cannot store organisations in config file", ex);
         }
     }

@@ -51,6 +51,11 @@ public class FiletreeAction extends DefaultAction {
     private String expandTo;
     private String selectedFilePath;
     
+    
+    public Resolution listSDEDir() {
+        log.debug("SDE requested: " + dir);
+        return new ForwardResolution(DIRCONTENTS_JSP);
+    }    
 
     public Resolution listDir() {
         log.debug("Directory requested: " + dir);
