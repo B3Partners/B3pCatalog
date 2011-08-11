@@ -101,14 +101,20 @@
     </context-param>
     <context-param>
         <description>
-            Puntkomma gescheiden ArcSDE connecties
+            Enter-gescheiden ArcSDE connecties.
+            Connecties bestaan uit key-value pairs gescheiden door punt-komma's (';')
+            Voor te gebruiken keys zie de javadoc van ArcObjects:
+            http://help.arcgis.com/en/sdk/10.0/java_ao_adf/api/arcobjects/com/esri/arcgis/datasourcesGDB/SdeWorkspaceFactory.html#open%28com.esri.arcgis.system.IPropertySet,%20int%29
+            
             Elke root kan weer een displayname (label) bevatten na een komma.
             Voorbeeld:
+            server=localhost;instance=sqlexpress;database=B3pCat;authentication_mode=osa;version=dbo.default, SDE B3pCat
             
+            NB: keys MOETEN lowercase zijn!! Bv "server" en dus niet "SERVER" oid
         </description>
         <param-name>ArcSDERoots</param-name>
         <param-value>
-            
+            server=localhost;instance=sqlexpress;database=B3pCat;authentication_mode=osa;version=dbo.default, SDE B3pCat
         </param-value>
     </context-param>
     <!-- SCC-servlet configuratie -->

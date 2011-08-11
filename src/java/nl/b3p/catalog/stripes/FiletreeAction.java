@@ -21,13 +21,14 @@ import java.util.List;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import nl.b3p.catalog.B3PCatalogException;
-import nl.b3p.catalog.resolution.HtmlErrorResolution;
+import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirContent;
 import nl.b3p.catalog.filetree.Extensions;
 import nl.b3p.catalog.filetree.Rewrite;
 import nl.b3p.catalog.filetree.Root;
+import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -54,7 +55,48 @@ public class FiletreeAction extends DefaultAction {
     
     public Resolution listSDEDir() {
         log.debug("SDE requested: " + dir);
-        return new ForwardResolution(DIRCONTENTS_JSP);
+        log.debug("expandTo: " + expandTo);
+        
+        try {
+            dirContent = getSDERootDirContent();
+            /*if (dir != null && expandTo == null) {
+                File directory = Rewrite.getFileFromPPFileName(dir, getContext());
+                log.debug("dir: " + directory);
+                dirContent = getDirContent(directory, null);
+            } else if (expandTo != null) {
+                File expandToFile = Rewrite.getFileFromPPFileName(expandTo, getContext());
+                selectedFilePath = expandToFile.getAbsolutePath();
+                log.debug("selectedFilePath/expandTo: " + selectedFilePath);
+                
+                File root = Rewrite.getRoot(selectedFilePath, getContext());
+                log.debug("root directory: " + root.getAbsolutePath());
+
+                List<String> subDirList = new LinkedList<String>();
+
+                File currentDirFile = expandToFile;
+                while (!currentDirFile.getAbsolutePath().equals(root.getAbsolutePath())) {
+                    subDirList.add(0, currentDirFile.getName());
+                    currentDirFile = currentDirFile.getParentFile();
+                }
+                log.debug("subDirList: " + subDirList);
+
+                dirContent = getSDERootDirContent(); 
+                for (Dir rootDir : dirContent.getDirs()) {
+                    if (rootDir.getPath().equals(root.getAbsolutePath())) {
+                        rootDir.setContent(getDirContent(root, subDirList));
+                        break;
+                    }
+                }
+            } else {
+                dirContent = getSDERootDirContent();
+            }*/
+            
+            return new ForwardResolution(DIRCONTENTS_JSP);
+        } catch(Exception ex) {
+            String message = "Niet gelukt SDE directory inhoud te tonen";
+            log.error(message, ex);
+            return new HtmlErrorResolution(message, ex);
+        }
     }    
 
     public Resolution listDir() {
@@ -83,7 +125,7 @@ public class FiletreeAction extends DefaultAction {
                 }
                 log.debug("subDirList: " + subDirList);
 
-                dirContent = getRootDirContent(); 
+                dirContent = getFileRootDirContent(); 
                 for (Dir rootDir : dirContent.getDirs()) {
                     if (rootDir.getPath().equals(root.getAbsolutePath())) {
                         rootDir.setContent(getDirContent(root, subDirList));
@@ -91,7 +133,7 @@ public class FiletreeAction extends DefaultAction {
                     }
                 }
             } else {
-                dirContent = getRootDirContent();
+                dirContent = getFileRootDirContent();
             }
             
             return new ForwardResolution(DIRCONTENTS_JSP);
@@ -101,11 +143,19 @@ public class FiletreeAction extends DefaultAction {
             return new HtmlErrorResolution(message, ex);
         }
     }
+    
+    protected DirContent getFileRootDirContent() {
+        return getRootDirContent(Rewrite.getRoots(getContext()));
+    }
+    
+    protected DirContent getSDERootDirContent() {
+        return getRootDirContent(ArcSDEHelperProxy.getRoots(getContext()));
+    }
 
-    protected DirContent getRootDirContent() {
+    protected DirContent getRootDirContent(List<Root> roots) {
         DirContent dc = new DirContent();
         List<Dir> dirs = new ArrayList<Dir>();
-        for (Root root : Rewrite.getRoots(getContext())) {
+        for (Root root : roots) {
             Dir dir = new Dir();
             dir.setPath(root.getPath());
             dir.setName(root.getPrettyName() + " (" + root.getPath() + ")");

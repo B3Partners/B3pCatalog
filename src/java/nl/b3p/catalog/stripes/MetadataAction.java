@@ -39,6 +39,7 @@ import nl.b3p.catalog.xml.Namespaces;
 import nl.b3p.catalog.xml.XPathHelper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -76,6 +77,10 @@ public class MetadataAction extends DefaultAction {
     private boolean strictISO19115 = false;
     
     private FileBean filedata;
+    
+    public Resolution loadSDE() {
+        throw new NotImplementedException();
+    }
 
     public Resolution load() {
         return getMetadataResolution();

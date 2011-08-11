@@ -5,19 +5,40 @@ B3pCatalog.hashchange = function(event) {
     log(event.getState());
     var page = event.getState("page");
     var filename = event.getState("filename");
+    var arcsde = event.getState("arcsde");
     if (!page && filename) {
-        var $selectedFile = $("a[rel=\"" + RegExp.escape(filename) + "\"]", "#filetree");
+        $(".selected", "#filetree").removeClass("selected");
+        var $selectedFile = $("a[rel=\"" + RegExp.escape(filename) + "\"]", "#filetree-file");
         if ($selectedFile.length == 0) {
-            B3pCatalog.loadFiletree(filename);
+            B3pCatalog.loadFiletreeFile(filename);
         } else {
             // highlight selected
-            $(".selected", "#filetree").removeClass("selected");
             $selectedFile.addClass("selected");
             B3pCatalog.fileTreeScrollTo($selectedFile);
         }
         // bad user input is dealt with internally:
         B3pCatalog.loadMetadataFromFile(
             filename,
+            event.getState("type", true),
+            event.getState("isgeo", true),
+            function() {
+                B3pCatalog.clickedFileAnchor.removeClass("selected");
+                B3pCatalog.getCurrentFileAnchor().addClass("selected").focus();
+            }
+        );
+    } else if (!page && arcsde) {
+        $(".selected", "#filetree").removeClass("selected");
+        var $selectedSDE = $("a[rel=\"" + RegExp.escape(arcsde) + "\"]", "#filetree-sde");
+        if ($selectedSDE.length == 0) {
+            B3pCatalog.loadFiletreeSDE(arcsde);
+        } else {
+            // highlight selected
+            $selectedSDE.addClass("selected");
+            B3pCatalog.fileTreeScrollTo($selectedSDE);
+        }
+        // bad user input is dealt with internally:
+        B3pCatalog.loadMetadataFromFile(
+            arcsde,
             event.getState("type", true),
             event.getState("isgeo", true),
             function() {
@@ -42,9 +63,13 @@ B3pCatalog.hashchange = function(event) {
         }
     }
     
-    if ($("#filetree").children().length == 0) {
+    if ($("#filetree-file").children().length == 0) {
         // first run:
-        B3pCatalog.loadFiletree();
+        B3pCatalog.loadFiletreeFile();
+    }
+    if ($("#filetree-sde").children().length == 0) {
+        // first run:
+        B3pCatalog.loadFiletreeSDE();
     }
 };
 
@@ -52,35 +77,18 @@ B3pCatalog.hashchange = function(event) {
 /////////////////////////////// Filetree ///////////////////////////////////////
 
 // zou niet meer nodig moeten zijn nu.
-B3pCatalog.loadingFiletree = false;
+B3pCatalog.loadingFiletreeFile = false;
 
 // Deze functie wordt maar één keer aangeroepen per aanroep van de B3PCatalog pagina, vandaar de boolean.
 // De boolean B3pCatalog.loadingFiletree voorkomt het voor een tweede keer starten van de filetree (met alleen de roots)
-B3pCatalog.loadFiletree = function(selectedFilePath) {
-    log("loadFiletree");
-    if (B3pCatalog.loadingFiletree)
+B3pCatalog.loadFiletreeFile = function(selectedFilePath) {
+    log("loadFiletreeFile");
+    if (B3pCatalog.loadingFiletreeFile)
         return;
-    B3pCatalog.loadingFiletree = true;
+    B3pCatalog.loadingFiletreeFile = true;
 
-    // used to indicate that the selected file does not need to be selected in readyCallback
-    var selectedFileFound = false;
-    
-    $("#filetree").fileTree({
-        script: B3pCatalog.filetreeUrl,
+    B3pCatalog._loadFiletree(selectedFilePath, $("#filetree-file"), {
         scriptEvent: "listDir",
-        root: "",
-        spinnerImage: B3pCatalog.contextPath + "/styles/images/spinner.gif",
-        expandEasing: "", //"linear",
-        collapseEasing: "", //"linear", //"easeOutBounce",
-        expandSpeed: 0,
-        collapseSpeed: 0,
-        dragAndDrop: false,
-        /*extraAjaxOptions: {
-            global: false
-        },*/
-        activeClass: "selected",
-        activateDirsOnClick: false,
-        expandOnFirstCallTo: selectedFilePath,
         fileCallback: function(filename, aElement) {
             //log("file clicked: " + filename);
             var anchor = B3pCatalog.clickedFileAnchor = $(aElement);
@@ -99,7 +107,60 @@ B3pCatalog.loadFiletree = function(selectedFilePath) {
             }
 
             $.bbq.pushState(newState, 2);
-        },
+        }
+    });
+};
+
+// zou niet meer nodig moeten zijn nu.
+B3pCatalog.loadingFiletreeSDE = false;
+
+B3pCatalog.loadFiletreeSDE = function(selectedFilePath) {
+    log("loadFiletreeSDE");
+    if (B3pCatalog.loadingFiletreeSDE)
+        return;
+    B3pCatalog.loadingFiletreeSDE = true;
+
+    B3pCatalog._loadFiletree(selectedFilePath, $("#filetree-sde"), {
+        scriptEvent: "listSDEDir",
+        fileCallback: function(filename, aElement) {
+            //log("file clicked: " + filename);
+            var anchor = B3pCatalog.clickedFileAnchor = $(aElement);
+            if (anchor.length > 0 && anchor.hasClass("selected"))
+                return;
+
+            var newState = {arcsde: filename};
+
+            var esriType = parseInt(anchor.attr("esritype"));
+            if (!isNaN(esriType) && esriType !== 0) {
+                newState.type = anchor.attr("esritype");
+            }
+
+            $.bbq.pushState(newState, 2);
+        }
+    });
+};
+
+B3pCatalog._loadFiletree = function(selectedFilePath, $elem, extraOpts) {
+    // used to indicate that the selected file does not need to be selected in readyCallback
+    var selectedFileFound = false;
+    
+    $elem.fileTree($.extend({
+        scriptEvent: "",
+        script: B3pCatalog.filetreeUrl,
+        root: "",
+        spinnerImage: B3pCatalog.contextPath + "/styles/images/spinner.gif",
+        expandEasing: "", //"linear",
+        collapseEasing: "", //"linear", //"easeOutBounce",
+        expandSpeed: 0,
+        collapseSpeed: 0,
+        dragAndDrop: false,
+        /*extraAjaxOptions: {
+            global: false
+        },*/
+        activeClass: "selected",
+        activateDirsOnClick: false,
+        expandOnFirstCallTo: selectedFilePath,
+        fileCallback: $.noop,
         dirExpandCallback: function(dir) {},
         readyCallback: function(root) {
             if (selectedFilePath && !selectedFileFound) {
@@ -116,14 +177,14 @@ B3pCatalog.loadFiletree = function(selectedFilePath) {
                 B3pCatalog.fileTreeScrollTo(root);
             }
         }
-    });
-}
+    }, extraOpts));
+};
 
 B3pCatalog.filetreeScrollToOptions = {
     axis: "y",
     duration: 0, //200, //1000,
     easing: "" //"linear" //"easeOutBounce"
-}
+};
 
 B3pCatalog.fileTreeScrollTo = function(elem) {
     var $elem = $(elem),
@@ -151,7 +212,7 @@ B3pCatalog.fileTreeScrollTo = function(elem) {
             $pane.scrollTo($elem, B3pCatalog.filetreeScrollToOptions);
         }
     }
-}
+};
 
 function scrollbarWidth() {
     var div = $('<div style="width:50px;height:50px;overflow:hidden;position:absolute;top:-200px;left:-200px;"><div style="height:100px;"></div>');

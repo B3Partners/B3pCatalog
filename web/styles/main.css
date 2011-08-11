@@ -246,6 +246,10 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
     padding: 10px;
 }
 
+#filetree-sde {
+    padding-top: 10px;
+}
+
 #searchResultsContainer {
     margin-top: 1em;
     margin-bottom: 1em;

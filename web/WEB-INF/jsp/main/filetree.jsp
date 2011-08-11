@@ -10,4 +10,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 
-<div id="filetree" class="tab-definition"></div>
+<div id="filetree" class="tab-definition">
+    <div id="filetree-file"></div>
+    <div id="filetree-sde"></div>
+</div>
