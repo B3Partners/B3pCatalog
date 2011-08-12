@@ -71,7 +71,7 @@
                 <li class="ui-corner-top">
                     <a href="#search">Catalog doorzoeken</a>
                 </li>
-                <c:if test="${pageContext.request.isUserInRole('admin')}">
+                <c:if test="${f:isUserInRole(pageContext.request,'admin')}">
                     <li class="ui-corner-top">
                         <a href="#admin">Beheer</a>
                     </li>
