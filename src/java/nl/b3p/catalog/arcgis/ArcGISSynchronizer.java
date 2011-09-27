@@ -17,8 +17,13 @@ import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.geodatabase.esriDatasetType;
 import com.esri.arcgis.geodatabase.esriFieldType;
 import com.esri.arcgis.geometry.IEnvelopeGEN;
+import com.esri.arcgis.geometry.IPoint;
+import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.geometry.ISpatialReferenceInfo;
+import com.esri.arcgis.geometry.Point;
+import com.esri.arcgis.geometry.SpatialReferenceEnvironment;
 import com.esri.arcgis.geometry.esriGeometryType;
+import com.esri.arcgis.geometry.esriSRGeoCSType;
 import java.io.File;
 import java.io.IOException;
 import nl.b3p.catalog.B3PCatalogException;
@@ -95,11 +100,19 @@ public class ArcGISSynchronizer {
         IGeoDataset geoDataset = (IGeoDataset)dataset;
         
         IEnvelopeGEN envelope = (IEnvelopeGEN)geoDataset.getExtent();
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_WEST, "" + envelope.getXMin());
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_EAST, "" + envelope.getXMax());
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_SOUTH, "" + envelope.getYMin());
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_NORTH, "" + envelope.getYMax());
-        
+
+        IPoint ll = envelope.getLowerLeft();
+        IPoint ur = envelope.getUpperRight();
+        SpatialReferenceEnvironment refEnv = new SpatialReferenceEnvironment();
+        ISpatialReference wgs84 = refEnv.createGeographicCoordinateSystem(esriSRGeoCSType.esriSRGeoCS_WGS1984);
+        ll.project(wgs84);
+        ur.project(wgs84);
+
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_WEST, "" + ll.getX());
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_EAST, "" + ur.getX());
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_SOUTH, "" + ll.getY());
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_NORTH, "" + ur.getY());
+
         ISpatialReferenceInfo spatialRef = (ISpatialReferenceInfo)geoDataset.getSpatialReference();
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.REF_CODESPACE, "EPSG");
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.REF_CODE, "" + spatialRef.getFactoryCode()); // is 0 voor edam/volendam voorbeeld?!?
