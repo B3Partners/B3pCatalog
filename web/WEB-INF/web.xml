@@ -93,10 +93,10 @@
         </description>
         <param-name>CatalogRoots</param-name>
         <param-value>
-            C:\Documents and Settings\Erik van de Pol\Mijn documenten\B3PCatalogRoot1, Root1; 
-            C:\Documents and Settings\Erik van de Pol\Mijn documenten\B3PCatalogRoot2, Root2; 
-            C:\, SimpleTestOnly; 
-            C:\Users\Erik\Documents\ArcCatalogRoot, Root
+            C:\, C;
+            V:\, V;
+            X:\, X;
+            Y:\, Y
         </param-value>
     </context-param>
     <context-param>
@@ -114,7 +114,7 @@
         </description>
         <param-name>ArcSDERoots</param-name>
         <param-value>
-            server=localhost;instance=sqlexpress;database=B3pCat;authentication_mode=osa;version=dbo.default, SDE B3pCat
+            server=localhost;instance=sqlexpress;database=geodb;authentication_mode=osa;version=dbo.default, SDE geodb
         </param-value>
     </context-param>
     <!-- SCC-servlet configuratie -->
@@ -182,7 +182,7 @@
             Full absolute path to the config file that contains the allowed organisations and contacts in the MDE.
         </description>
         <param-name>organisationsJSONFilePath</param-name>
-        <param-value>/opt/B3pCatalog/config/organisations.json</param-value>
+        <param-value>C:/opt/B3pCatalog/config/organisations.json</param-value>
     </context-param>
     <filter>
         <display-name>Security Filter</display-name>
