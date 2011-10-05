@@ -1,14 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package nl.b3p.catalog.stripes;
-
-/**
- *
- * @author Erik van de Pol
- */
 
 import java.io.File;
 import java.io.FileFilter;
@@ -16,13 +6,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
+import nl.b3p.catalog.filetree.ArcSDEPath;
+import nl.b3p.catalog.filetree.ArcSDERoot;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirContent;
 import nl.b3p.catalog.filetree.Extensions;
@@ -32,65 +23,24 @@ import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/**
- *
- * @author Erik van de Pol
- */
 public class FiletreeAction extends DefaultAction {
     private final static Log log = LogFactory.getLog(FiletreeAction.class);
 
     private static List<String> geoExtensions = null;
     
-    /*protected final static String[] ALLOWED_CONTENT_TYPES = {
-        ""
-    };*/
-
     private final static String DIRCONTENTS_JSP = "/WEB-INF/jsp/main/file/filetreeConnector.jsp";
 
     private DirContent dirContent;
-    private String dir;
-    private String expandTo;
-    private String selectedFilePath;
-    
+    private String dir;    
     
     public Resolution listSDEDir() {
-        log.debug("SDE requested: " + dir);
-        log.debug("expandTo: " + expandTo);
+        log.debug(String.format("listSDEDir(): %s", dir));
         
         try {
-            dirContent = getSDERootDirContent();
-            /*if (dir != null && expandTo == null) {
-                File directory = Rewrite.getFileFromPPFileName(dir, getContext());
-                log.debug("dir: " + directory);
-                dirContent = getDirContent(directory, null);
-            } else if (expandTo != null) {
-                File expandToFile = Rewrite.getFileFromPPFileName(expandTo, getContext());
-                selectedFilePath = expandToFile.getAbsolutePath();
-                log.debug("selectedFilePath/expandTo: " + selectedFilePath);
-                
-                File root = Rewrite.getRoot(selectedFilePath, getContext());
-                log.debug("root directory: " + root.getAbsolutePath());
+            dirContent = dir == null
+                    ? getSDERootDirContent()
+                    : getSDEContents();
 
-                List<String> subDirList = new LinkedList<String>();
-
-                File currentDirFile = expandToFile;
-                while (!currentDirFile.getAbsolutePath().equals(root.getAbsolutePath())) {
-                    subDirList.add(0, currentDirFile.getName());
-                    currentDirFile = currentDirFile.getParentFile();
-                }
-                log.debug("subDirList: " + subDirList);
-
-                dirContent = getSDERootDirContent(); 
-                for (Dir rootDir : dirContent.getDirs()) {
-                    if (rootDir.getPath().equals(root.getAbsolutePath())) {
-                        rootDir.setContent(getDirContent(root, subDirList));
-                        break;
-                    }
-                }
-            } else {
-                dirContent = getSDERootDirContent();
-            }*/
-            
             return new ForwardResolution(DIRCONTENTS_JSP);
         } catch(Exception ex) {
             String message = "Niet gelukt SDE directory inhoud te tonen";
@@ -100,42 +50,13 @@ public class FiletreeAction extends DefaultAction {
     }    
 
     public Resolution listDir() {
-        log.debug("Directory requested: " + dir);
-        log.debug("expandTo: " + expandTo);
+        log.debug(String.format("listDir(): %s", dirContent, dir));
 
         try {
-            if (dir != null && expandTo == null) {
-                File directory = Rewrite.getFileFromPPFileName(dir, getContext());
-                log.debug("dir: " + directory);
-                dirContent = getDirContent(directory, null);
-            } else if (expandTo != null) {
-                File expandToFile = Rewrite.getFileFromPPFileName(expandTo, getContext());
-                selectedFilePath = expandToFile.getAbsolutePath();
-                log.debug("selectedFilePath/expandTo: " + selectedFilePath);
-                
-                File root = Rewrite.getRoot(selectedFilePath, getContext());
-                log.debug("root directory: " + root.getAbsolutePath());
+            dirContent = dir == null
+                    ? getFileRootDirContent()
+                    : getDirContent(Rewrite.getFileFromPPFileName(dir, getContext()), null);
 
-                List<String> subDirList = new LinkedList<String>();
-
-                File currentDirFile = expandToFile;
-                while (!currentDirFile.getAbsolutePath().equals(root.getAbsolutePath())) {
-                    subDirList.add(0, currentDirFile.getName());
-                    currentDirFile = currentDirFile.getParentFile();
-                }
-                log.debug("subDirList: " + subDirList);
-
-                dirContent = getFileRootDirContent(); 
-                for (Dir rootDir : dirContent.getDirs()) {
-                    if (rootDir.getPath().equals(root.getAbsolutePath())) {
-                        rootDir.setContent(getDirContent(root, subDirList));
-                        break;
-                    }
-                }
-            } else {
-                dirContent = getFileRootDirContent();
-            }
-            
             return new ForwardResolution(DIRCONTENTS_JSP);
         } catch(Exception ex) {
             String message = "Niet gelukt directory inhoud te tonen";
@@ -152,13 +73,35 @@ public class FiletreeAction extends DefaultAction {
         return getRootDirContent(ArcSDEHelperProxy.getRoots(getContext()));
     }
 
-    protected DirContent getRootDirContent(List<Root> roots) {
+    protected DirContent getSDEContents() throws Exception {
+        ArcSDEPath arcSDEPath = new ArcSDEPath(dir, getContext());
+
+        DirContent dc = new DirContent();
+        List<Dir> dirsList = new ArrayList<Dir>();
+        List<nl.b3p.catalog.filetree.File> filesList = new ArrayList<nl.b3p.catalog.filetree.File>();
+        if(arcSDEPath.getDatasetName() == null) {
+            dirsList = ArcSDEHelperProxy.getFeatureDatasets(arcSDEPath.getRoot(), dir);
+            filesList = ArcSDEHelperProxy.getFeatureClasses(arcSDEPath.getRoot(), dir);
+        } else {
+            filesList = ArcSDEHelperProxy.getFeatureClassesInDataset(arcSDEPath.getRoot(), dir, arcSDEPath.getContainingFeatureDatasetName());
+        }
+
+        Collections.sort(dirsList, new DirnameComparator());
+        sortFiles(filesList);
+
+        dc.setDirs(dirsList);
+        dc.setFiles(filesList);
+
+        return dc;
+    }
+    
+    protected DirContent getRootDirContent(List<? extends Root> roots) {
         DirContent dc = new DirContent();
         List<Dir> dirs = new ArrayList<Dir>();
         for (Root root : roots) {
             Dir dir = new Dir();
             dir.setPath(root.getPath());
-            dir.setName(root.getPrettyName() + " (" + root.getPath() + ")");
+            dir.setName(root.getPrettyName() + (root instanceof ArcSDERoot ? "" : " (" + root.getPath() + ")"));
             dirs.add(dir);
         }
         dc.setDirs(dirs);
@@ -324,22 +267,6 @@ public class FiletreeAction extends DefaultAction {
         }
     }
 
-    public DirContent getDirContent() {
-        return dirContent;
-    }
-
-    public void setDirContent(DirContent dirContent) {
-        this.dirContent = dirContent;
-    }
-
-    public String getExpandTo() {
-        return expandTo;
-    }
-
-    public void setExpandTo(String expandTo) {
-        this.expandTo = expandTo;
-    }
-
     public String getDir() {
         return dir;
     }
@@ -348,12 +275,12 @@ public class FiletreeAction extends DefaultAction {
         this.dir = dir;
     }
 
-    public String getSelectedFilePath() {
-        return selectedFilePath;
+    public DirContent getDirContent() {
+        return dirContent;
     }
 
-    public void setSelectedFilePath(String selectedFilePath) {
-        this.selectedFilePath = selectedFilePath;
+    public void setDirContent(DirContent dirContent) {
+        this.dirContent = dirContent;
     }
 
     // <editor-fold defaultstate="collapsed" desc="Comparison methods for file/dir sorting">

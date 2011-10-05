@@ -1,75 +1,54 @@
 if (typeof B3pCatalog == "undefined") B3pCatalog = {};
 
 B3pCatalog.hashchange = function(event) {
-    log("state:");
-    log(event.getState());
-    var page = event.getState("page");
-    var filename = event.getState("filename");
-    var arcsde = event.getState("arcsde");
-    if (!page && filename) {
+    // get possible cookie set by login page:
+    var loginHash = $.cookie("mdeLoginHash");
+    if (loginHash && $.trim(loginHash) !== "#") {
+        // delete cookie first (prevent perpetual loops):
+        $.cookie("mdeLoginHash", null);
+        // we just logged in. get login hash from cookie.
+        // this will trigger this event again ("hashchange")
+        location.hash = loginHash;
+        return; // stop the rest of the function (unnecessary loadFiletree)
+    }
+
+    if ($("#filetree-file").children().length == 0) {
+        // first run:
+        B3pCatalog.loadFiletreeFile();
+        B3pCatalog.loadFiletreeSDE();
+    }
+
+    if(event.getState("page") === "organisations") {
+        B3pCatalog.loadOrganisations();
+        return;
+    }
+
+    if(event.getState("page") === "csw") {
+        showTab($("#main-tabs a[href='#search']"));
+        return;
+    }
+
+    if(event.getState("page") == "metadata") {
         $(".selected", "#filetree").removeClass("selected");
-        var $selectedFile = $("a[rel=\"" + RegExp.escape(filename) + "\"]", "#filetree-file");
+        var $selectedFile = $("a[rel=\"" + RegExp.escape(event.getState("path")) + "\"]", "#filetree-file");
         if ($selectedFile.length == 0) {
-            B3pCatalog.loadFiletreeFile(filename);
+            B3pCatalog.loadFiletreeFile(event.getState("path"));
         } else {
             // highlight selected
             $selectedFile.addClass("selected");
             B3pCatalog.fileTreeScrollTo($selectedFile);
         }
-        // bad user input is dealt with internally:
-        B3pCatalog.loadMetadataFromFile(
-            filename,
-            event.getState("type", true),
-            event.getState("isgeo", true),
+
+        B3pCatalog.loadMetadata(
+            event.getState("mode"),
+            event.getState("path"),
+            event.getState("isGeo",true),
             function() {
                 B3pCatalog.clickedFileAnchor.removeClass("selected");
                 B3pCatalog.getCurrentFileAnchor().addClass("selected").focus();
             }
         );
-    } else if (!page && arcsde) {
-        $(".selected", "#filetree").removeClass("selected");
-        var $selectedSDE = $("a[rel=\"" + RegExp.escape(arcsde) + "\"]", "#filetree-sde");
-        if ($selectedSDE.length == 0) {
-            B3pCatalog.loadFiletreeSDE(arcsde);
-        } else {
-            // highlight selected
-            $selectedSDE.addClass("selected");
-            B3pCatalog.fileTreeScrollTo($selectedSDE);
-        }
-        // bad user input is dealt with internally:
-        B3pCatalog.loadMetadataFromFile(
-            arcsde,
-            event.getState("type", true),
-            event.getState("isgeo", true),
-            function() {
-                B3pCatalog.clickedFileAnchor.removeClass("selected");
-                B3pCatalog.getCurrentFileAnchor().addClass("selected").focus();
-            }
-        );
-    } else if (page === "organisations") {
-        B3pCatalog.loadOrganisations();
-    } else if (page === "csw") {
-        showTab($("#main-tabs a[href='#search']"));
-    } else {
-        // get possible cookie set by login page:
-        var loginHash = $.cookie("mdeLoginHash");
-        if (loginHash && $.trim(loginHash) !== "#") {
-            // delete cookie first (prevent perpetual loops):
-            $.cookie("mdeLoginHash", null);
-            // we just logged in. get login hash from cookie.
-            // this will trigger this event again ("hashchange")
-            location.hash = loginHash;
-            return; // stop the rest of the function (unnecessary loadFiletree)
-        }
-    }
-    
-    if ($("#filetree-file").children().length == 0) {
-        // first run:
-        B3pCatalog.loadFiletreeFile();
-    }
-    if ($("#filetree-sde").children().length == 0) {
-        // first run:
-        B3pCatalog.loadFiletreeSDE();
+        return;
     }
 };
 
@@ -89,22 +68,18 @@ B3pCatalog.loadFiletreeFile = function(selectedFilePath) {
 
     B3pCatalog._loadFiletree(selectedFilePath, $("#filetree-file"), {
         scriptEvent: "listDir",
-        fileCallback: function(filename, aElement) {
+        fileCallback: function(rel, aElement) {
             //log("file clicked: " + filename);
             var anchor = B3pCatalog.clickedFileAnchor = $(aElement);
             if (anchor.length > 0 && anchor.hasClass("selected"))
                 return;
 
-            var newState = {filename: filename};
-
-            var esriType = parseInt(anchor.attr("esritype"));
-            if (!isNaN(esriType) && esriType !== 0) {
-                newState.type = anchor.attr("esritype");
-            }
-            var isGeo = anchor.attr("isgeo");
-            if (isGeo !== "true") {
-                newState.isgeo = isGeo;
-            }
+            var newState = {
+                page: "metadata",
+                mode: B3pCatalog.modes.FILE_MODE,
+                path: rel,
+                isGeo: "true" == anchor.attr("isgeo")
+            };
 
             $.bbq.pushState(newState, 2);
         }
@@ -115,25 +90,22 @@ B3pCatalog.loadFiletreeFile = function(selectedFilePath) {
 B3pCatalog.loadingFiletreeSDE = false;
 
 B3pCatalog.loadFiletreeSDE = function(selectedFilePath) {
-    log("loadFiletreeSDE");
     if (B3pCatalog.loadingFiletreeSDE)
         return;
     B3pCatalog.loadingFiletreeSDE = true;
 
     B3pCatalog._loadFiletree(selectedFilePath, $("#filetree-sde"), {
         scriptEvent: "listSDEDir",
-        fileCallback: function(filename, aElement) {
-            //log("file clicked: " + filename);
+        fileCallback: function(rel, aElement) {
             var anchor = B3pCatalog.clickedFileAnchor = $(aElement);
             if (anchor.length > 0 && anchor.hasClass("selected"))
                 return;
 
-            var newState = {arcsde: filename};
-
-            var esriType = parseInt(anchor.attr("esritype"));
-            if (!isNaN(esriType) && esriType !== 0) {
-                newState.type = anchor.attr("esritype");
-            }
+            var newState = {
+                page: "metadata",
+                mode: B3pCatalog.modes.SDE_MODE,
+                path: rel
+            };
 
             $.bbq.pushState(newState, 2);
         }
@@ -285,12 +257,13 @@ B3pCatalog.openSimpleErrorDialog = function(message) {
 // de modus hier beschreven is dus de modus van de metadata rechts in het scherm.
 // het zou wellicht in een data veld in #mde-wrapper kunnen worden opgeslagen. weinig verschil met status quo.
 B3pCatalog.modes = {
-    NO_MODE: 0,
-    FILE_MODE: 1,
-    CSW_MODE: 2,
-    ADMIN_MODE: 3
+    NO_MODE: "none",
+    FILE_MODE: "file",
+    SDE_MODE: "sde",
+    CSW_MODE: "csw",
+    ADMIN_MODE: "admin"
 };
-
+ 
 // dit kan wat consistenter:
 B3pCatalog.currentMode = B3pCatalog.modes.NO_MODE;
 
@@ -309,7 +282,8 @@ B3pCatalog.getCurrentFileAnchor = function() {
 
 /////////////////////////////// Functies ///////////////////////////////////////
 
-B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo, cancel) {
+B3pCatalog.loadMetadata = function(mode, path, isGeo, cancel) {
+
     this._loadMetadata({
         done: function() {
             
@@ -320,15 +294,15 @@ B3pCatalog.loadMetadataFromFile = function(filename, esriType, isGeo, cancel) {
             type: "POST",
             data: {
                 load : "t",
-                filename : filename,
-                esriType : typeof esriType == "number" ? esriType : -1
+                mode: mode,
+                path : path
             },
             dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
             success: function(data, textStatus, jqXHR) {
                 //log(data);
-                B3pCatalog.currentFilename = filename;
-                B3pCatalog.currentMode = B3pCatalog.modes.FILE_MODE;
-                document.title = B3pCatalog.title + B3pCatalog.titleSeparator + filename;
+                B3pCatalog.currentFilename = path;
+                B3pCatalog.currentMode = mode;
+                document.title = B3pCatalog.title + B3pCatalog.titleSeparator + path;
                 // TODO: on demand van PBL bv: laatst geopende doc opslaan
                 //$.cookie();
                 var viewMode = jqXHR.getResponseHeader("MDE_viewMode") === "true";
@@ -412,9 +386,9 @@ B3pCatalog.saveMetadata = function(settings) {
         type: "POST",
         data: {
             save: "t",
-            filename: options.filename,
-            metadata: xml,
-            esriType: B3pCatalog.getCurrentEsriType()
+            path: options.filename,
+            mode: B3pCatalog.currentMode,
+            metadata: xml
         },
         success: function(data, textStatus, xhr) {
             //log("metadata saved succesfully.");
@@ -488,12 +462,12 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
                 return false;
             } else {
                 var xhr = $.ajax({
-                    url: B3pCatalog.contextPath + "/Metadata.action",
+                    url: B3pCatalog.metadataUrl,
                     data: {
                         postComment: "t",
                         comment: comment,
-                        filename: B3pCatalog.currentFilename,
-                        esriType: B3pCatalog.getCurrentEsriType()
+                        path: B3pCatalog.currentFilename,
+                        mode: B3pCatalog.currentMode
                     },
                     dataType: "text",
                     method: "POST",
@@ -526,18 +500,19 @@ B3pCatalog.createCswMde = function(xmlDoc) {
 
 B3pCatalog.exportMetadata = function() {
     switch(B3pCatalog.currentMode) {
-        case B3pCatalog.modes.FILE_MODE:B3pCatalog._exportMetadataFromFile();break;
+        case B3pCatalog.modes.SDE_MODE:
+        case B3pCatalog.modes.FILE_MODE:B3pCatalog._exportMetadata();break;
         case B3pCatalog.modes.CSW_MODE:B3pCatalog._exportMetadataByUUID();break;
         default:openErrorDialog(B3pCatalog.title + " is in an illegal mode: " + B3pCatalog.currentMode);
     }
 };
 
-B3pCatalog._exportMetadataFromFile = function() {
+B3pCatalog._exportMetadata = function() {
     $("#mde").mde("option", "pageLeaveWarning", false);
     window.location = B3pCatalog.metadataUrl + "?" + $.param({
         "export": "t",
-        filename: B3pCatalog.currentFilename,
-        esriType: B3pCatalog.getCurrentEsriType(),
+        path: B3pCatalog.currentFilename,
+        mode: B3pCatalog.currentMode,
         strictISO19115: $("#strictISO19115Checkbox").is(":checked")
     });
     $("#mde").mde("option", "pageLeaveWarning", true);
@@ -562,7 +537,7 @@ B3pCatalog.importMetadata = function() {
         text: "Kies een xml metadata bestand:"
     });
     
-    var $fileInput = $("<input type='file' name='uploader' size='50' style='width: 100%' />");
+    var $fileInput = $("<input type='file' name='importXml' size='50' style='width: 100%' />");
     
     var $textarea = $("<textarea></textarea>", {
         id: "import-textarea",
@@ -661,11 +636,11 @@ B3pCatalog.synchronizeWithData = function() {
         done: function() {
             //log($("#mde").mde("save", {postprocess: false}));
             $.ajax({
-                url: B3pCatalog.contextPath + "/Metadata.action",
+                url: B3pCatalog.metadataUrl,
                 data: {
                     synchronize: "t",
-                    filename: B3pCatalog.currentFilename,
-                    esriType: B3pCatalog.getCurrentEsriType(),
+                    path: B3pCatalog.currentFilename,
+                    mode: B3pCatalog.currentMode,
                     metadata: $("#mde").mde("save", {postprocess: false})
                 },
                 type: "POST",
@@ -799,7 +774,7 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
             icons: {primary: "ui-icon-b3p-up_16"}
         })
     );
-    if (B3pCatalog.currentMode === B3pCatalog.modes.FILE_MODE) {
+    if (B3pCatalog.currentMode == B3pCatalog.modes.FILE_MODE || B3pCatalog.currentMode == B3pCatalog.modes.SDE_MODE) {
         toolbar.append($("<input type='checkbox' checked='checked' value='strictISO19115' id='strictISO19115Checkbox' />"));
         toolbar.append($("<label for='strictISO19115Checkbox' title='Exporteer als ISO 19115 metadata volgens het Nederlands profiel versie 1.2. Tabs Algemeen, Attributen en Commentaar worden dan weggelaten.'>Exporteer strict</label>"));
     }

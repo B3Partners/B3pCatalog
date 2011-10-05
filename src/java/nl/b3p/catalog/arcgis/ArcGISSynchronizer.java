@@ -54,15 +54,26 @@ public class ArcGISSynchronizer {
      * @return
      * @throws IOException 
      */
-    public void synchronizeFGDB(Document xmlDoc, File fgdbFile, int esriType) throws IOException, B3PCatalogException, JDOMException {
-        IDataset dataset = FGDBHelper.getTargetDataset(fgdbFile, esriType);
+    public void synchronizeFGDB(Document xmlDoc, File fgdbFile) throws IOException, B3PCatalogException, JDOMException {
+        IDataset dataset = FGDBHelper.getTargetDataset(fgdbFile, esriDatasetType.esriDTFeatureClass);
         Workspace workspace = new Workspace(dataset.getWorkspace());
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_NAME, "ESRI File based Geo DataBase (FGDB)");
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_NAME, "ESRI file geodatabase (FGDB)");
         // Als distribute formaat naam is ingevuld, moet ook de versie ingevuld staan, anders is de xml niet correct volgens het xsd.
         // hmmm, dit geeft 2.2 bij sample FGDB's van ArcGIS 10 ?!?
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_VERSION, workspace.getMajorVersion() + "." + workspace.getMinorVersion());
 
         // We don't use the FGDBHelperProxy below. A test whether a ArcGIS connection existsmust must be done beforehand.
+        sync(xmlDoc, dataset);
+    }
+
+    public void synchronizeSDE(Document xmlDoc, IDataset dataset) throws IOException, B3PCatalogException, JDOMException {
+
+        Workspace workspace = new Workspace(dataset.getWorkspace());
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_NAME, "ESRI ArcSDE");
+        // Als distribute formaat naam is ingevuld, moet ook de versie ingevuld staan, anders is de xml niet correct volgens het xsd.
+        // hmmm, dit geeft 2.2 bij sample FGDB's van ArcGIS 10 ?!?
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_VERSION, workspace.getMajorVersion() + "." + workspace.getMinorVersion());
+
         sync(xmlDoc, dataset);
     }
     
@@ -75,7 +86,7 @@ public class ArcGISSynchronizer {
         if (!shapefileFullname.endsWith(Extensions.SHAPE) || shapefileFullname.length() == Extensions.SHAPE.length())
             throw new B3PCatalogException("File is not a shape file");
         
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_NAME, "ESRI Shape file");
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_NAME, "ESRI shapefile");
         // Bug in ArcObjects. Hij zegt bij de volgende regel:
         // AutomationException: No such interface supported 
         // Dit gaat dan om de IGeodatabaseRelease interface die toch echt supported hoort te zijn.

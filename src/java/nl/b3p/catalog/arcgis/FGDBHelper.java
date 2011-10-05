@@ -45,10 +45,6 @@ public class FGDBHelper {
     }
 
     private static IMetadata getIMetadata(File fileGDBPath, int datasetType) throws IOException, B3PCatalogException {
-        if (datasetType <= 0) {
-            // we at least try to make something of this:
-            datasetType = esriDatasetType.esriDTFeatureDataset;
-        }
         IDataset ds = getTargetDataset(fileGDBPath, datasetType);
         return (IMetadata)DatasetHelper.getIDataset(ds).getFullName();
     }
@@ -102,6 +98,9 @@ public class FGDBHelper {
             while (!currentDirFile.getCanonicalFile().equals(fgdb.getCanonicalFile())) {
                 subDirList.add(0, currentDirFile.getName());
                 currentDirFile = currentDirFile.getParentFile();
+            }
+            if(subDirList.size()>2) {
+                throw new IllegalStateException("Feature datasets inside feature datasets not supported");
             }
             targetDataset = getWorkspace(fgdb.getCanonicalPath());
             for (String subDir : subDirList) {

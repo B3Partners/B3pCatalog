@@ -21,6 +21,11 @@ public class Dir {
         
     }
 
+    public Dir(String name, String path) {
+        this.name = name;
+        this.path = path;
+    }
+
     public DirContent getContent() {
         return content;
     }
