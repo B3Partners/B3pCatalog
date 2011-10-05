@@ -94,6 +94,22 @@
         <param-name>CatalogRoots</param-name>
         <param-value>\\wsrl.local\wsrl\Kerndata\GEODATA, GEODATA; \\wsrl.local\wsrl\Kerndata\INFOWATERKERING, INFOWATERKERING</param-value>    
     </context-param>
+    <!--context-param>
+        <description>
+            Enter-gescheiden ArcSDE connecties.
+            Connecties bestaan uit key-value pairs gescheiden door punt-komma's (';')
+            Voor te gebruiken keys zie de javadoc van ArcObjects:
+            http://help.arcgis.com/en/sdk/10.0/java_ao_adf/api/arcobjects/com/esri/arcgis/datasourcesGDB/SdeWorkspaceFactory.html#open%28com.esri.arcgis.system.IPropertySet,%20int%29
+            
+            Elke root kan weer een displayname (label) bevatten na een komma.
+            Voorbeeld:
+            INSTANCE=sde:sqlserver:localhost\sqlexpress;DATABASE=geodb;AUTHENTICATION_MODE=OSA;VERSION=dbo.DEFAULT, ArcSDE geodb
+        </description>
+        <param-name>ArcSDERoots</param-name>
+        <param-value>
+            INSTANCE=sde:sqlserver:localhost\sqlexpress;DATABASE=geodb;AUTHENTICATION_MODE=OSA;VERSION=dbo.DEFAULT, ArcSDE geodb
+        </param-value>
+    </context-param-->
     <!-- SCC-servlet configuratie -->
     <context-param>
         <param-name>defaultXsl</param-name>
@@ -157,7 +173,7 @@
             Full absolute path to the config file that contains the allowed organisations and contacts in the MDE.
         </description>
         <param-name>organisationsJSONFilePath</param-name>
-        <param-value>/opt/B3pCatalog/config/organisations.json</param-value>
+        <param-value>C:\b3p\B3pCatalog\organisations.json</param-value>
     </context-param>
     <filter>
         <display-name>Security Filter</display-name>
