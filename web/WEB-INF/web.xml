@@ -93,10 +93,7 @@
         </description>
         <param-name>CatalogRoots</param-name>
         <param-value>
-            C:\, C;
-            V:\, V;
-            X:\, X;
-            Y:\, Y
+            C:\catalog_test, Catalog test
         </param-value>
     </context-param>
     <context-param>
@@ -108,13 +105,11 @@
             
             Elke root kan weer een displayname (label) bevatten na een komma.
             Voorbeeld:
-            server=localhost;instance=sqlexpress;database=B3pCat;authentication_mode=osa;version=dbo.default, SDE B3pCat
-            
-            NB: keys MOETEN lowercase zijn!! Bv "server" en dus niet "SERVER" oid
+            INSTANCE=sde:sqlserver:localhost\sqlexpress;DATABASE=geodb;AUTHENTICATION_MODE=OSA;VERSION=dbo.DEFAULT, ArcSDE geodb
         </description>
         <param-name>ArcSDERoots</param-name>
         <param-value>
-            server=localhost;instance=sqlexpress;database=geodb;authentication_mode=osa;version=dbo.default, SDE geodb
+            INSTANCE=sde:sqlserver:localhost\sqlexpress;DATABASE=geodb;AUTHENTICATION_MODE=OSA;VERSION=dbo.DEFAULT, ArcSDE geodb
         </param-value>
     </context-param>
     <!-- SCC-servlet configuratie -->
@@ -182,7 +177,7 @@
             Full absolute path to the config file that contains the allowed organisations and contacts in the MDE.
         </description>
         <param-name>organisationsJSONFilePath</param-name>
-        <param-value>C:/opt/B3pCatalog/config/organisations.json</param-value>
+        <param-value>C:\b3p\B3pCatalog\organisations.json</param-value>
     </context-param>
     <filter>
         <display-name>Security Filter</display-name>
