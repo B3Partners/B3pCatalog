@@ -19,7 +19,7 @@ B3pCatalog.getExtraMdeOptions = function(isGeo, viewMode) {
         fcMode: true,
         dcMode: true,
         dcPblMode: true,
-        synchroniseDC: true,
+        //synchroniseDC: true,
         iso19115oneTab: true,
         commentMode: true,
         afterInit: B3pMde.afterInit
