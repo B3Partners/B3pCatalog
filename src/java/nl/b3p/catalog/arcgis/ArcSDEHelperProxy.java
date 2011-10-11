@@ -44,15 +44,17 @@ public class ArcSDEHelperProxy {
     public static Map<String, ArcSDERoot> getRootsMap(ActionBeanContext context) {
         String catalogRoots = context.getServletContext().getInitParameter("ArcSDERoots");
         Map<String, ArcSDERoot> roots = new TreeMap<String, ArcSDERoot>(); // TreeMap ipv HashMap omdat "values()" dan gesorteerd zijn: zie "getRoots()"
-        int index = 0;
-        for (String catalogRoot : catalogRoots.split("\n")) {
-            String[] catalogRootSplit = catalogRoot.split(",");
-            if (catalogRootSplit.length > 0) {
-                String connectionString = catalogRootSplit[0].trim();
-                String prettyName = catalogRootSplit.length > 1 ? catalogRootSplit[1].trim() : "";
+        if(catalogRoots != null) {
+            int index = 0;
+            for (String catalogRoot : catalogRoots.split("\n")) {
+                String[] catalogRootSplit = catalogRoot.split(",");
+                if (catalogRootSplit.length > 0) {
+                    String connectionString = catalogRootSplit[0].trim();
+                    String prettyName = catalogRootSplit.length > 1 ? catalogRootSplit[1].trim() : "";
 
-                ArcSDERoot root = new ArcSDERoot(index, connectionString, prettyName);
-                roots.put(root.getPath(), root);
+                    ArcSDERoot root = new ArcSDERoot(index, connectionString, prettyName);
+                    roots.put(root.getPath(), root);
+                }
             }
         }
         return roots;
