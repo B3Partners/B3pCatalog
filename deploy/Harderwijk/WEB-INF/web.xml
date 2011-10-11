@@ -92,13 +92,7 @@
             N.B.: Windows drive-letters MOETEN een hoofdletter zijn.
         </description>
         <param-name>CatalogRoots</param-name>
-        <!--param-value>C:\, Root</param-value-->
-        <!--param-value>C:\Users\Erik\Documents\ArcCatalogRoot, Root</param-value-->
         <param-value>\\hwk-appl-01\hwk-arcgisdata$\Harderwijk\gis_data, Gis Data</param-value>
-        <!--param-value>D:\Development\b3p\B3pCatalogRootTest1, Root1; D:\Development\b3p\B3pCatalogRootTest2, Root2</param-value-->
-        <!--param-value>D:\, Oude Share</param-value-->
-        <!-- x4: -->
-        <!--param-value>/opt/B3PCatalogRoot1, Root1; /opt/B3PCatalogRoot2, Root2</param-value-->
     </context-param>
     <!-- SCC-servlet configuratie -->
     <context-param>
@@ -123,16 +117,6 @@
         <param-name>cswPassword</param-name>
         <param-value>admin</param-value>
     </context-param>
-    <!-- IDGis Inspire service (Deegree): -->
-    <!--context-param>
-        <param-name>cswUrl</param-name>
-        <param-value>http://inspire.idgis.eu:9080/services</param-value>
-    </context-param-->
-    <!-- NGR -->
-    <!--context-param>
-        <param-name>cswUrl</param-name>
-        <param-value>http://www.nationaalgeoregister.nl/geonetwork/srv/en/csw</param-value>
-    </context-param-->
     <context-param>
         <description>
             Semicolon-separated (";") list of extensions that are to be considered geographical files.
@@ -145,7 +129,7 @@
             
         </description>
         <param-name>geoExtensions</param-name>
-        <param-value>shp;dxf;lyr</param-value>
+        <param-value>shp;dxf;lyr;sid</param-value>
     </context-param>
     <context-param>
         <description>
@@ -182,19 +166,6 @@
         <filter-name>SecurityFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    <servlet>
-        <servlet-name>securityconfig</servlet-name>
-        <servlet-class>nl.b3p.catalog.security.ConfigServlet</servlet-class>
-        <init-param>
-            <param-name>kburl</param-name>
-            <param-value>http://www.kaartenbalie.nl/kaartenbalie/services/</param-value>
-        </init-param>
-        <init-param>
-            <param-name>anonymous_user</param-name>
-            <param-value>anoniem</param-value>
-        </init-param>
-        <load-on-startup>3</load-on-startup>
-    </servlet>
     <servlet>
         <servlet-name>xmlsecuritydatabase</servlet-name>
         <servlet-class>nl.b3p.commons.security.XmlSecurityDatabase</servlet-class>
