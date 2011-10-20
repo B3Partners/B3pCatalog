@@ -147,7 +147,7 @@
             Full absolute path to the config file that contains the allowed organisations and contacts in the MDE.
         </description>
         <param-name>organisationsJSONFilePath</param-name>
-        <param-value>C:\b3p\B3pCatalog\organisations.json</param-value>
+        <param-value>e:\Appl\geonetwork\organisations.json</param-value>
     </context-param>
     <filter>
         <display-name>Security Filter</display-name>
