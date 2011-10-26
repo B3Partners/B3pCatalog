@@ -71,5 +71,53 @@ organisations = {
             "Sükran Koç-Kirmiziyüz":{"email": "s.koc-kirmiziyuz@harderwijk.nl"},
             "Sylvia van Itegem":    {"email": "s.vanitegem@harderwijk.nl"}
         }
-    }
+    },
+    
+    "Kadaster": {
+        "address": "Postbus 9046",
+        "city": "Apeldoorn",
+        "state": "Gelderland",
+        "postalCode": "7300 GH",
+        "country": "Nederland",
+        "url": "http://www.kadaster.nl/",
+        "voice": "088-1832200",
+        "email": "https://www.kadaster.nl/forms/default.asp?ft=contact",
+        "contacts": {}
+    },
+
+    "Provincie Gelderland": {
+        "address": "Postbus 9090",
+        "city": "Arnhem",
+        "state": "Gelderland",
+        "postalCode": "6800 GX",
+        "country": "Nederland",
+        "url": "http://www.gelderland.nl",
+        "voice": "026-3599111",
+        "email": "post@gelderland.nl",
+        "contacts": {}
+    },
+
+    "Rijksdienst voor het Cultureel Erfgoed": {
+        "address": "Postbus 1600",
+        "city": "Amersfoort",
+        "state": "Utrecht",
+        "postalCode": "3800 BP",
+        "country": "Nederland",
+        "url": "http://www.cultureelerfgoed.nl/",
+        "voice": "033–4217421",
+        "email": "nfo@cultureelerfgoed.nl",
+        "contacts": {}
+    },
+
+    "CycloMedia Technology B.V. ": {
+        "address": "Postbus 68",
+        "city": "Waardenburg",
+        "state": "Gelderland",
+        "postalCode": "4180 BB",
+        "country": "Nederland",
+        "url": "http://www.cyclomedia.nl/",
+        "voice": "0418-556100",
+        "email": "http://www.cyclomedia.nl/contact/",
+        "contacts": {}
+    }    
 };
