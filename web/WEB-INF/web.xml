@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app 
-        xmlns="http://java.sun.com/xml/ns/j2ee"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
-        version="2.4"
-        >
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    <context-param>
+        <description>
+            Lokatie van XML configuratiebestand van B3P Catalog. Een relatief 
+            pad is ten opzichte can CATALINA_BASE.
+            
+            Let op: pas dit aan door in context.xml (of in Catalina/localhost/b3pcatalog.xml)
+            deze parameter te overriden zodat bij een nieuwe versie deze behouden
+            blijft:
+            &lt;Context&gt; path="/b3pcatalog" ...>
+                &lt;Parameter name="config" value="c:\b3p\b3pcatalog\config.xml" override="false"/&gt;
+            &lt;/Context&gt;
+        </description>
+        <param-name>config</param-name>
+        <param-value>conf/b3pcatalog/config.xml</param-value>
+    </context-param>    
+    
     <filter>
         <display-name>Stripes Filter</display-name>
         <filter-name>StripesFilter</filter-name>
@@ -46,6 +57,9 @@
         <filter-name>Request encoding filter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+    <listener>
+        <listener-class>nl.b3p.catalog.config.CatalogAppConfig</listener-class>
+    </listener>
     <servlet>
         <servlet-name>StripesDispatcher</servlet-name>
         <servlet-class>net.sourceforge.stripes.controller.DispatcherServlet</servlet-class>
@@ -78,45 +92,6 @@
         <param-value>StripesResources</param-value>
         <!-- huidige locale wordt hier automatisch slim achtergeplakt (_nl etc.) -->
     </context-param>
-    <!-- Filetree config -->
-    <context-param>
-        <description>
-            Puntkomma gescheiden directories/shares/drives die de roots vormen van waaruit metadata gezocht kan worden.
-            Elke root kan weer een displayname (label) bevatten na een komma.
-            Voorbeeld:
-            X:\, OudeShare; Y:\, Nieuwe Share
-
-            Deze scheidingstekens zijn uiteraard niet correct in de zin dat een ";" voor mag komen in een windows-bestandsnaam.
-            Hier dealen we mee als we het tegenkomen. Voor nu is dit goed genoeg.
-
-            N.B.: Windows drive-letters MOETEN een hoofdletter zijn.
-        </description>
-        <param-name>CatalogRoots</param-name>
-        <param-value>
-            C:\catalog_test, Catalog test
-        </param-value>
-    </context-param>
-    <context-param>
-        <description>
-            Enter-gescheiden ArcSDE connecties.
-            Connecties bestaan uit key-value pairs gescheiden door punt-komma's (';')
-            Voor te gebruiken keys zie de javadoc van ArcObjects:
-            http://help.arcgis.com/en/sdk/10.0/java_ao_adf/api/arcobjects/com/esri/arcgis/datasourcesGDB/SdeWorkspaceFactory.html#open%28com.esri.arcgis.system.IPropertySet,%20int%29
-            
-            Elke root kan weer een displayname (label) bevatten na een komma.
-            Voorbeeld:
-            INSTANCE=sde:sqlserver:localhost\sqlexpress;DATABASE=geodb;AUTHENTICATION_MODE=OSA;VERSION=dbo.DEFAULT, ArcSDE geodb
-        </description>
-        <param-name>ArcSDERoots</param-name>
-        <param-value>
-            INSTANCE=sde:sqlserver:localhost\sqlexpress;DATABASE=geodb;AUTHENTICATION_MODE=OSA;VERSION=dbo.DEFAULT, ArcSDE geodb
-        </param-value>
-    </context-param>
-    <!-- SCC-servlet configuratie -->
-    <context-param>
-        <param-name>defaultXsl</param-name>
-        <param-value>simple-response.xsl</param-value>
-    </context-param>
     <!-- CSW-server configuratie -->
     <!-- Geonetwork / Deegree / etc. Only cswUrl is necessary when login is not applicable -->
     <context-param>
@@ -147,38 +122,13 @@
     </context-param-->
     <context-param>
         <description>
-            Semicolon-separated (";") list of extensions that are to be considered geographical files.
-            Geographical metadata tabs will automatically be shown for them.
-            Geographical metadata tabs will also automatically be shown for FGDB directories.
-
-            E.g.:
-
-            shp;dxf
-            
-        </description>
-        <param-name>geoExtensions</param-name>
-        <param-value>shp;dxf;lyr</param-value>
-    </context-param>
-    <context-param>
-        <description>
-            name
-            
-            or
-            
-            extension
-            
-            TODO: maak van de comparators publieke klassen en geef die mee als parameter value.
-        </description>
-        <param-name>filetreeSortBy</param-name>
-        <param-value>name</param-value>
-    </context-param>
-    <context-param>
-        <description>
             Full absolute path to the config file that contains the allowed organisations and contacts in the MDE.
         </description>
         <param-name>organisationsJSONFilePath</param-name>
         <param-value>C:\b3p\B3pCatalog\organisations.json</param-value>
-    </context-param>
+    </context-param>    
+    
+    <!-- Security -->
     <filter>
         <display-name>Security Filter</display-name>
         <filter-name>SecurityFilter</filter-name>

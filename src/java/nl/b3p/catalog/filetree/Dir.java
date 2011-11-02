@@ -10,28 +10,16 @@ package nl.b3p.catalog.filetree;
  * @author Erik van de Pol
  */
 public class Dir {
-    // Full PP path from upload dir
-    private String path;
-    // Local dir name
     private String name;
-    private DirContent content;
+    private String path;
     private boolean isFGDB;
 
     public Dir() {
-        
     }
 
     public Dir(String name, String path) {
         this.name = name;
         this.path = path;
-    }
-
-    public DirContent getContent() {
-        return content;
-    }
-
-    public void setContent(DirContent content) {
-        this.content = content;
     }
 
     public String getPath() {

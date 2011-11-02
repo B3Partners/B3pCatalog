@@ -12,23 +12,19 @@ import java.util.List;
  *
  * @author Erik van de Pol
  */
-public class File {
+public class DirEntry {
     private static final List<String> DOUBLE_EXTENSIONS = Arrays.asList("url", "lnk");
-    // Full PP path from upload dir
+
     private String path;
-    // local file name
     private String name;
 
     private boolean isGeo;
 
-    private int esriType = 0;
-
-
-    public File() {
+    public DirEntry() {
         
     }
 
-    public File(String name, String path) {
+    public DirEntry(String name, String path) {
         this.name = name;
         this.path = path;
     }
@@ -68,13 +64,4 @@ public class File {
     public void setIsGeo(boolean isGeo) {
         this.isGeo = isGeo;
     }
-
-    public int getEsriType() {
-        return esriType;
-    }
-
-    public void setEsriType(int esriType) {
-        this.esriType = esriType;
-    }
-
 }

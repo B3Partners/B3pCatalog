@@ -21,13 +21,15 @@ import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.Roles;
-import nl.b3p.catalog.resolution.XmlResolution;
 import nl.b3p.catalog.arcgis.ArcGISSynchronizer;
 import nl.b3p.catalog.arcgis.ArcSDEHelper;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
-import nl.b3p.catalog.filetree.ArcSDEPath;
+import nl.b3p.catalog.config.AclAccess;
+import nl.b3p.catalog.config.FileRoot;
+import nl.b3p.catalog.config.SDERoot;
 import nl.b3p.catalog.filetree.Extensions;
-import nl.b3p.catalog.filetree.Rewrite;
+import nl.b3p.catalog.filetree.FileListHelper;
+import nl.b3p.catalog.resolution.XmlResolution;
 import nl.b3p.catalog.xml.DocumentHelper;
 import nl.b3p.catalog.xml.Names;
 import nl.b3p.catalog.xml.Namespaces;
@@ -79,16 +81,17 @@ public class MetadataAction extends DefaultAction {
 
         try {
             if(SDE_MODE.equals(mode)) {
-                ArcSDEPath sdePath = new ArcSDEPath(path, getContext());
-                metadata = ArcSDEHelper.getMetadata(sdePath.getDataset());
+                SDERoot root = (SDERoot)FiletreeAction.getRoot(getContext(), path, AclAccess.READ);
+                metadata = ArcSDEHelper.getMetadata(ArcSDEHelper.getDataset(root, FiletreeAction.getPath(path)));
                 return new XmlResolution(strictISO19115 ? extractMD_Metadata(metadata) : metadata, extraHeaders);
             } else if(FILE_MODE.equals(mode)) {
-                File mdFile = Rewrite.getFileFromPPFileName(path, getContext());
+                FileRoot root = (FileRoot)FiletreeAction.getRoot(getContext(), path, AclAccess.READ);                
+                File mdFile = FileListHelper.getFileForPath(root, FiletreeAction.getPath(path));
 
                 if(FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
                     return new XmlResolution(FGDBHelperProxy.getMetadata(mdFile,esriDatasetType.esriDTFeatureClass), extraHeaders);
                 } else {
-                    mdFile = Rewrite.getFileFromPPFileName(path + Extensions.METADATA, getContext());
+                    mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
                     if (!mdFile.exists()) {
                         // create new metadata on client side or show this in exported file:
                         return new XmlResolution("empty", extraHeaders);
@@ -117,19 +120,21 @@ public class MetadataAction extends DefaultAction {
             }
 
             if(SDE_MODE.equals(mode)) {
-                ArcSDEPath sdePath = new ArcSDEPath(path, getContext());
-                IDataset dataset = sdePath.getDataset();
+                SDERoot root = (SDERoot)FiletreeAction.getRoot(getContext(), path, AclAccess.WRITE);
+                
+                IDataset dataset = ArcSDEHelper.getDataset(root, FiletreeAction.getPath(path));
                 String oldMetadata = ArcSDEHelper.getMetadata(dataset);
                 ArcSDEHelper.saveMetadata(dataset, sanitizeComments(oldMetadata,metadata));
             } else if(FILE_MODE.equals(mode)) {
-                File mdFile = Rewrite.getFileFromPPFileName(path, getContext());
-
+                FileRoot root = (FileRoot)FiletreeAction.getRoot(getContext(), path, AclAccess.WRITE);                
+                File mdFile = FileListHelper.getFileForPath(root, FiletreeAction.getPath(path));
+                
                 if(FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
                     String oldMetadata = FGDBHelperProxy.getMetadata(mdFile,esriDatasetType.esriDTFeatureClass);
                     FGDBHelperProxy.setMetadata(mdFile, 5, sanitizeComments(oldMetadata,metadata));
                 } else {
-                    mdFile = Rewrite.getFileFromPPFileName(path + Extensions.METADATA, getContext());
-
+                    mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
+                    
                     Document oldMetadata = DocumentHelper.getMetadataDocument(mdFile);
                     metadata = sanitizeComments(oldMetadata, metadata);
 
@@ -156,12 +161,15 @@ public class MetadataAction extends DefaultAction {
             Document xmlDoc = new SAXBuilder().build(new StringReader(metadata));
 
             if(SDE_MODE.equals(mode)) {
-                ArcSDEPath sdePath = new ArcSDEPath(path, getContext());
-                IDataset dataset = sdePath.getDataset();
+                
+                SDERoot root = (SDERoot)FiletreeAction.getRoot(getContext(), path, AclAccess.READ);
+                IDataset dataset = ArcSDEHelper.getDataset(root, FiletreeAction.getPath(path));
+                
                 ArcGISSynchronizer arcGISSynchronizer = new ArcGISSynchronizer();
                 arcGISSynchronizer.synchronizeSDE(xmlDoc, dataset);
             } else if(FILE_MODE.equals(mode)) {
-                File dataFile = Rewrite.getFileFromPPFileName(path, getContext());
+                FileRoot root = (FileRoot)FiletreeAction.getRoot(getContext(), path, AclAccess.READ);                
+                File dataFile = FileListHelper.getFileForPath(root, FiletreeAction.getPath(path));
             
                 if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dataFile)) {
                     // only instantiate ArcGISSynchronizer here, since a NoClassDefFoundError can occur if ArcGIS is not installed / incorrectly installed
@@ -174,10 +182,10 @@ public class MetadataAction extends DefaultAction {
                         arcGISSynchronizer.synchronizeShapeFile(xmlDoc, dataFile);
                     } catch(NoClassDefFoundError ncdfe) {
                         // ArcGIS not installed / incorrectly installed
-                        synchronizeRegularMetadata(xmlDoc);
+                        synchronizeRegularMetadata(xmlDoc, dataFile);
                     }
                 } else {
-                    synchronizeRegularMetadata(xmlDoc);
+                    synchronizeRegularMetadata(xmlDoc, dataFile);
                 }
             } else {
                 throw new IllegalArgumentException("Invalid mode: " + mode);
@@ -190,8 +198,8 @@ public class MetadataAction extends DefaultAction {
         }
     }
     
-    private void synchronizeRegularMetadata(Document xmlDoc) throws IOException, JDOMException {
-        String localFilename = path.substring(1 + path.lastIndexOf(Rewrite.PRETTY_DIR_SEPARATOR));
+    private void synchronizeRegularMetadata(Document xmlDoc, File dataFile) throws IOException, JDOMException {
+        String localFilename = dataFile.getName();
         
         String title = "";
         String fileFormat = "";
@@ -213,7 +221,7 @@ public class MetadataAction extends DefaultAction {
         // Als distribute formaat naam is ingevuld, moet ook de versie ingevuld staan, anders is de xml niet correct volgens het xsd.
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_VERSION, "Onbekend");
 
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.URL_DATASET, Rewrite.getFileNameFromPPFileName(path, getContext()));
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.URL_DATASET, dataFile.getCanonicalPath());
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.NAME_DATASET, "");
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.PROTOCOL_DATASET, "download");
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DESC_DATASET, "");
@@ -267,15 +275,18 @@ public class MetadataAction extends DefaultAction {
     public Resolution postComment() {
         try {
             if(SDE_MODE.equals(mode)) {
-                ArcSDEPath sdePath = new ArcSDEPath(path, getContext());
-                IDataset dataset = sdePath.getDataset();
+                SDERoot root = (SDERoot)FiletreeAction.getRoot(getContext(), path, AclAccess.COMMENT);
+                IDataset dataset = ArcSDEHelper.getDataset(root, FiletreeAction.getPath(path));
+                
                 Document doc = DocumentHelper.getMetadataDocument(ArcSDEHelper.getMetadata(dataset));
                 addComment(doc, comment);
                 String commentedMD = DocumentHelper.getDocumentString(doc);
                 ArcSDEHelper.saveMetadata(dataset, commentedMD);
                 return new XmlResolution(commentedMD);
             } else if(FILE_MODE.equals(mode)) {
-                File mdFile = Rewrite.getFileFromPPFileName(path, getContext());
+                FileRoot root = (FileRoot)FiletreeAction.getRoot(getContext(), path, AclAccess.COMMENT);                
+                File mdFile = FileListHelper.getFileForPath(root, FiletreeAction.getPath(path));
+                
                 if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
                     Document doc = DocumentHelper.getMetadataDocument(FGDBHelperProxy.getMetadata(mdFile, esriDatasetType.esriDTFeatureClass));
 
@@ -286,7 +297,7 @@ public class MetadataAction extends DefaultAction {
 
                     return new XmlResolution(commentedMD);
                 } else {
-                    mdFile = Rewrite.getFileFromPPFileName(path + Extensions.METADATA, getContext());
+                    mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
 
                     Document doc = DocumentHelper.getMetadataDocument(mdFile);
 

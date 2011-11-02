@@ -1,61 +1,78 @@
 package nl.b3p.catalog.stripes;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.StrictBinding;
+import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.B3PCatalogException;
-import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
-import nl.b3p.catalog.arcgis.FGDBHelperProxy;
-import nl.b3p.catalog.filetree.ArcSDEPath;
-import nl.b3p.catalog.filetree.ArcSDERoot;
+import nl.b3p.catalog.config.AclAccess;
+import nl.b3p.catalog.config.CatalogAppConfig;
+import nl.b3p.catalog.config.FileRoot;
+import nl.b3p.catalog.config.Root;
+import nl.b3p.catalog.config.SDERoot;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirContent;
-import nl.b3p.catalog.filetree.Extensions;
-import nl.b3p.catalog.filetree.Rewrite;
-import nl.b3p.catalog.filetree.Root;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+@StrictBinding
 public class FiletreeAction extends DefaultAction {
     private final static Log log = LogFactory.getLog(FiletreeAction.class);
 
-    private static List<String> geoExtensions = null;
-    
     private final static String DIRCONTENTS_JSP = "/WEB-INF/jsp/main/file/filetreeConnector.jsp";
 
     private DirContent dirContent;
-    private String dir;    
+
+    @Validate
+    private String dir;   
+    
+    /* TODO: eigenlijk moet er voor front-end geen verschil zijn tussen listDir 
+     * en listSDEDir. JavaScript code is nogal hairy om meteen aan te passen
+     */
+    
+    public Resolution listDir() {
+        log.debug("listDir: " + dir);
+        return list(FileRoot.class);
+    }    
     
     public Resolution listSDEDir() {
-        log.debug(String.format("listSDEDir(): %s", dir));
-        
-        try {
-            dirContent = dir == null
-                    ? getSDERootDirContent()
-                    : getSDEContents();
-
-            return new ForwardResolution(DIRCONTENTS_JSP);
-        } catch(Exception ex) {
-            String message = "Niet gelukt SDE directory inhoud te tonen";
-            log.error(message, ex);
-            return new HtmlErrorResolution(message, ex);
-        }
+        log.debug("listDir: " + dir);
+        return list(SDERoot.class);
     }    
-
-    public Resolution listDir() {
-        log.debug(String.format("listDir(): %s", dirContent, dir));
-
+    
+    private static int getRootIndex(String dir) {
+        int i = dir.indexOf(DirContent.SEPARATOR);
+        return Integer.parseInt(dir.substring(0,i));
+    }
+    
+    static Root getRoot(ActionBeanContext context, String dir, AclAccess minimumAccessLevel) throws B3PCatalogException {
+        Root r = CatalogAppConfig.getConfig().getRoots().get(getRootIndex(dir));
+        if(r.isRequestUserAuthorizedFor(context.getRequest(), minimumAccessLevel)) {
+            return r;
+        } else {
+            throw new B3PCatalogException("Not authorized for required minimum access level " + minimumAccessLevel.name());
+        }
+    }
+    
+    static String getPath(String dir) {
+        return dir.substring(dir.indexOf(DirContent.SEPARATOR)+1);
+    }
+        
+    private Resolution list(Class clazz) {
         try {
-            dirContent = dir == null
-                    ? getFileRootDirContent()
-                    : getDirContent(Rewrite.getFileFromPPFileName(dir, getContext()), null);
+            if(dir == null) {
+                dirContent = getRoots(clazz);
+            } else {
+                int index = getRootIndex(dir);
+                Root r = getRoot(getContext(), dir, AclAccess.READ);
+                String path = getPath(dir);
+               
+                dirContent = r.getDirContent(index + "" + DirContent.SEPARATOR, path);
+                dirContent.sort();                
+            }
 
             return new ForwardResolution(DIRCONTENTS_JSP);
         } catch(Exception ex) {
@@ -64,208 +81,22 @@ public class FiletreeAction extends DefaultAction {
             return new HtmlErrorResolution(message, ex);
         }
     }
-    
-    protected DirContent getFileRootDirContent() {
-        return getRootDirContent(Rewrite.getRoots(getContext()));
-    }
-    
-    protected DirContent getSDERootDirContent() {
-        return getRootDirContent(ArcSDEHelperProxy.getRoots(getContext()));
-    }
 
-    protected DirContent getSDEContents() throws Exception {
-        ArcSDEPath arcSDEPath = new ArcSDEPath(dir, getContext());
-
+    private DirContent getRoots(Class clazz) {
         DirContent dc = new DirContent();
-        List<Dir> dirsList = new ArrayList<Dir>();
-        List<nl.b3p.catalog.filetree.File> filesList = new ArrayList<nl.b3p.catalog.filetree.File>();
-        if(arcSDEPath.getDatasetName() == null) {
-            dirsList = ArcSDEHelperProxy.getFeatureDatasets(arcSDEPath.getRoot(), dir);
-            filesList = ArcSDEHelperProxy.getFeatureClasses(arcSDEPath.getRoot(), dir);
-        } else {
-            filesList = ArcSDEHelperProxy.getFeatureClassesInDataset(arcSDEPath.getRoot(), dir, arcSDEPath.getContainingFeatureDatasetName());
-        }
-
-        Collections.sort(dirsList, new DirnameComparator());
-        sortFiles(filesList);
-
-        dc.setDirs(dirsList);
-        dc.setFiles(filesList);
-
-        return dc;
-    }
-    
-    protected DirContent getRootDirContent(List<? extends Root> roots) {
-        DirContent dc = new DirContent();
-        List<Dir> dirs = new ArrayList<Dir>();
-        for (Root root : roots) {
-            Dir dir = new Dir();
-            dir.setPath(root.getPath());
-            dir.setName(root.getPrettyName() + (root instanceof ArcSDERoot ? "" : " (" + root.getPath() + ")"));
-            dirs.add(dir);
-        }
-        dc.setDirs(dirs);
-        return dc;
-    }
-
-    protected DirContent getDirContent(File directory, List<String> subDirList) throws IOException, B3PCatalogException {
-        if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(directory)) {
-            // recursief met expandTo gaat dit misschien nog verkeerd: wordt nu niet gebruikt.
-            return getFGDBDirContent(directory, subDirList);
-        } else {
-            return getNormalDirContent(directory, subDirList);
-        }
-    }
-
-    protected DirContent getNormalDirContent(File directory, List<String> subDirList) throws IOException, B3PCatalogException {
-        DirContent dc = new DirContent();
-
-        File[] dirs = directory.listFiles(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isDirectory();
-            }
-        });
-
-        File[] files = directory.listFiles(new FileFilter() {
-            public boolean accept(File file) {
-                return !file.isDirectory();
-            }
-        });
-
-        List<Dir> dirsList = new ArrayList<Dir>();
-        if (dirs != null) {
-            for (File dir : dirs) {
-                Dir newDir = new Dir();
-                newDir.setName(dir.getName());
-                newDir.setPath(Rewrite.getFileNameRelativeToRootDirPP(dir, getContext()));
-                // can be used to attach a different dir icon to it.
-                newDir.setIsFGDB(FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dir));
-                dirsList.add(newDir);
+        List<Root> roots = CatalogAppConfig.getConfig().getRoots();
+            
+        for(int i = 0; i < roots.size(); i++) {
+            Root r = roots.get(i);
+            if(r.getClass().equals(clazz) && r.isRequestUserAuthorizedFor(getContext().getRequest(), AclAccess.READ)) {
+                Dir d = new Dir();
+                d.setPath(i + "" + DirContent.SEPARATOR);
+                d.setName(roots.get(i).getName());
+                dc.getDirs().add(d);
             }
         }
-
-        List<nl.b3p.catalog.filetree.File> filesList = new ArrayList<nl.b3p.catalog.filetree.File>();
-        if (files != null) {
-            for (File file : files) {
-                nl.b3p.catalog.filetree.File newFile = new nl.b3p.catalog.filetree.File();
-                newFile.setName(file.getName());
-                newFile.setPath(Rewrite.getFileNameRelativeToRootDirPP(file, getContext()));
-                newFile.setIsGeo(isGeoFile(file));
-                filesList.add(newFile);
-            }
-        }
-
-        dc.setDirs(dirsList);
-        dc.setFiles(filesList);
-
-        filterOutFilesToHide(dc);
-
-        // sort just at the end, because filters (above) could have needed sorting (of a different kind).
-        Collections.sort(dirsList, new DirnameComparator());
-        sortFiles(filesList);
-
-        if (subDirList != null && subDirList.size() > 0) {
-            String subDirString = subDirList.remove(0);
-
-            for (Dir subDir : dc.getDirs()) {
-                if (subDir.getName().equals(subDirString)) {
-                    File followSubDir = Rewrite.getFileFromPPFileName(subDir.getPath(), getContext());
-                    subDir.setContent(getDirContent(followSubDir, subDirList));
-                    break;
-                }
-            }
-        }
-
-        return dc;
-    }
-
-    protected DirContent getFGDBDirContent(File directory, List<String> subDirList) throws IOException, B3PCatalogException {
-        // recursief met expandTo werkt niet: wordt nu niet gebruikt.
-        DirContent dc = new DirContent();
-
-        List<Dir> dirsList =
-                FGDBHelperProxy.getAllDirDatasets(directory, getContext());
-        List<nl.b3p.catalog.filetree.File> filesList =
-                FGDBHelperProxy.getAllFileDatasets(directory, getContext());
-
-        Collections.sort(dirsList, new DirnameComparator());
-        sortFiles(filesList);
-
-        dc.setDirs(dirsList);
-        dc.setFiles(filesList);
-
-        return dc;
-    }
-    
-    protected void sortFiles(List<nl.b3p.catalog.filetree.File> files) {
-        String sortBy = getContext().getServletContext().getInitParameter("filetreeSortBy");
-        if (sortBy.equalsIgnoreCase("name")) {
-            Collections.sort(files, new FilenameComparator());
-        } else { // "extension"
-            Collections.sort(files, new FileExtensionComparator());
-        }
-    }
-
-    protected boolean isGeoFile(File file) {
-        if (geoExtensions == null) {
-            String geoExtensionsString = getContext().getServletContext().getInitParameter("geoExtensions");
-            String[] geoExtensionsArray = geoExtensionsString.split(";");
-            geoExtensions = new ArrayList<String>();
-            for (String geoExt : geoExtensionsArray) {
-                geoExtensions.add(geoExt.trim().toLowerCase());
-            }
-        }
-
-        return geoExtensions.contains(nl.b3p.catalog.filetree.File.getExtension(file.getName()));
-    }
-
-    protected void filterOutFilesToHide(DirContent dc) {
-        filterOutMetadataFiles(dc);
-        filterOutShapeExtraFiles(dc);
-    }
-
-    protected void filterOutMetadataFiles(DirContent dc) {
-        List<nl.b3p.catalog.filetree.File> toBeIgnoredFiles = new ArrayList<nl.b3p.catalog.filetree.File>();
-
-        List<nl.b3p.catalog.filetree.File> filesList = dc.getFiles();
-        Collections.sort(filesList, new FilenameComparator());
-        
-        String lastFilename = null;
-        for (nl.b3p.catalog.filetree.File file : filesList) {
-            String filename = file.getName();
-
-            if (lastFilename == null || !filename.startsWith(lastFilename)) {
-                lastFilename = filename;
-            } else if (filename.length() == (lastFilename.length() + 4) && filename.endsWith(".xml")) {
-                toBeIgnoredFiles.add(file);
-            }
-        }
-
-        for (nl.b3p.catalog.filetree.File file : toBeIgnoredFiles) {
-            filesList.remove(file);
-        }
-    }
-
-    protected void filterOutShapeExtraFiles(DirContent dc) {
-        List<String> shapeNames = new ArrayList<String>();
-        for (nl.b3p.catalog.filetree.File file : dc.getFiles()) {
-            if (file.getName().endsWith(Extensions.SHAPE)) {
-                shapeNames.add(file.getName().substring(0, file.getName().length() - Extensions.SHAPE.length()));
-            }
-        }
-
-        for (String shapeName : shapeNames) {
-            List<nl.b3p.catalog.filetree.File> toBeIgnoredFiles = new ArrayList<nl.b3p.catalog.filetree.File>();
-            for (nl.b3p.catalog.filetree.File file : dc.getFiles()) {
-                if (file.getName().startsWith(shapeName) && !file.getName().endsWith(Extensions.SHAPE)) {
-                    toBeIgnoredFiles.add(file);
-                }
-            }
-            for (nl.b3p.catalog.filetree.File file : toBeIgnoredFiles) {
-                dc.getFiles().remove(file);
-            }
-        }
-    }
+        return dc;        
+    }   
 
     public String getDir() {
         return dir;
@@ -282,61 +113,4 @@ public class FiletreeAction extends DefaultAction {
     public void setDirContent(DirContent dirContent) {
         this.dirContent = dirContent;
     }
-
-    // <editor-fold defaultstate="collapsed" desc="Comparison methods for file/dir sorting">
-    private int compareExtensions(String s1, String s2) {
-        // the +1 is to avoid including the '.' in the extension and to avoid exceptions
-        // EDIT:
-        // We first need to make sure that either both files or neither file
-        // has an extension (otherwise we'll end up comparing the extension of one
-        // to the start of the other, or else throwing an exception)
-        final int s1Dot = s1.lastIndexOf('.');
-        final int s2Dot = s2.lastIndexOf('.');
-        if ((s1Dot == -1) == (s2Dot == -1)) { // both or neither
-            s1 = s1.substring(s1Dot + 1);
-            s2 = s2.substring(s2Dot + 1);
-            return s1.compareToIgnoreCase(s2);
-        } else if (s1Dot == -1) { // only s2 has an extension, so s1 goes first
-            return -1;
-        } else { // only s1 has an extension, so s1 goes second
-            return 1;
-        }
-    }
-
-    private class DirnameComparator implements Comparator<Dir> {
-        @Override
-        public int compare(Dir d1, Dir d2) {
-            String s1 = d1.getName();
-            String s2 = d2.getName();
-            return s1.compareToIgnoreCase(s2);
-        }
-    }
-
-    private class DirExtensionComparator implements Comparator<Dir> {
-        @Override
-        public int compare(Dir d1, Dir d2) {
-            String s1 = d1.getName();
-            String s2 = d2.getName();
-            return compareExtensions(s1, s2);
-        }
-    }
-
-    private class FileExtensionComparator implements Comparator<nl.b3p.catalog.filetree.File> {
-        @Override
-        public int compare(nl.b3p.catalog.filetree.File f1, nl.b3p.catalog.filetree.File f2) {
-            String s1 = f1.getName();
-            String s2 = f2.getName();
-            return compareExtensions(s1, s2);
-        }
-    }
-
-    private class FilenameComparator implements Comparator<nl.b3p.catalog.filetree.File> {
-        @Override
-        public int compare(nl.b3p.catalog.filetree.File f1, nl.b3p.catalog.filetree.File f2) {
-            String s1 = f1.getName();
-            String s2 = f2.getName();
-            return s1.compareToIgnoreCase(s2);
-        }
-    }
-// </editor-fold>
 }

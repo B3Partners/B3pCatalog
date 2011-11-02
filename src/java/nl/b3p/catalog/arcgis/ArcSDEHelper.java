@@ -1,5 +1,6 @@
 package nl.b3p.catalog.arcgis;
 
+import com.esri.arcgis.datasourcesGDB.SdeWorkspaceFactory;
 import com.esri.arcgis.geodatabase.IDataset;
 import com.esri.arcgis.geodatabase.IEnumDataset;
 import com.esri.arcgis.geodatabase.IMetadata;
@@ -9,14 +10,73 @@ import com.esri.arcgis.geodatabase.esriDatasetType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import nl.b3p.catalog.filetree.ArcSDEPath;
-import nl.b3p.catalog.filetree.ArcSDERoot;
+import java.util.regex.Pattern;
+import nl.b3p.catalog.B3PCatalogException;
+import nl.b3p.catalog.config.SDERoot;
 import nl.b3p.catalog.filetree.Dir;
+import nl.b3p.catalog.filetree.DirContent;
+import nl.b3p.catalog.filetree.DirEntry;
 
 public class ArcSDEHelper {
+    
+    public static DirContent getDirContent(SDERoot root, String prefix, String path) throws IOException {
 
-    public static List<Dir> getFeatureDatasets(ArcSDERoot sdeRoot, String path) throws IOException {
-        Workspace ws = sdeRoot.getWorkspace();
+        DirContent dc = new DirContent();
+        if("".equals(path)) { 
+            dc.setDirs(getFeatureDatasets(root, prefix));
+            dc.setFiles(getFeatureClasses(root, prefix));
+        } else {
+            dc.setFiles(getFeatureClassesInDataset(root, prefix + path + DirContent.SEPARATOR, path));
+        }
+        return dc;
+    }
+    
+    public static IDataset getDataset(SDERoot root, String path) throws IOException {
+        String paths[] = path.split(Pattern.quote(DirContent.SEPARATOR + ""));
+        
+        String containingFeatureDatasetName = null;
+        String datasetName = null;
+        
+        if(paths.length == 1) {
+            datasetName = paths[0];
+        } else {
+            containingFeatureDatasetName = paths[0];
+            datasetName = paths[1];
+        }
+            
+        if(datasetName == null) {
+            throw new IllegalArgumentException("Invalid dataset specified");
+        }
+        Workspace ws = getWorkspace(root);
+        IEnumDataset enumDataset = ws.getSubsets();
+        if(containingFeatureDatasetName != null) {
+            IDataset ds;
+            while ((ds = enumDataset.next()) != null) {
+                if (ds.getType() == esriDatasetType.esriDTFeatureDataset && ds.getName().equals(containingFeatureDatasetName)) {
+                    enumDataset = ds.getSubsets();
+                    break;
+                }
+            }
+            if(ds == null) {
+                throw new IllegalArgumentException("Feature dataset \"" + containingFeatureDatasetName + "\" not found");
+            }
+        }
+        IDataset ds;
+        while ((ds = enumDataset.next()) != null) {
+            if (ds.getType() != esriDatasetType.esriDTFeatureDataset && ds.getName().equals(datasetName)) {
+                return ds;
+            }
+        }      
+        throw new IllegalArgumentException("Feature class \"" + datasetName + "\" not found");        
+    }  
+    
+    private static Workspace getWorkspace(SDERoot root) throws IOException {
+        SdeWorkspaceFactory factory = new SdeWorkspaceFactory();
+        return new Workspace(factory.openFromString(root.getArcobjectsConnection(), 0));
+    }    
+
+    public static List<Dir> getFeatureDatasets(SDERoot root, String currentPath) throws IOException {
+        Workspace ws = getWorkspace(root);
 
         try {
             List<Dir> dirs = new ArrayList<Dir>();
@@ -25,7 +85,7 @@ public class ArcSDEHelper {
             IDataset ds;
             while ((ds = enumDataset.next()) != null) {
                 if (ds.getType() == esriDatasetType.esriDTFeatureDataset) {
-                    Dir d = new Dir(ds.getName(),path+ds.getName()+"/");
+                    Dir d = new Dir(ds.getName(), currentPath + ds.getName());
                     dirs.add(d);
                 }
             }
@@ -35,22 +95,22 @@ public class ArcSDEHelper {
         }
     }
 
-    public static List<nl.b3p.catalog.filetree.File> getFeatureClasses(ArcSDERoot sdeRoot, String path) throws IOException {
-        Workspace ws = sdeRoot.getWorkspace();
+    public static List<nl.b3p.catalog.filetree.DirEntry> getFeatureClasses(SDERoot root, String currentPath) throws IOException {
+        Workspace ws = getWorkspace(root);
 
         try {
-            return getDatasetEnumFeatureClassFiles(ws.getSubsets(), path);
+            return getDatasetEnumFeatureClassFiles(ws.getSubsets(), currentPath);
         } finally {
             ws.release();
         }
     }
 
-    public static List<nl.b3p.catalog.filetree.File> getFeatureClassesInDataset(ArcSDERoot sdeRoot, String path, String dataset) throws Exception {
+    public static List<nl.b3p.catalog.filetree.DirEntry> getFeatureClassesInDataset(SDERoot root, String currentPath, String dataset) throws IOException {
         if(dataset == null) {
             throw new IllegalArgumentException("Invalid feature dataset specified");
         }
 
-        Workspace ws = sdeRoot.getWorkspace();
+        Workspace ws = getWorkspace(root);
 
         try {
             IEnumDataset enumDataset = ws.getSubsets();
@@ -65,19 +125,18 @@ public class ArcSDEHelper {
                 throw new IllegalArgumentException("Dataset \"" + dataset + "\" not found");
             }
 
-            return getDatasetEnumFeatureClassFiles(ds.getSubsets(), path);
+            return getDatasetEnumFeatureClassFiles(ds.getSubsets(), currentPath);
         } finally {
             ws.release();
         }
     }
 
-    private static List<nl.b3p.catalog.filetree.File> getDatasetEnumFeatureClassFiles(IEnumDataset enumDataset, String path) throws IOException {
-        List<nl.b3p.catalog.filetree.File> files = new ArrayList<nl.b3p.catalog.filetree.File>();
+    private static List<nl.b3p.catalog.filetree.DirEntry> getDatasetEnumFeatureClassFiles(IEnumDataset enumDataset, String currentPath) throws IOException {
+        List<nl.b3p.catalog.filetree.DirEntry> files = new ArrayList<nl.b3p.catalog.filetree.DirEntry>();
         IDataset ds;
         while ((ds = enumDataset.next()) != null) {
             if(ds.getType() !=  esriDatasetType.esriDTFeatureDataset) {
-                nl.b3p.catalog.filetree.File f = new nl.b3p.catalog.filetree.File(ds.getName(),path+ds.getName());
-                f.setEsriType(ds.getType());
+                DirEntry f = new nl.b3p.catalog.filetree.DirEntry(ds.getName(), currentPath + ds.getName());
                 f.setIsGeo(true);
                 files.add(f);
             }

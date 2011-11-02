@@ -97,17 +97,17 @@ public class FGDBHelperProxy {
         }
     }
 
-    public static List<Dir> getAllDirDatasets(File fileGDBPath, ActionBeanContext context) throws IOException, B3PCatalogException {
+    public static List<Dir> getAllDirDatasets(File fileGDBPath, String currentPath) throws IOException, B3PCatalogException {
         try {
-            return FGDBHelper.getAllDirDatasets(fileGDBPath, context);
+            return FGDBHelper.getAllDirDatasets(fileGDBPath, currentPath);
         } catch(NoClassDefFoundError ncdfex) {
             rethrow(ncdfex); return null;
         }
     }
 
-    public static List<nl.b3p.catalog.filetree.File> getAllFileDatasets(File fileGDBPath, ActionBeanContext context) throws IOException, B3PCatalogException {
+    public static List<nl.b3p.catalog.filetree.DirEntry> getAllFileDatasets(File fileGDBPath, String currentPath) throws IOException, B3PCatalogException {
         try {
-            return FGDBHelper.getAllFileDatasets(fileGDBPath, context);
+            return FGDBHelper.getAllFileDatasets(fileGDBPath, currentPath);
         } catch(NoClassDefFoundError ncdfex) {
             rethrow(ncdfex); return null;
         }

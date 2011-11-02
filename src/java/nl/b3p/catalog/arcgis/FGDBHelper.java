@@ -17,10 +17,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import net.sourceforge.stripes.action.ActionBeanContext;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.filetree.Dir;
-import nl.b3p.catalog.filetree.Rewrite;
+import nl.b3p.catalog.filetree.DirContent;
+import nl.b3p.catalog.filetree.DirEntry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -49,7 +49,7 @@ public class FGDBHelper {
         return (IMetadata)DatasetHelper.getIDataset(ds).getFullName();
     }
     
-    public static List<Dir> getAllDirDatasets(File fileGDBPath, ActionBeanContext context) throws IOException {
+    public static List<Dir> getAllDirDatasets(File fileGDBPath, String currentPath) throws IOException {
         List<Dir> files = new ArrayList<Dir>();
 
         IDataset targetDataset = getTargetDataset(fileGDBPath, esriDatasetType.esriDTFeatureDataset);
@@ -60,15 +60,15 @@ public class FGDBHelper {
             if (ds.getType() == esriDatasetType.esriDTFeatureDataset) {
                 Dir dir = new Dir();
                 dir.setName(ds.getName());
-                dir.setPath(Rewrite.getFileNameRelativeToRootDirPP(new File(fileGDBPath, ds.getName()), context));
+                dir.setPath(currentPath + ds.getName());
                 files.add(dir);
             }
         }
         return files;
     }
 
-    public static List<nl.b3p.catalog.filetree.File> getAllFileDatasets(File fileGDBPath, ActionBeanContext context) throws IOException {
-        List<nl.b3p.catalog.filetree.File> files = new ArrayList<nl.b3p.catalog.filetree.File>();
+    public static List<nl.b3p.catalog.filetree.DirEntry> getAllFileDatasets(File fileGDBPath, String currentPath) throws IOException {
+        List<nl.b3p.catalog.filetree.DirEntry> files = new ArrayList<nl.b3p.catalog.filetree.DirEntry>();
 
         IDataset targetDataset = getTargetDataset(fileGDBPath, esriDatasetType.esriDTFeatureDataset);
         
@@ -76,11 +76,10 @@ public class FGDBHelper {
         IDataset ds;
         while ((ds = enumDataset.next()) != null) {
             if (ds.getType() != esriDatasetType.esriDTFeatureDataset) {
-                nl.b3p.catalog.filetree.File file = new nl.b3p.catalog.filetree.File();
+                DirEntry file = new nl.b3p.catalog.filetree.DirEntry();
                 file.setName(ds.getName());
-                file.setPath(Rewrite.getFileNameRelativeToRootDirPP(new File(fileGDBPath, ds.getName()), context));
+                file.setPath(currentPath + ds.getName());
                 file.setIsGeo(true);
-                file.setEsriType(ds.getType());
                 files.add(file);
             }
         }
