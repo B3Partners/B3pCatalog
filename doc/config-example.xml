@@ -132,7 +132,7 @@
     <!-- Spatiegescheiden lijst van bestandsextensies waarbij de geografische 
          tabs in de metadataeditor automatisch worden getoond.
     -->
-    <geoFileExtensions>gml shp dxf dgn sdf sdl lyr ecw sid tif tiff asc</geoFileExtensions>
+    <geoFileExtensions>gml shp dxf dgn sdf sdl lyr ecw sid tif tiff asc mdb</geoFileExtensions>
 
     <!-- CSW server configuratie voor de "Catalog doorzoeken" tab -->
     <cswServer>
