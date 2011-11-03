@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import nl.b3p.catalog.B3PCatalogException;
+import nl.b3p.catalog.config.Root;
 import nl.b3p.catalog.config.SDERoot;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirContent;
@@ -31,7 +31,8 @@ public class ArcSDEHelper {
         return dc;
     }
     
-    public static IDataset getDataset(SDERoot root, String path) throws IOException {
+    public static IDataset getDataset(Root r, String path) throws IOException {
+        SDERoot root = (SDERoot)r;
         String paths[] = path.split(Pattern.quote(DirContent.SEPARATOR + ""));
         
         String containingFeatureDatasetName = null;

@@ -20,12 +20,11 @@ import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
-import nl.b3p.catalog.Roles;
 import nl.b3p.catalog.arcgis.ArcGISSynchronizer;
 import nl.b3p.catalog.arcgis.ArcSDEHelper;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.config.AclAccess;
-import nl.b3p.catalog.config.FileRoot;
+import nl.b3p.catalog.config.Root;
 import nl.b3p.catalog.config.SDERoot;
 import nl.b3p.catalog.filetree.Extensions;
 import nl.b3p.catalog.filetree.FileListHelper;
@@ -74,18 +73,29 @@ public class MetadataAction extends DefaultAction {
     @Validate
     private FileBean importXml;
     
+    private Root root;
+    private AclAccess rootAccess;
+    private Map<String,String> extraHeaders = new HashMap<String,String>();
+
+    public void determineRoot() throws B3PCatalogException {
+        root = FiletreeAction.getRoot(getContext(), path, AclAccess.READ);
+        rootAccess = root.getRequestUserHighestAccessLevel(getContext().getRequest());
+        
+        extraHeaders.put("X-MDE-Access", rootAccess.name());
+    }
+    
     public Resolution load() {
-        Map<String, String> extraHeaders = new HashMap<String, String>();
-        if (!getContext().getRequest().isUserInRole(Roles.EDITOR))
-            extraHeaders.put("MDE_viewMode", "true");
 
         try {
+            determineRoot();
+
             if(SDE_MODE.equals(mode)) {
-                SDERoot root = (SDERoot)FiletreeAction.getRoot(getContext(), path, AclAccess.READ);
-                metadata = ArcSDEHelper.getMetadata(ArcSDEHelper.getDataset(root, FiletreeAction.getPath(path)));
+                
+                metadata = ArcSDEHelper.getMetadata(ArcSDEHelper.getDataset((SDERoot)root, FiletreeAction.getPath(path)));
                 return new XmlResolution(strictISO19115 ? extractMD_Metadata(metadata) : metadata, extraHeaders);
+                
             } else if(FILE_MODE.equals(mode)) {
-                FileRoot root = (FileRoot)FiletreeAction.getRoot(getContext(), path, AclAccess.READ);                
+                
                 File mdFile = FileListHelper.getFileForPath(root, FiletreeAction.getPath(path));
 
                 if(FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
@@ -115,18 +125,20 @@ public class MetadataAction extends DefaultAction {
 
     public Resolution save() {
         try {
-            if (!getContext().getRequest().isUserInRole(Roles.EDITOR)) {
-                throw new B3PCatalogException("Only editors can save metadata files");
+            determineRoot();
+            
+            if(rootAccess.getSecurityLevel() < AclAccess.WRITE.getSecurityLevel()) {
+                throw new B3PCatalogException("Geen rechten om metadata op te slaan op deze locatie");
             }
 
             if(SDE_MODE.equals(mode)) {
-                SDERoot root = (SDERoot)FiletreeAction.getRoot(getContext(), path, AclAccess.WRITE);
                 
                 IDataset dataset = ArcSDEHelper.getDataset(root, FiletreeAction.getPath(path));
                 String oldMetadata = ArcSDEHelper.getMetadata(dataset);
                 ArcSDEHelper.saveMetadata(dataset, sanitizeComments(oldMetadata,metadata));
+                
             } else if(FILE_MODE.equals(mode)) {
-                FileRoot root = (FileRoot)FiletreeAction.getRoot(getContext(), path, AclAccess.WRITE);                
+                
                 File mdFile = FileListHelper.getFileForPath(root, FiletreeAction.getPath(path));
                 
                 if(FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
@@ -157,18 +169,19 @@ public class MetadataAction extends DefaultAction {
     public Resolution synchronize() {
 
         try {
+            determineRoot();
+            
             // metadata string must already have been preprocessed on the clientside
             Document xmlDoc = new SAXBuilder().build(new StringReader(metadata));
 
             if(SDE_MODE.equals(mode)) {
                 
-                SDERoot root = (SDERoot)FiletreeAction.getRoot(getContext(), path, AclAccess.READ);
-                IDataset dataset = ArcSDEHelper.getDataset(root, FiletreeAction.getPath(path));
-                
+                IDataset dataset = ArcSDEHelper.getDataset(root, FiletreeAction.getPath(path));                
                 ArcGISSynchronizer arcGISSynchronizer = new ArcGISSynchronizer();
                 arcGISSynchronizer.synchronizeSDE(xmlDoc, dataset);
+                
             } else if(FILE_MODE.equals(mode)) {
-                FileRoot root = (FileRoot)FiletreeAction.getRoot(getContext(), path, AclAccess.READ);                
+
                 File dataFile = FileListHelper.getFileForPath(root, FiletreeAction.getPath(path));
             
                 if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dataFile)) {
@@ -274,8 +287,13 @@ public class MetadataAction extends DefaultAction {
     // that has <metadata/> or <gmd:MD_Metadata/> as root. This is by design.
     public Resolution postComment() {
         try {
+            determineRoot();
+            
+            if(rootAccess.getSecurityLevel() < AclAccess.COMMENT.getSecurityLevel()) {
+                throw new B3PCatalogException("Geen rechten om commentaar aan metadata toe te voegen op deze locatie");
+            }
+            
             if(SDE_MODE.equals(mode)) {
-                SDERoot root = (SDERoot)FiletreeAction.getRoot(getContext(), path, AclAccess.COMMENT);
                 IDataset dataset = ArcSDEHelper.getDataset(root, FiletreeAction.getPath(path));
                 
                 Document doc = DocumentHelper.getMetadataDocument(ArcSDEHelper.getMetadata(dataset));
@@ -284,7 +302,7 @@ public class MetadataAction extends DefaultAction {
                 ArcSDEHelper.saveMetadata(dataset, commentedMD);
                 return new XmlResolution(commentedMD);
             } else if(FILE_MODE.equals(mode)) {
-                FileRoot root = (FileRoot)FiletreeAction.getRoot(getContext(), path, AclAccess.COMMENT);                
+                
                 File mdFile = FileListHelper.getFileForPath(root, FiletreeAction.getPath(path));
                 
                 if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {

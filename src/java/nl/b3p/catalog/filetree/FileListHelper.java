@@ -26,6 +26,7 @@ import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.config.CatalogAppConfig;
 import nl.b3p.catalog.config.FileRoot;
+import nl.b3p.catalog.config.Root;
 
 /**
  *
@@ -33,7 +34,8 @@ import nl.b3p.catalog.config.FileRoot;
  */
 public class FileListHelper {
     
-    public static File getFileForPath(FileRoot root, String path) throws FileNotFoundException {
+    public static File getFileForPath(Root r, String path) throws FileNotFoundException {
+        FileRoot root = (FileRoot)r;
         if(path.indexOf("..") != -1) {
             throw new IllegalArgumentException("Illegal path");
         }

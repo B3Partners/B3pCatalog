@@ -305,7 +305,9 @@ B3pCatalog.loadMetadata = function(mode, path, isGeo, cancel) {
                 document.title = B3pCatalog.title + B3pCatalog.titleSeparator + path;
                 // TODO: on demand van PBL bv: laatst geopende doc opslaan
                 //$.cookie();
-                var viewMode = jqXHR.getResponseHeader("MDE_viewMode") === "true";
+                var access = jqXHR.getResponseHeader("X-MDE-Access");
+                var viewMode = access != "WRITE";
+                console.log("viewMode", viewMode);
                 B3pCatalog.createMde(data, isGeo, viewMode);
             }
         }
