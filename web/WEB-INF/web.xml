@@ -118,12 +118,4 @@
         <welcome-file>/index.jsp</welcome-file>
     </welcome-file-list>
     
-    <context-param>
-        <description>
-            Full absolute path to the config file that contains the allowed organisations and contacts in the MDE.
-        </description>
-        <param-name>organisationsJSONFilePath</param-name>
-        <param-value>C:\b3p\B3pCatalog\organisations.json</param-value>
-    </context-param>    
-    
 </web-app>

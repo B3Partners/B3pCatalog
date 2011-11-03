@@ -9,6 +9,7 @@ import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
+import nl.b3p.catalog.config.CatalogAppConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,15 +24,22 @@ public class OrganisationsAction extends DefaultAction {
     @DefaultHandler
     public Resolution main() {
         String organisations = getOrganisations(getContext());
+        
+        // TODO ipv JavaScript code JSON teruggeven en dit eerst valideren
+        // met org.json.JSONObject
+        // In MDE niet met <script> tag maar met XHR laden (mogelijk probleem 
+        // met XHR in ArcCatalog plugin?)
+        
         return new StreamingResolution("text/javascript", organisations);
     }
     
     public static String getOrganisations(ActionBeanContext context) {
         try {
-            return FileUtils.readFileToString(getOrganisationsConfigFile(context), "utf-8");
+            return FileUtils.readFileToString(getOrganisationsConfigFile(context), "UTF-8");
         } catch (Exception ex) {
-            log.error("Cannot read organisations config file", ex);
-            return "";
+            log.error("Cannot read organisations config file: " + ex.getMessage());
+            
+            return "organisations = {}";
         }
     }
     
@@ -44,7 +52,11 @@ public class OrganisationsAction extends DefaultAction {
     }
     
     protected static File getOrganisationsConfigFile(ActionBeanContext context) {
-        String orgsPath = context.getServletContext().getInitParameter("organisationsJSONFilePath");
-        return new File(orgsPath);
+        CatalogAppConfig cfg = CatalogAppConfig.getConfig();
+        File f = new File(cfg.getOrganizationsJsonFile());
+        if(!f.isAbsolute()) {
+            f = new File(cfg.getConfigFilePath(), cfg.getOrganizationsJsonFile());
+        }
+        return f;
     }
 }
