@@ -19,7 +19,7 @@ import nl.b3p.catalog.filetree.DirEntry;
 
 public class ArcSDEHelper {
     
-    public static DirContent getDirContent(SDERoot root, String fullPath) throws IOException {
+    public static DirContent getDirContent(SDERoot root, String fullPath) throws Exception {
 
         DirContent dc = new DirContent();
         String path = Root.getPathPart(fullPath);
@@ -32,7 +32,7 @@ public class ArcSDEHelper {
         return dc;
     }
     
-    public static IDataset getDataset(Root r, String path) throws IOException {
+    public static IDataset getDataset(Root r, String path) throws Exception {
         SDERoot root = (SDERoot)r;
         path = Root.getPathPart(path);
         String paths[] = path.split(Pattern.quote(DirContent.SEPARATOR + ""));
@@ -73,12 +73,15 @@ public class ArcSDEHelper {
         throw new IllegalArgumentException("Feature class \"" + datasetName + "\" not found");        
     }  
     
-    private static Workspace getWorkspace(SDERoot root) throws IOException {
+    private static Workspace getWorkspace(SDERoot root) throws Exception {
+        if(root.getArcobjectsConnection() == null) {
+            throw new Exception("ArcObjects niet geconfigureerd voor deze SDE root");
+        }
         SdeWorkspaceFactory factory = new SdeWorkspaceFactory();
         return new Workspace(factory.openFromString(root.getArcobjectsConnection(), 0));
     }    
 
-    public static List<Dir> getFeatureDatasets(SDERoot root, String currentPath) throws IOException {
+    public static List<Dir> getFeatureDatasets(SDERoot root, String currentPath) throws Exception {
         Workspace ws = getWorkspace(root);
 
         try {
@@ -98,7 +101,7 @@ public class ArcSDEHelper {
         }
     }
 
-    public static List<nl.b3p.catalog.filetree.DirEntry> getFeatureClasses(SDERoot root, String currentPath) throws IOException {
+    public static List<nl.b3p.catalog.filetree.DirEntry> getFeatureClasses(SDERoot root, String currentPath) throws Exception {
         Workspace ws = getWorkspace(root);
 
         try {
@@ -108,7 +111,7 @@ public class ArcSDEHelper {
         }
     }
 
-    public static List<nl.b3p.catalog.filetree.DirEntry> getFeatureClassesInDataset(SDERoot root, String currentPath, String dataset) throws IOException {
+    public static List<nl.b3p.catalog.filetree.DirEntry> getFeatureClassesInDataset(SDERoot root, String currentPath, String dataset) throws Exception {
         if(dataset == null) {
             throw new IllegalArgumentException("Invalid feature dataset specified");
         }

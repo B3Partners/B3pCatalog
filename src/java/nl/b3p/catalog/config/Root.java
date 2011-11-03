@@ -16,7 +16,6 @@
  */
 package nl.b3p.catalog.config;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -133,7 +132,7 @@ public abstract class Root {
         return AclAccess.NONE;
     }
     
-    public abstract DirContent getDirContent(String fullPath) throws IOException, B3PCatalogException;
+    public abstract DirContent getDirContent(String fullPath) throws Exception;
     
     /**
      * Return the part of a full path without the prefix indicating the root

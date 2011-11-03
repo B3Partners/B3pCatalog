@@ -19,7 +19,6 @@ import java.util.LinkedList;
 import java.util.List;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.filetree.Dir;
-import nl.b3p.catalog.filetree.DirContent;
 import nl.b3p.catalog.filetree.DirEntry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

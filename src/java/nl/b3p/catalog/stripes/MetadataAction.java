@@ -20,10 +20,12 @@ import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.arcgis.ArcGISSynchronizer;
 import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
+import nl.b3p.catalog.arcgis.ArcSDEJDBCDataset;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.config.AclAccess;
+import nl.b3p.catalog.config.ArcObjectsConfig;
+import nl.b3p.catalog.config.CatalogAppConfig;
 import nl.b3p.catalog.config.Root;
-import nl.b3p.catalog.config.SDERoot;
 import nl.b3p.catalog.filetree.Extensions;
 import nl.b3p.catalog.filetree.FileListHelper;
 import nl.b3p.catalog.resolution.XmlResolution;
@@ -106,7 +108,7 @@ public class MetadataAction extends DefaultAction {
                     mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
                     if (!mdFile.exists()) {
                         // create new metadata on client side or show this in exported file:
-                        return new XmlResolution("empty", extraHeaders);
+                        return new XmlResolution(DocumentHelper.EMPTY_METADATA, extraHeaders);
                     } else {
                         if(strictISO19115) {
                             return new XmlResolution(extractMD_Metadata(mdFile), extraHeaders);
@@ -178,7 +180,18 @@ public class MetadataAction extends DefaultAction {
 
             if(SDE_MODE.equals(mode)) {
                 
-                Object dataset = ArcSDEHelperProxy.getDataset(root, path);                
+                Object dataset = ArcSDEHelperProxy.getDataset(root, path); 
+                
+                if(dataset instanceof ArcSDEJDBCDataset) {
+                    
+                    ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();
+                    
+                    if(cfg != null && cfg.isEnabled()) {
+                        dataset = ArcSDEHelperProxy.getArcObjectsDataset(root, path);
+                    } else if(cfg != null && cfg.isForkSynchroniser()) {
+                        throw new UnsupportedOperationException("Not implemented yet");
+                    }                    
+                }
                 ArcGISSynchronizer arcGISSynchronizer = new ArcGISSynchronizer();
                 arcGISSynchronizer.synchronizeSDE(xmlDoc, dataset);
                 
@@ -209,7 +222,7 @@ public class MetadataAction extends DefaultAction {
         } catch (Exception e) {
             String message = "Could not synchronize " + mode + " metadata from location " + path;
             log.error(message, e);
-            return new HtmlErrorResolution(message);
+            return new HtmlErrorResolution(message, e);
         }
     }
     

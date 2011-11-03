@@ -16,16 +16,23 @@
  */
 package nl.b3p.catalog.config;
 
-import java.io.IOException;
-import nl.b3p.catalog.B3PCatalogException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
 import nl.b3p.catalog.filetree.DirContent;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
  * @author Matthijs Laan
  */
 public class SDERoot extends Root {
+    private static final Log log = LogFactory.getLog(SDERoot.class);
     
     private String jndiDataSource;
     
@@ -48,7 +55,15 @@ public class SDERoot extends Root {
     }
 
     @Override
-    public DirContent getDirContent(String fullPath) throws IOException, B3PCatalogException {
+    public DirContent getDirContent(String fullPath) throws Exception {
         return ArcSDEHelperProxy.getDirContent(this, fullPath);
+    }
+    
+    public Connection openJDBCConnection() throws NamingException, SQLException {
+        log.debug("Looking up datasource for SDE with name " + getJndiDataSource());
+        Context initCtx = new InitialContext();
+        DataSource ds = (DataSource)initCtx.lookup(getJndiDataSource());
+
+        return ds.getConnection();        
     }
 }

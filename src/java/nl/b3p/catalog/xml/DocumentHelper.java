@@ -25,6 +25,7 @@ import org.jdom.output.XMLOutputter;
  * @author Erik van de Pol
  */
 public class DocumentHelper {
+    public static final String EMPTY_METADATA = "empty";
 
     public static String getDocumentString(Document xml) {
         return new XMLOutputter(Format.getPrettyFormat()).outputString(xml);

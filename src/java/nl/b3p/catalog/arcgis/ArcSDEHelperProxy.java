@@ -4,7 +4,6 @@
  */
 package nl.b3p.catalog.arcgis;
 
-import java.io.IOException;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.config.Root;
 import nl.b3p.catalog.config.SDERoot;
@@ -25,33 +24,60 @@ public class ArcSDEHelperProxy {
         throw new ArcObjectsNotFoundException(message, ncdfex);
     }
 
-    public static DirContent getDirContent(Root root, String fullPath) throws IOException, B3PCatalogException {
+    public static DirContent getDirContent(Root r, String fullPath) throws Exception {
         try {
-            return ArcSDEHelper.getDirContent((SDERoot)root, fullPath);
+            SDERoot root = (SDERoot)r;
+            if(root.getJndiDataSource() != null) {
+                return ArcSDEJDBCHelper.getDirContent(root, fullPath);
+            } else {
+                return ArcSDEHelper.getDirContent(root, fullPath);
+            }
         } catch(NoClassDefFoundError ncdfex) {
             rethrow(ncdfex); return null;
         }
     }    
     
-    public static Object getDataset(Root root, String path) throws Exception {
+    public static Object getDataset(Root r, String path) throws Exception {
         try {
-            return ArcSDEHelper.getDataset(root, path);
+            SDERoot root = (SDERoot)r;
+            if(root.getJndiDataSource() != null) {
+                return ArcSDEJDBCHelper.getDataset(root, path);
+            } else {
+                return ArcSDEHelper.getDataset(root, path);
+            }
         } catch(NoClassDefFoundError ncdfex) {
             rethrow(ncdfex); return null;
         }
-    }    
+    }   
+    
+    public static Object getArcObjectsDataset(Root r, String path) throws Exception {
+        try {
+            return ArcSDEHelper.getDataset((SDERoot)r, path);
+        } catch(NoClassDefFoundError ncdfex) {
+            rethrow(ncdfex); return null;
+        }
+    }        
     
     public static String getMetadata(Object dataset) throws Exception {
         try {
-            return ArcSDEHelper.getMetadata(dataset);
+            if(dataset instanceof  ArcSDEJDBCDataset) {
+                return ArcSDEJDBCHelper.getMetadata((ArcSDEJDBCDataset)dataset);
+            } else {
+                return ArcSDEHelper.getMetadata(dataset);
+            }
         } catch(NoClassDefFoundError ncdfex) {
             rethrow(ncdfex); return null;
         }
     }
     
-    public static String getMetadata(Root root, String path) throws Exception {
+    public static String getMetadata(Root r, String path) throws Exception {
         try {
-            return ArcSDEHelper.getMetadata(ArcSDEHelper.getDataset(root, path));
+            SDERoot root = (SDERoot)r;
+            if(root.getJndiDataSource() != null) {
+                return ArcSDEJDBCHelper.getMetadata(root, path);
+            } else {
+                return ArcSDEHelper.getMetadata(ArcSDEHelper.getDataset(root, path));
+            }
         } catch(NoClassDefFoundError ncdfex) {
             rethrow(ncdfex); return null;
         }
@@ -59,7 +85,11 @@ public class ArcSDEHelperProxy {
 
     public static void saveMetadata(Object dataset, String metadata) throws Exception {
         try {
-            ArcSDEHelper.saveMetadata(dataset, metadata);
+            if(dataset instanceof  ArcSDEJDBCDataset) {
+                ArcSDEJDBCHelper.saveMetadata((ArcSDEJDBCDataset)dataset, metadata);            
+            } else {
+                ArcSDEHelper.saveMetadata(dataset, metadata);
+            }
         } catch(NoClassDefFoundError ncdfex) {
             rethrow(ncdfex);
         }
