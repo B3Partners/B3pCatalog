@@ -8,19 +8,19 @@
             Let op: pas dit aan door in context.xml (of in Catalina/localhost/b3pcatalog.xml)
             deze parameter te overriden zodat bij een nieuwe versie deze behouden
             blijft:
-            &lt;Context&gt; path="/b3pcatalog" ...>
+            &lt;Context&gt; path="/b3pcatalog" ...&gt;
                 &lt;Parameter name="config" value="c:\b3p\b3pcatalog\config.xml" override="false"/&gt;
             &lt;/Context&gt;
         </description>
         <param-name>config</param-name>
         <param-value>conf/b3pcatalog/config.xml</param-value>
-    </context-param>    
+    </context-param>
     
     <listener>
         <listener-class>nl.b3p.catalog.config.CatalogAppConfig</listener-class>
     </listener>
     <listener>
-        <listener-class>nl.b3p.gis.arcgis.ArcGISConnector</listener-class>
+        <listener-class>nl.b3p.catalog.arcgis.ArcObjectsInitializerListener</listener-class>
     </listener>
     
     <filter>
@@ -63,7 +63,7 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-
+    
     <!-- See http://www.stripesframework.org/display/stripes/Localization (bottom of the page) -->
     <context-param>
         <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
@@ -100,7 +100,7 @@
         <dispatcher>FORWARD</dispatcher>
         <dispatcher>INCLUDE</dispatcher>
         <dispatcher>ERROR</dispatcher>
-    </filter-mapping>    
+    </filter-mapping>
     <servlet>
         <servlet-name>StripesDispatcher</servlet-name>
         <servlet-class>net.sourceforge.stripes.controller.DispatcherServlet</servlet-class>
@@ -112,10 +112,9 @@
     </servlet-mapping>
     
     <session-config>
-        <session-timeout>600</session-timeout>
+        <session-timeout>3600</session-timeout>
     </session-config>
     <welcome-file-list>
         <welcome-file>/index.jsp</welcome-file>
     </welcome-file-list>
-    
 </web-app>

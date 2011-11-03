@@ -19,20 +19,22 @@ import nl.b3p.catalog.filetree.DirEntry;
 
 public class ArcSDEHelper {
     
-    public static DirContent getDirContent(SDERoot root, String prefix, String path) throws IOException {
+    public static DirContent getDirContent(SDERoot root, String fullPath) throws IOException {
 
         DirContent dc = new DirContent();
+        String path = Root.getPathPart(fullPath);
         if("".equals(path)) { 
-            dc.setDirs(getFeatureDatasets(root, prefix));
-            dc.setFiles(getFeatureClasses(root, prefix));
+            dc.setDirs(getFeatureDatasets(root, fullPath));
+            dc.setFiles(getFeatureClasses(root, fullPath));
         } else {
-            dc.setFiles(getFeatureClassesInDataset(root, prefix + path + DirContent.SEPARATOR, path));
+            dc.setFiles(getFeatureClassesInDataset(root, fullPath + DirContent.SEPARATOR, path));
         }
         return dc;
     }
     
     public static IDataset getDataset(Root r, String path) throws IOException {
         SDERoot root = (SDERoot)r;
+        path = Root.getPathPart(path);
         String paths[] = path.split(Pattern.quote(DirContent.SEPARATOR + ""));
         
         String containingFeatureDatasetName = null;
@@ -145,14 +147,14 @@ public class ArcSDEHelper {
 
         return files;
     }
-
-    public static String getMetadata(IDataset dataset) throws IOException {
-        IMetadata imd = (IMetadata)dataset.getFullName();
+    
+    public static String getMetadata(Object dataset) throws IOException {
+        IMetadata imd = (IMetadata)((IDataset)dataset).getFullName();
         return ((XmlPropertySet)imd.getMetadata()).getXml("/");
     }
 
-    public static void saveMetadata(IDataset dataset, String metadata) throws IOException {
-        IMetadata imd = (IMetadata)dataset.getFullName();
+    public static void saveMetadata(Object dataset, String metadata) throws IOException {
+        IMetadata imd = (IMetadata)((IDataset)dataset).getFullName();
         XmlPropertySet mdPS = (XmlPropertySet)imd.getMetadata();
         mdPS.setXml(metadata);
         imd.setMetadata(mdPS);

@@ -42,35 +42,14 @@ public class FiletreeAction extends DefaultAction {
         log.debug("listDir: " + dir);
         return list(SDERoot.class);
     }    
-    
-    private static int getRootIndex(String dir) {
-        int i = dir.indexOf(DirContent.SEPARATOR);
-        return Integer.parseInt(dir.substring(0,i));
-    }
-    
-    static Root getRoot(ActionBeanContext context, String dir, AclAccess minimumAccessLevel) throws B3PCatalogException {
-        Root r = CatalogAppConfig.getConfig().getRoots().get(getRootIndex(dir));
-        if(r.isRequestUserAuthorizedFor(context.getRequest(), minimumAccessLevel)) {
-            return r;
-        } else {
-            throw new B3PCatalogException("Not authorized for required minimum access level " + minimumAccessLevel.name());
-        }
-    }
-    
-    static String getPath(String dir) {
-        return dir.substring(dir.indexOf(DirContent.SEPARATOR)+1);
-    }
         
     private Resolution list(Class clazz) {
         try {
             if(dir == null) {
                 dirContent = getRoots(clazz);
             } else {
-                int index = getRootIndex(dir);
-                Root r = getRoot(getContext(), dir, AclAccess.READ);
-                String path = getPath(dir);
-               
-                dirContent = r.getDirContent(index + "" + DirContent.SEPARATOR, path);
+                Root r = Root.getRootForPath(dir, getContext().getRequest(), AclAccess.READ);
+                dirContent = r.getDirContent(dir);
                 dirContent.sort();                
             }
 

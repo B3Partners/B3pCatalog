@@ -48,7 +48,7 @@ public class SDERoot extends Root {
     }
 
     @Override
-    public DirContent getDirContent(String prefix, String path) throws IOException, B3PCatalogException {
-        return ArcSDEHelperProxy.getDirContent(this, prefix, path);
+    public DirContent getDirContent(String fullPath) throws IOException, B3PCatalogException {
+        return ArcSDEHelperProxy.getDirContent(this, fullPath);
     }
 }

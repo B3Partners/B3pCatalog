@@ -66,8 +66,8 @@ public class ArcGISSynchronizer {
         sync(xmlDoc, dataset);
     }
 
-    public void synchronizeSDE(Document xmlDoc, IDataset dataset) throws IOException, B3PCatalogException, JDOMException {
-
+    public void synchronizeSDE(Document xmlDoc, Object ds) throws IOException, B3PCatalogException, JDOMException {
+        IDataset dataset = (IDataset)ds;
         Workspace workspace = new Workspace(dataset.getWorkspace());
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_NAME, "ESRI ArcSDE");
         // Als distribute formaat naam is ingevuld, moet ook de versie ingevuld staan, anders is de xml niet correct volgens het xsd.

@@ -42,7 +42,7 @@ public class FileRoot extends Root {
     }
 
     @Override
-    public DirContent getDirContent(String prefix, String path) throws IOException, B3PCatalogException {
-        return FileListHelper.getDirContent(this, prefix, path);
+    public DirContent getDirContent(String fullPath) throws IOException, B3PCatalogException {
+        return FileListHelper.getDirContent(this, fullPath);
     }
 }

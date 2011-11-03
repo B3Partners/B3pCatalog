@@ -16,8 +16,10 @@
  */
 package nl.b3p.catalog.config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -26,18 +28,23 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Matthijs Laan
  */
 public class ArcObjectsConfig {
+    @XmlAttribute
     private boolean enabled;
     
+    @XmlAttribute
     @XmlList
-    private List<String> productCodes = Arrays.asList(new String[] {
+    private List<String> productCodes = new ArrayList<String>(Arrays.asList(new String[] {
         "ArcInfo", "ArcEditor", "ArcView", "ArcServer", "EngineGeoDB", "Engine"
-    });
+    }));
     
+    @XmlAttribute
     private String arcEngineHome;
     
+    @XmlAttribute
     private boolean forkSynchroniser;
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
+    @XmlTransient
     public String getArcEngineHome() {
         return arcEngineHome;
     }
@@ -46,6 +53,7 @@ public class ArcObjectsConfig {
         this.arcEngineHome = arcEngineHome;
     }
 
+    @XmlTransient
     public boolean isEnabled() {
         return enabled;
     }
@@ -54,6 +62,7 @@ public class ArcObjectsConfig {
         this.enabled = enabled;
     }
 
+    @XmlTransient
     public boolean isForkSynchroniser() {
         return forkSynchroniser;
     }

@@ -1,7 +1,5 @@
 package nl.b3p.catalog.stripes;
 
-import com.esri.arcgis.geodatabase.IDataset;
-import com.esri.arcgis.geodatabase.esriDatasetType;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -21,7 +19,7 @@ import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.arcgis.ArcGISSynchronizer;
-import nl.b3p.catalog.arcgis.ArcSDEHelper;
+import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.config.AclAccess;
 import nl.b3p.catalog.config.Root;
@@ -54,6 +52,11 @@ public class MetadataAction extends DefaultAction {
     private static final String SDE_MODE = "sde";
 
     private final static DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    
+    /* XXX niet nodig omdat objecten van verschillende types toch niet dezelfde
+     * naam mogen hebben...
+     */
+    private static final int esriDTFeatureClass = 5; /* esriDatasetType */
 
     @Validate(required=true, on={"!importMD"})
     private String path;
@@ -78,9 +81,8 @@ public class MetadataAction extends DefaultAction {
     private Map<String,String> extraHeaders = new HashMap<String,String>();
 
     public void determineRoot() throws B3PCatalogException {
-        root = FiletreeAction.getRoot(getContext(), path, AclAccess.READ);
+        root = Root.getRootForPath(path, getContext().getRequest(), AclAccess.READ);
         rootAccess = root.getRequestUserHighestAccessLevel(getContext().getRequest());
-        
         extraHeaders.put("X-MDE-Access", rootAccess.name());
     }
     
@@ -91,15 +93,15 @@ public class MetadataAction extends DefaultAction {
 
             if(SDE_MODE.equals(mode)) {
                 
-                metadata = ArcSDEHelper.getMetadata(ArcSDEHelper.getDataset((SDERoot)root, FiletreeAction.getPath(path)));
+                metadata = ArcSDEHelperProxy.getMetadata(root, path);
                 return new XmlResolution(strictISO19115 ? extractMD_Metadata(metadata) : metadata, extraHeaders);
                 
             } else if(FILE_MODE.equals(mode)) {
                 
-                File mdFile = FileListHelper.getFileForPath(root, FiletreeAction.getPath(path));
+                File mdFile = FileListHelper.getFileForPath(root, path);
 
                 if(FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                    return new XmlResolution(FGDBHelperProxy.getMetadata(mdFile,esriDatasetType.esriDTFeatureClass), extraHeaders);
+                    return new XmlResolution(FGDBHelperProxy.getMetadata(mdFile,esriDTFeatureClass), extraHeaders);
                 } else {
                     mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
                     if (!mdFile.exists()) {
@@ -133,16 +135,16 @@ public class MetadataAction extends DefaultAction {
 
             if(SDE_MODE.equals(mode)) {
                 
-                IDataset dataset = ArcSDEHelper.getDataset(root, FiletreeAction.getPath(path));
-                String oldMetadata = ArcSDEHelper.getMetadata(dataset);
-                ArcSDEHelper.saveMetadata(dataset, sanitizeComments(oldMetadata,metadata));
+                Object dataset = ArcSDEHelperProxy.getDataset(root, path);
+                String oldMetadata = ArcSDEHelperProxy.getMetadata(dataset);
+                ArcSDEHelperProxy.saveMetadata(dataset, sanitizeComments(oldMetadata,metadata));
                 
             } else if(FILE_MODE.equals(mode)) {
                 
-                File mdFile = FileListHelper.getFileForPath(root, FiletreeAction.getPath(path));
+                File mdFile = FileListHelper.getFileForPath(root, path);
                 
                 if(FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                    String oldMetadata = FGDBHelperProxy.getMetadata(mdFile,esriDatasetType.esriDTFeatureClass);
+                    String oldMetadata = FGDBHelperProxy.getMetadata(mdFile,esriDTFeatureClass);
                     FGDBHelperProxy.setMetadata(mdFile, 5, sanitizeComments(oldMetadata,metadata));
                 } else {
                     mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
@@ -176,13 +178,13 @@ public class MetadataAction extends DefaultAction {
 
             if(SDE_MODE.equals(mode)) {
                 
-                IDataset dataset = ArcSDEHelper.getDataset(root, FiletreeAction.getPath(path));                
+                Object dataset = ArcSDEHelperProxy.getDataset(root, path);                
                 ArcGISSynchronizer arcGISSynchronizer = new ArcGISSynchronizer();
                 arcGISSynchronizer.synchronizeSDE(xmlDoc, dataset);
                 
             } else if(FILE_MODE.equals(mode)) {
 
-                File dataFile = FileListHelper.getFileForPath(root, FiletreeAction.getPath(path));
+                File dataFile = FileListHelper.getFileForPath(root, path);
             
                 if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dataFile)) {
                     // only instantiate ArcGISSynchronizer here, since a NoClassDefFoundError can occur if ArcGIS is not installed / incorrectly installed
@@ -294,24 +296,24 @@ public class MetadataAction extends DefaultAction {
             }
             
             if(SDE_MODE.equals(mode)) {
-                IDataset dataset = ArcSDEHelper.getDataset(root, FiletreeAction.getPath(path));
+                Object dataset = ArcSDEHelperProxy.getDataset(root, path);
                 
-                Document doc = DocumentHelper.getMetadataDocument(ArcSDEHelper.getMetadata(dataset));
+                Document doc = DocumentHelper.getMetadataDocument(ArcSDEHelperProxy.getMetadata(dataset));
                 addComment(doc, comment);
                 String commentedMD = DocumentHelper.getDocumentString(doc);
-                ArcSDEHelper.saveMetadata(dataset, commentedMD);
+                ArcSDEHelperProxy.saveMetadata(dataset, commentedMD);
                 return new XmlResolution(commentedMD);
             } else if(FILE_MODE.equals(mode)) {
                 
-                File mdFile = FileListHelper.getFileForPath(root, FiletreeAction.getPath(path));
+                File mdFile = FileListHelper.getFileForPath(root, path);
                 
                 if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                    Document doc = DocumentHelper.getMetadataDocument(FGDBHelperProxy.getMetadata(mdFile, esriDatasetType.esriDTFeatureClass));
+                    Document doc = DocumentHelper.getMetadataDocument(FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass));
 
                     addComment(doc, comment);
 
                     String commentedMD = DocumentHelper.getDocumentString(doc);
-                    FGDBHelperProxy.setMetadata(mdFile, esriDatasetType.esriDTFeatureClass, commentedMD);
+                    FGDBHelperProxy.setMetadata(mdFile, esriDTFeatureClass, commentedMD);
 
                     return new XmlResolution(commentedMD);
                 } else {

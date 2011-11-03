@@ -133,5 +133,33 @@ public abstract class Root {
         return AclAccess.NONE;
     }
     
-    public abstract DirContent getDirContent(String prefix, String path) throws IOException, B3PCatalogException;
+    public abstract DirContent getDirContent(String fullPath) throws IOException, B3PCatalogException;
+    
+    /**
+     * Return the part of a full path without the prefix indicating the root
+     * @param fullPath full path request parameter
+     * @return 
+     */
+    public static String getPathPart(String fullPath) {
+        return fullPath.substring(fullPath.indexOf(DirContent.SEPARATOR)+1);        
+    }
+    
+    public static String getRootPart(String fullPath) {
+        return fullPath.substring(0, fullPath.indexOf(DirContent.SEPARATOR)+1);
+    }
+    
+    public static Root getRootForPath(String fullPath) throws B3PCatalogException {
+        int i = fullPath.indexOf(DirContent.SEPARATOR);
+        int index = Integer.parseInt(fullPath.substring(0,i));
+        return CatalogAppConfig.getConfig().getRoots().get(index);    
+    }
+    
+    public static Root getRootForPath(String fullPath, HttpServletRequest request, AclAccess minimumAccessLevel) throws B3PCatalogException {
+        Root r = getRootForPath(fullPath);
+        if(r.isRequestUserAuthorizedFor(request, minimumAccessLevel)) {
+            return r;
+        } else {
+            throw new B3PCatalogException("Not authorized for required minimum access level " + minimumAccessLevel.name());
+        }        
+    }
 }

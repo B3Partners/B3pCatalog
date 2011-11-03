@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.List;
-import net.sourceforge.stripes.action.ActionBeanContext;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.filetree.Dir;
 import org.apache.commons.logging.Log;
@@ -24,7 +23,7 @@ public class FGDBHelperProxy {
     private final static Log log = LogFactory.getLog(FGDBHelperProxy.class);
 
     private static void rethrow(NoClassDefFoundError ncdfex) throws B3PCatalogException {
-        String message = "ArcGIS is niet (of niet correct) geïnstalleerd. Om metadata te bekijken en weg te schrijven in deze ESRI File based Geodatabase (FGDB) is dit nodig.";
+        String message = "ArcObjects is niet goed geinitialiseerd. Om metadata te bekijken en weg te schrijven in deze ESRI file geodatabase (FGDB) is dit nodig.";
         log.warn(message, ncdfex);
         throw new ArcObjectsNotFoundException(message, ncdfex);
     }

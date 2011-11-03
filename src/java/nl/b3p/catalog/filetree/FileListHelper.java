@@ -36,6 +36,7 @@ public class FileListHelper {
     
     public static File getFileForPath(Root r, String path) throws FileNotFoundException {
         FileRoot root = (FileRoot)r;
+        path = Root.getPathPart(path);
         if(path.indexOf("..") != -1) {
             throw new IllegalArgumentException("Illegal path");
         }
@@ -54,11 +55,11 @@ public class FileListHelper {
         return f;
     }
     
-    public static DirContent getDirContent(FileRoot root, String prefix, String path) throws IOException, B3PCatalogException {
+    public static DirContent getDirContent(FileRoot root, String fullPath) throws IOException, B3PCatalogException {
 
-        File dir = getFileForPath(root, path);
-        
-        return getDirContent(dir, prefix + path + (path.equals("") ? "" : DirContent.SEPARATOR));
+        File dir = getFileForPath(root, fullPath);
+        String pathPart = Root.getPathPart(fullPath);
+        return getDirContent(dir, fullPath + (pathPart.equals("") ? "" : DirContent.SEPARATOR));
     }
     
     private static DirContent getDirContent(File directory, String currentPath) throws IOException, B3PCatalogException {
