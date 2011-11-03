@@ -68,7 +68,7 @@ public class CatalogAppConfig implements ServletContextListener {
     
     @XmlList
     private Set<String> geoFileExtensions = new HashSet<String>(Arrays.asList(
-            new String[] {"gml", "shp", "dxf", "dgn", "sdf", "sdl", "lyr", "ecw", "sid", "tif", "tiff", "asc"}
+            new String[] {"gml", "shp", "dxf", "dgn", "sdf", "sdl", "lyr", "ecw", "sid", "tif", "tiff", "asc", "mdb"}
     ));
     
     private CSWServerConfig cswServer = null;
@@ -193,6 +193,10 @@ public class CatalogAppConfig implements ServletContextListener {
             StringWriter sw = new StringWriter();
             m.marshal(config, sw);        
             log.info("Parsed configuration: \n" + sw.toString());
+            
+            if(!CURRENT_VERSION.equals(config.getVersion())) {
+                throw new Exception(String.format("Wrong configuration file version: %s, must be %s",config.getVersion(),CURRENT_VERSION));
+            }
         } catch(Exception e) {
             log.error("Error loading configuration", e);
             throw new IllegalArgumentException("Error loading configuration from file \"" + canonicalPath + '"',e );
