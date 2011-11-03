@@ -7,7 +7,6 @@ package nl.b3p.catalog.stripes;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.ServletContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -15,6 +14,8 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.validation.Validate;
+import nl.b3p.catalog.config.CSWServerConfig;
+import nl.b3p.catalog.config.CatalogAppConfig;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.resolution.XmlResolution;
 import nl.b3p.csw.client.CswClient;
@@ -85,6 +86,10 @@ public class CatalogAction extends DefaultAction {
             CswClient client = getCswClient();
             OutputById output = client.search(new InputById(uuid));
             //log.debug(new XMLOutputter().outputString(output.getXml()));
+            
+            if(output.getSearchResult() == null) {
+                throw new IllegalArgumentException(String.format("Metadata document met UUID \"%s\" kon niet worden gevonden bij CSW-service", uuid));
+            }
 
             return new XmlResolution(output.getSearchResultString());
         } catch (Exception e) {
@@ -107,14 +112,13 @@ public class CatalogAction extends DefaultAction {
     }
 
     private CswClient getCswClient() {
-        ServletContext servletContext = getContext().getServletContext();
-
-        String cswLoginUrl = servletContext.getInitParameter("cswLoginUrl");
-        String cswUrl = servletContext.getInitParameter("cswUrl");
-        String cswUsername = servletContext.getInitParameter("cswUsername");
-        String cswPassword = servletContext.getInitParameter("cswPassword");
-
-        return new CswClient(new GeoNetworkCswServer(cswLoginUrl, cswUrl, cswUsername, cswPassword));
+        CSWServerConfig cfg = CatalogAppConfig.getConfig().getCswServer();
+        return new CswClient(new GeoNetworkCswServer(
+                cfg.getLoginUrl(),
+                cfg.getUrl(),
+                cfg.getUsername(),
+                cfg.getPassword()
+        ));
     }
 
     protected List<MetadataBean> createMetadataList(OutputBySearch output) throws TransformerConfigurationException, TransformerFactoryConfigurationError, TransformerException, JDOMException, JAXBException, OwsException {

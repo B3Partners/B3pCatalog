@@ -71,7 +71,7 @@ public class CatalogAppConfig implements ServletContextListener {
             new String[] {"gml", "shp", "dxf", "dgn", "sdf", "sdl", "lyr", "ecw", "sid", "tif", "tiff", "asc"}
     ));
     
-    private CSWServer cswServer = null;
+    private CSWServerConfig cswServer = null;
 
     private String organizationsJsonFile = "organizations.json";
 
@@ -102,11 +102,11 @@ public class CatalogAppConfig implements ServletContextListener {
         this.arcObjectsConfig = arcObjectsConfig;
     }
 
-    public CSWServer getCswServer() {
+    public CSWServerConfig getCswServer() {
         return cswServer;
     }
     
-    public void setCswServer(CSWServer cswServer) {
+    public void setCswServer(CSWServerConfig cswServer) {
         this.cswServer = cswServer;
     }
 
@@ -152,7 +152,7 @@ public class CatalogAppConfig implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         
         String configParam = sce.getServletContext().getInitParameter("config");
-        
+
         if(configParam == null) {
             throw new IllegalArgumentException("No config file specified in \"config\" context init parameter");
         }

@@ -117,23 +117,20 @@ public abstract class Root {
     }
        
     public boolean isRequestUserAuthorizedFor(HttpServletRequest request, AclAccess minimumAccessLevel) {
-
-        if(minimumAccessLevel == AclAccess.NONE) {
-            return true;
-        }
-        
+        AclAccess highest = getRequestUserHighestAccessLevel(request);        
+        return highest.getSecurityLevel() >= minimumAccessLevel.getSecurityLevel();
+    }
+    
+    public AclAccess getRequestUserHighestAccessLevel(HttpServletRequest request) {
         if(request.getUserPrincipal() == null) {
-            return false;
+            return AclAccess.NONE;
         }
-        
         for(RoleAccess ra: getRoleAccessList()) {
             if("*".equals(ra.getRole()) || request.isUserInRole(ra.getRole())) {
-                if(ra.getAccess().getSecurityLevel() >= minimumAccessLevel.getSecurityLevel()) {
-                    return true;
-                }
+                return ra.getAccess();
             }
         } 
-        return false;
+        return AclAccess.NONE;
     }
     
     public abstract DirContent getDirContent(String prefix, String path) throws IOException, B3PCatalogException;

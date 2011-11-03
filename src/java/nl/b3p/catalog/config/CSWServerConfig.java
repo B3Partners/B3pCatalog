@@ -20,7 +20,7 @@ package nl.b3p.catalog.config;
  *
  * @author Matthijs Laan
  */
-public class CSWServer {
+public class CSWServerConfig {
     private String url;
     private String loginUrl;
     private String username;
