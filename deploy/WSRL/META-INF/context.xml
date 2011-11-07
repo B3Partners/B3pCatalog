@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/b3pcatalog" antiJARLocking="true" disableURLRewriting="true" >
+    
+    <!-- Locatie van XML configuratiebestand. Een relatief pad is ten opzichte
+         van CATALINA_BASE. Standaardwaarde in web.xml: conf/b3pcatalog/config.xml
+    -->
+    <Parameter name="config" value="C:\Program Files (x86)\b3pcatalog\config.xml" override="false"/>
+        
+    <Resource name="jdbc/arcsde_ond"
+        auth="Container"
+        type="javax.sql.DataSource"
+        username="wsrl_ond"
+        password="rivierenland"
+        driverClassName="oracle.jdbc.OracleDriver"
+        url="jdbc:oracle:thin:@as034:1521:ondprd"
+        maxActive="25"
+        validationQuery="select 1 from dual"
+
+        timeBetweenEvictionRunsMillis="30000"
+        minEvictableIdleTimeMillis="5000"
+    />
+</Context>
