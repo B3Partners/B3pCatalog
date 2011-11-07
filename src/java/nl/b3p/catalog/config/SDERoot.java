@@ -60,7 +60,6 @@ public class SDERoot extends Root {
     }
     
     public Connection openJDBCConnection() throws NamingException, SQLException {
-        log.debug("Looking up datasource for SDE with name " + getJndiDataSource());
         Context initCtx = new InitialContext();
         DataSource ds = (DataSource)initCtx.lookup(getJndiDataSource());
 
