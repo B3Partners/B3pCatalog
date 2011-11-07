@@ -12,7 +12,10 @@
         url="jdbc:jtds:sqlserver://192.168.1.31:1213;DatabaseName=geodb"
         maxActive="25"
         validationQuery="select 1"
+
+    />
+    <!-- bug in Tomcat 6.0.26 
         timeBetweenEvictionRunsMillis="30000"
         minEvictableIdleTimeMillis="5000"
-    />
+    -->
 </Context>
