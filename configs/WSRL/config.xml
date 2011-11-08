@@ -106,7 +106,7 @@
              onder).
          -->
         <sdeRoot name="SDE ond">
-            <arcobjectsConnection>SERVER=as034;INSTANCE=5153;DATABASE=ondprd;AUTHENTICATION_MODE=DBMS;USER=wsrl_ond;PASSWORD=rivierenland;VERSION=SDE.DEFAULT, SDE ond</arcobjectsConnection>
+            <arcobjectsConnection>SERVER=as034;INSTANCE=5153;DATABASE=ondprd;AUTHENTICATION_MODE=DBMS;USER=wsrl_ond;PASSWORD=rivierenland;VERSION=SDE.DEFAULT</arcobjectsConnection>
 
             <!-- De JNDI datasource moet in Tomcat zijn gedefinieerd in de webapp 
                  context. In de WAR zit deze in META-INF/context.xml.
@@ -114,8 +114,20 @@
                  gebruikt. Voor meer informatie:
                  http://tomcat.apache.org/tomcat-6.0-doc/jndi-resources-howto.html#JDBC_Data_Sources
             -->
-            <jndiDataSource>java:comp/env/jdbc/arcsde_ond</jndiDataSource>
+            <jndiDataSource>java:comp/env/jdbc/arcsde_ondprd</jndiDataSource>
         </sdeRoot>
+		
+        <sdeRoot name="SDE geo">
+            <arcobjectsConnection>SERVER=as034;INSTANCE=5151;DATABASE=geoprd;AUTHENTICATION_MODE=DBMS;USER=sde;PASSWORD=rivierenland;VERSION=SDE.DEFAULT</arcobjectsConnection>
+
+            <!-- De JNDI datasource moet in Tomcat zijn gedefinieerd in de webapp 
+                 context. In de WAR zit deze in META-INF/context.xml.
+                 Na deployen wordt het bestand in tomcat/conf/Catalina/localhost/b3pcatalog.xml
+                 gebruikt. Voor meer informatie:
+                 http://tomcat.apache.org/tomcat-6.0-doc/jndi-resources-howto.html#JDBC_Data_Sources
+            -->
+            <jndiDataSource>java:comp/env/jdbc/arcsde_geoprd</jndiDataSource>
+        </sdeRoot>		
         
     </roots>
     
