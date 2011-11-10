@@ -394,6 +394,9 @@ public class MetadataAction extends DefaultAction {
     }
 
     protected String sanitizeComments(String oldDoc, String md) throws Exception {
+        if(DocumentHelper.EMPTY_METADATA.equals(md)) {
+            return md;
+        }
         return sanitizeComments(DocumentHelper.getMetadataDocument(oldDoc),md);
     }
 
