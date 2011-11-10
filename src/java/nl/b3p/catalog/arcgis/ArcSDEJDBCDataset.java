@@ -43,6 +43,10 @@ public class ArcSDEJDBCDataset {
         }        
     }
 
+    public String getOwner() {
+        return fullName.substring(0,fullName.lastIndexOf('.'));
+    }
+    
     public String getName() {
         return fullName.substring(fullName.lastIndexOf('.')+1);
     }

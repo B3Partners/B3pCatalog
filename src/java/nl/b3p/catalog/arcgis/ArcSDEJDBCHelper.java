@@ -40,7 +40,7 @@ import org.apache.commons.io.IOUtils;
  */
 public class ArcSDEJDBCHelper {
     private static final String ENCODING = "UTF-8";
-
+    
     public static DirContent getDirContent(SDERoot root, String fullPath) throws NamingException, SQLException {
         DirContent dc = new DirContent();
         String path = Root.getPathPart(fullPath);        
@@ -59,12 +59,11 @@ public class ArcSDEJDBCHelper {
         
         Connection c = root.openJDBCConnection();
         try {
-            ResultSet rs = c.prepareStatement("select DatabaseName,Owner,Name from gdb_featuredataset").executeQuery();
+            ResultSet rs = c.prepareStatement("select Owner,Name from gdb_featuredataset").executeQuery();
             while(rs.next()) {
-                String db = rs.getString(1);
-                String owner = rs.getString(2);
-                String name = rs.getString(3);
-                l.add(new Dir(name, currentPath + db + "." + owner + "." + name));
+                String owner = rs.getString(1);
+                String name = rs.getString(2);
+                l.add(new Dir(name, currentPath + owner + "." + name));
             }
             rs.close();
             
@@ -80,7 +79,7 @@ public class ArcSDEJDBCHelper {
         
         Connection c = root.openJDBCConnection();
         try {
-            String sql ="select oc.DatabaseName,oc.Owner,oc.Name from gdb_objectclasses oc ";
+            String sql ="select oc.Owner,oc.Name from gdb_objectclasses oc ";
             if(containingDatasetName == null) {
                 sql += "where DatasetID is null or DatasetID not in (select ID from gdb_featuredataset)";
             } else {
@@ -92,10 +91,9 @@ public class ArcSDEJDBCHelper {
             }
             ResultSet rs = s.executeQuery();
             while(rs.next()) {
-                String db = rs.getString(1);
-                String owner = rs.getString(2);
-                String name = rs.getString(3);
-                l.add(new DirEntry(name, currentPath + db + "." + owner + "." + name));
+                String owner = rs.getString(1);
+                String name = rs.getString(2);
+                l.add(new DirEntry(name, currentPath + owner + "." + name));
             }
             rs.close();
             s.close();      
@@ -114,14 +112,14 @@ public class ArcSDEJDBCHelper {
     static String getMetadata(ArcSDEJDBCDataset dataset) throws NamingException, SQLException, IOException {        
         Connection c = dataset.getRoot().openJDBCConnection();
         try {
-            String sql ="select xml from gdb_usermetadata where name = ?";
+            String sql ="select xml from gdb_usermetadata where name = ? and owner = ?";
             PreparedStatement s = c.prepareStatement(sql);
             s.setString(1, dataset.getName());
+            s.setString(2, dataset.getOwner());
             ResultSet rs = s.executeQuery();
             String xml = DocumentHelper.EMPTY_METADATA;
             if(rs.next()) {
-                Blob blob = rs.getBlob(1);
-                xml = IOUtils.toString(blob.getBinaryStream(), ENCODING);
+                xml = IOUtils.toString(rs.getBinaryStream(1), ENCODING);
             }
             rs.close();
             s.close();
@@ -141,11 +139,12 @@ public class ArcSDEJDBCHelper {
         try {
             c.setAutoCommit(false);
             
-            String sql = "update gdb_usermetadata set xml = ? where name = ?";
+            String sql = "update gdb_usermetadata set xml = ? where name = ? and owner = ?";
             PreparedStatement s = c.prepareStatement(sql);
             byte[] xml = metadata.getBytes(ENCODING);
             s.setBinaryStream(1, new ByteArrayInputStream(xml), xml.length);
             s.setString(2, dataset.getName());
+            s.setString(3, dataset.getOwner());
             int rowsAffected = s.executeUpdate();
             if(rowsAffected != 1) {
                 throw new Exception("Updating metadata should affect one row; got rows affected count of " + rowsAffected);
@@ -159,5 +158,4 @@ public class ArcSDEJDBCHelper {
             c.close();
         }        
     }
-    
 }
