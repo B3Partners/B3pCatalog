@@ -18,6 +18,7 @@ package nl.b3p.catalog.config;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
+import nl.b3p.catalog.arcgis.ArcSDE10JDBCHelper;
 import nl.b3p.catalog.arcgis.ArcSDE9xJDBCHelper;
 import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
 import nl.b3p.catalog.arcgis.ArcSDEJDBCHelper;
@@ -32,8 +33,8 @@ import org.apache.commons.logging.LogFactory;
 public class SDERoot extends Root {
     private static final Log log = LogFactory.getLog(SDERoot.class);
     
-    private static final String SCHEMA_VERSION_9X = "9.x";
-    private static final String SCHEMA_VERSION_10 = "10";
+    public static final String SCHEMA_VERSION_9X = "9.x";
+    public static final String SCHEMA_VERSION_10 = "10";
     
     private String jndiDataSource;
     
@@ -89,8 +90,8 @@ public class SDERoot extends Root {
     public ArcSDEJDBCHelper getJDBCHelper() {
         if(JDBCHelper == null) {
             JDBCHelper =  SCHEMA_VERSION_9X.equals(schemaVersion) 
-                    ? new  ArcSDE9xJDBCHelper(this)
-                    : null /* XXX */;
+                    ? new ArcSDE9xJDBCHelper(this)
+                    : new ArcSDE10JDBCHelper(this);
         }
         return JDBCHelper;
     }

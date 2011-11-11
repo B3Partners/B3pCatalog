@@ -41,17 +41,20 @@ public class ArcSDEJDBCDataset {
         String paths[] = path.split(Pattern.quote(DirContent.SEPARATOR + ""), 2);
         
         fullName = paths[paths.length-1];
-        String[] nameParts = fullName.split(Pattern.quote("."));
-        if(nameParts.length == 2) {
-            owner = nameParts[0];
-            name = nameParts[1];
-        } else if(nameParts.length == 3) {
-            databaseName = nameParts[0];
-            owner = nameParts[1];
-            name = nameParts[2];
-        } else {
-            throw new IllegalStateException("Full dataset name \"" + fullName + "\" must contain one or two dots");
-        }    
+        
+        if(SDERoot.SCHEMA_VERSION_9X.equals(root.getSchemaVersion())) {
+            String[] nameParts = fullName.split(Pattern.quote("."));
+            if(nameParts.length == 2) {
+                owner = nameParts[0];
+                name = nameParts[1];
+            } else if(nameParts.length == 3) {
+                databaseName = nameParts[0];
+                owner = nameParts[1];
+                name = nameParts[2];
+            } else {
+                throw new IllegalStateException("Full dataset name \"" + fullName + "\" must contain one or two dots");
+            }    
+        }
         
         if(paths.length > 1) {
             parent = new ArcSDEJDBCDataset(root, paths[1]);
@@ -62,6 +65,10 @@ public class ArcSDEJDBCDataset {
         return fullName;
     }
 
+    public Integer getObjectID() {
+        return Integer.parseInt(fullName);
+    }
+    
     public String getDatabaseName() {
         return databaseName;
     }
