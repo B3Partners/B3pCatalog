@@ -26,49 +26,64 @@ import nl.b3p.catalog.filetree.DirContent;
  * @author Matthijs Laan
  */
 public class ArcSDEJDBCDataset {
+
     private SDERoot root;
-    private String containingDatasetFullName;
+    private ArcSDEJDBCDataset parent;
     private String fullName;
+    
+    private String databaseName;
+    private String owner;
+    private String name;
     
     public ArcSDEJDBCDataset(SDERoot root, String fullPath) {
         this.root = root;
         String path = Root.getPathPart(fullPath);
         String paths[] = path.split(Pattern.quote(DirContent.SEPARATOR + ""), 2);
         
-        if(paths.length == 1) {
-            fullName = paths[0];
+        fullName = paths[0];
+        String[] nameParts = fullName.split(Pattern.quote("."));
+        if(nameParts.length == 2) {
+            owner = nameParts[0];
+            name = nameParts[1];
+        } else if(nameParts.length == 3) {
+            databaseName = nameParts[0];
+            owner = nameParts[1];
+            name = nameParts[2];
         } else {
-            containingDatasetFullName = paths[0];
-            fullName = paths[1];
+            throw new IllegalStateException("Full dataset name \"" + fullName + "\" must contain one or two dots");
+        }    
+        
+        if(paths.length > 1) {
+            parent = new ArcSDEJDBCDataset(root, paths[1]);
         }        
-    }
-
-    public String getOwner() {
-        return fullName.substring(0,fullName.lastIndexOf('.'));
-    }
-    
-    public String getName() {
-        return fullName.substring(fullName.lastIndexOf('.')+1);
-    }
-
-    public String getContainingDataset() {
-        return containingDatasetFullName.substring(containingDatasetFullName.lastIndexOf('.')+1);
     }
 
     public String getFullName() {
         return fullName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public String getDatabaseName() {
+        return databaseName;
     }
 
-    public String getContainingDatasetFullName() {
-        return containingDatasetFullName;
+    public String getName() {
+        return name;
     }
 
-    public void setContainingDatasetFullName(String containingDatasetFullName) {
-        this.containingDatasetFullName = containingDatasetFullName;
+    public String getOwner() {
+        return owner;
+    }
+
+    static String constructFullName(String databaseName, String owner, String name) {
+        if(databaseName == null) {
+            return owner + "." + name;
+        } else {
+            return databaseName + "." + owner + "." + name;
+        }
+    }    
+    
+    public ArcSDEJDBCDataset getParent() {
+        return parent;
     }
 
     public SDERoot getRoot() {

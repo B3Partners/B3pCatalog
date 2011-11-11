@@ -17,11 +17,14 @@
 package nl.b3p.catalog.config;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
 import nl.b3p.catalog.filetree.DirContent;
 import org.apache.commons.logging.Log;
@@ -37,7 +40,10 @@ public class SDERoot extends Root {
     private String jndiDataSource;
     
     private String arcobjectsConnection;
-
+    
+    @XmlAttribute
+    private String tablePrefix;
+    
     public String getJndiDataSource() {
         return jndiDataSource;
     }
@@ -54,15 +60,32 @@ public class SDERoot extends Root {
         this.arcobjectsConnection = arcobjectsConnection;
     }
 
+    @XmlTransient
+    public String getTablePrefix() {
+        return tablePrefix;
+    }
+
+    public void setTablePrefix(String tablePrefix) {
+        this.tablePrefix = tablePrefix;
+    }
+    
     @Override
     public DirContent getDirContent(String fullPath) throws Exception {
         return ArcSDEHelperProxy.getDirContent(this, fullPath);
     }
-    
+
     public Connection openJDBCConnection() throws NamingException, SQLException {
         Context initCtx = new InitialContext();
         DataSource ds = (DataSource)initCtx.lookup(getJndiDataSource());
 
         return ds.getConnection();        
+    }
+    
+    public String getTableName(String name) {
+        if(getTablePrefix() == null) {
+            return name;
+        } else {
+            return getTablePrefix() + "." + name;
+        }
     }
 }
