@@ -105,8 +105,19 @@
             <arcobjectsConnection>INSTANCE=sde:sqlserver:localhost\sqlexpress;DATABASE=geodb;AUTHENTICATION_MODE=OSA;VERSION=dbo.DEFAULT</arcobjectsConnection>
         </sdeRoot>
         
-        <!-- Browse bestanden in SDE via alleen JDBC (geen synchronisatie mogelijk) -->
-        <sdeRoot name="SDE JDBC">
+        <!-- Browse bestanden in SDE via alleen JDBC (geen synchronisatie mogelijk) 
+ 
+             Geef prefix voor tabellen op met tablePrefix attribuut (bijvoorbeeld indien
+             de tabellen in een ander dan het default schema staan).
+
+	         Geef de ESRI versie van het SDE schema op met schemaVersion attribuut. Mogelijke
+             waardes "9.x" (GDB_USERMETADATA, etc.) of "10" (GDB_ITEMS). Default is
+             "9.x".
+
+             Specificatie 9.x: http://webhelp.esri.com/arcgisserver/9.3/java/index.htm#geodatabases/system_1203016261.htm
+             Specificatie 10:  http://help.arcgis.com/en/arcgisdesktop/10.0/help/index.html#//002n0000008m000000
+        -->
+        <sdeRoot name="SDE JDBC" tablePrefix="" schemaVersion="9.x">
             <!-- De JNDI datasource moet in Tomcat zijn gedefinieerd in de webapp 
                  context. In de WAR zit deze in META-INF/context.xml.
                  Na deployen wordt het bestand in tomcat/conf/Catalina/localhost/b3pcatalog.xml

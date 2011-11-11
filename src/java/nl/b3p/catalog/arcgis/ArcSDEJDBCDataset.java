@@ -40,7 +40,7 @@ public class ArcSDEJDBCDataset {
         String path = Root.getPathPart(fullPath);
         String paths[] = path.split(Pattern.quote(DirContent.SEPARATOR + ""), 2);
         
-        fullName = paths[0];
+        fullName = paths[paths.length-1];
         String[] nameParts = fullName.split(Pattern.quote("."));
         if(nameParts.length == 2) {
             owner = nameParts[0];

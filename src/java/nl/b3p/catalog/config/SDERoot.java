@@ -16,16 +16,11 @@
  */
 package nl.b3p.catalog.config;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
+import nl.b3p.catalog.arcgis.ArcSDE9xJDBCHelper;
 import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
+import nl.b3p.catalog.arcgis.ArcSDEJDBCHelper;
 import nl.b3p.catalog.filetree.DirContent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,12 +32,20 @@ import org.apache.commons.logging.LogFactory;
 public class SDERoot extends Root {
     private static final Log log = LogFactory.getLog(SDERoot.class);
     
+    private static final String SCHEMA_VERSION_9X = "9.x";
+    private static final String SCHEMA_VERSION_10 = "10";
+    
     private String jndiDataSource;
     
     private String arcobjectsConnection;
     
     @XmlAttribute
     private String tablePrefix;
+    
+    @XmlAttribute
+    private String schemaVersion = SCHEMA_VERSION_9X;
+    
+    private ArcSDEJDBCHelper JDBCHelper = null;
     
     public String getJndiDataSource() {
         return jndiDataSource;
@@ -68,24 +71,27 @@ public class SDERoot extends Root {
     public void setTablePrefix(String tablePrefix) {
         this.tablePrefix = tablePrefix;
     }
-    
+
+    @XmlTransient
+    public String getSchemaVersion() {
+        return schemaVersion;
+    }
+
+    public void setSchemaVersion(String schemaVersion) {
+        this.schemaVersion = schemaVersion;
+    }
+
     @Override
     public DirContent getDirContent(String fullPath) throws Exception {
         return ArcSDEHelperProxy.getDirContent(this, fullPath);
     }
-
-    public Connection openJDBCConnection() throws NamingException, SQLException {
-        Context initCtx = new InitialContext();
-        DataSource ds = (DataSource)initCtx.lookup(getJndiDataSource());
-
-        return ds.getConnection();        
-    }
     
-    public String getTableName(String name) {
-        if(getTablePrefix() == null) {
-            return name;
-        } else {
-            return getTablePrefix() + "." + name;
+    public ArcSDEJDBCHelper getJDBCHelper() {
+        if(JDBCHelper == null) {
+            JDBCHelper =  SCHEMA_VERSION_9X.equals(schemaVersion) 
+                    ? new  ArcSDE9xJDBCHelper(this)
+                    : null /* XXX */;
         }
+        return JDBCHelper;
     }
 }

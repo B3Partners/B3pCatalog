@@ -28,7 +28,7 @@ public class ArcSDEHelperProxy {
         try {
             SDERoot root = (SDERoot)r;
             if(root.getJndiDataSource() != null) {
-                return ArcSDEJDBCHelper.getDirContent(root, fullPath);
+                return root.getJDBCHelper().getDirContent(fullPath);
             } else {
                 return ArcSDEHelper.getDirContent(root, fullPath);
             }
@@ -41,7 +41,7 @@ public class ArcSDEHelperProxy {
         try {
             SDERoot root = (SDERoot)r;
             if(root.getJndiDataSource() != null) {
-                return ArcSDEJDBCHelper.getDataset(root, path);
+                return root.getJDBCHelper().getDataset(path);
             } else {
                 return ArcSDEHelper.getDataset(root, path);
             }
@@ -61,7 +61,7 @@ public class ArcSDEHelperProxy {
     public static String getMetadata(Object dataset) throws Exception {
         try {
             if(dataset instanceof  ArcSDEJDBCDataset) {
-                return ArcSDEJDBCHelper.getMetadata((ArcSDEJDBCDataset)dataset);
+                return ((ArcSDEJDBCDataset)dataset).getRoot().getJDBCHelper().getMetadata((ArcSDEJDBCDataset)dataset);
             } else {
                 return ArcSDEHelper.getMetadata(dataset);
             }
@@ -86,7 +86,7 @@ public class ArcSDEHelperProxy {
     public static void saveMetadata(Object dataset, String metadata) throws Exception {
         try {
             if(dataset instanceof  ArcSDEJDBCDataset) {
-                ArcSDEJDBCHelper.saveMetadata((ArcSDEJDBCDataset)dataset, metadata);            
+                ((ArcSDEJDBCDataset)dataset).getRoot().getJDBCHelper().saveMetadata((ArcSDEJDBCDataset)dataset, metadata);            
             } else {
                 ArcSDEHelper.saveMetadata(dataset, metadata);
             }
