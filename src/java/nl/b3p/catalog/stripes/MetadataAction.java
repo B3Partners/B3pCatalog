@@ -103,7 +103,8 @@ public class MetadataAction extends DefaultAction {
                 File mdFile = FileListHelper.getFileForPath(root, path);
 
                 if(FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                    return new XmlResolution(FGDBHelperProxy.getMetadata(mdFile,esriDTFeatureClass), extraHeaders);
+                    metadata = FGDBHelperProxy.getMetadata(mdFile,esriDTFeatureClass);
+                    return new XmlResolution(strictISO19115 ? extractMD_Metadata(metadata) : metadata, extraHeaders);
                 } else {
                     mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
                     if (!mdFile.exists()) {
@@ -394,9 +395,6 @@ public class MetadataAction extends DefaultAction {
     }
 
     protected String sanitizeComments(String oldDoc, String md) throws Exception {
-        if(DocumentHelper.EMPTY_METADATA.equals(md)) {
-            return md;
-        }
         return sanitizeComments(DocumentHelper.getMetadataDocument(oldDoc),md);
     }
 

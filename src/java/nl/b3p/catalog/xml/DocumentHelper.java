@@ -47,7 +47,7 @@ public class DocumentHelper {
 
     public static Document getMetadataDocument(String md) throws IOException, JDOMException, B3PCatalogException {
         Document doc = null;
-        if (StringUtils.isBlank(md)) {
+        if (StringUtils.isBlank(md) || EMPTY_METADATA.equals(md)) {
             doc = new Document(new Element(Names.METADATA));
         } else {
             doc = new SAXBuilder().build(new StringReader(md));
