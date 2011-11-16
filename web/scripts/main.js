@@ -42,6 +42,7 @@ B3pCatalog.hashchange = function(event) {
         B3pCatalog.loadMetadata(
             event.getState("mode"),
             event.getState("path"),
+            event.getState("title"),
             event.getState("isGeo",true),
             function() {
                 B3pCatalog.clickedFileAnchor.removeClass("selected");
@@ -78,6 +79,7 @@ B3pCatalog.loadFiletreeFile = function(selectedFilePath) {
                 page: "metadata",
                 mode: B3pCatalog.modes.FILE_MODE,
                 path: rel,
+                title: anchor.attr("title"),
                 isGeo: "true" == anchor.attr("isgeo")
             };
 
@@ -104,7 +106,8 @@ B3pCatalog.loadFiletreeSDE = function(selectedFilePath) {
             var newState = {
                 page: "metadata",
                 mode: B3pCatalog.modes.SDE_MODE,
-                path: rel
+                path: rel,
+                title: anchor.attr("title")                
             };
 
             $.bbq.pushState(newState, 2);
@@ -282,7 +285,7 @@ B3pCatalog.getCurrentFileAnchor = function() {
 
 /////////////////////////////// Functies ///////////////////////////////////////
 
-B3pCatalog.loadMetadata = function(mode, path, isGeo, cancel) {
+B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
 
     this._loadMetadata({
         done: function() {
@@ -302,7 +305,7 @@ B3pCatalog.loadMetadata = function(mode, path, isGeo, cancel) {
                 //log(data);
                 B3pCatalog.currentFilename = path;
                 B3pCatalog.currentMode = mode;
-                document.title = B3pCatalog.title + B3pCatalog.titleSeparator + path;
+                document.title = B3pCatalog.title + B3pCatalog.titleSeparator + title;
                 // TODO: on demand van PBL bv: laatst geopende doc opslaan
                 //$.cookie();
                 var access = jqXHR.getResponseHeader("X-MDE-Access");
