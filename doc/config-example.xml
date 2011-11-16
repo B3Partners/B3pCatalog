@@ -160,10 +160,13 @@
          contactpersonen die in de metadataeditor snel kan worden ingevuld.
          
          Een relatief pad is ten opzichte van de directory waar dit 
-         configuratie XML bestand staat.
+         configuratie XML bestand staat. Optioneel, standaardwaarde is "organizations.json"
          
-         LET OP! Dit bestand moet geldige JavaScript code zijn.
+         LET OP! Dit bestand moet geldige JavaScript code zijn. Er is enige
+         syntax controle indien een beheerder de gegevens wijzigt via de webapplicatie.
+         LET OP! Dit bestand moet schrijfbaar zijn door Tomcat 
+         LET OP! Voor speciale tekens: charset moet UTF-8 zijn
     -->
-    <organizationsJsonFile>organizations.json</organizationsJsonFile>
+    <!--organizationsJsonFile>organizations.json</organizationsJsonFile-->
     
 </b3p:catalogAppConfig>
