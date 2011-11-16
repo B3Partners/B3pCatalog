@@ -38,7 +38,7 @@ organisations = {
 etc...
 */
 
-organisations = {
+/* DEZE REGEL NIET WIJZIGEN */ organisations = {
     "Gemeente Harderwijk": {
         "address": "Havendam 56",
         "city": "Harderwijk",
