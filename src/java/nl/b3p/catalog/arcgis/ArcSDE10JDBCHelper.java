@@ -36,6 +36,10 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.io.IOUtils;
+import org.jdom.Document;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  *
@@ -133,7 +137,12 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
         Connection c = getConnection();
         PreparedStatement ps = null;
         try {
-            // TODO sloop <?xml encoding="UTF-8" eruit, geeft error "unable to switch the encoding"
+            
+            // Sloop encoding uit XML declaratie, anders geeft MSSQL error 
+            // "unable to switch the encoding" op column type xml
+            
+            Document doc = DocumentHelper.getMetadataDocument(metadata);
+            metadata = new XMLOutputter(Format.getPrettyFormat().setOmitEncoding(true)).outputString(doc);
             
             String sql = "update " + getTableName(TABLE_ITEMS) + " set documentation = ? where objectid = ?";
             ps = c.prepareStatement(sql);
