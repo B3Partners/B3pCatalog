@@ -30,7 +30,8 @@ B3pCatalog.hashchange = function(event) {
 
     if(event.getState("page") == "metadata") {
         $(".selected", "#filetree").removeClass("selected");
-        var $selectedFile = $("a[rel=\"" + RegExp.escape(event.getState("path")) + "\"]", "#filetree-file");
+        var mode = event.getState("mode");
+        var $selectedFile = $("a[rel=\"" + RegExp.escape(event.getState("path")) + "\"]", "#filetree-" + mode);
         if ($selectedFile.length == 0) {
             B3pCatalog.loadFiletreeFile(event.getState("path"));
         } else {
@@ -40,7 +41,7 @@ B3pCatalog.hashchange = function(event) {
         }
 
         B3pCatalog.loadMetadata(
-            event.getState("mode"),
+            mode,
             event.getState("path"),
             event.getState("title"),
             event.getState("isGeo",true),
