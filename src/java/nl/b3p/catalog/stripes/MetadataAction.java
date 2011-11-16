@@ -19,6 +19,8 @@ import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.arcgis.ArcGISSynchronizer;
+import nl.b3p.catalog.arcgis.ArcObjectsSynchronizerForker;
+import nl.b3p.catalog.arcgis.ArcObjectsSynchronizerMain;
 import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
 import nl.b3p.catalog.arcgis.ArcSDEJDBCDataset;
 import nl.b3p.catalog.arcgis.DatasetHelperProxy;
@@ -123,7 +125,7 @@ public class MetadataAction extends DefaultAction {
                 throw new IllegalArgumentException("Invalid mode: " + mode);
             }
         } catch (Exception e) {
-            String message = "Could not load " + mode + " metadata from location " + path;
+            String message = "Kan geen " + mode + " metadata openen van lokatie " + path;
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }
@@ -171,7 +173,7 @@ public class MetadataAction extends DefaultAction {
             return new HtmlErrorResolution(message, e);
         }
     }
-
+    
     public Resolution synchronize() {
 
         try {
@@ -188,34 +190,58 @@ public class MetadataAction extends DefaultAction {
                     
                     ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();
                     
-                    if(cfg != null && cfg.isEnabled()) {
+                    if(cfg.isEnabled()) {
                         dataset = ArcSDEHelperProxy.getArcObjectsDataset(root, path);
-                    } else if(cfg != null && cfg.isForkSynchroniser()) {
-                        
-                        throw new UnsupportedOperationException("Not implemented yet");
-                    }                    
+                        ArcGISSynchronizer.synchronize(xmlDoc, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
+                    } else if(cfg.isForkSynchroniser()) {
+                        ArcSDEJDBCDataset ds = (ArcSDEJDBCDataset)dataset;
+
+                        if(ds.getRoot().getArcobjectsConnection() == null) {
+                            throw new Exception("ArcObjects niet geconfigureerd, synchroniseren niet mogelijk");
+                        }
+                        xmlDoc = ArcObjectsSynchronizerForker.synchronize(
+                                getContext().getServletContext(),  
+                                ds.getAbsoluteName(),
+                                ArcObjectsSynchronizerMain.TYPE_SDE, 
+                                ds.getRoot().getArcobjectsConnection()
+                        );
+                    } else {
+                        throw new Exception("ArcObjects niet geconfigureerd, synchroniseren niet mogelijk");
+                    }
+                } else {
+                    ArcGISSynchronizer.synchronize(xmlDoc, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
                 }
-                ArcGISSynchronizer.synchronize(xmlDoc, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
                 
             } else if(FILE_MODE.equals(mode)) {
 
                 File dataFile = FileListHelper.getFileForPath(root, path);
             
-                if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dataFile)) {
-                    Object ds = FGDBHelperProxy.getTargetDataset(dataFile, 5 /*esriDatasetType.esriDTFeatureClass*/);
-                    ArcGISSynchronizer.synchronize(xmlDoc, ds, ArcGISSynchronizer.FORMAT_NAME_FGDB);
-                } else if (path.endsWith(Extensions.SHAPE)) {
-                    Object ds = DatasetHelperProxy.getShapeDataset(dataFile);
-                    ArcGISSynchronizer.synchronize(xmlDoc, ds, ArcGISSynchronizer.FORMAT_NAME_SHAPE);
-                } else {
-                    synchronizeRegularMetadata(xmlDoc, dataFile);
+                boolean isFGDB = FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dataFile);
+                ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();                
+                if(cfg.isEnabled()) {
+                    if(isFGDB) {
+                        Object ds = FGDBHelperProxy.getTargetDataset(dataFile, 5 /*esriDatasetType.esriDTFeatureClass*/);
+                        ArcGISSynchronizer.synchronize(xmlDoc, ds, ArcGISSynchronizer.FORMAT_NAME_FGDB);
+                    } else if (path.endsWith(Extensions.SHAPE)) {
+                        Object ds = DatasetHelperProxy.getShapeDataset(dataFile);
+                        ArcGISSynchronizer.synchronize(xmlDoc, ds, ArcGISSynchronizer.FORMAT_NAME_SHAPE);
+                    } else {
+                        synchronizeRegularMetadata(xmlDoc, dataFile);
+                    }
+                } else if(cfg.isForkSynchroniser()) {
+                    xmlDoc = ArcObjectsSynchronizerForker.synchronize(
+                            getContext().getServletContext(),  
+                            FileListHelper.getFileForPath(root, path).getAbsolutePath(),
+                            isFGDB ? ArcObjectsSynchronizerMain.TYPE_FGDB : ArcObjectsSynchronizerMain.TYPE_SHAPE, 
+                            null
+                    );                    
                 }
             } else {
                 throw new IllegalArgumentException("Invalid mode: " + mode);
             }
             return new XmlResolution(xmlDoc);
         } catch (Exception e) {
-            String message = "Could not synchronize " + mode + " metadata from location " + path;
+            String message = "Fout tijdens synchroniseren " + mode + " metadata van lokatie " + path;
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }
