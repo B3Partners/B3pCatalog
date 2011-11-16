@@ -52,7 +52,9 @@ public class HtmlErrorResolution extends StreamingResolution {
         }
         
         if (e != null) {
+            sb.append("<pre>");
             sb.append(e.getLocalizedMessage());
+            sb.append("</pre>");
             if (printStackTrace) {
                 sb.append("<br /><br />");
                 //sb.append("<script type='text/javascript'>$(document).ready(function(){ $('#advanced-error-button').button().click(function(){ $(\"#advanced-error\").toggle(); }); });</script>");
