@@ -19,7 +19,6 @@ package nl.b3p.catalog.arcgis;
 import java.util.regex.Pattern;
 import nl.b3p.catalog.config.Root;
 import nl.b3p.catalog.config.SDERoot;
-import nl.b3p.catalog.filetree.DirContent;
 
 /**
  *
@@ -38,7 +37,7 @@ public class ArcSDEJDBCDataset {
     public ArcSDEJDBCDataset(SDERoot root, String fullPath) {
         this.root = root;
         String path = Root.getPathPart(fullPath);
-        String paths[] = path.split(Pattern.quote(DirContent.SEPARATOR + ""), 2);
+        String paths[] = path.split(Pattern.quote(Root.SEPARATOR), 2);
         
         fullName = paths[paths.length-1];
         
@@ -57,7 +56,7 @@ public class ArcSDEJDBCDataset {
         }
         
         if(paths.length > 1) {
-            parent = new ArcSDEJDBCDataset(root, paths[1]);
+            parent = new ArcSDEJDBCDataset(root, paths[paths.length-2]);
         }        
     }
 
@@ -101,4 +100,7 @@ public class ArcSDEJDBCDataset {
         this.root = root;
     }
 
+    public String getAbsoluteName() throws Exception {
+        return root.getJDBCHelper().getAbsoluteDatasetName(this);
+    }
 }

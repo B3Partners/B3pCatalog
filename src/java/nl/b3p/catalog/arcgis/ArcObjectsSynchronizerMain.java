@@ -28,6 +28,11 @@ import org.apache.log4j.*;
 public class ArcObjectsSynchronizerMain {
     private static Log log;
     
+    public static final String TYPE_SHAPE = "shape";
+    public static final String TYPE_FGDB = "fgdb";
+    public static final String TYPE_SDE = "sde";
+    public static final String TYPE_SDEFILE = "sdefile";
+    
     private static Options buildOptions() {
         Options options = new Options();        
         
@@ -52,7 +57,7 @@ public class ArcObjectsSynchronizerMain {
     
     public static void main(String[] args) throws Exception {
         Logger root = Logger.getRootLogger();
-        root.addAppender(new ConsoleAppender(new PatternLayout("%-5p %c{1}: %m%n"),ConsoleAppender.SYSTEM_ERR));
+        root.addAppender(new ConsoleAppender(new PatternLayout("%m%n"),ConsoleAppender.SYSTEM_ERR));
         
         log = LogFactory.getLog(ArcObjectsSynchronizerMain.class);
         

@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.naming.NamingException;
+import nl.b3p.catalog.config.Root;
 import nl.b3p.catalog.config.SDERoot;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirEntry;
@@ -146,5 +147,22 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
             DbUtils.closeQuietly(ps);
             DbUtils.close(c);
         }         
+    }
+    
+    @Override
+    public String getAbsoluteDatasetName(ArcSDEJDBCDataset dataset) throws Exception {
+        Connection c = getConnection();
+        try {
+            String sql = "select name from " + getTableName(TABLE_ITEMS) + " where objectid = ?";
+            String name = (String)new QueryRunner().query(c, sql, new ScalarHandler(), dataset.getObjectID());
+            
+            if(dataset.getParent() != null) {
+                String parentName = (String)new QueryRunner().query(c, sql, new ScalarHandler(), dataset.getParent().getObjectID());
+                name = parentName + Root.SEPARATOR + name;
+            }
+            return name;
+        } finally {
+             DbUtils.close(c);
+        }              
     }
 }

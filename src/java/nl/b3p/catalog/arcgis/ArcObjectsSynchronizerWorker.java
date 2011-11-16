@@ -16,6 +16,7 @@
  */
 package nl.b3p.catalog.arcgis;
 
+import nl.b3p.catalog.config.Root;
 import com.esri.arcgis.datasourcesGDB.SdeWorkspaceFactory;
 import com.esri.arcgis.geodatabase.IDataset;
 import com.esri.arcgis.geodatabase.IEnumDataset;
@@ -30,6 +31,8 @@ import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+
+import static nl.b3p.catalog.arcgis.ArcObjectsSynchronizerMain.*;
 
 /**
  *
@@ -46,13 +49,13 @@ public class ArcObjectsSynchronizerWorker {
         IDataset ds = null;
         String formatName = null;
 
-        if("sde".equals(type) || "sdefile".equals(type)) {
+        if(TYPE_SDE.equals(type) || TYPE_SDEFILE.equals(type)) {
             formatName = ArcGISSynchronizer.FORMAT_NAME_SDE;
             Workspace ws;
-            if("sde".equals(type)) {
-                String connectionString = cl.getOptionValue("sde");
+            if(TYPE_SDE.equals(type)) {
+                String connectionString = cl.getOptionValue(TYPE_SDE);
                 if(connectionString == null) {
-                    throw new IllegalArgumentException("sde option is required");
+                    throw new IllegalArgumentException(TYPE_SDE + " option is required");
                 }
 
                 // XXX wachtwoord mogelijk zichtbaar in output
@@ -60,9 +63,9 @@ public class ArcObjectsSynchronizerWorker {
                 SdeWorkspaceFactory factory = new SdeWorkspaceFactory();
                 ws = new Workspace(factory.openFromString(connectionString, 0));
             } else {
-                String file = cl.getOptionValue("sdefile");
+                String file = cl.getOptionValue(TYPE_SDEFILE);
                 if(file == null) {
-                    throw new IllegalArgumentException("sdefile option is required");
+                    throw new IllegalArgumentException(TYPE_SDEFILE + " option is required");
                 }
                 log.info("Opening SDE workspace from connection file " + file);
                 IWorkspaceFactory factory = new SdeWorkspaceFactory();
@@ -71,10 +74,10 @@ public class ArcObjectsSynchronizerWorker {
             log.info("SDE workspace open, looking for dataset " + dataset);
             ds = findSDEDataset(ws, dataset);
 
-        } else if("fgdb".equals(type)) {
+        } else if(TYPE_FGDB.equals(type)) {
             formatName = ArcGISSynchronizer.FORMAT_NAME_FGDB;
             ds = FGDBHelper.getTargetDataset(new File(dataset), esriDatasetType.esriDTFeatureClass);
-        } else if("shape".equals(type)) {
+        } else if(TYPE_SHAPE.equals(type)) {
             formatName = ArcGISSynchronizer.FORMAT_NAME_SHAPE;
             ds = DatasetHelper.getShapeDataset(new File(dataset));
         } else {
@@ -89,7 +92,7 @@ public class ArcObjectsSynchronizerWorker {
     private static IDataset findSDEDataset(Workspace ws, String datasetName) throws Exception {
         IEnumDataset eds = ws.getSubsets();
 
-        String[] parts = datasetName.split(Pattern.quote("/"));
+        String[] parts = datasetName.split(Pattern.quote(Root.SEPARATOR));
         if(parts.length > 2) {
             throw new IllegalArgumentException("Invalid dataset: " + datasetName);
         }

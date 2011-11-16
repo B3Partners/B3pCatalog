@@ -33,6 +33,8 @@ import nl.b3p.catalog.filetree.DirContent;
  * @author Matthijs Laan
  */
 public abstract class Root {
+    public static final String SEPARATOR = "/";
+    
     @XmlAttribute
     private String name;
       
@@ -140,15 +142,15 @@ public abstract class Root {
      * @return 
      */
     public static String getPathPart(String fullPath) {
-        return fullPath.substring(fullPath.indexOf(DirContent.SEPARATOR)+1);        
+        return fullPath.substring(fullPath.indexOf(SEPARATOR)+1);        
     }
     
     public static String getRootPart(String fullPath) {
-        return fullPath.substring(0, fullPath.indexOf(DirContent.SEPARATOR)+1);
+        return fullPath.substring(0, fullPath.indexOf(SEPARATOR)+1);
     }
     
     public static Root getRootForPath(String fullPath) throws B3PCatalogException {
-        int i = fullPath.indexOf(DirContent.SEPARATOR);
+        int i = fullPath.indexOf(SEPARATOR);
         int index = Integer.parseInt(fullPath.substring(0,i));
         return CatalogAppConfig.getConfig().getRoots().get(index);    
     }

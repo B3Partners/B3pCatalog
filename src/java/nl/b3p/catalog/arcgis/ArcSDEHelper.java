@@ -27,7 +27,7 @@ public class ArcSDEHelper {
             dc.setDirs(getFeatureDatasets(root, fullPath));
             dc.setFiles(getFeatureClasses(root, fullPath));
         } else {
-            dc.setFiles(getFeatureClassesInDataset(root, fullPath + DirContent.SEPARATOR, path));
+            dc.setFiles(getFeatureClassesInDataset(root, fullPath + Root.SEPARATOR, path));
         }
         return dc;
     }
@@ -35,7 +35,7 @@ public class ArcSDEHelper {
     public static IDataset getDataset(Root r, String path) throws Exception {
         SDERoot root = (SDERoot)r;
         path = Root.getPathPart(path);
-        String paths[] = path.split(Pattern.quote(DirContent.SEPARATOR + ""));
+        String paths[] = path.split(Pattern.quote(Root.SEPARATOR + ""));
         
         String containingFeatureDatasetName = null;
         String datasetName = null;

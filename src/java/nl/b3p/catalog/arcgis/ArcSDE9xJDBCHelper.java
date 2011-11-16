@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.naming.NamingException;
+import nl.b3p.catalog.config.Root;
 import nl.b3p.catalog.config.SDERoot;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirEntry;
@@ -216,6 +217,15 @@ public class ArcSDE9xJDBCHelper extends ArcSDEJDBCHelper {
         } finally {
             DbUtils.closeQuietly(ps);
         }
+    }
+    
+    @Override
+    public String getAbsoluteDatasetName(ArcSDEJDBCDataset dataset) throws Exception {
+        String name = dataset.getFullName();
+        if(dataset.getParent() != null) {
+            name = dataset.getParent().getFullName() + Root.SEPARATOR + name;
+        }    
+        return name;
     }
     
     private Integer determineDatasetType(Connection c, ArcSDEJDBCDataset dataset) throws Exception {

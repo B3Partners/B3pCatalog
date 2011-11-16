@@ -69,7 +69,7 @@ public class FiletreeAction extends DefaultAction {
             Root r = roots.get(i);
             if(r.getClass().equals(clazz) && r.isRequestUserAuthorizedFor(getContext().getRequest(), AclAccess.READ)) {
                 Dir d = new Dir();
-                d.setPath(i + "" + DirContent.SEPARATOR);
+                d.setPath(i + Root.SEPARATOR);
                 d.setName(roots.get(i).getName());
                 dc.getDirs().add(d);
             }

@@ -40,7 +40,7 @@ public class FileListHelper {
         if(path.indexOf("..") != -1) {
             throw new IllegalArgumentException("Illegal path");
         }
-        String osPath = path.replace(DirContent.SEPARATOR, File.separatorChar);
+        String osPath = path.replace(Root.SEPARATOR.charAt(0), File.separatorChar);
         
         File p = new File(osPath);
         if(p.isAbsolute()) {
@@ -59,7 +59,7 @@ public class FileListHelper {
 
         File dir = getFileForPath(root, fullPath);
         String pathPart = Root.getPathPart(fullPath);
-        return getDirContent(dir, fullPath + (pathPart.equals("") ? "" : DirContent.SEPARATOR));
+        return getDirContent(dir, fullPath + (pathPart.equals("") ? "" : Root.SEPARATOR));
     }
     
     private static DirContent getDirContent(File directory, String currentPath) throws IOException, B3PCatalogException {

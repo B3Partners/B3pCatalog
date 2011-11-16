@@ -9,14 +9,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import nl.b3p.catalog.config.CatalogAppConfig;
 
 /**
  *
  * @author Erik van de Pol
  */
 public class DirContent {
-    public static final char SEPARATOR = '/';
     
     protected List<Dir> dirs = new ArrayList<Dir>();
     protected List<DirEntry> files = new ArrayList<DirEntry>();

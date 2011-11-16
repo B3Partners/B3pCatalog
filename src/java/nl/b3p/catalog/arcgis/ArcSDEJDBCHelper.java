@@ -64,7 +64,7 @@ public abstract class ArcSDEJDBCHelper {
             dc.setDirs(getFeatureDatasets(fullPath));
             dc.setFiles(getFeatureClasses(fullPath, null));
         } else {            
-            dc.setFiles(getFeatureClasses(fullPath + DirContent.SEPARATOR, new ArcSDEJDBCDataset(root,path)));
+            dc.setFiles(getFeatureClasses(fullPath + Root.SEPARATOR, new ArcSDEJDBCDataset(root,path)));
         }
         return dc;
     }
@@ -85,4 +85,5 @@ public abstract class ArcSDEJDBCHelper {
     public abstract List<DirEntry> getFeatureClasses(final String currentPath, final ArcSDEJDBCDataset parent) throws NamingException, SQLException;
     public abstract String getMetadata(ArcSDEJDBCDataset dataset) throws NamingException, SQLException, IOException; 
     public abstract void saveMetadata(ArcSDEJDBCDataset dataset, String metadata) throws Exception;
+    public abstract String getAbsoluteDatasetName(ArcSDEJDBCDataset dataset) throws Exception;
 }
