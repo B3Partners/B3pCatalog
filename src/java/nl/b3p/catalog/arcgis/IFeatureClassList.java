@@ -18,8 +18,6 @@ import org.apache.commons.logging.LogFactory;
  * @author Erik van de Pol
  */
 public class IFeatureClassList implements Iterable<IFeatureClass> {
-    private final static Log log = LogFactory.getLog(IFeatureClassList.class);
-    
     private IDataset dataset;
 
     public IFeatureClassList(IDataset dataset) {
@@ -29,10 +27,8 @@ public class IFeatureClassList implements Iterable<IFeatureClass> {
     public Iterator<IFeatureClass> iterator() {
         try {
             if (dataset instanceof IFeatureClassContainer) {
-                log.debug("dataset instanceof IFeatureClassContainer");
                 return new IFeatureClassContainerIterator((IFeatureClassContainer)dataset);
             } else if (dataset instanceof IFeatureClass) {
-                log.debug("dataset instanceof IFeatureClass");
                 return new IFeatureClassIterator((IFeatureClass)dataset);
             } else {
                 throw new IOException("Unrecognized dataset type. Does it contain FeatureClasses?");
