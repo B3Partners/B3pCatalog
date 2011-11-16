@@ -33,6 +33,13 @@ B3pCatalog.getExtraMdeOptions = function(isGeo, viewMode) {
         $.extend(extraOptions, {
             viewMode: viewMode
         });
+        if (!viewMode) {
+            $.extend(extraOptions, {
+                extraPreprocessors: [
+                    "preprocessors/preprocessorGHW.xsl"
+                ]
+            });
+        }
     }
     
     return extraOptions;
