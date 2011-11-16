@@ -57,7 +57,7 @@ public class CatalogAppConfig implements ServletContextListener {
     private String configFilePath;
     
     @XmlElement(name="arcobjects")
-    private ArcObjectsConfig arcObjectsConfig;
+    private ArcObjectsConfig arcObjectsConfig = new ArcObjectsConfig();
     
     @XmlElementWrapper(name="roots")
     @XmlElements({
@@ -177,7 +177,7 @@ public class CatalogAppConfig implements ServletContextListener {
         if(!f.exists() || !f.canRead()) {
             throw new IllegalArgumentException(
                     String.format("Config file specified in \"config\" context init parameter with value \"%s\" (canonical path \"%s\") does not exist or cannot be read",
-                        config,
+                        configParam,
                         canonicalPath
             ));
         }
