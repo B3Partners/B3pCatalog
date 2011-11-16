@@ -310,7 +310,6 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
                 //$.cookie();
                 var access = jqXHR.getResponseHeader("X-MDE-Access");
                 var viewMode = access != "WRITE";
-                console.log("viewMode", viewMode);
                 B3pCatalog.createMde(data, isGeo, viewMode);
             }
         }
