@@ -21,6 +21,7 @@ import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.arcgis.ArcGISSynchronizer;
 import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
 import nl.b3p.catalog.arcgis.ArcSDEJDBCDataset;
+import nl.b3p.catalog.arcgis.DatasetHelperProxy;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.config.AclAccess;
 import nl.b3p.catalog.config.ArcObjectsConfig;
@@ -190,29 +191,22 @@ public class MetadataAction extends DefaultAction {
                     if(cfg != null && cfg.isEnabled()) {
                         dataset = ArcSDEHelperProxy.getArcObjectsDataset(root, path);
                     } else if(cfg != null && cfg.isForkSynchroniser()) {
+                        
                         throw new UnsupportedOperationException("Not implemented yet");
                     }                    
                 }
-                ArcGISSynchronizer arcGISSynchronizer = new ArcGISSynchronizer();
-                arcGISSynchronizer.synchronizeSDE(xmlDoc, dataset);
+                ArcGISSynchronizer.synchronize(xmlDoc, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
                 
             } else if(FILE_MODE.equals(mode)) {
 
                 File dataFile = FileListHelper.getFileForPath(root, path);
             
                 if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dataFile)) {
-                    // only instantiate ArcGISSynchronizer here, since a NoClassDefFoundError can occur if ArcGIS is not installed / incorrectly installed
-                    ArcGISSynchronizer arcGISSynchronizer = new ArcGISSynchronizer();
-                    arcGISSynchronizer.synchronizeFGDB(xmlDoc, dataFile);
+                    Object ds = FGDBHelperProxy.getTargetDataset(dataFile, 5 /*esriDatasetType.esriDTFeatureClass*/);
+                    ArcGISSynchronizer.synchronize(xmlDoc, ds, ArcGISSynchronizer.FORMAT_NAME_FGDB);
                 } else if (path.endsWith(Extensions.SHAPE)) {
-                    try {
-                        // only instantiate ArcGISSynchronizer here, since a NoClassDefFoundError can occur if ArcGIS is not installed / incorrectly installed
-                        ArcGISSynchronizer arcGISSynchronizer = new ArcGISSynchronizer();
-                        arcGISSynchronizer.synchronizeShapeFile(xmlDoc, dataFile);
-                    } catch(NoClassDefFoundError ncdfe) {
-                        // ArcGIS not installed / incorrectly installed
-                        synchronizeRegularMetadata(xmlDoc, dataFile);
-                    }
+                    Object ds = DatasetHelperProxy.getShapeDataset(dataFile);
+                    ArcGISSynchronizer.synchronize(xmlDoc, ds, ArcGISSynchronizer.FORMAT_NAME_SHAPE);
                 } else {
                     synchronizeRegularMetadata(xmlDoc, dataFile);
                 }

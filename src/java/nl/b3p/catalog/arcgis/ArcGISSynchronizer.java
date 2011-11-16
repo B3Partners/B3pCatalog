@@ -4,30 +4,29 @@
  */
 package nl.b3p.catalog.arcgis;
 
-import com.esri.arcgis.datasourcesfile.ShapefileWorkspaceFactory;
 import com.esri.arcgis.geodatabase.FeatureClass;
 import com.esri.arcgis.geodatabase.IDataset;
 import com.esri.arcgis.geodatabase.IFeatureClass;
 import com.esri.arcgis.geodatabase.IField;
 import com.esri.arcgis.geodatabase.IFields;
 import com.esri.arcgis.geodatabase.IGeoDataset;
+import com.esri.arcgis.geodatabase.IMetadata;
 import com.esri.arcgis.geodatabase.IObjectClass;
-import com.esri.arcgis.geodatabase.IWorkspace;
 import com.esri.arcgis.geodatabase.Workspace;
+import com.esri.arcgis.geodatabase.XmlPropertySet;
 import com.esri.arcgis.geodatabase.esriDatasetType;
 import com.esri.arcgis.geodatabase.esriFieldType;
 import com.esri.arcgis.geometry.IEnvelopeGEN;
 import com.esri.arcgis.geometry.IPoint;
 import com.esri.arcgis.geometry.ISpatialReference;
 import com.esri.arcgis.geometry.ISpatialReferenceInfo;
-import com.esri.arcgis.geometry.Point;
 import com.esri.arcgis.geometry.SpatialReferenceEnvironment;
 import com.esri.arcgis.geometry.esriGeometryType;
 import com.esri.arcgis.geometry.esriSRGeoCSType;
-import java.io.File;
+import com.esri.arcgis.system.IName;
 import java.io.IOException;
+import java.io.StringReader;
 import nl.b3p.catalog.B3PCatalogException;
-import nl.b3p.catalog.filetree.Extensions;
 import nl.b3p.catalog.xml.Names;
 import nl.b3p.catalog.xml.Namespaces;
 import nl.b3p.catalog.xml.XPathHelper;
@@ -36,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 
 /**
  *
@@ -44,62 +44,49 @@ import org.jdom.JDOMException;
 public class ArcGISSynchronizer {
     private final static Log log = LogFactory.getLog(ArcGISSynchronizer.class);
     
-    public ArcGISSynchronizer() {
+    public static final String FORMAT_NAME_FGDB = "ESRI file geodatabase (FGDB)";
+    public static final String FORMAT_NAME_SDE =  "ESRI ArcSDE";
+    public static final String FORMAT_NAME_SHAPE = "ESRI shapefile";
+    
+    private static Document getMetadata(IDataset ds) throws Exception {
+        IName name = DatasetHelper.getIDataset(ds).getFullName();
+        IMetadata im = (IMetadata)name;
+        XmlPropertySet xmlPropertySet = (XmlPropertySet)im.getMetadata();
+        String xml = xmlPropertySet.getXml("/");        
+        return new SAXBuilder().build(new StringReader(xml));
+    }
+        
+    public static Document synchronize(IDataset dataset, String formatName) throws Exception {
+        Document xml = getMetadata((IDataset)dataset);
+        synchronize(xml, dataset, formatName);
+        return xml;
     }
     
-    /**
-     * 
-     * @param arcGISFilename Filename to the FGDB with datasets as subdirs.
-     * @param esriType
-     * @return
-     * @throws IOException 
-     */
-    public void synchronizeFGDB(Document xmlDoc, File fgdbFile) throws IOException, B3PCatalogException, JDOMException {
-        IDataset dataset = FGDBHelper.getTargetDataset(fgdbFile, esriDatasetType.esriDTFeatureClass);
-        Workspace workspace = new Workspace(dataset.getWorkspace());
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_NAME, "ESRI file geodatabase (FGDB)");
-        // Als distribute formaat naam is ingevuld, moet ook de versie ingevuld staan, anders is de xml niet correct volgens het xsd.
-        // hmmm, dit geeft 2.2 bij sample FGDB's van ArcGIS 10 ?!?
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_VERSION, workspace.getMajorVersion() + "." + workspace.getMinorVersion());
-
-        // We don't use the FGDBHelperProxy below. A test whether a ArcGIS connection existsmust must be done beforehand.
-        sync(xmlDoc, dataset);
-    }
-
-    public void synchronizeSDE(Document xmlDoc, Object ds) throws IOException, B3PCatalogException, JDOMException {
+    // XXX kan formatName niet bepaald worden adv IDataset?
+    public static void synchronize(Document doc, Object ds, String formatName) throws Exception {  
+        // Use Object so caller class does not have to import com.esri
         IDataset dataset = (IDataset)ds;
         Workspace workspace = new Workspace(dataset.getWorkspace());
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_NAME, "ESRI ArcSDE");
-        // Als distribute formaat naam is ingevuld, moet ook de versie ingevuld staan, anders is de xml niet correct volgens het xsd.
-        // hmmm, dit geeft 2.2 bij sample FGDB's van ArcGIS 10 ?!?
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_VERSION, workspace.getMajorVersion() + "." + workspace.getMinorVersion());
+        XPathHelper.applyXPathValuePair(doc, XPathHelper.DISTR_FORMAT_NAME, formatName);
 
-        sync(xmlDoc, dataset);
+        String version = "Onbekend";
+        if(!FORMAT_NAME_SHAPE.equals(formatName)) {
+            // Als distribute formaat naam is ingevuld, moet ook de versie ingevuld staan, anders is de xml niet correct volgens het xsd.
+            // hmmm, dit geeft 2.2 bij sample FGDB's van ArcGIS 10 ?!?
+            XPathHelper.applyXPathValuePair(doc, XPathHelper.DISTR_FORMAT_VERSION, workspace.getMajorVersion() + "." + workspace.getMinorVersion());
+        } else {
+            // Bug in ArcObjects. Hij zegt bij de volgende regel:
+            // AutomationException: No such interface supported 
+            // Dit gaat dan om de IGeodatabaseRelease interface die toch echt supported hoort te zijn.
+            //XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_VERSION, workspace.getMajorVersion() + "." + workspace.getMinorVersion());
+            // Als distribute formaat naam is ingevuld, moet ook de versie ingevuld staan, anders is de xml niet correct volgens het xsd.
+        }
+        XPathHelper.applyXPathValuePair(doc, XPathHelper.DISTR_FORMAT_VERSION, version);            
+
+        sync(doc, dataset);
     }
     
-    public void synchronizeShapeFile(Document xmlDoc, File shapeFile) throws IOException, B3PCatalogException, JDOMException {
-        ShapefileWorkspaceFactory shapefileWorkspaceFactory = new ShapefileWorkspaceFactory();
-        IWorkspace iWorkspace = shapefileWorkspaceFactory.openFromFile(shapeFile.getParent(), 0);
-        Workspace workspace = new Workspace(iWorkspace);
-        
-        String shapefileFullname = shapeFile.getName();
-        if (!shapefileFullname.endsWith(Extensions.SHAPE) || shapefileFullname.length() == Extensions.SHAPE.length())
-            throw new B3PCatalogException("File is not a shape file");
-        
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_NAME, "ESRI shapefile");
-        // Bug in ArcObjects. Hij zegt bij de volgende regel:
-        // AutomationException: No such interface supported 
-        // Dit gaat dan om de IGeodatabaseRelease interface die toch echt supported hoort te zijn.
-        //XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_VERSION, workspace.getMajorVersion() + "." + workspace.getMinorVersion());
-        // Als distribute formaat naam is ingevuld, moet ook de versie ingevuld staan, anders is de xml niet correct volgens het xsd.
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_VERSION, "Onbekend");
-        
-        String shapeFilename = shapefileFullname.substring(0, shapefileFullname.lastIndexOf('.'));
-        // shape file names are unique per directory; therefore type is irrelevant (== -1)
-        sync(xmlDoc, DatasetHelper.getDataSubset(workspace, shapeFilename, -1));
-    }
-    
-    protected void sync(Document xmlDoc, IDataset dataset) throws IOException, B3PCatalogException, JDOMException {
+    private static void sync(Document xmlDoc, IDataset dataset) throws IOException, B3PCatalogException, JDOMException {
         dataset = DatasetHelper.getIDataset(dataset); // tja, ArcGIS; dataset is in den beginne slechts een IDatasetProxy. Zie verder getIDataset
         
         IObjectClass objectClass = (IObjectClass)dataset;
@@ -133,9 +120,15 @@ public class ArcGISSynchronizer {
         //log.debug(new XMLOutputter().outputString(xmlDoc));
     }
     
-    protected void syncFeatureCatalog(Document xmlDoc, IDataset dataset) throws JDOMException, IOException {
+    private static void syncFeatureCatalog(Document xmlDoc, IDataset dataset) throws JDOMException, IOException {
         Element gfc_FC_FeatureCatalogue = XPathHelper.selectSingleElement(xmlDoc, XPathHelper.FEATURE_CATALOG);
-        gfc_FC_FeatureCatalogue.removeChildren(Names.GFC_FEATURE_TYPE, Namespaces.GFC);
+        if(gfc_FC_FeatureCatalogue == null) {
+            // XXX ook gmx:name aanmaken? mogelijk verplicht in schema
+            gfc_FC_FeatureCatalogue = new Element(Names.GFC_FC_FEATURE_CATALOG, Namespaces.GFC);
+            xmlDoc.getRootElement().addContent(gfc_FC_FeatureCatalogue);
+        } else {
+            gfc_FC_FeatureCatalogue.removeChildren(Names.GFC_FEATURE_TYPE, Namespaces.GFC);
+        }
         
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.FC_TITLE, dataset.getBrowseName());
         
@@ -185,7 +178,7 @@ public class ArcGISSynchronizer {
         }
     }
     
-    private String getSpatialRepresentation(IDataset dataset) throws IOException {
+    private static String getSpatialRepresentation(IDataset dataset) throws IOException {
         switch(dataset.getType()) {
             // most used 2:
 
@@ -236,7 +229,7 @@ public class ArcGISSynchronizer {
         }
     }
     
-    private String getFeatureClassShapeType(IFeatureClass featureClass) throws IOException {
+    private static String getFeatureClassShapeType(IFeatureClass featureClass) throws IOException {
         switch(featureClass.getShapeType()) {
             case esriGeometryType.esriGeometryAny:
                 return "Any";
@@ -283,7 +276,7 @@ public class ArcGISSynchronizer {
         }
     }
 
-    private String getValueType(int varType, IFeatureClass featureClass) throws IOException {
+    private static String getValueType(int varType, IFeatureClass featureClass) throws IOException {
         switch(varType) {
             case esriFieldType.esriFieldTypeBlob:
                 return "Blob";
@@ -314,6 +307,5 @@ public class ArcGISSynchronizer {
             default:
                 return "";
         }
-    }
-    
+    }    
 }

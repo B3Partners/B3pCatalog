@@ -79,7 +79,15 @@ public class FGDBHelperProxy {
             return false;
         return gdbFiles.length >= 1;
     }
-
+    
+    public static Object getTargetDataset(File fileGDBPath, int dataType) throws IOException, B3PCatalogException {
+        try {
+            return FGDBHelper.getTargetDataset(fileGDBPath, dataType);
+        } catch(NoClassDefFoundError ncdfex) {
+            rethrow(ncdfex); return null;
+        }
+    }
+        
     public static String getMetadata(File fileGDBPath, int datasetType) throws IOException, B3PCatalogException {
         try {
             return FGDBHelper.getMetadata(fileGDBPath, datasetType);

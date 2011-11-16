@@ -4,6 +4,7 @@
  */
 package nl.b3p.catalog.arcgis;
 
+import com.esri.arcgis.datasourcesfile.ShapefileWorkspaceFactory;
 import com.esri.arcgis.datasourcesraster.RasterBand;
 import com.esri.arcgis.datasourcesraster.RasterDataset;
 import com.esri.arcgis.geodatabase.FeatureClass;
@@ -11,6 +12,7 @@ import com.esri.arcgis.geodatabase.FeatureDataset;
 import com.esri.arcgis.geodatabase.GeometricNetwork;
 import com.esri.arcgis.geodatabase.IDataset;
 import com.esri.arcgis.geodatabase.IEnumDataset;
+import com.esri.arcgis.geodatabase.IWorkspace;
 import com.esri.arcgis.geodatabase.NetworkDataset;
 import com.esri.arcgis.geodatabase.RasterCatalog;
 import com.esri.arcgis.geodatabase.RelationshipClass;
@@ -18,12 +20,15 @@ import com.esri.arcgis.geodatabase.RepresentationClass;
 import com.esri.arcgis.geodatabase.Table;
 import com.esri.arcgis.geodatabase.Tin;
 import com.esri.arcgis.geodatabase.Topology;
+import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.geodatabase.esriDatasetType;
 import com.esri.arcgis.geodatabaseextensions.CadastralFabric;
 import com.esri.arcgis.geodatabaseextensions.Terrain;
 import com.esri.arcgis.schematic.SchematicDataset;
+import java.io.File;
 import java.io.IOException;
 import nl.b3p.catalog.B3PCatalogException;
+import nl.b3p.catalog.filetree.Extensions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -47,6 +52,19 @@ public class DatasetHelper {
         return null;
     }
 
+    public static IDataset getShapeDataset(File shapeFile) throws Exception {
+        ShapefileWorkspaceFactory shapefileWorkspaceFactory = new ShapefileWorkspaceFactory();
+        IWorkspace iWorkspace = shapefileWorkspaceFactory.openFromFile(shapeFile.getParent(), 0);
+        Workspace workspace = new Workspace(iWorkspace);
+
+        String shapefileFullname = shapeFile.getName();
+        if (!shapefileFullname.endsWith(Extensions.SHAPE) || shapefileFullname.length() == Extensions.SHAPE.length())
+            throw new Exception("File is not a shape file");
+
+        String shapeFilename = shapefileFullname.substring(0, shapefileFullname.lastIndexOf('.'));
+        return DatasetHelper.getDataSubset(workspace, shapeFilename, -1);
+    }
+    
     // wat een rampen-API
     public static IDataset getIDataset(IDataset dataset) throws IOException, B3PCatalogException {
         switch (dataset.getType()) {

@@ -24,6 +24,7 @@ public class Names {
 
     public final static String GFC_FEATURE_TYPE = "featureType";
     public final static String GFC_FC_FEATURE_TYPE = "FC_FeatureType";
+    public final static String GFC_FC_FEATURE_CATALOG = "FC_FeatureCatalogue";
     public final static String GFC_TYPE_NAME = "typeName";
     public final static String GFC_CARRIER_OF_CHARACTERISTICS = "carrierOfCharacteristics";
     public final static String GFC_FC_FEATURE_ATTRIBUTE = "FC_FeatureAttribute";
