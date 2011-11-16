@@ -16,12 +16,6 @@
  */
 package nl.b3p.catalog.arcgis;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.List;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import nl.b3p.catalog.config.ArcObjectsConfig;
@@ -37,82 +31,36 @@ import org.apache.commons.logging.LogFactory;
 public class ArcObjectsInitializerListener implements ServletContextListener {
     private final static Log log = LogFactory.getLog(ArcObjectsInitializerListener.class);
 
-    private ArcObjectsInitializer initializer;
+    private boolean initialized;
 
-    public boolean isInitialized() {
-        return initializer != null;
-    }
-    
     public void contextInitialized(ServletContextEvent sce) {
         
         CatalogAppConfig cfg = CatalogAppConfig.getConfig();
         
-        if(cfg == null || cfg.getArcObjectsConfig() == null || !cfg.getArcObjectsConfig().isEnabled()) {
-            log.info("ArcObjects is disabled by config");
+        if(!cfg.getArcObjectsConfig().isEnabled()) {
+            log.info("ArcObjects is not enabled by config");
             return;
         }
         ArcObjectsConfig aoCfg = cfg.getArcObjectsConfig();
         try {
             log.info("Attempting to add ArcObjects jar to classpath...");
-            linkArcObjects(aoCfg.getArcEngineHome());
+            ArcObjectsLinker.link(aoCfg.getArcEngineHome());
             log.info("OK, initializing license");
 
-            ArcObjectsInitializer.initializeLicenseWithStringCodes(aoCfg.getProductCodes());
-
+            ArcObjectsInitializer.initializeLicenseWithStringCodes(aoCfg.getProductCodes().toArray(new String[]{}));
+            initialized = true;
         } catch (Exception e) {
             log.error("Error initializing ArcObjects", e);
-            initializer = null;
         }        
     }
     
     public void contextDestroyed(ServletContextEvent sce) {
         try {
-            ArcObjectsInitializer.shutdown();
+            if(initialized) {
+                ArcObjectsInitializer.shutdown();
+            }
         } catch(Exception e) {
             log.error("Error shutting down ArcObjects", e);
         }
-    }
-    
-    private static List<String> homeEnvVars = Arrays.asList(new String[] {
-        "AGSENGINEJAVA", "AGSDESKTOPJAVA", "ARCGISHOME"});    
-    
-    private void linkArcObjects(String arcObjectsHome) throws Exception {
-        
-        if(arcObjectsHome == null) {
-            for(String s: homeEnvVars) {
-                arcObjectsHome = System.getenv(s);
-                if(arcObjectsHome != null) {
-                    break;
-                }
-            }
-        }
-        if (arcObjectsHome == null) {
-            throw new Exception("Could not find ArcObjects home in environment variables " + homeEnvVars + ". "
-                        + (System.getProperty("os.name").toLowerCase().indexOf("win") > -1
-                        ? "ArcGIS Engine Runtime or ArcGIS Desktop must be installed"
-                        : "ArcGIS Engine Runtime must be installed"));
-        }   
-        
-        String jarPath = arcObjectsHome + File.separator + "java" + File.separator + "lib" + File.separator + "arcobjects.jar";
-        File jarFile = new File(jarPath);
-
-        if(!jarFile.exists()) {
-            throw new Exception("Error: could not find arcobjects.jar at path \"" + jarFile.getAbsolutePath() + "\"");
-        }        
-        
-
-        log.info(String.format("Using ArcObjects home \"%s\"", arcObjectsHome));
-
-        //Helps load classes and resources from a search path of URLs
-        URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-        Class<URLClassLoader> sysclass = URLClassLoader.class;
-
-        try {
-            Method method = sysclass.getDeclaredMethod("addURL", new Class[]{URL.class});
-            method.setAccessible(true);
-            method.invoke(sysloader, new Object[]{jarFile.toURI().toURL()});
-        } catch (Throwable throwable) {
-            throw new Exception("Could not add arcobjects.jar to system classloader", throwable);
-        }               
-    }    
+    }  
 }

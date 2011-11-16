@@ -20,7 +20,6 @@ import com.esri.arcgis.system.AoInitialize;
 import com.esri.arcgis.system.EngineInitializer;
 import com.esri.arcgis.system.esriLicenseProductCode;
 import com.esri.arcgis.system.esriLicenseStatus;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +34,8 @@ public class ArcObjectsInitializer {
     private final static Log log = LogFactory.getLog(ArcObjectsInitializer.class);    
     
     private static AoInitialize aoInit = null;
-
-    private static List<Integer> getProductCodeIntegers(List<String> productCodes) {
+        
+    private static int[] getProductCodeIntegers(String[] productCodes) {
         Class clazz = esriLicenseProductCode.class;
         
         List<Integer> codes = new ArrayList<Integer>();
@@ -48,12 +47,53 @@ public class ArcObjectsInitializer {
                 log.warn("Invalid product code: " + c);
             }
         }
-        return codes;
+        int[] c = new int[codes.size()];
+        for(int i = 0; i < c.length; i++) {
+            c[i] = codes.get(i);
+        }
+        return c;
     }
    
-    public static void initializeLicenseWithStringCodes(List<String> productCodes) throws Exception {
-        List<Integer> codes = getProductCodeIntegers(productCodes);
+    public static void initializeLicenseWithStringCodes(String[] productCodes) throws Exception {
+        int[] codes = getProductCodeIntegers(productCodes);
         initializeLicense(codes);        
+    }
+    
+    /** 
+     * Will try to initialize, in order: ArcInfo, ArcEditor, ArcServer, ArcView, 
+     * EngineGeoDB, Engine
+     */
+    public static void initializeEditOrViewLicense() throws Exception {
+        initializeLicense(new int[] {
+            esriLicenseProductCode.esriLicenseProductCodeArcInfo,
+            esriLicenseProductCode.esriLicenseProductCodeArcEditor,
+            esriLicenseProductCode.esriLicenseProductCodeArcServer,
+            esriLicenseProductCode.esriLicenseProductCodeArcView,
+            esriLicenseProductCode.esriLicenseProductCodeEngineGeoDB,
+            esriLicenseProductCode.esriLicenseProductCodeEngine
+        });                
+    }
+
+    /**
+     * Will try to initialize, in order: ArcInfo, ArcEditor, ArcServer(?)
+     */
+    public static void initializeEditLicense() throws Exception {
+        initializeLicense(new int[] {
+            esriLicenseProductCode.esriLicenseProductCodeArcInfo,
+            esriLicenseProductCode.esriLicenseProductCodeArcEditor,
+            esriLicenseProductCode.esriLicenseProductCodeArcServer
+        });                
+    }
+
+    /**
+     * Will try to initialize, in order: ArcView, EngineGeoDB, Engine
+     */
+    public static void initializeViewLicense() throws Exception {
+        initializeLicense(new int[] {
+            esriLicenseProductCode.esriLicenseProductCodeArcView,
+            esriLicenseProductCode.esriLicenseProductCodeEngineGeoDB,
+            esriLicenseProductCode.esriLicenseProductCodeEngine
+        });                
     }
     
     /**
@@ -61,10 +101,13 @@ public class ArcObjectsInitializer {
      * proberen product codes (indien een product code niet beschikbaar is wordt 
      * de volgende geprobeerd).
      * 
+     * <b>WAARSCHUWING:</b> importeer geen com.esri packages in classes die 
+     * worden geladen voordat ArcObjectsLinker.link() succesvol is aangeroepen!
+     * 
      * @param productCodes lijst van com.esri.arcgis.system.esriLicenseProductCode fields 
      * @throws Exception indien licentie niet kon worden geinitialiseerd
      */
-    public static void initializeLicense(List<Integer> productCodes) throws Exception {
+    public static void initializeLicense(int[] productCodes) throws Exception {
         //Initialize engine console application
         EngineInitializer.initializeEngine();
 
