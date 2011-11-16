@@ -10,6 +10,7 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.Roles;
+import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -42,8 +43,9 @@ public class AdminAction extends DefaultAction {
             OrganisationsAction.setOrganisations(getContext(), organisations);
             return new StreamingResolution("text/plain", "success");
         } catch (Exception ex) {
-            log.error("Cannot read organisations config file", ex);
-            return new StreamingResolution("text/plain", "fail");
+            String message ="Fout bij opslaan organisaties";
+            log.error(message, ex);
+            return new HtmlErrorResolution(message, ex);
         }
     }
 
