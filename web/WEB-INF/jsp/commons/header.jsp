@@ -69,9 +69,10 @@
                     <a href="#filetree">Bestanden verkennen</a>
                 </li>
                 <li class="ui-corner-top">
-                    <a href="#search">Catalog doorzoeken</a>
+                    <a href="#search">Catalog doorzoeken</a> 
                 </li>
-                <c:if test="${f:isUserInRole(pageContext.request,'admin')}">
+                <stripes:useActionBean beanclass="nl.b3p.catalog.stripes.AdminCheckActionBean" event="init" var="b"/>
+                <c:if test="${b.admin}">
                     <li class="ui-corner-top">
                         <a href="#admin">Beheer</a>
                     </li>
