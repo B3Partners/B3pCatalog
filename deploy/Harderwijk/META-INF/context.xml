@@ -9,13 +9,24 @@
     <Resource name="jdbc/arcsde"
         auth="Container"
         type="javax.sql.DataSource"
-        username="sa"
-        password="geheim"
+        username="gis"
+        password="hwijk2011"
         driverClassName="net.sourceforge.jtds.jdbc.Driver"
-        url="jdbc:jtds:sqlserver://192.168.1.28:1288;DatabaseName=geodb"
+        url="jdbc:jtds:sqlserver://hwk-gisdb:1433;DatabaseName=gisdb_test"
         maxActive="25"
         validationQuery="select 1"
         timeBetweenEvictionRunsMillis="30000"
         minEvictableIdleTimeMillis="5000"        
     />
+    <Realm className="org.apache.catalina.realm.JNDIRealm"
+        connectionURL="ldap://ldap:389"
+        connectionName="CN=SVC_LDAP,OU=Service Accounts,OU=User Accounts,OU=ICT,DC=aorta,DC=local"
+        connectionPassword="qpkUMYG5d"
+        userBase="OU=User Accounts,OU=Gemeente Harderwijk,DC=aorta,DC=local"
+        userSearch="(mail={0})"
+        userRoleName="memberOf"
+    />
 </Context>
+
+
+<!-- userRoleName="memberOf" -->
