@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlList;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -28,8 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Matthijs Laan
  */
 public class Acl {
-    @XmlAttribute
-    @XmlList
+    @XmlElement(name="role")
     private Set<String> roles = new HashSet<String>();
     
     @XmlAttribute
