@@ -77,18 +77,20 @@
         
 			<!-- Autorisatie voor deze root
 
-				"role" spatiegescheiden lijst met geldige rollen uit web.xml (<security-role>) of "*" voor 
-                elke gebruiker.
-
                 "access" kan één van onderstaande waardes hebben:
                   "write"  : gebruiker met deze rol kan metadata wijzigen
                   "comment": gebruiker met deze rol kan metadata lezen en commentaar toevoegen
                   "read"   : gebruiker kan alleen metadata lezen
                   "none"   : root wordt niet getoond in de boomstructuur voor gebruiker, kan geen metadata lezen
 
-                Indien geen <acl> elementen aanwezig zijn is het default <acl role="*" access="write"/>
+				Met geneste <role>naam_van_rol</role> elementen kan een lijst met geldige rollen uit web.xml (<security-role>) of "*" voor 
+                elke gebruiker worden opgegeven voor bovengenoemde access.
+
+                Indien geen <acl> elementen aanwezig zijn is het default <acl access="write"><role>*</role></acl>
             -->
-			<acl roles="*" access="write"/>
+			<acl access="write">
+				<role>*</role>
+			</acl>
         </fileRoot>
         
         <!-- Browse bestanden in SDE via alleen ArcObjects.
