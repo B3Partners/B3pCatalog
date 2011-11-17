@@ -71,7 +71,7 @@
              synchroniseren van Esri file geodatabases is een ArcView licentie 
              nodig.
         -->
-        <fileRoot name="hwk-arcgisdata" path="\\hwk-appl-01\hwk-arcgisdata$\Harderwijk\gis_data">
+        <fileRoot name="hwk-arcgisdata-01" path="\\hwk-appl-01\hwk-arcgisdata$\Harderwijk\gis_data">
         
 			<!-- Autorisatie voor deze root
 
@@ -86,7 +86,39 @@
 
                 Indien geen <acl> elementen aanwezig zijn is het default <acl role="*" access="write"/>
             -->
-			<acl roles="*" access="write"/>
+            <acl access="read">
+                <role>*</role>
+            </acl>
+            <acl access="write">
+                <role>CN=GG_APP_HWK_B3PCatalog_Beheer,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>CN=GG_APP_HWK_B3PCatalog_Editor,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+            </acl>
+
+        </fileRoot>
+
+        <fileRoot name="hwk-arcgisdata-18" path="\\hwk-appl-18\hwk-arcgisdata$\Harderwijk\gis_data">
+        
+			<!-- Autorisatie voor deze root
+
+				"role" spatiegescheiden lijst met geldige rollen uit web.xml (<security-role>) of "*" voor 
+                elke gebruiker.
+
+                "access" kan één van onderstaande waardes hebben:
+                  "write"  : gebruiker met deze rol kan metadata wijzigen
+                  "comment": gebruiker met deze rol kan metadata lezen en commentaar toevoegen
+                  "read"   : gebruiker kan alleen metadata lezen
+                  "none"   : root wordt niet getoond in de boomstructuur voor gebruiker, kan geen metadata lezen
+
+                Indien geen <acl> elementen aanwezig zijn is het default <acl role="*" access="write"/>
+            -->
+            <acl access="read">
+                <role>*</role>
+            </acl>
+            <acl access="write">
+                <role>CN=GG_APP_HWK_B3PCatalog_Beheer,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>CN=GG_APP_HWK_B3PCatalog_Editor,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+            </acl>
+
         </fileRoot>
         
         <!-- Browse bestanden in SDE via alleen ArcObjects.
@@ -99,9 +131,11 @@
              enorm traag zijn. Gebruik daarvoor directe JDBC connectie (zie
              onder).
          -->
+	<!--
         <sdeRoot name="SDE ArcObjects">
             <arcobjectsConnection>INSTANCE=sde:sqlserver:localhost\sqlexpress;DATABASE=geodb;AUTHENTICATION_MODE=OSA;VERSION=dbo.DEFAULT</arcobjectsConnection>
         </sdeRoot>
+	-->
         
         <!-- Browse bestanden in SDE via alleen JDBC (geen synchronisatie mogelijk) 
  
@@ -115,16 +149,16 @@
              Specificatie 9.x: http://webhelp.esri.com/arcgisserver/9.3/java/index.htm#geodatabases/system_1203016261.htm
              Specificatie 10:  http://help.arcgis.com/en/arcgisdesktop/10.0/help/index.html#//002n0000008m000000
         -->
-        <sdeRoot name="SDE JDBC" tablePrefix="" schemaVersion="10">
-            <!-- De JNDI datasource moet in Tomcat zijn gedefinieerd in de webapp 
+        <!--<sdeRoot name="SDE JDBC" tablePrefix="sde" schemaVersion="10">
+            De JNDI datasource moet in Tomcat zijn gedefinieerd in de webapp 
                  context. In de WAR zit deze in META-INF/context.xml.
                  Na deployen wordt het bestand in tomcat/conf/Catalina/localhost/b3pcatalog.xml
                  gebruikt. Voor meer informatie:
                  http://tomcat.apache.org/tomcat-6.0-doc/jndi-resources-howto.html#JDBC_Data_Sources
-            -->
+            
             
             <jndiDataSource>java:comp/env/jdbc/arcsde</jndiDataSource>
-        </sdeRoot>
+        </sdeRoot> -->
         
         <!-- Browse bestanden in SDE via hybride JDBC / ArcObjects
         
@@ -132,9 +166,16 @@
              synchronisatie is ArcView licentie nodig (optioneel). 
              Werkt met de forkSynchroniser optie.             
         -->
-        <sdeRoot name="SDE JDBC+ArcObjects">
+        <sdeRoot name="SDE_GISDB_TEST" tablePrefix="sde" schemaVersion="10">
             <jndiDataSource>java:comp/env/jdbc/arcsde</jndiDataSource>
-            <arcobjectsConnection>INSTANCE=sde:sqlserver:localhost\sqlexpress;DATABASE=geodb;AUTHENTICATION_MODE=OSA;VERSION=dbo.DEFAULT</arcobjectsConnection>           
+            <arcobjectsConnection>SERVER=hwk-gisdb;INSTANCE=sde:sqlserver:hwk-gisdb;DATABASE=gisdb_test;AUTHENTICATION_MODE=DBMS;USER=gis;PASSWORD=hwijk2011;VERSION=sde.DEFAULT</arcobjectsConnection>           
+            <acl access="read">
+                <role>*</role>
+            </acl>
+            <acl access="write">
+                <role>CN=GG_APP_HWK_B3PCatalog_Beheer,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>CN=GG_APP_HWK_B3PCatalog_Editor,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+            </acl>
         </sdeRoot>
     </roots>
     
@@ -164,6 +205,6 @@
          LET OP! Dit bestand moet schrijfbaar zijn door Tomcat 
          LET OP! Voor speciale tekens: charset moet UTF-8 zijn
     -->
-    <!--organizationsJsonFile>organizations.json</organizationsJsonFile-->
+    <organizationsJsonFile>E:\Appl\b3pcatalog\organisations.js</organizationsJsonFile>
     
 </b3p:catalogAppConfig>
