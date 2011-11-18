@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app 
-		xmlns="http://java.sun.com/xml/ns/j2ee" 
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-		xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
-        version="2.4"
-        >
-    <filter>
-        <display-name>Stripes Filter</display-name>
-        <filter-name>StripesFilter</filter-name>
-        <filter-class>net.sourceforge.stripes.controller.StripesFilter</filter-class>
-        <init-param>
-            <param-name>ActionResolver.Packages</param-name>
-            <param-value>nl.b3p.catalog.stripes</param-value>
-        </init-param>
-        <init-param>
-            <param-name>LocalePicker.Locales</param-name>
-            <param-value>nl_NL, nl</param-value>
-        </init-param>
-    </filter>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    <context-param>
+        <description>
+            Lokatie van XML configuratiebestand van B3P Catalog. Een relatief 
+            pad is ten opzichte can CATALINA_BASE.
+            
+            Let op: pas dit aan door in context.xml (of in Catalina/localhost/b3pcatalog.xml)
+            deze parameter te overriden zodat bij een nieuwe versie deze behouden
+            blijft:
+            &lt;Context&gt; path="/b3pcatalog" ...&gt;
+                &lt;Parameter name="config" value="c:\b3p\b3pcatalog\config.xml" override="false"/&gt;
+            &lt;/Context&gt;
+        </description>
+        <param-name>config</param-name>
+        <param-value>/pblnas/DataPortaal/_beheer/b3pcatalog/config.xml</param-value>
+    </context-param>
+    
+    <listener>
+        <listener-class>nl.b3p.catalog.config.CatalogAppConfig</listener-class>
+    </listener>
+    <listener>
+        <listener-class>nl.b3p.catalog.arcgis.ArcObjectsInitializerListener</listener-class>
+    </listener>
+    
     <filter>
         <filter-name>Request encoding filter</filter-name>
         <filter-class>nl.b3p.commons.services.SetRequestEncodingFilter</filter-class>
@@ -27,148 +32,11 @@
         </init-param>
     </filter>
     <filter-mapping>
-        <filter-name>StripesFilter</filter-name>
-        <url-pattern>*.jsp</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-        <dispatcher>FORWARD</dispatcher>
-        <dispatcher>INCLUDE</dispatcher>
-        <dispatcher>ERROR</dispatcher>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>StripesFilter</filter-name>
-        <servlet-name>StripesDispatcher</servlet-name>
-        <dispatcher>REQUEST</dispatcher>
-        <dispatcher>FORWARD</dispatcher>
-        <dispatcher>INCLUDE</dispatcher>
-        <dispatcher>ERROR</dispatcher>
-    </filter-mapping>
-    <filter-mapping>
         <filter-name>Request encoding filter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    <servlet>
-        <servlet-name>StripesDispatcher</servlet-name>
-        <servlet-class>net.sourceforge.stripes.controller.DispatcherServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-		<security-role-ref>
-			<role-name>editor</role-name>
-			<role-link>CN=STO_PBL_PBLNAS^Datalogistiek_RW,OU=PBLNAS,OU=STO,OU=Groups,OU=PBL,OU=ALT,DC=alt,DC=rivm,DC=nl</role-link>
-		</security-role-ref>
-    </servlet>
-    <security-role>
-        <role-name>CN=STO_PBL_PBLNAS^Datalogistiek_RW,OU=PBLNAS,OU=STO,OU=Groups,OU=PBL,OU=ALT,DC=alt,DC=rivm,DC=nl</role-name>
-    </security-role>
-    <servlet>
-        <servlet-name>SimpleCswServlet</servlet-name>
-        <servlet-class>nl.b3p.catalog.SimpleCswServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>StripesDispatcher</servlet-name>
-        <url-pattern>*.action</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SimpleCswServlet</servlet-name>
-        <url-pattern>/scc</url-pattern>
-    </servlet-mapping>
-    <session-config>
-        <session-timeout>600</session-timeout>
-    </session-config>
-    <welcome-file-list>
-        <welcome-file>/index.jsp</welcome-file>
-    </welcome-file-list>
-    <listener>
-        <listener-class>nl.b3p.gis.arcgis.ArcGISConnector</listener-class>
-    </listener>
-    <!-- See http://www.stripesframework.org/display/stripes/Localization (bottom of the page) -->
-    <context-param>
-        <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
-        <param-value>StripesResources</param-value>
-        <!-- huidige locale wordt hier automatisch slim achtergeplakt (_nl etc.) -->
-    </context-param>
-    <!-- Filetree config -->
-    <context-param>
-        <description>
-            Puntkomma gescheiden directories/shares/drives die de roots vormen van waaruit metadata gezocht kan worden.
-            Elke root kan weer een displayname (label) bevatten na een komma.
-            Voorbeeld:
-            X:\, OudeShare; Y:\, Nieuwe Share
-
-            Deze scheidingstekens zijn uiteraard niet correct in de zin dat een ";" voor mag komen in een windows-bestandsnaam.
-            Hier dealen we mee als we het tegenkomen. Voor nu is dit goed genoeg.
-
-            N.B.: Windows drive-letters MOETEN een hoofdletter zijn.
-        </description>
-        <param-name>CatalogRoots</param-name>
-        <param-value>
-			/pblnas/DataPortaal, DataPortaal;
-			/pblnas/data/DO, DO;
-			/pblnas/data/KLE, KLE;
-			/pblnas/data/NLG, NLG;
-			/pblnas/data/ROL, ROL;
-			/pblnas/data/VenM, VenM;
-			/pblnas/data/WLV, WLV;
-			/pblnas/data/PBLbase, PBLbase;
-			/pblnas/data/PBLbase_restricted, PBLbase_restricted;
-			/pblnas/ontwdata/mnpbase, ontwdata/mnpbase;
-			/pblnas/project, Project
-        </param-value>
-    </context-param>
-    <!-- SCC-servlet configuratie -->
-    <context-param>
-        <param-name>defaultXsl</param-name>
-        <param-value>simple-response.xsl</param-value>
-    </context-param>
-    <!-- CSW-server configuratie -->
-    <!-- PBL geonetwork test setup: -->
-    <context-param>
-        <param-name>cswUrl</param-name>
-        <param-value>http://pbl-gis2-mbz.rivm.nl/geonetwork/srv/en/csw</param-value>
-    </context-param>
-    <context-param>
-        <param-name>cswLoginUrl</param-name>
-        <param-value>http://pbl-gis2-mbz.rivm.nl/geonetwork/srv/en/xml.user.login</param-value>
-    </context-param>
-    <context-param>
-        <param-name>cswUsername</param-name>
-        <param-value>admin</param-value>
-    </context-param>
-    <context-param>
-        <param-name>cswPassword</param-name>
-        <param-value>admin</param-value>
-    </context-param>
-    <context-param>
-        <description>
-            Semicolon-separated (";") list of extensions that are to be considered geographical files.
-            Geographical metadata tabs will automatically be shown for them.
-            Geographical metadata tabs will also automatically be shown for FBGD directories.
-
-            E.g.:
-
-            shp;dxf
-            
-        </description>
-        <param-name>geoExtensions</param-name>
-        <param-value>shp;dxf;lyr</param-value>
-    </context-param>
-    <context-param>
-        <description>
-            name
-            
-            or
-            
-            extension            
-        </description>
-        <param-name>filetreeSortBy</param-name>
-        <param-value>name</param-value>
-    </context-param>
-    <context-param>
-        <description>
-            Full absolute path to the config file that contains the allowed organisations and contacts in the MDE.
-        </description>
-        <param-name>organisationsJSONFilePath</param-name>
-        <param-value>/opt/B3pCatalog/config/organisations.json</param-value>
-    </context-param>
-
+    
+    <!-- Security --> 
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>styles</web-resource-name>
@@ -215,9 +83,13 @@
             <url-pattern>/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
-            <role-name>*</role-name>
+		<role-name>*</role-name>
         </auth-constraint>
     </security-constraint>
+
+    <security-role>
+        <role-name>STO_PBL_PBLNAS^Datalogistiek_RW</role-name>
+    </security-role>
 
     <login-config>
         <auth-method>FORM</auth-method>
@@ -227,4 +99,61 @@
         </form-login-config>
     </login-config>
 
+    <!-- See http://www.stripesframework.org/display/stripes/Localization (bottom of the page) -->
+    <context-param>
+        <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+        <param-value>StripesResources</param-value>
+        <!-- huidige locale wordt hier automatisch slim achtergeplakt (_nl etc.) -->
+    </context-param>
+    
+    <!-- Stripes -->
+    <filter>
+        <display-name>Stripes Filter</display-name>
+        <filter-name>StripesFilter</filter-name>
+        <filter-class>net.sourceforge.stripes.controller.StripesFilter</filter-class>
+        <init-param>
+            <param-name>ActionResolver.Packages</param-name>
+            <param-value>nl.b3p.catalog.stripes</param-value>
+        </init-param>
+        <init-param>
+            <param-name>LocalePicker.Locales</param-name>
+            <param-value>nl_NL, nl</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>StripesFilter</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>StripesFilter</filter-name>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+    <servlet>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <servlet-class>net.sourceforge.stripes.controller.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+        <security-role-ref>
+            <role-name>admin</role-name>
+            <role-link>STO_PBL_PBLNAS^Datalogistiek_RW</role-link>
+        </security-role-ref>        
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>*.action</url-pattern>
+    </servlet-mapping>
+    
+    <session-config>
+        <session-timeout>3600</session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>/index.jsp</welcome-file>
+    </welcome-file-list>
 </web-app>
