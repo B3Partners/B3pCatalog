@@ -37,7 +37,7 @@ public class ArcObjectsInitializerListener implements ServletContextListener {
         
         CatalogAppConfig cfg = CatalogAppConfig.getConfig();
         
-        if(!cfg.getArcObjectsConfig().isEnabled()) {
+        if(cfg != null && !cfg.getArcObjectsConfig().isEnabled()) {
             log.info("ArcObjects is not enabled by config");
             return;
         }
