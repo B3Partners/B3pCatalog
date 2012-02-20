@@ -45,7 +45,7 @@ public class ArcObjectsLinker {
     private static final Log log = LogFactory.getLog(ArcObjectsLinker.class);
     
     private static List<String> homeEnvVars = Arrays.asList(new String[] {
-        "AGSENGINEJAVA", "AGSDESKTOPJAVA", "ARCGISHOME"});    
+        "AGSSERVERJAVA", "AGSENGINEJAVA", "AGSDESKTOPJAVA", "ARCGISHOME"});    
     
     public static void link() throws Exception {
         link(null);

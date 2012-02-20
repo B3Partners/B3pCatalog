@@ -40,7 +40,7 @@
            directory moet de subdirectory "java\lib" aanwezig zijn met daarin het
            bestand arcobjects.jar. Optionele optie, indien niet aanwezig wordt 
            het pad gehaald uit de volgende environment variabelen:
-           AGSENGINEJAVA, AGSDESKTOPJAVA of ARCGISHOME
+           AGSSERVERJAVA, AGSENGINEJAVA, AGSDESKTOPJAVA of ARCGISHOME
 
          Attribuut: forkSynchroniser
          Type: boolean
