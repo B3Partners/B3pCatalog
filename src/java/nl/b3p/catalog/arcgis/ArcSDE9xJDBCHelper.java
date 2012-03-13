@@ -70,7 +70,7 @@ public class ArcSDE9xJDBCHelper extends ArcSDEJDBCHelper {
                 }
             });
         } finally {
-            DbUtils.close(c);
+            DbUtils.closeQuietly(c);
         }
     }
     
@@ -124,7 +124,7 @@ public class ArcSDE9xJDBCHelper extends ArcSDEJDBCHelper {
             
             return l;        
         } finally {
-            DbUtils.close(c);
+            DbUtils.closeQuietly(c);
         }
     }    
 
@@ -154,7 +154,7 @@ public class ArcSDE9xJDBCHelper extends ArcSDEJDBCHelper {
                 return new QueryRunner().query(c, sql, h, dataset.getName(), dataset.getOwner());
             }
         } finally {
-            DbUtils.close(c);
+            DbUtils.closeQuietly(c);
         }
         
     }

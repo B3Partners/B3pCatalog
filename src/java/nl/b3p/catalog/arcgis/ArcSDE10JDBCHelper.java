@@ -78,7 +78,7 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
             };
             return new QueryRunner().query(c, sql, h, TYPE_FEATURE_DATASET);
         } finally {
-            DbUtils.close(c);
+            DbUtils.closeQuietly(c);
         }
     }
 
@@ -112,7 +112,7 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
                 return new QueryRunner().query(c, sql, h, TYPE_FEATURE_CLASS, TYPE_RASTER, parent.getObjectID());
             }
         } finally {
-            DbUtils.close(c);
+            DbUtils.closeQuietly(c);
         }
     }
 
@@ -128,7 +128,7 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
             }
             return IOUtils.toString(xml.getCharacterStream());
         } finally {
-            DbUtils.close(c);
+            DbUtils.closeQuietly(c);
         }        
     }
 
@@ -154,7 +154,7 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
             }
         } finally {
             DbUtils.closeQuietly(ps);
-            DbUtils.close(c);
+            DbUtils.closeQuietly(c);
         }         
     }
     
@@ -171,7 +171,7 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
             }
             return name;
         } finally {
-             DbUtils.close(c);
+             DbUtils.closeQuietly(c);
         }              
     }
 }
