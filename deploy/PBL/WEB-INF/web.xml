@@ -13,7 +13,7 @@
             &lt;/Context&gt;
         </description>
         <param-name>config</param-name>
-        <param-value>/pblnas/DataPortaal/_beheer/b3pcatalog/config.xml</param-value>
+        <param-value>conf/b3pcatalog/config.xml</param-value>
     </context-param>
     
     <listener>
@@ -82,14 +82,12 @@
             <web-resource-name>all</web-resource-name>
             <url-pattern>/*</url-pattern>
         </web-resource-collection>
+        
+        <!-- Alleen users uit de genoemde groep (role-name) hebben toegang tot de applicatie -->
         <auth-constraint>
-		<role-name>*</role-name>
+		<role-name>G-PBL-OO-B3PCatalog</role-name>
         </auth-constraint>
     </security-constraint>
-
-    <security-role>
-        <role-name>STO_PBL_PBLNAS^Datalogistiek_RW</role-name>
-    </security-role>
 
     <login-config>
         <auth-method>FORM</auth-method>
@@ -139,11 +137,7 @@
     <servlet>
         <servlet-name>StripesDispatcher</servlet-name>
         <servlet-class>net.sourceforge.stripes.controller.DispatcherServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-        <security-role-ref>
-            <role-name>admin</role-name>
-            <role-link>STO_PBL_PBLNAS^Datalogistiek_RW</role-link>
-        </security-role-ref>        
+        <load-on-startup>1</load-on-startup>       
     </servlet>
     <servlet-mapping>
         <servlet-name>StripesDispatcher</servlet-name>
