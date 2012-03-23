@@ -1,8 +1,0 @@
-pbl-app02-mbz.rivm.nl
-
-SVC-B3pCatalog
-welkom01
-
-
-
-configuratie van Jndirealm staat in server.xml, Catalina/localhost/b3pcatalog.xml wordt niet opgepakt
