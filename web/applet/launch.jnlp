@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jnlp href="launch.jnlp" spec="1.0+">
+    <information>
+        <title>local-access-applet</title>
+        <vendor>B3Partners B.V.</vendor>
+        <homepage href=""/>
+        <description>local-access-applet</description>
+        <description kind="short">local-access-applet</description>
+        
+        
+    </information>
+    <update check="always"/>
+    <security>
+<all-permissions/>
+</security>
+    <resources>
+        <j2se version="1.6+"/>
+        <jar href="local-access-applet.jar" main="true"/>
+</resources>
+    <applet-desc height="20" main-class="nl.b3p.applet.local.LocalAccessApplet" name="local-access-applet" width="60">
+        
+    <param name="classloader_cache" value="false"/>
+</applet-desc>
+</jnlp>
