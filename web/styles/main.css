@@ -250,6 +250,24 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
     padding-top: 10px;
 }
 
+#filetree-local {
+    padding-top: 10px;
+}
+
+#connect-local {
+    border-top: 1px inset black;
+    height: 24px;
+    padding-left: 5px;
+    vertical-align: middle;
+    padding-top: 5px;
+}
+
+#applet-container {
+    float: right;
+    width: 60px;
+    height: 20px;
+}
+
 #searchResultsContainer {
     margin-top: 1em;
     margin-bottom: 1em;

@@ -13,3 +13,9 @@
     <%@include file="search.jsp" %>
     <%@include file="admin.jsp" %>
 </div>
+
+<div id="connect-local" class="ui-layout-content">
+    <a href="#" onclick="B3pCatalog.connectDirectory()">Lokale map verkennen...</a>
+    
+    <div id="applet-container"></div>
+</div>
