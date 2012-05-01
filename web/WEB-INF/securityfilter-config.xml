@@ -48,6 +48,14 @@
 
     <security-constraint>
         <web-resource-collection>
+            <web-resource-name>applet</web-resource-name>
+            <url-pattern>/applet/*</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+    </security-constraint>
+    
+    <security-constraint>
+        <web-resource-collection>
             <web-resource-name>all</web-resource-name>
             <url-pattern>/*</url-pattern>
         </web-resource-collection>
