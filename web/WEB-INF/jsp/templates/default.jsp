@@ -72,7 +72,9 @@
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mdeOptions.js"></script>
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/main.js"></script>
 
-
+        <!-- connect local folder -->
+        <script type="text/javascript" src="${contextPath}/applet/deployJavaSucks.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/local.js"></script>
 
         <stripes:layout-component name="head"/>
 

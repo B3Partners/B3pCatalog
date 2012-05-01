@@ -54,6 +54,124 @@ B3pCatalog.hashchange = function(event) {
     }
 };
 
+B3pCatalog.connectDirectory = function() {
+    var me = this;
+    if(!this.local) {
+        $.okCancel({
+            text: "Voor het openen van lokale mappen is een Java applet nodig. Dit werkt het beste wanneer de laatste versie van Java geinstalleerd is. Doorgaan met het laden van het applet?",
+            ok: function() {
+                me.local = new LocalAccess();
+                me.local.initApplet( function() { me.connectDirectory2(); } );
+            }
+        });        
+    } else {
+        this.connectDirectory2();
+    }
+}
+
+B3pCatalog.connectDirectory2 = function() {
+    this.local.selectDirectory("Selecteer een map...", 
+        function(dir) { 
+            if(dir != null) {
+                B3pCatalog.loadFiletreeLocal(dir);
+            }
+        },
+        function(e) { $.ok({text: e }); }
+    );
+}
+
+function escapeString(s) {
+    return (s+'').replace(/([\\"'])/g, "\\$1").replace(/\0/g, "\\0");
+}
+
+B3pCatalog.decodeFileList = function(data, fileJSON, success) {
+    console.log("decodeFileList", data, fileJSON);
+    eval("var files = " + fileJSON);    
+    var s = "<ul class=\"jqueryFileTree\">";
+    
+    var dir = data.expandTo || data.dir;
+    
+    if(data.expandTo) {
+        var d = escapeString(data.expandTo);
+        s += "<li class=\"directory expanded\">" +
+            "<a href=\"#\" rel=\"" + d + "\" title=\"" + d + "\">" + d + "</a>";
+        s += "<ul class=\"jqueryFileTree\">";
+    }                
+
+    for(var i = 0; i < files.length; i++) {
+        var f = files[i];
+        if(f.d != 0) {
+            s += "<li class=\"directory collapsed\">";
+            s += "<a href=\"#\" rel=\"" + escapeString(dir + "/" + f.n) + "\" title=\"" + escapeString(f.n) + "\" isgeo=\"true\">";
+            s += escapeString(f.n) + "</a></li>";            
+        }
+    }
+
+    for(i = 0; i < files.length; i++) {
+        f = files[i];
+        if(f.d == 0) {
+            var idx = f.n.lastIndexOf(".");
+            var ext = "";
+            if(idx != -1) {
+                ext = ext.substring(idx);
+                if(ext.indexOf(" ") == -1) { // not entirely foolproof
+                    ext = "ext_" + ext;
+                } else {
+                    ext = "";
+                }
+            }
+            s += "<li class=\"file " + ext + "\">";
+            s += "<a href=\"#\" rel=\"" + escapeString(dir + "/" + f.n) + "\" title=\"" + escapeString(f.n) + "\" isgeo=\"true\">";
+            s += escapeString(f.n) + "</a></li>";
+        }
+    }
+    if(data.expandTo) {
+        s += "</ul></li>";
+    }
+    s += "</ul>";
+    success(s);
+}
+    
+B3pCatalog.loadFiletreeLocal = function(dir) {
+    log("loadFiletreeLocal", dir);
+    
+    var me = this;
+
+    B3pCatalog._loadFiletree(dir, $("#filetree-local"), {
+        noAjax: function(data, success, error) {
+            console.log("listing dir " + dir);
+            me.local.listDirectory(data.expandTo || data.dir, 
+                function(files) {
+                    B3pCatalog.decodeFileList(data, files, success)
+                },
+                function(e) {
+                    $.ok({text: e});
+                    error();
+                }
+            );
+        },
+        fileCallback: function(rel, aElement) {
+            var anchor = B3pCatalog.clickedFileAnchor = $(aElement);
+            if (anchor.length > 0 && anchor.hasClass("selected"))
+                return;
+
+            $.ok({
+                text: "Geselecteerd bestand: " + anchor.attr("rel") ,
+                ok: function() {}
+            });
+/*            
+            var newState = {
+                page: "metadata",
+                mode: B3pCatalog.modes.LOCAL_MODE,
+                path: rel,
+                title: anchor.attr("title")                
+            };
+
+            $.bbq.pushState(newState, 2);
+*/            
+        }
+    });    
+}
 
 /////////////////////////////// Filetree ///////////////////////////////////////
 
@@ -103,7 +221,7 @@ B3pCatalog.loadFiletreeSDE = function(selectedFilePath) {
             var anchor = B3pCatalog.clickedFileAnchor = $(aElement);
             if (anchor.length > 0 && anchor.hasClass("selected"))
                 return;
-
+            
             var newState = {
                 page: "metadata",
                 mode: B3pCatalog.modes.SDE_MODE,
