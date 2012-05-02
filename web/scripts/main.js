@@ -80,19 +80,21 @@ B3pCatalog.connectDirectory2 = function() {
     );
 }
 
-function escapeString(s) {
-    return (s+'').replace(/([\\"'])/g, "\\$1").replace(/\0/g, "\\0");
+function htmlEncode(str) {
+    var div = document.createElement("div");
+    var txt = document.createTextNode(str);
+    div.appendChild(txt);
+    return div.innerHTML;
 }
 
 B3pCatalog.decodeFileList = function(data, fileJSON, success) {
-    console.log("decodeFileList", data, fileJSON);
     eval("var files = " + fileJSON);    
     var s = "<ul class=\"jqueryFileTree\">";
     
     var dir = data.expandTo || data.dir;
     
     if(data.expandTo) {
-        var d = escapeString(data.expandTo);
+        var d = htmlEncode(data.expandTo);
         s += "<li class=\"directory expanded\">" +
             "<a href=\"#\" rel=\"" + d + "\" title=\"" + d + "\">" + d + "</a>";
         s += "<ul class=\"jqueryFileTree\">";
@@ -101,9 +103,10 @@ B3pCatalog.decodeFileList = function(data, fileJSON, success) {
     for(var i = 0; i < files.length; i++) {
         var f = files[i];
         if(f.d != 0) {
+            var en = htmlEncode(f.n);
             s += "<li class=\"directory collapsed\">";
-            s += "<a href=\"#\" rel=\"" + escapeString(dir + "/" + f.n) + "\" title=\"" + escapeString(f.n) + "\" isgeo=\"true\">";
-            s += escapeString(f.n) + "</a></li>";            
+            s += "<a href=\"#\" rel=\"" + htmlEncode(dir) + "/" + en + "\" title=\"" + en + "\" isgeo=\"true\">";
+            s += en + "</a></li>";            
         }
     }
 
@@ -113,7 +116,7 @@ B3pCatalog.decodeFileList = function(data, fileJSON, success) {
             var idx = f.n.lastIndexOf(".");
             var ext = "";
             if(idx != -1) {
-                ext = ext.substring(idx);
+                ext = f.n.substring(idx+1);
                 if(ext.indexOf(" ") == -1) { // not entirely foolproof
                     ext = "ext_" + ext;
                 } else {
@@ -121,8 +124,9 @@ B3pCatalog.decodeFileList = function(data, fileJSON, success) {
                 }
             }
             s += "<li class=\"file " + ext + "\">";
-            s += "<a href=\"#\" rel=\"" + escapeString(dir + "/" + f.n) + "\" title=\"" + escapeString(f.n) + "\" isgeo=\"true\">";
-            s += escapeString(f.n) + "</a></li>";
+            var en = htmlEncode(f.n);
+            s += "<a href=\"#\" rel=\"" + htmlEncode(dir) + "/" + en + "\" title=\"" + en + " (" + (f.s / 1024).toFixed(2) + " KB)\" isgeo=\"true\">";
+            s += en + "</a></li>";
         }
     }
     if(data.expandTo) {
@@ -157,8 +161,18 @@ B3pCatalog.loadFiletreeLocal = function(dir) {
 
             $.ok({
                 text: "Geselecteerd bestand: " + anchor.attr("rel") ,
-                ok: function() {}
+                ok: function() {
+                    me.local.readFileBase64(anchor.attr("rel"),
+                        function(base64) {
+                            console.log("file contents " + base64);
+                            $.ok({text: "Bestand gelezen, " + base64.length + " BASE64 tekens"});
+                        },
+                        function(e) {
+                            $.ok({text: "Fout bij lezen bestand: " + e});
+                        });
+                }
             });
+            
 /*            
             var newState = {
                 page: "metadata",

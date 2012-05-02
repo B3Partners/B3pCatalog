@@ -65,13 +65,13 @@
     </security-constraint>
 
     <login-config>
-        <auth-method>FORM</auth-method>
-        <form-login-config>
+        <auth-method>BASIC</auth-method>
+        <!--form-login-config>
             <form-login-page>/login.jsp</form-login-page>
             <form-logout-page>/logout.jsp</form-logout-page>
             <form-error-page>/loginError.jsp</form-error-page>
             <form-default-page>/</form-default-page>
-        </form-login-config>
+        </form-login-config-->
     </login-config>
 
     <realm className="nl.b3p.catalog.security.GisSecurityRealm"/>
