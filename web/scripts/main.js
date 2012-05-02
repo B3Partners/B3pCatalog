@@ -87,9 +87,65 @@ function htmlEncode(str) {
     return div.innerHTML;
 }
 
+function filterOutMetadataFiles(files) {
+    var i = 0;
+    while(i < files.length) {
+        var f = files[i];
+        var prev = files[i-1];
+        if(i > 0 && prev.n == f.n.substring(0,prev.n.length)) {
+            if(f.n.substring(prev.n.length) == ".xml") {
+                prev.m = true;
+                files.splice(i,1);
+                continue;
+            }            
+        } 
+        prev = f.n;
+        i++;
+    }
+}
+
+function filterOutShapeExtraFiles(files) {
+    var shapefiles = [];
+    for(var i = 0; i < files.length; i++) {      
+        var f = files[i];
+        var idx = f.n.lastIndexOf(".shp");
+        if(idx == f.n.length - 4) {
+            shapefiles[shapefiles.length] = f.n.substring(0,idx);           
+        }
+    }
+    
+    for(var i = 0; i < shapefiles.length; i++) {
+        var shp = shapefiles[i];
+        var j = 0;
+        while(j < files.length) {
+            var f = files[j];
+            if(f.n.substring(0,shp.length) == shp) {
+                if(! (f.n.lastIndexOf(".shp") == f.n.length - 4) ) {
+                    files.splice(j,1);
+                    continue;
+                }
+            }
+            j++;
+        }
+    }
+}
+
 B3pCatalog.decodeFileList = function(data, fileJSON, success) {
+    
+    
     eval("var files = " + fileJSON);    
+    
     var s = "<ul class=\"jqueryFileTree\">";
+    
+    files.sort( function(lhs, rhs) {
+        if(lhs.d != rhs.d) {
+            return lhs.d < rhs.d ? 1 : -1;
+        }    
+        return lhs.n.localeCompare(rhs.n);
+    });
+    
+    filterOutMetadataFiles(files);
+    filterOutShapeExtraFiles(files);
     
     var dir = data.expandTo || data.dir;
     
@@ -100,19 +156,14 @@ B3pCatalog.decodeFileList = function(data, fileJSON, success) {
         s += "<ul class=\"jqueryFileTree\">";
     }                
 
-    for(var i = 0; i < files.length; i++) {
-        var f = files[i];
+    for(i = 0; i < files.length; i++) {
+        f = files[i];
         if(f.d != 0) {
             var en = htmlEncode(f.n);
             s += "<li class=\"directory collapsed\">";
             s += "<a href=\"#\" rel=\"" + htmlEncode(dir) + "/" + en + "\" title=\"" + en + "\" isgeo=\"true\">";
             s += en + "</a></li>";            
-        }
-    }
-
-    for(i = 0; i < files.length; i++) {
-        f = files[i];
-        if(f.d == 0) {
+        } else  {
             var idx = f.n.lastIndexOf(".");
             var ext = "";
             if(idx != -1) {
@@ -123,9 +174,12 @@ B3pCatalog.decodeFileList = function(data, fileJSON, success) {
                     ext = "";
                 }
             }
+            if(f.m) {
+                ext += " with_metadata";
+            }
             s += "<li class=\"file " + ext + "\">";
             var en = htmlEncode(f.n);
-            s += "<a href=\"#\" rel=\"" + htmlEncode(dir) + "/" + en + "\" title=\"" + en + " (" + (f.s / 1024).toFixed(2) + " KB)\" isgeo=\"true\">";
+            s += "<a href=\"#\" rel=\"" + htmlEncode(dir) + "/" + en + "\" title=\"" + en + " (" + (f.s / 1024).toFixed(2) + " KB)" + (f.m ? " (metadata XML bestand aanwezig)" : "") + "\" isgeo=\"true\">";
             s += en + "</a></li>";
         }
     }

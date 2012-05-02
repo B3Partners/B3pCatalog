@@ -247,11 +247,15 @@ ul#main-tabs > li.main-tab-hover > a.main-tab-hover {
 }
 
 #filetree-sde {
-    padding-top: 10px;
+    padding-top: 2px;
 }
 
 #filetree-local {
-    padding-top: 10px;
+    padding-top: 2px;
+}
+
+.with_metadata {
+    font-weight: bold;
 }
 
 #connect-local {
