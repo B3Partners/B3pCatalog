@@ -78,7 +78,7 @@ B3pCatalog.connectDirectory = function() {
                     B3pCatalog.loadFiletreeLocal(dir);
                 }
             },
-            function(e) { $.ok({text: e }); }
+            B3pCatalog.openSimpleErrorDialog
         );
     });
 }
@@ -115,9 +115,10 @@ function filterOutShapeExtraFiles(files) {
     var shapefiles = [];
     for(var i = 0; i < files.length; i++) {      
         var f = files[i];
-        var idx = f.n.lastIndexOf(".shp");
-        if(idx == f.n.length - 4) {
-            shapefiles[shapefiles.length] = f.n.substring(0,idx);           
+        if(f.d == 0) {
+            if(extension(f.n) == "shp") {
+                shapefiles[shapefiles.length] = f.n.substring(0,f.n.length - 4);           
+            }
         }
     }
     
@@ -204,7 +205,7 @@ B3pCatalog.loadFiletreeLocal = function(dir) {
 
     B3pCatalog._loadFiletree(dir, $("#filetree-local"), {
         noAjax: function(data, success, error) {
-            console.log("listing dir " + dir);
+            log("list directory", data.expandTo || data.dir);            
             me.local.listDirectory(data.expandTo || data.dir, 
                 function(files) {
                     B3pCatalog.decodeFileList(data, files, success)
@@ -518,9 +519,9 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
                         });                
                 });
             } else {
-                
+                path = path + ".xml";
                 me.loadLocal(function() {
-                    me.local.readFileIfExistsUTF8(path + ".xml",
+                    me.local.readFileIfExistsUTF8(path,
                         loadLocalMetadata,
                         function() {
                             // XML bestand bestaat nog niet
@@ -601,33 +602,54 @@ B3pCatalog._loadMetadata = function(opts) {
 };
 
 B3pCatalog.saveMetadata = function(settings) {
-    var options = $.extend({
-        filename: B3pCatalog.currentFilename,
-        updateUI: true,
-        async: false
-    }, settings);
-
-    if (!options.filename)
-        return;
 
     var xml = $("#mde").mde("save");
-    $.ajax({
-        url: B3pCatalog.metadataUrl,
-        async: options.async,
-        type: "POST",
-        data: {
-            save: "t",
-            path: options.filename,
-            mode: B3pCatalog.currentMode,
-            metadata: xml
-        },
-        success: function(data, textStatus, xhr) {
-            //log("metadata saved succesfully.");
-            B3pCatalog.fadeMessage("Metadata succesvol opgeslagen");
-            if (options.updateUI)
-                $("#saveMD").button("option", "disabled", true);
-        }
-    });
+    
+    if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
+        
+        var me = this;
+        
+        me.loadLocal(function() {
+            
+            me.local.writeFileUTF8(B3pCatalog.currentFilename, xml,
+                function() {
+                    B3pCatalog.fadeMessage("Metadata succesvol opgeslagen");
+                    $("#saveMD").button("option", "disabled", true);       
+                     B3pCatalog.clickedFileAnchor.addClass("with_metadata");
+                },
+                function(e) {
+                    B3pCatalog.openSimpleErrorDialog("Fout bij opslaan bestand: " + e);
+                }
+            );
+        });
+    } else {
+        var options = $.extend({
+            filename: B3pCatalog.currentFilename,
+            updateUI: true,
+            async: false
+        }, settings);
+
+        if (!options.filename)
+            return;
+
+        $.ajax({
+            url: B3pCatalog.metadataUrl,
+            async: options.async,
+            type: "POST",
+            data: {
+                save: "t",
+                path: options.filename,
+                mode: B3pCatalog.currentMode,
+                metadata: xml
+            },
+            success: function(data, textStatus, xhr) {
+                //log("metadata saved succesfully.");
+                B3pCatalog.fadeMessage("Metadata succesvol opgeslagen");
+                if (options.updateUI)
+                    $("#saveMD").button("option", "disabled", true);
+            }
+        });
+    }
 };
 
 B3pCatalog.fadeMessage = function(message) {
@@ -734,7 +756,7 @@ B3pCatalog.exportMetadata = function() {
         case B3pCatalog.modes.SDE_MODE:
         case B3pCatalog.modes.FILE_MODE:B3pCatalog._exportMetadata();break;
         case B3pCatalog.modes.CSW_MODE:B3pCatalog._exportMetadataByUUID();break;
-        default:openErrorDialog(B3pCatalog.title + " is in an illegal mode: " + B3pCatalog.currentMode);
+        default:B3pCatalog.openSimpleErrorDialog(B3pCatalog.title + " is in an illegal mode: " + B3pCatalog.currentMode);
     }
 };
 
