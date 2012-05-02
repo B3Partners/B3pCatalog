@@ -54,30 +54,33 @@ B3pCatalog.hashchange = function(event) {
     }
 };
 
-B3pCatalog.connectDirectory = function() {
+B3pCatalog.loadLocal = function(success) {
     var me = this;
     if(!this.local) {
         $.okCancel({
             text: "Voor het openen van lokale mappen is een Java applet nodig. Dit werkt het beste wanneer de laatste versie van Java geinstalleerd is. Doorgaan met het laden van het applet?",
             ok: function() {
                 me.local = new LocalAccess();
-                me.local.initApplet( function() { me.connectDirectory2(); } );
+                me.local.initApplet(success);
             }
-        });        
+        });
     } else {
-        this.connectDirectory2();
+        success();
     }
 }
-
-B3pCatalog.connectDirectory2 = function() {
-    this.local.selectDirectory("Selecteer een map...", 
-        function(dir) { 
-            if(dir != null) {
-                B3pCatalog.loadFiletreeLocal(dir);
-            }
-        },
-        function(e) { $.ok({text: e }); }
-    );
+    
+B3pCatalog.connectDirectory = function() {
+    var me = this;
+    this.loadLocal( function() {
+        me.local.selectDirectory("Selecteer een map...", 
+            function(dir) { 
+                if(dir != null) {
+                    B3pCatalog.loadFiletreeLocal(dir);
+                }
+            },
+            function(e) { $.ok({text: e }); }
+        );
+    });
 }
 
 function htmlEncode(str) {
@@ -85,6 +88,10 @@ function htmlEncode(str) {
     var txt = document.createTextNode(str);
     div.appendChild(txt);
     return div.innerHTML;
+}
+
+function extension(f) {
+    return f.substring((f.lastIndexOf(".")+1));
 }
 
 function filterOutMetadataFiles(files) {
@@ -120,7 +127,7 @@ function filterOutShapeExtraFiles(files) {
         while(j < files.length) {
             var f = files[j];
             if(f.n.substring(0,shp.length) == shp) {
-                if(! (f.n.lastIndexOf(".shp") == f.n.length - 4) ) {
+                if(extension(f.n) != "shp") {
                     files.splice(j,1);
                     continue;
                 }
@@ -161,7 +168,7 @@ B3pCatalog.decodeFileList = function(data, fileJSON, success) {
         if(f.d != 0) {
             var en = htmlEncode(f.n);
             s += "<li class=\"directory collapsed\">";
-            s += "<a href=\"#\" rel=\"" + htmlEncode(dir) + "/" + en + "\" title=\"" + en + "\" isgeo=\"true\">";
+            s += "<a href=\"#\" rel=\"" + htmlEncode(dir) + "/" + en + "\" title=\"" + en + "\">";
             s += en + "</a></li>";            
         } else  {
             var idx = f.n.lastIndexOf(".");
@@ -179,7 +186,7 @@ B3pCatalog.decodeFileList = function(data, fileJSON, success) {
             }
             s += "<li class=\"file " + ext + "\">";
             var en = htmlEncode(f.n);
-            s += "<a href=\"#\" rel=\"" + htmlEncode(dir) + "/" + en + "\" title=\"" + en + " (" + (f.s / 1024).toFixed(2) + " KB)" + (f.m ? " (metadata XML bestand aanwezig)" : "") + "\" isgeo=\"true\">";
+            s += "<a href=\"#\" m=\"" + (!!f.m) + "\" rel=\"" + htmlEncode(dir) + "/" + en + "\" title=\"" + en + " (" + (f.s / 1024).toFixed(2) + " KB)" + (f.m ? " (metadata XML bestand aanwezig)" : "") + "\">";
             s += en + "</a></li>";
         }
     }
@@ -213,30 +220,14 @@ B3pCatalog.loadFiletreeLocal = function(dir) {
             if (anchor.length > 0 && anchor.hasClass("selected"))
                 return;
 
-            $.ok({
-                text: "Geselecteerd bestand: " + anchor.attr("rel") ,
-                ok: function() {
-                    me.local.readFileBase64(anchor.attr("rel"),
-                        function(base64) {
-                            console.log("file contents " + base64);
-                            $.ok({text: "Bestand gelezen, " + base64.length + " BASE64 tekens"});
-                        },
-                        function(e) {
-                            $.ok({text: "Fout bij lezen bestand: " + e});
-                        });
-                }
-            });
-            
-/*            
             var newState = {
                 page: "metadata",
                 mode: B3pCatalog.modes.LOCAL_MODE,
                 path: rel,
-                title: anchor.attr("title")                
+                title: anchor.attr("title")
             };
 
             $.bbq.pushState(newState, 2);
-*/            
         }
     });    
 }
@@ -450,6 +441,7 @@ B3pCatalog.modes = {
     NO_MODE: "none",
     FILE_MODE: "file",
     SDE_MODE: "sde",
+    LOCAL_MODE: "local",
     CSW_MODE: "csw",
     ADMIN_MODE: "admin"
 };
@@ -474,7 +466,7 @@ B3pCatalog.getCurrentFileAnchor = function() {
 
 B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
 
-    this._loadMetadata({
+    var opts = {
         done: function() {
             
         },
@@ -500,7 +492,51 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
                 B3pCatalog.createMde(data, isGeo, viewMode);
             }
         }
-    });
+    };
+    
+    var me = this;
+    
+    if(mode == B3pCatalog.modes.LOCAL_MODE) {
+        opts.noAjax = function() {
+            
+            function loadLocalMetadata(md) {
+                B3pCatalog.currentFilename = path;
+                B3pCatalog.currentMode = mode;
+                document.title = B3pCatalog.title + B3pCatalog.titleSeparator + title;                            
+                B3pCatalog.createMde(md, isGeo, false);                            
+            }
+            
+            if(extension(path) == "xml") {
+                
+                me.loadLocal(function() {
+                    me.local.readFileUTF8(path,
+                        loadLocalMetadata,
+                        function(e) {
+                            B3pCatalog.openSimpleErrorDialog("Fout bij lezen bestand: " + e);
+                            cancel();
+                            return;
+                        });                
+                });
+            } else {
+                
+                me.loadLocal(function() {
+                    me.local.readFileIfExistsUTF8(path + ".xml",
+                        loadLocalMetadata,
+                        function() {
+                            // XML bestand bestaat nog niet
+                            loadLocalMetadata("");
+                        },
+                        function(e) {
+                            B3pCatalog.openSimpleErrorDialog("Fout bij lezen metadata : " + e);
+                            cancel();
+                        }
+                    );
+                });
+            }
+        }
+    }
+    
+    this._loadMetadata(opts);
 };
 
 B3pCatalog.loadMetadataByUUID = function(uuid) {
@@ -554,7 +590,11 @@ B3pCatalog._loadMetadata = function(opts) {
 
             document.title = B3pCatalog.title;
             options.done();
-            $.ajax(options.ajaxOptions);
+            if(opts.noAjax) {
+                opts.noAjax();
+            } else {
+                $.ajax(options.ajaxOptions);
+            }
         },
         cancel: options.cancel
     });
