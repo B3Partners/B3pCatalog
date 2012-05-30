@@ -601,6 +601,10 @@ B3pCatalog._loadMetadata = function(opts) {
     });
 };
 
+function endsWith(s, n) {
+    return s.indexOf(n, s.length - n.length) != -1;
+}
+
 B3pCatalog.saveMetadata = function(settings) {
 
     var xml = $("#mde").mde("save");
@@ -615,7 +619,9 @@ B3pCatalog.saveMetadata = function(settings) {
                 function() {
                     B3pCatalog.fadeMessage("Metadata succesvol opgeslagen");
                     $("#saveMD").button("option", "disabled", true);       
-                     B3pCatalog.clickedFileAnchor.addClass("with_metadata");
+                    if(!endsWith(B3pCatalog.currentFilename.toLowerCase(), ".xml")) {
+                        B3pCatalog.clickedFileAnchor.addClass("with_metadata");
+                    }
                 },
                 function(e) {
                     B3pCatalog.openSimpleErrorDialog("Fout bij opslaan bestand: " + e);
