@@ -55,6 +55,7 @@ public class MetadataAction extends DefaultAction {
 
     private static final String FILE_MODE = "file";
     private static final String SDE_MODE = "sde";
+    private static final String LOCAL_MODE = "local";
 
     private final static DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     
@@ -323,6 +324,13 @@ public class MetadataAction extends DefaultAction {
     // that has <metadata/> or <gmd:MD_Metadata/> as root. This is by design.
     public Resolution postComment() {
         try {
+            if(LOCAL_MODE.equals(mode)) {
+                Document doc = DocumentHelper.getMetadataDocument(metadata);
+                addComment(doc, comment);
+                String commentedMD = DocumentHelper.getDocumentString(doc);
+                return new XmlResolution(commentedMD);
+            }
+            
             determineRoot();
             
             if(rootAccess.getSecurityLevel() < AclAccess.COMMENT.getSecurityLevel()) {

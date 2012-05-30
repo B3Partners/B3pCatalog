@@ -720,22 +720,32 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
                 B3pCatalog.openSimpleErrorDialog("Commentaar kan niet leeg zijn.");
                 return false;
             } else {
+                
+                var metadata = "";
+                
+                if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
+                    metadata = $("#mde").mde("save");
+                }
                 var xhr = $.ajax({
                     url: B3pCatalog.metadataUrl,
                     data: {
                         postComment: "t",
                         comment: comment,
                         path: B3pCatalog.currentFilename,
-                        mode: B3pCatalog.currentMode
+                        mode: B3pCatalog.currentMode,
+                        metadata: metadata
                     },
                     dataType: "text",
                     method: "POST",
                     async: false
                 });
+                if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
+                    $("#saveMD").button("option", "disabled", false);              
+                }                
                 return xhr.responseText;
             }
         },
-        change: function(changed) {
+        change: function(changed) {            
             $("#saveMD").button("option", "disabled", !changed);
         }
     }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)));
