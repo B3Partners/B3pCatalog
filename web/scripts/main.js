@@ -770,6 +770,7 @@ B3pCatalog.createCswMde = function(xmlDoc) {
 B3pCatalog.exportMetadata = function() {
     switch(B3pCatalog.currentMode) {
         case B3pCatalog.modes.SDE_MODE:
+        case B3pCatalog.modes.LOCAL_MODE:
         case B3pCatalog.modes.FILE_MODE:B3pCatalog._exportMetadata();break;
         case B3pCatalog.modes.CSW_MODE:B3pCatalog._exportMetadataByUUID();break;
         default:B3pCatalog.openSimpleErrorDialog(B3pCatalog.title + " is in an illegal mode: " + B3pCatalog.currentMode);
@@ -778,11 +779,17 @@ B3pCatalog.exportMetadata = function() {
 
 B3pCatalog._exportMetadata = function() {
     $("#mde").mde("option", "pageLeaveWarning", false);
+    var metadata = "";
+
+    if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
+        metadata = $("#mde").mde("save");
+    }    
     window.location = B3pCatalog.metadataUrl + "?" + $.param({
         "export": "t",
         path: B3pCatalog.currentFilename,
         mode: B3pCatalog.currentMode,
-        strictISO19115: $("#strictISO19115Checkbox").is(":checked")
+        strictISO19115: $("#strictISO19115Checkbox").is(":checked"),
+        metadata: metadata
     });
     $("#mde").mde("option", "pageLeaveWarning", true);
 };

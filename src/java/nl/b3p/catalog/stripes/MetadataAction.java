@@ -95,6 +95,9 @@ public class MetadataAction extends DefaultAction {
     public Resolution load() {
 
         try {
+            if(LOCAL_MODE.equals(mode)) {
+                return new XmlResolution(metadata);
+            }            
             determineRoot();
 
             if(SDE_MODE.equals(mode)) {
