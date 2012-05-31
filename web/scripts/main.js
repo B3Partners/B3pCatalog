@@ -907,26 +907,46 @@ B3pCatalog.importMetadata = function() {
 };
 
 B3pCatalog.synchronizeWithData = function() {
+    var me = this;
+    
+    var doIt = function(synchronizeData) {
+        //log($("#mde").mde("save", {postprocess: false}));
+        $.ajax({
+            url: B3pCatalog.metadataUrl,
+            data: {
+                synchronize: "t",
+                path: B3pCatalog.currentFilename,
+                mode: B3pCatalog.currentMode,
+                metadata: $("#mde").mde("save", {postprocess: false}),
+                synchronizeData: synchronizeData
+            },
+            type: "POST",
+            async: false,
+            dataType: "text",
+            success: function(data) {
+                $("#mde").mde("option", "xml", data);
+                B3pCatalog.fadeMessage("Synchronisatie succesvol");
+            }
+        });
+    }
+        
     B3pCatalog.saveDataUserConfirm({
         text: "Wilt u uw wijzigingen opslaan alvorens uw metadata te synchroniseren? Als u \"Nee\" kiest gaan uw wijzigingen verloren.",
         done: function() {
-            //log($("#mde").mde("save", {postprocess: false}));
-            $.ajax({
-                url: B3pCatalog.metadataUrl,
-                data: {
-                    synchronize: "t",
-                    path: B3pCatalog.currentFilename,
-                    mode: B3pCatalog.currentMode,
-                    metadata: $("#mde").mde("save", {postprocess: false})
-                },
-                type: "POST",
-                async: false,
-                dataType: "text",
-                success: function(data) {
-                    $("#mde").mde("option", "xml", data);
-                    B3pCatalog.fadeMessage("Synchronisatie succesvol");
+            
+            if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {            
+                var fn = B3pCatalog.currentFilename;
+                if(endsWith(fn, ".xml")) {
+                    fn = fn.substr(0, fn.length-4);
                 }
-            });
+                me.local.getShapefileMetadata(
+                    fn,
+                    doIt,
+                    B3pCatalog.openSimpleErrorDialog);
+                return;
+            } else {
+                doIt();
+            }
         }
     });
 }

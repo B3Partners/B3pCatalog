@@ -35,6 +35,7 @@ import nl.b3p.catalog.resolution.XmlResolution;
 import nl.b3p.catalog.xml.DocumentHelper;
 import nl.b3p.catalog.xml.Names;
 import nl.b3p.catalog.xml.Namespaces;
+import nl.b3p.catalog.xml.ShapefileSynchronizer;
 import nl.b3p.catalog.xml.XPathHelper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -42,6 +43,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -49,6 +52,10 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class MetadataAction extends DefaultAction {
     private final static Log log = LogFactory.getLog(MetadataAction.class);
@@ -81,6 +88,9 @@ public class MetadataAction extends DefaultAction {
 
     @Validate
     private FileBean importXml;
+    
+    @Validate
+    private String synchronizeData;
     
     private Root root;
     private AclAccess rootAccess;
@@ -178,9 +188,32 @@ public class MetadataAction extends DefaultAction {
         }
     }
     
+    public Resolution synchronizeLocal() throws JDOMException, IOException, JSONException, FactoryException {
+        // metadata string must already have been preprocessed on the clientside
+        Document doc = new SAXBuilder().build(new StringReader(metadata));
+        
+        String formatName = null;
+        
+        if(path.toLowerCase().endsWith(".shp.xml")) {
+            
+            ShapefileSynchronizer.synchronizeFromLocalAccessJSON(doc, synchronizeData);
+            
+        } else if(path.toLowerCase().endsWith(".nc.xml")) {
+            formatName = "NetCDF";
+        }
+        if(formatName != null) {
+        }
+        return new XmlResolution(doc);        
+    }
+    
     public Resolution synchronize() {
 
         try {
+            
+            if(LOCAL_MODE.equals(mode)) {
+                return synchronizeLocal();
+            }
+            
             determineRoot();
             
             // metadata string must already have been preprocessed on the clientside
@@ -489,6 +522,14 @@ public class MetadataAction extends DefaultAction {
 
     public void setImportXml(FileBean importXml) {
         this.importXml = importXml;
+    }
+
+    public String getSynchronizeData() {
+        return synchronizeData;
+    }
+
+    public void setSynchronizeData(String synchronizeData) {
+        this.synchronizeData = synchronizeData;
     }
     // </editor-fold>
 }
