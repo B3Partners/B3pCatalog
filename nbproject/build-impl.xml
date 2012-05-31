@@ -742,6 +742,8 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${reference.b3p-commons-csw.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.commons-dbutils-1.4.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.commons-cli-1.2.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${libs.GeotoolsFull.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${libs.JTS.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${reference.local-access-applet.jar}" todir="${build.web.dir}//applet/"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
         <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update"/>
@@ -759,6 +761,8 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${reference.b3p-commons-csw.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.commons-dbutils-1.4.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.commons-cli-1.2.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${libs.GeotoolsFull.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${libs.JTS.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${reference.local-access-applet.jar}" todir="${build.web.dir}//applet/"/>
     </target>
     <target depends="init" if="dist.ear.dir" name="-clean-webinf-lib">
