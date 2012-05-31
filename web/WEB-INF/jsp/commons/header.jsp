@@ -51,18 +51,29 @@
         <div class="nav-bar">
             <div class="title-bar">
                 <%@include file="titlebar.jsp" %>
-                <div class="login-info-block">
-                    <div class="logged-in">
-                        <fmt:message key="loggedIn"/>
+                
+                <c:if test="${!empty pageContext.request.remoteUser}">
+                    <div class="login-info-block">
+                        <div class="logged-in">
+                            <fmt:message key="loggedIn"/>
+                        </div>
+                        <div class="logged-in-as">
+                            <fmt:message key="loggedInAs"/>:
+                        </div>
+                        <div class="logged-in-as-user">
+                            ${pageContext.request.remoteUser}
+                        </div>
+                        <a href="#" class="logout-link">Uitloggen</a>
                     </div>
-                    <div class="logged-in-as">
-                        <fmt:message key="loggedInAs"/>:
+                </c:if>
+                <c:if test="${empty pageContext.request.remoteUser}">
+                    <div class="login-info-block">
+                        <div class="logged-in">
+                            <fmt:message key="notLoggedIn"/>
+                        </div>
+                        <stripes:link class="login-link" href="/login.jsp">Inloggen</stripes:link>
                     </div>
-                    <div class="logged-in-as-user">
-                        ${pageContext.request.remoteUser}
-                    </div>
-                    <a href="#" class="logout-link">Uitloggen</a>
-                </div>
+                </c:if>                
             </div>
             <ul id="main-tabs" class="ui-helper-reset">
                 <li class="ui-corner-top">

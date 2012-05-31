@@ -15,18 +15,20 @@
 <c:set var="files" value="${dirContent.files}" scope="page"/>
 
 <ul class="jqueryFileTree">
-    <c:forEach var="dir" items="${dirs}">
-        <li class="directory collapsed">
-            <a href="#" rel="${dir.path}" title="${dir.name}">
-                ${dir.name}
-            </a>
-        </li>
-    </c:forEach>
-    <c:forEach var="file" items="${files}">
-        <li class="file ext_${file.extension}">
-            <a href="#" rel="${file.path}" title="${file.name}" isgeo="${file.isGeo}">
-                ${file.name}
-            </a>
-        </li>
-    </c:forEach>
+    <c:if test="${!empty dirs}">
+        <c:forEach var="dir" items="${dirs}">
+            <li class="directory collapsed">
+                <a href="#" rel="${dir.path}" title="${dir.name}">
+                    ${dir.name}
+                </a>
+            </li>
+        </c:forEach>
+        <c:forEach var="file" items="${files}">
+            <li class="file ext_${file.extension}">
+                <a href="#" rel="${file.path}" title="${file.name}" isgeo="${file.isGeo}">
+                    ${file.name}
+                </a>
+            </li>
+        </c:forEach>
+    </c:if>
 </ul>
