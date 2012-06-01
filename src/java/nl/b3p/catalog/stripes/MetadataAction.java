@@ -92,6 +92,9 @@ public class MetadataAction extends DefaultAction {
     @Validate
     private String synchronizeData;
     
+    @Validate
+    private String username;
+    
     private Root root;
     private AclAccess rootAccess;
     private Map<String,String> extraHeaders = new HashMap<String,String>();
@@ -467,8 +470,12 @@ public class MetadataAction extends DefaultAction {
         if (comments == null)
             throw new B3PCatalogException("Xml Document is non-metadata xml. This is not allowed.");
 
+        String user = getContext().getRequest().getRemoteUser();
+        if(user == null) {
+            user = username;
+        }
         Element newComment = new Element(Names.B3P_COMMENT, Namespaces.B3P).addContent(Arrays.asList(
-            new Element(Names.B3P_USERNAME, Namespaces.B3P).setText(getContext().getRequest().getRemoteUser()),
+            new Element(Names.B3P_USERNAME, Namespaces.B3P).setText(user),
             new Element(Names.B3P_DATE_TIME, Namespaces.B3P).setText(DATETIME_FORMAT.format(new Date())),
             new Element(Names.B3P_CONTENT, Namespaces.B3P).setText(comment)
         ));
@@ -530,6 +537,14 @@ public class MetadataAction extends DefaultAction {
 
     public void setSynchronizeData(String synchronizeData) {
         this.synchronizeData = synchronizeData;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
     // </editor-fold>
 }

@@ -109,6 +109,12 @@
             function getWestSize() {
                 return $("body").width() / 3;
             }
+            
+            var username = null;
+            
+            <c:if test="${!empty pageContext.request.remoteUser}">
+                username = '${pageContext.request.remoteUser}';
+            </c:if>
         </script>
 
     </head>

@@ -706,6 +706,8 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
     }
 };
 
+var commentUsername = null;
+
 B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
     $("#mde").mde("destroy");
     $("#center-wrapper").html($("<div>", {
@@ -721,6 +723,22 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
                 return false;
             } else {
                 
+                if(commentUsername == null) {
+                    if(username != null) {
+                        commentUsername = username;
+                    } else {
+                        commentUsername = $.cookie('commentUsername');
+                        if(commentUsername == null) {
+                            commentUsername = prompt("Onder welke naam wilt u dit commentaar plaatsen?");                        
+                        }
+                        if(commentUsername == null) {
+                            return null;
+                        } else {
+                            $.cookie("commentUsername", commentUsername, { expires: 30 });
+                        }
+                    }
+                }
+
                 var metadata = "";
                 
                 if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
@@ -733,7 +751,8 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
                         comment: comment,
                         path: B3pCatalog.currentFilename,
                         mode: B3pCatalog.currentMode,
-                        metadata: metadata
+                        metadata: metadata,
+                        username: commentUsername
                     },
                     dataType: "text",
                     method: "POST",
