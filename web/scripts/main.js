@@ -495,9 +495,12 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
         }
     };
     
+    $("#synchronizeMD").button("option", "disabled", false);       
+    
     var me = this;
     
     if(mode == B3pCatalog.modes.LOCAL_MODE) {
+
         opts.noAjax = function() {
             
             function loadLocalMetadata(md) {
@@ -505,6 +508,12 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
                 B3pCatalog.currentMode = mode;
                 document.title = B3pCatalog.title + B3pCatalog.titleSeparator + title;                            
                 B3pCatalog.createMde(md, isGeo, false);                            
+
+                var lpath = path.toLowerCase();
+                if(! (endsWith(lpath, ".shp.xml") || endsWith(lpath, ".nc.xml") || endsWith(lpath, ".cdf.xml"))) {
+                    console.log("disabling synchronize button for "+lpath);
+                    $("#synchronizeMD").button("option", "disabled", true);       
+                }
             }
             
             if(extension(path) == "xml") {
