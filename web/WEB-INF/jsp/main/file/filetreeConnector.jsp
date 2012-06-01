@@ -23,6 +23,8 @@
                 </a>
             </li>
         </c:forEach>
+    </c:if>
+    <c:if test="${!empty files}">
         <c:forEach var="file" items="${files}">
             <li class="file ext_${file.extension}">
                 <a href="#" rel="${file.path}" title="${file.name}" isgeo="${file.isGeo}">
