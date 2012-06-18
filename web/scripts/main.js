@@ -764,7 +764,7 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
                         username: commentUsername
                     },
                     dataType: "text",
-                    method: "POST",
+                    type: "POST",
                     async: false
                 });
                 if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
