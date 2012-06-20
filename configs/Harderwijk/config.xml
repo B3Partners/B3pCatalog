@@ -71,21 +71,7 @@
              synchroniseren van Esri file geodatabases is een ArcView licentie 
              nodig.
         -->
-        <fileRoot name="hwk-arcgisdata-01" path="\\hwk-appl-01\hwk-arcgisdata$\Harderwijk\gis_data">
-        
-			<!-- Autorisatie voor deze root
-
-				"role" spatiegescheiden lijst met geldige rollen uit web.xml (<security-role>) of "*" voor 
-                elke gebruiker.
-
-                "access" kan één van onderstaande waardes hebben:
-                  "write"  : gebruiker met deze rol kan metadata wijzigen
-                  "comment": gebruiker met deze rol kan metadata lezen en commentaar toevoegen
-                  "read"   : gebruiker kan alleen metadata lezen
-                  "none"   : root wordt niet getoond in de boomstructuur voor gebruiker, kan geen metadata lezen
-
-                Indien geen <acl> elementen aanwezig zijn is het default <acl role="*" access="write"/>
-            -->
+        <!-- <fileRoot name="hwk-arcgisdata-01" path="\\hwk-appl-01\hwk-arcgisdata$\Harderwijk\gis_data">
             <acl access="read">
                 <role>*</role>
             </acl>
@@ -95,12 +81,10 @@
             </acl>
 
         </fileRoot>
+	-->
 
-        <fileRoot name="hwk-arcgisdata-18" path="\\hwk-appl-18\hwk-arcgisdata$\Harderwijk\gis_data">
-        
-			<!-- Autorisatie voor deze root
-
-				"role" spatiegescheiden lijst met geldige rollen uit web.xml (<security-role>) of "*" voor 
+	<!-- Autorisatie voor root
+		"role" spatiegescheiden lijst met geldige rollen uit web.xml (<security-role>) of "*" voor 
                 elke gebruiker.
 
                 "access" kan één van onderstaande waardes hebben:
@@ -111,14 +95,76 @@
 
                 Indien geen <acl> elementen aanwezig zijn is het default <acl role="*" access="write"/>
             -->
+
+        <fileRoot name="hwk-appl-18 gis_data" path="\\hwk-appl-18\hwk-arcgisdata$\Harderwijk\gis_data">        
             <acl access="read">
                 <role>*</role>
             </acl>
             <acl access="write">
                 <role>CN=GG_APP_HWK_B3PCatalog_Beheer,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
                 <role>CN=GG_APP_HWK_B3PCatalog_Editor,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>admin</role>
             </acl>
-
+        </fileRoot>
+        <fileRoot name="hwk-appl-18 Bestemmingsplannen" path="\\hwk-appl-18\hwk-arcgisdata$\Harderwijk\Bestemmingsplannen"> 
+            <acl access="read">
+                <role>*</role>
+            </acl>
+            <acl access="write">
+                <role>CN=GG_APP_HWK_B3PCatalog_Beheer,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>CN=GG_APP_HWK_B3PCatalog_Editor,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>admin</role>
+            </acl>
+        </fileRoot>
+        <fileRoot name="hwk-appl-18 cad_data" path="\\hwk-appl-18\hwk-arcgisdata$\Harderwijk\cad_data">
+            <acl access="read">
+                <role>*</role>
+            </acl>
+            <acl access="write">
+                <role>CN=GG_APP_HWK_B3PCatalog_Beheer,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>CN=GG_APP_HWK_B3PCatalog_Editor,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>admin</role>
+            </acl>
+        </fileRoot>
+        <fileRoot name="hwk-appl-18 luchtfotos" path="\\hwk-appl-18\hwk-arcgisdata$\Harderwijk\luchtfotos">
+            <acl access="read">
+                <role>*</role>
+            </acl>
+            <acl access="write">
+                <role>CN=GG_APP_HWK_B3PCatalog_Beheer,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>CN=GG_APP_HWK_B3PCatalog_Editor,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>admin</role>
+            </acl>
+        </fileRoot>
+        <fileRoot name="hwk-appl-17 gis_data" path="\\hwk-appl-17\hwk-arcgisdata$\Harderwijk\gis_data">
+            <acl access="read">
+                <role>*</role>
+            </acl>
+            <acl access="write">
+                <role>CN=GG_APP_HWK_B3PCatalog_Beheer,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>CN=GG_APP_HWK_B3PCatalog_Editor,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>admin</role>
+            </acl>
+        </fileRoot>
+        <fileRoot name="hwk-appl-17 Bestemmingsplannen" path="\\hwk-appl-17\hwk-arcgisdata$\Harderwijk\Bestemmingsplannen"> 
+            <acl access="read">
+                <role>*</role>
+            </acl>
+            <acl access="write">
+                <role>CN=GG_APP_HWK_B3PCatalog_Beheer,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>CN=GG_APP_HWK_B3PCatalog_Editor,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>admin</role>
+            </acl>
+        </fileRoot>
+        <fileRoot name="hwk-appl-17 cad_data" path="\\hwk-appl-17\hwk-arcgisdata$\Harderwijk\cad_data">
+            <acl access="read">
+                <role>*</role>
+            </acl>
+            <acl access="write">
+                <role>CN=GG_APP_HWK_B3PCatalog_Beheer,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>CN=GG_APP_HWK_B3PCatalog_Editor,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>admin</role>
+            </acl>
         </fileRoot>
         
         <!-- Browse bestanden in SDE via alleen ArcObjects.
@@ -166,7 +212,7 @@
              synchronisatie is ArcView licentie nodig (optioneel). 
              Werkt met de forkSynchroniser optie.             
         -->
-        <sdeRoot name="SDE_GISDB_TEST" tablePrefix="sde" schemaVersion="10">
+        <sdeRoot name="SDE gisdb (test)" tablePrefix="sde" schemaVersion="10">
             <jndiDataSource>java:comp/env/jdbc/arcsde</jndiDataSource>
             <arcobjectsConnection>SERVER=hwk-gisdb;INSTANCE=sde:sqlserver:hwk-gisdb;DATABASE=gisdb_test;AUTHENTICATION_MODE=DBMS;USER=gis;PASSWORD=hwijk2011;VERSION=sde.DEFAULT</arcobjectsConnection>           
             <acl access="read">
@@ -175,6 +221,20 @@
             <acl access="write">
                 <role>CN=GG_APP_HWK_B3PCatalog_Beheer,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
                 <role>CN=GG_APP_HWK_B3PCatalog_Editor,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>admin</role>
+            </acl>
+        </sdeRoot>
+
+        <sdeRoot name="SDE gisdb (productie)" tablePrefix="sde" schemaVersion="10">
+            <jndiDataSource>java:comp/env/jdbc/arcsde_productie</jndiDataSource>
+            <arcobjectsConnection>SERVER=hwk-gisdb;INSTANCE=sde:sqlserver:hwk-gisdb;DATABASE=gisdb;AUTHENTICATION_MODE=DBMS;USER=gis;PASSWORD=hwijk2011;VERSION=sde.DEFAULT</arcobjectsConnection>           
+            <acl access="read">
+                <role>*</role>
+            </acl>
+            <acl access="write">
+                <role>CN=GG_APP_HWK_B3PCatalog_Beheer,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>CN=GG_APP_HWK_B3PCatalog_Editor,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local</role>
+                <role>admin</role>
             </acl>
         </sdeRoot>
     </roots>
