@@ -18,6 +18,20 @@
         timeBetweenEvictionRunsMillis="30000"
         minEvictableIdleTimeMillis="5000"        
     />
+
+    <Resource name="jdbc/arcsde_productie"
+        auth="Container"
+        type="javax.sql.DataSource"
+        username="gis"
+        password="hwijk2011"
+        driverClassName="net.sourceforge.jtds.jdbc.Driver"
+        url="jdbc:jtds:sqlserver://hwk-gisdb:1433;DatabaseName=gisdb"
+        maxActive="25"
+        validationQuery="select 1"
+        timeBetweenEvictionRunsMillis="30000"
+        minEvictableIdleTimeMillis="5000"        
+    />
+
     <Realm className="org.apache.catalina.realm.JNDIRealm"
         connectionURL="ldap://ldap:389"
         connectionName="CN=SVC_LDAP,OU=Service Accounts,OU=User Accounts,OU=ICT,DC=aorta,DC=local"
