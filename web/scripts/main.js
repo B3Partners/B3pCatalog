@@ -715,14 +715,14 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
     }
 };
 
-var commentUsername = null;
+B3pCatalog.commentUsername = null;
 
 B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
     $("#mde").mde("destroy");
     $("#center-wrapper").html($("<div>", {
         id: "mde"
     }));
-
+    
     log("creating mde...");
     $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xml: xmlDoc,
@@ -731,19 +731,20 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
                 B3pCatalog.openSimpleErrorDialog("Commentaar kan niet leeg zijn.");
                 return false;
             } else {
+                var me = B3pCatalog;
                 
-                if(commentUsername == null) {
-                    if(username != null) {
-                        commentUsername = username;
+                if(me.commentUsername == null) {
+                    if(me.username != null && me.username.trim().length > 0) {
+                        me.commentUsername = me.username;
                     } else {
-                        commentUsername = $.cookie('commentUsername');
-                        if(commentUsername == null) {
-                            commentUsername = prompt("Onder welke naam wilt u dit commentaar plaatsen?");                        
+                        me.commentUsername = $.cookie('commentUsername');
+                        if(me.commentUsername == null) {
+                            me.commentUsername = prompt("Onder welke naam wilt u dit commentaar plaatsen?");                        
                         }
-                        if(commentUsername == null) {
+                        if(me.commentUsername == null) {
                             return null;
                         } else {
-                            $.cookie("commentUsername", commentUsername, {expires: 30});
+                            $.cookie("commentUsername", me.commentUsername, {expires: 30});
                         }
                     }
                 }
@@ -761,7 +762,7 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
                         path: B3pCatalog.currentFilename,
                         mode: B3pCatalog.currentMode,
                         metadata: metadata,
-                        username: commentUsername
+                        username: me.commentUsername
                     },
                     dataType: "text",
                     type: "POST",
@@ -1014,6 +1015,24 @@ B3pCatalog.synchronizeWithData = function() {
     });
 }
 
+B3pCatalog.publishMetadata = function() {
+    
+    var xml = $("#mde").mde("save");
+
+    $.ajax({
+        url: B3pCatalog.publishUrl,
+        type: "POST",
+        data: {
+            publish: "t",
+            metadata: xml
+        },
+        success: function(data, textStatus, xhr) {
+            
+            B3pCatalog.fadeMessage("Metadata succesvol gepubliceerd " + (data.exists ? "(update)" : "(nieuw)"));
+        }
+    });    
+}
+
 B3pCatalog.createAdminOrganisationsToolbar = function() {
     var toolbar = $("#toolbar");
     toolbar.empty();
@@ -1133,7 +1152,33 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
             icons: {primary: "ui-icon-b3p-up_16"}
         })
     );
+           
+    if(B3pCatalog.username != null && B3pCatalog.haveCsw) {
+        toolbar.append(
+            $("<a />", {
+                href: "#",
+                id: "publishMD",
+                text: "Publiceren",
+                title: "Metadatadocument publiceren naar CSW",
+                click: function(event) {
+                    $(this).removeClass("ui-state-hover");
+                    B3pCatalog.saveDataUserConfirm({
+                        done: function() {
+                            B3pCatalog.publishMetadata();
+                        },
+                        text: "Wilt u uw wijzigingen opslaan alvorens de metadata te publiceren?",
+                        asyncSave: false // data needs to be saved already when we do our publish request
+                    });
+                    return false;
+                }
+            }).button({
+                disabled: false,
+                icons: {primary: "ui-icon-b3p-sync_alt_16"}
+            })
+        );
         
+    }
+       
     B3pCatalog.resizeTabsAndToolbar();
 };
 

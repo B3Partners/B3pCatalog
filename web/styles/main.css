@@ -368,6 +368,9 @@ ul.jqueryFileTree a {
     background-image: url(../images/sync_16.png);
 }
 
+.ui-button .ui-icon.ui-icon-b3p-sync_alt_16 {
+    background-image: url(../images/sync_alt_16.png);
+}
 
 textarea {
     box-sizing: border-box;

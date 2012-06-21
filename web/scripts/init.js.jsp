@@ -17,9 +17,14 @@ B3pCatalog.contextPath = "${contextPath}";
 B3pCatalog.metadataUrl = "${metadataUrl}";
 B3pCatalog.filetreeUrl = "${filetreeUrl}";
 B3pCatalog.catalogUrl = "${catalogUrl}";
-B3pCatalog.adminUrl = "${adminUrl}";
+B3pCatalog.adminUrl = "${adminUrl}";    
+B3pCatalog.publishUrl = "${publishUrl}";
 
 B3pCatalog.username = "${pageContext.request.remoteUser}";
+
+<stripes:useActionBean beanclass="nl.b3p.catalog.stripes.AppConfigCheckActionBean" event="init" var="b"/>
+B3pCatalog.haveCsw = ${!empty b.config.cswServer && b.config.cswServer.url != null};
+
 
 B3pCatalog.title = "${title}";
 B3pCatalog.titleSeparator = " | ";

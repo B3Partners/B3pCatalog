@@ -11,3 +11,4 @@
 <stripes:url var="metadataUrl" beanclass="nl.b3p.catalog.stripes.MetadataAction"/>
 <stripes:url var="catalogUrl" beanclass="nl.b3p.catalog.stripes.CatalogAction"/>
 <stripes:url var="adminUrl" beanclass="nl.b3p.catalog.stripes.AdminAction"/>
+<stripes:url var="publishUrl" beanclass="nl.b3p.catalog.stripes.PublishActionBean"/>
