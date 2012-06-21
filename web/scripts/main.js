@@ -743,7 +743,7 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
                         if(commentUsername == null) {
                             return null;
                         } else {
-                            $.cookie("commentUsername", commentUsername, { expires: 30 });
+                            $.cookie("commentUsername", commentUsername, {expires: 30});
                         }
                     }
                 }
@@ -806,6 +806,24 @@ B3pCatalog.exportMetadata = function() {
 };
 
 B3pCatalog._exportMetadata = function() {
+    
+    $.yesNoCancel({
+        html: "Wilt u alle metadata exporteren? Indien u nee antwoordt worden alleen de ISO19115 metadata " +
+            " gegevens op de tab \"Geografisch\" geexporteerd.<p>" +
+            "<b>Ja</b>: XML root element <tt>&lt;metadata&gt;</tt> met verschillende soorten metadata, o.a. attributen en commentaar" +
+            "<p><b>Nee</b>: XML root element <tt>&lt;MD_Metadata&gt;</tt> volgens het ISO 19139 XML schema",
+        yes: function() {
+            B3pCatalog._doExportMetadata(false);
+        },
+        no: function() {
+            B3pCatalog._doExportMetadata(true);
+        },
+        cancel: function() {
+        }
+    });
+}
+    
+B3pCatalog._doExportMetadata = function(strict) {    
     $("#mde").mde("option", "pageLeaveWarning", false);
 
     if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
@@ -815,7 +833,7 @@ B3pCatalog._exportMetadata = function() {
                 "export": "t",
                 "mode": B3pCatalog.currentMode,
                 "path": B3pCatalog.currentFilename,
-                strictISO19115: $("#strictISO19115Checkbox").is(":checked")
+                strictISO19115: strict
                 });
                 
         var form = $("<form>", {
@@ -833,7 +851,7 @@ B3pCatalog._exportMetadata = function() {
             "export": "t",
             path: B3pCatalog.currentFilename,
             mode: B3pCatalog.currentMode,
-            strictISO19115: $("#strictISO19115Checkbox").is(":checked"),
+            strictISO19115: strict
         });
     }
     $("#mde").mde("option", "pageLeaveWarning", true);
@@ -1115,10 +1133,7 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
             icons: {primary: "ui-icon-b3p-up_16"}
         })
     );
-    if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE || B3pCatalog.currentMode == B3pCatalog.modes.FILE_MODE || B3pCatalog.currentMode == B3pCatalog.modes.SDE_MODE) {
-        toolbar.append($("<input type='checkbox' checked='checked' value='strictISO19115' id='strictISO19115Checkbox' />"));
-        toolbar.append($("<label for='strictISO19115Checkbox' title='Exporteer als ISO 19115 metadata volgens het Nederlands profiel versie 1.2. Tabs Algemeen, Attributen en Commentaar worden dan weggelaten.'>Exporteer strict</label>"));
-    }
+        
     B3pCatalog.resizeTabsAndToolbar();
 };
 
@@ -1175,7 +1190,15 @@ B3pCatalog.saveOrganisations = function() {
             no: $.noop,
             cancel: $.noop
         }, opts);
-        $("<div/>").text(options.text).appendTo(document.body).dialog($.extend({
+        
+        var div = $("<div/>");
+        
+        if(options.html) {
+            div.html(options.html);
+        } else {
+            div.text(options.text);
+        }
+        div.appendTo(document.body).dialog($.extend({
             title: "Vraag",
             modal: true,
             buttons: [{
