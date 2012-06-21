@@ -807,18 +807,35 @@ B3pCatalog.exportMetadata = function() {
 
 B3pCatalog._exportMetadata = function() {
     $("#mde").mde("option", "pageLeaveWarning", false);
-    var metadata = "";
 
     if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
-        metadata = $("#mde").mde("save");
-    }    
-    window.location = B3pCatalog.metadataUrl + "?" + $.param({
-        "export": "t",
-        path: B3pCatalog.currentFilename,
-        mode: B3pCatalog.currentMode,
-        strictISO19115: $("#strictISO19115Checkbox").is(":checked"),
-        metadata: metadata
-    });
+        var metadata = $("#mde").mde("save");
+        
+        var action = B3pCatalog.metadataUrl + "?" + $.param({
+                "export": "t",
+                "mode": B3pCatalog.currentMode,
+                "path": B3pCatalog.currentFilename,
+                strictISO19115: $("#strictISO19115Checkbox").is(":checked")
+                });
+                
+        var form = $("<form>", {
+            "method": "POST",
+            "action": action
+        }).append(
+            $("<textarea>", {
+                "name": "metadata"
+            }).text(metadata).hide()
+        );
+        form.appendTo("body").submit();
+        form.remove();
+    } else {
+        window.location = B3pCatalog.metadataUrl + "?" + $.param({
+            "export": "t",
+            path: B3pCatalog.currentFilename,
+            mode: B3pCatalog.currentMode,
+            strictISO19115: $("#strictISO19115Checkbox").is(":checked"),
+        });
+    }
     $("#mde").mde("option", "pageLeaveWarning", true);
 };
 
@@ -1098,7 +1115,7 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
             icons: {primary: "ui-icon-b3p-up_16"}
         })
     );
-    if (B3pCatalog.currentMode == B3pCatalog.modes.FILE_MODE || B3pCatalog.currentMode == B3pCatalog.modes.SDE_MODE) {
+    if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE || B3pCatalog.currentMode == B3pCatalog.modes.FILE_MODE || B3pCatalog.currentMode == B3pCatalog.modes.SDE_MODE) {
         toolbar.append($("<input type='checkbox' checked='checked' value='strictISO19115' id='strictISO19115Checkbox' />"));
         toolbar.append($("<label for='strictISO19115Checkbox' title='Exporteer als ISO 19115 metadata volgens het Nederlands profiel versie 1.2. Tabs Algemeen, Attributen en Commentaar worden dan weggelaten.'>Exporteer strict</label>"));
     }

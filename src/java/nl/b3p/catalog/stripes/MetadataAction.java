@@ -25,10 +25,7 @@ import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
 import nl.b3p.catalog.arcgis.ArcSDEJDBCDataset;
 import nl.b3p.catalog.arcgis.DatasetHelperProxy;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
-import nl.b3p.catalog.config.AclAccess;
-import nl.b3p.catalog.config.ArcObjectsConfig;
-import nl.b3p.catalog.config.CatalogAppConfig;
-import nl.b3p.catalog.config.Root;
+import nl.b3p.catalog.config.*;
 import nl.b3p.catalog.filetree.Extensions;
 import nl.b3p.catalog.filetree.FileListHelper;
 import nl.b3p.catalog.resolution.XmlResolution;
@@ -43,8 +40,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
 import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -53,9 +48,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class MetadataAction extends DefaultAction {
     private final static Log log = LogFactory.getLog(MetadataAction.class);
@@ -109,7 +102,7 @@ public class MetadataAction extends DefaultAction {
 
         try {
             if(LOCAL_MODE.equals(mode)) {
-                return new XmlResolution(metadata);
+                return new XmlResolution(strictISO19115 ? extractMD_Metadata(metadata) : metadata);
             }            
             determineRoot();
 
@@ -358,7 +351,7 @@ public class MetadataAction extends DefaultAction {
         }
         return resolution;
     }
-
+    
     // Comments can be posted by anyone to any ".xml"-file that is a descendant of one of the roots.
     // that has <metadata/> or <gmd:MD_Metadata/> as root. This is by design.
     public Resolution postComment() {
