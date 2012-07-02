@@ -71,6 +71,10 @@
                     <file>${reference.local-access-applet.jar}</file>
                     <path-in-war>/applet/</path-in-war>
                 </library>
+                <library dirs="200">
+                    <file>${file.reference.ncCore-4.2.jar}</file>
+                    <path-in-war>/applet/</path-in-war>
+                </library>
             </web-module-additional-libraries>
             <source-roots>
                 <root id="src.dir"/>
