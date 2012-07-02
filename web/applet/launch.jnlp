@@ -16,6 +16,7 @@
     <resources>
         <j2se version="1.6+"/>
         <jar href="local-access-applet.jar" main="true"/>
+        <jar href="ncCore-4.2.jar"/>
 </resources>
     <applet-desc height="20" main-class="nl.b3p.applet.local.LocalAccessApplet" name="local-access-applet" width="60">
         

@@ -61,7 +61,7 @@ B3pCatalog.loadLocal = function(success) {
             text: "Voor het openen van lokale mappen is een Java applet nodig. Dit werkt het beste wanneer de laatste versie van Java geinstalleerd is. Doorgaan met het laden van het applet?",
             ok: function() {
                 me.local = new LocalAccess();
-                me.local.initApplet(success);
+                me.local.initApplet(B3pCatalog.contextPath + "/applet", "applet-container", success);
             }
         });
     } else {
@@ -72,7 +72,7 @@ B3pCatalog.loadLocal = function(success) {
 B3pCatalog.connectDirectory = function() {
     var me = this;
     this.loadLocal( function() {
-        me.local.selectDirectory("Selecteer een map...", 
+        me.local.callApplet("selectDirectory", "Selecteer een map...", 
             function(dir) { 
                 if(dir != null) {
                     B3pCatalog.loadFiletreeLocal(dir);
@@ -206,7 +206,7 @@ B3pCatalog.loadFiletreeLocal = function(dir) {
     B3pCatalog._loadFiletree(dir, $("#filetree-local"), {
         noAjax: function(data, success, error) {
             log("list directory", data.expandTo || data.dir);            
-            me.local.listDirectory(data.expandTo || data.dir, 
+            me.local.callApplet("listDirectory", data.expandTo || data.dir, 
                 function(files) {
                     B3pCatalog.decodeFileList(data, files, success)
                 },
@@ -519,7 +519,7 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
             if(extension(path) == "xml") {
                 
                 me.loadLocal(function() {
-                    me.local.readFileUTF8(path,
+                    me.local.callApplet("readFileUTF8", path,
                         loadLocalMetadata,
                         function(e) {
                             B3pCatalog.openSimpleErrorDialog("Fout bij lezen bestand: " + e);
@@ -530,11 +530,14 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
             } else {
                 path = path + ".xml";
                 me.loadLocal(function() {
-                    me.local.readFileIfExistsUTF8(path,
-                        loadLocalMetadata,
-                        function() {
-                            // XML bestand bestaat nog niet
-                            loadLocalMetadata("");
+                    me.local.callApplet("readFileUTF8", path,
+                        function(md) {
+                            if(md == null) {
+                                // XML bestand bestaat nog niet                                
+                                loadLocalMetadata("");
+                            } else {
+                                loadLocalMetadata(md);
+                            }
                         },
                         function(e) {
                             B3pCatalog.openSimpleErrorDialog("Fout bij lezen metadata : " + e);
@@ -624,7 +627,7 @@ B3pCatalog.saveMetadata = function(settings) {
         
         me.loadLocal(function() {
             
-            me.local.writeFileUTF8(B3pCatalog.currentFilename, xml,
+            me.local.callApplet("writeFileUTF8", B3pCatalog.currentFilename, xml,
                 function() {
                     B3pCatalog.fadeMessage("Metadata succesvol opgeslagen");
                     $("#saveMD").button("option", "disabled", true);       
@@ -1003,7 +1006,7 @@ B3pCatalog.synchronizeWithData = function() {
                 if(endsWith(fn, ".xml")) {
                     fn = fn.substr(0, fn.length-4);
                 }
-                me.local.getShapefileMetadata(
+                me.local.callApplet("getShapefileMetadata",
                     fn,
                     doIt,
                     B3pCatalog.openSimpleErrorDialog);
