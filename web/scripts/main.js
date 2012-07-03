@@ -1006,16 +1006,49 @@ B3pCatalog.synchronizeWithData = function() {
                 if(endsWith(fn, ".xml")) {
                     fn = fn.substr(0, fn.length-4);
                 }
-                me.local.callApplet("getShapefileMetadata",
-                    fn,
-                    doIt,
-                    B3pCatalog.openSimpleErrorDialog);
+                if(endsWith(fn.toLowerCase(), ".shp")) {
+                    me.local.callApplet("getShapefileMetadata",
+                        fn,
+                        doIt,
+                        B3pCatalog.openSimpleErrorDialog);
+                } else if(endsWith(fn.toLowerCase(), ".nc")) {
+                    me.synchronizeNetCDF(fn);
+                }
                 return;
             } else {
                 doIt();
             }
         }
     });
+}
+
+B3pCatalog.synchronizeNetCDF = function(fn) {
+    
+    var gotNCML = function(ncml) {
+
+        $.ajax({
+            url: B3pCatalog.metadataUrl,
+            data: {
+                synchronize: "t",
+                path: B3pCatalog.currentFilename,
+                mode: B3pCatalog.currentMode,
+                metadata: $("#mde").mde("save", {postprocess: false}),
+                synchronizeData: ncml
+            },
+            type: "POST",
+            async: false,
+            dataType: "text",
+            success: function(data) {
+                $("#mde").mde("option", "xml", data);
+                B3pCatalog.fadeMessage("NCML ingelezen, exporteer volledige metadata voor <netcdf> XML");
+            }
+        });        
+    }
+    
+    this.local.callApplet("getNCML",
+        fn,
+        gotNCML,
+        B3pCatalog.openSimpleErrorDialog);
 }
 
 B3pCatalog.publishMetadata = function() {

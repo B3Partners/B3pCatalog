@@ -29,11 +29,7 @@ import nl.b3p.catalog.config.*;
 import nl.b3p.catalog.filetree.Extensions;
 import nl.b3p.catalog.filetree.FileListHelper;
 import nl.b3p.catalog.resolution.XmlResolution;
-import nl.b3p.catalog.xml.DocumentHelper;
-import nl.b3p.catalog.xml.Names;
-import nl.b3p.catalog.xml.Namespaces;
-import nl.b3p.catalog.xml.ShapefileSynchronizer;
-import nl.b3p.catalog.xml.XPathHelper;
+import nl.b3p.catalog.xml.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -187,17 +183,14 @@ public class MetadataAction extends DefaultAction {
     public Resolution synchronizeLocal() throws JDOMException, IOException, JSONException, FactoryException {
         // metadata string must already have been preprocessed on the clientside
         Document doc = new SAXBuilder().build(new StringReader(metadata));
-        
-        String formatName = null;
-        
+                
         if(path.toLowerCase().endsWith(".shp.xml")) {
             
             ShapefileSynchronizer.synchronizeFromLocalAccessJSON(doc, synchronizeData);
             
         } else if(path.toLowerCase().endsWith(".nc.xml")) {
-            formatName = "NetCDF";
-        }
-        if(formatName != null) {
+            
+            NCMLSynchronizer.synchronizeNCML(doc, synchronizeData);
         }
         return new XmlResolution(doc);        
     }
