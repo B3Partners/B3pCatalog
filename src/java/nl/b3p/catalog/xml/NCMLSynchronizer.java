@@ -18,6 +18,8 @@ package nl.b3p.catalog.xml;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -74,7 +76,10 @@ public class NCMLSynchronizer {
         copyGlobalAttribute(doc, netcdf, "geospatial_lat_max", XPathHelper.BBOX_NORTH);
         copyGlobalAttribute(doc, netcdf, "geospatial_lon_min", XPathHelper.BBOX_WEST);
         copyGlobalAttribute(doc, netcdf, "geospatial_lon_max", XPathHelper.BBOX_EAST);
-
+        
+        copyGlobalDateAttribute(doc, netcdf, "time_coverage_start", XPathHelper.EX_TEMPORAL_BEGIN);
+        copyGlobalDateAttribute(doc, netcdf, "time_coverage_end", XPathHelper.EX_TEMPORAL_END);
+        
         // TODO: synchronize iso_dataset attributes!
         // For the standard used, see:http://adaguc.knmi.nl/contents/documents/ADAGUC_Standard.html
         
@@ -83,20 +88,22 @@ public class NCMLSynchronizer {
         // These will override the values set above.
     }
     
-    private static void addGlobalAttributeSummary(StringBuffer summary, Element netcdf, String attributeName) {
-        String attribute = getGlobalAttribute(netcdf, attributeName);
-        if(attribute != null && attribute.trim().length() > 0) {
-            summary.append(attributeName);
-            summary.append(": ");
-            summary.append(attribute);
-            summary.append("\n");
-        }           
-    }
-    
     private static void copyGlobalAttribute(Document doc, Element netcdf, String attributeName, String isoXPath) throws JDOMException {
         String attribute = getGlobalAttribute(netcdf, attributeName);
         if(attribute != null) {
             XPathHelper.applyXPathValuePair(doc, isoXPath, attribute);
+        }
+    }
+    
+    private static void copyGlobalDateAttribute(Document doc, Element netcdf, String attributeName, String isoXPath) {
+        String date = getGlobalAttribute(netcdf, attributeName);
+        if(date != null) {
+            try {
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                Date d = df.parse(date);
+                XPathHelper.applyXPathValuePair(doc, isoXPath, df.format(d));
+            } catch (Exception e) {
+            }
         }
     }
     
@@ -107,6 +114,16 @@ public class NCMLSynchronizer {
             }
         }
         return null;
+    }
+    
+    private static void addGlobalAttributeSummary(StringBuffer summary, Element netcdf, String attributeName) {
+        String attribute = getGlobalAttribute(netcdf, attributeName);
+        if(attribute != null && attribute.trim().length() > 0) {
+            summary.append(attributeName);
+            summary.append(": ");
+            summary.append(attribute);
+            summary.append("\n");
+        }           
     }
     
     

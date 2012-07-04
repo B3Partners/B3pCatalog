@@ -19,6 +19,7 @@ public class Namespaces {
     public final static Namespace GCO = Namespace.getNamespace("gco", "http://www.isotc211.org/2005/gco");
     public final static Namespace GFC = Namespace.getNamespace("gfc", "http://www.isotc211.org/2005/gfc");
     public final static Namespace GMX = Namespace.getNamespace("gmx", "http://www.isotc211.org/2005/gmx");
+    public final static Namespace GML = Namespace.getNamespace("gml", "http://www.opengis.net/gml");
     public final static Namespace B3P = Namespace.getNamespace("b3p", "http://www.b3partners.nl/xsd/metadata");
     public final static Namespace PBL = Namespace.getNamespace("pbl", "http://www.pbl.nl/xsd/metadata");
     public final static Namespace NC =  Namespace.getNamespace("nc", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");
@@ -28,6 +29,7 @@ public class Namespaces {
         GCO,
         GFC,
         GMX,
+        GML,
         B3P,
         PBL,
         NC
