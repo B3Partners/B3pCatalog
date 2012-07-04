@@ -7,6 +7,7 @@ package nl.b3p.catalog.xml;
 import java.util.List;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.Namespace;
 import org.jdom.xpath.XPath;
 
 /**
@@ -16,6 +17,13 @@ import org.jdom.xpath.XPath;
 public class XPathHelper {
     public final static String TITLE = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString";
     public final static String ALT_TITLE = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle/gco:CharacterString";
+    
+    public static final String DQ_LI_STATEMENT = "/*/gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:statement/gco:CharacterString";
+    public static final String POC_RESPONSIBLE_PARTY_ORG = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString";
+    public static final String POC_RESPONSIBLE_PARTY_EMAIL = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString";
+    public static final String POC_RESPONSIBLE_PARTY_URL = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL";
+    public static final String RESOURCE_CONSTRAINTS_USELIMITATION = "/metadata/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints[1]/gmd:MD_Constraints/gmd:useLimitation/gco:CharacterString";
+    public static final String ABSTRACT = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString";
     
     public final static String REF_CODESPACE = "/*/gmd:MD_Metadata/gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:codeSpace/gco:CharacterString";
     public final static String REF_CODE = "/*/gmd:MD_Metadata/gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code/gco:CharacterString";
@@ -43,7 +51,7 @@ public class XPathHelper {
             element.setText(value);
         }
     }
-
+    
     public static Element selectSingleElement(Object context, String xpathString) throws JDOMException {
         return (Element)selectSingleNode(context, xpathString);
     }
@@ -58,10 +66,9 @@ public class XPathHelper {
 
     public static XPath getXPath(String xpathString) throws JDOMException {
         XPath xpath = XPath.newInstance(xpathString);
-        xpath.addNamespace(Namespaces.GMD);
-        xpath.addNamespace(Namespaces.GCO);
-        xpath.addNamespace(Namespaces.GFC);
-        xpath.addNamespace(Namespaces.GMX);
+        for(Namespace ns: Namespaces.allNamespaces) {
+            xpath.addNamespace(ns);
+        }
         return xpath;
     }
 
