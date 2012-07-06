@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import net.sourceforge.stripes.action.FileBean;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
@@ -180,7 +182,7 @@ public class MetadataAction extends DefaultAction {
         }
     }
     
-    public Resolution synchronizeLocal() throws JDOMException, IOException, JSONException, FactoryException {
+    public Resolution synchronizeLocal() throws Exception {
         // metadata string must already have been preprocessed on the clientside
         Document doc = new SAXBuilder().build(new StringReader(metadata));
                 
@@ -190,7 +192,7 @@ public class MetadataAction extends DefaultAction {
             
         } else if(path.toLowerCase().endsWith(".nc.xml")) {
             
-            NCMLSynchronizer.synchronizeNCML(doc, synchronizeData);
+            doc = NCMLSynchronizer.synchronizeNCML(doc, synchronizeData);
         }
         return new XmlResolution(doc);        
     }
