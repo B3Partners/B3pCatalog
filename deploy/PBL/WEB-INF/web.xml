@@ -85,10 +85,12 @@
         
         <!-- Alleen users uit de genoemde groep (role-name) hebben toegang tot de applicatie -->
         <auth-constraint>
-		<role-name>G-PBL-OO-B3PCatalog</role-name>
+		<!--<role-name>G-PBL-OO-B3PCatalog</role-name>-->
+		<!--Rol commonRole='gebruiker' wordt toegekend in C:\software\Tomcat6.0\conf\Catalina\localhost\b3pcatalog.xml-->
+		<role-name>gebruiker</role-name>
         </auth-constraint>
     </security-constraint>
-
+    
     <login-config>
         <auth-method>FORM</auth-method>
         <form-login-config>
