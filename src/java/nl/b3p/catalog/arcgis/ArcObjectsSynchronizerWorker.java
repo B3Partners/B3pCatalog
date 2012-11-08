@@ -16,6 +16,7 @@
  */
 package nl.b3p.catalog.arcgis;
 
+import org.jdom.input.SAXBuilder;
 import nl.b3p.catalog.config.Root;
 import com.esri.arcgis.datasourcesGDB.SdeWorkspaceFactory;
 import com.esri.arcgis.geodatabase.IDataset;
@@ -48,6 +49,12 @@ public class ArcObjectsSynchronizerWorker {
 
         IDataset ds = null;
         String formatName = null;
+        
+        Document metadataAllElements = null;
+        if(cl.hasOption("stdin")) {
+            System.err.println("Reading XML document from stdin");
+            metadataAllElements = new SAXBuilder().build(System.in);
+        }
 
         if(TYPE_SDE.equals(type) || TYPE_SDEFILE.equals(type)) {
             formatName = ArcGISSynchronizer.FORMAT_NAME_SDE;
@@ -85,7 +92,14 @@ public class ArcObjectsSynchronizerWorker {
         }
 
         log.info("Dataset found, synchronizing");
-        Document doc = ArcGISSynchronizer.synchronize(ds, formatName);
+        Document doc;
+        if(metadataAllElements == null) {
+            doc = ArcGISSynchronizer.synchronize(ds, formatName);
+        } else {
+            System.err.println("Synchronizing using stdin document");
+            ArcGISSynchronizer.synchronize(metadataAllElements, ds, formatName);
+            doc = metadataAllElements;
+        }
         new XMLOutputter(Format.getPrettyFormat()).output(doc, System.out);
     }
 

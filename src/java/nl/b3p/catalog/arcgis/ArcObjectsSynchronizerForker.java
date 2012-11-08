@@ -38,7 +38,7 @@ import org.jdom.Document;
 public class ArcObjectsSynchronizerForker {
     private static final Log log = LogFactory.getLog(ArcObjectsSynchronizerForker.class);
     
-    public static Document synchronize(ServletContext context,/* HttpServletResponse response,*/ String dataset, String type, String sdeConnectionString) throws Exception {
+    public static Document synchronize(ServletContext context,/* HttpServletResponse response,*/ String dataset, String type, String sdeConnectionString, String metadata) throws Exception {
     
         String workingDir = context.getRealPath("/WEB-INF");
 
@@ -47,7 +47,7 @@ public class ArcObjectsSynchronizerForker {
         
         List<String> args = new ArrayList<String>();
         
-        args.addAll(Arrays.asList(new String[] {
+        args.addAll(Arrays.asList(
             "java",
             "-classpath",
             cp,
@@ -56,7 +56,10 @@ public class ArcObjectsSynchronizerForker {
             type,
             "-dataset",
             dataset
-        }));
+        ));
+        if(metadata != null && !"".equals(metadata)) {
+            args.add("-stdin");
+        }
         
         if("sde".equals(type)) {
             if(sdeConnectionString == null) {
@@ -78,6 +81,16 @@ public class ArcObjectsSynchronizerForker {
             final BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             final BufferedReader stdout = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
+            if(metadata != null && !"".equals(metadata)) {
+                try {
+                    p.getOutputStream().write(metadata.getBytes("UTF-8"));
+                    p.getOutputStream().flush();
+                    p.getOutputStream().close();
+                } catch(Exception e) {
+                    errors.write("Fout tijdens schrijven metadata XML met alle elementen naar stdin: " + e.getClass() + ": " + e.getMessage() + "\n");
+                }
+            }
+            
             // Threads vereist omdat streams blocken en pas verder gaan nadat je uit
             // de andere stream hebt gelezen
 

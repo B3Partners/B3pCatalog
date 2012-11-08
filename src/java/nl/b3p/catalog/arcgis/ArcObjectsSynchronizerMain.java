@@ -41,6 +41,7 @@ public class ArcObjectsSynchronizerMain {
         options.addOption(OptionBuilder.withDescription("target dataset").hasArg().isRequired().create("dataset"));
         options.addOption(OptionBuilder.withDescription("SDE connection file").hasArg().create("sdefile"));
         options.addOption(OptionBuilder.withDescription("SDE connection string").hasArg().create("sde"));
+        options.addOption(OptionBuilder.withDescription("Read XML metadata document with all elements to synchronise from stdin").create("stdin"));
         
         return options;
     }

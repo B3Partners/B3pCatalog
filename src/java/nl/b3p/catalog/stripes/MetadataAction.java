@@ -231,7 +231,8 @@ public class MetadataAction extends DefaultAction {
                                 getContext().getServletContext(),  
                                 ds.getAbsoluteName(),
                                 ArcObjectsSynchronizerMain.TYPE_SDE, 
-                                ds.getRoot().getArcobjectsConnection()
+                                ds.getRoot().getArcobjectsConnection(),
+                                metadata
                         );
                     } else {
                         throw new Exception("ArcObjects niet geconfigureerd, synchroniseren niet mogelijk");
@@ -261,7 +262,8 @@ public class MetadataAction extends DefaultAction {
                             getContext().getServletContext(),  
                             FileListHelper.getFileForPath(root, path).getAbsolutePath(),
                             isFGDB ? ArcObjectsSynchronizerMain.TYPE_FGDB : ArcObjectsSynchronizerMain.TYPE_SHAPE, 
-                            null
+                            null,
+                            metadata
                     );                    
                 }
             } else {
