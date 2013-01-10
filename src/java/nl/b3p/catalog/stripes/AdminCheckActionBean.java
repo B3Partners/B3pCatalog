@@ -18,12 +18,15 @@ package nl.b3p.catalog.stripes;
 
 import net.sourceforge.stripes.action.Resolution;
 import nl.b3p.catalog.Roles;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
  * @author Matthijs Laan
  */
 public class AdminCheckActionBean extends DefaultAction {
+    private static final Log log = LogFactory.getLog(AdminCheckActionBean.class);
     
     private boolean admin;
 
@@ -37,7 +40,7 @@ public class AdminCheckActionBean extends DefaultAction {
     
     public Resolution init() {
         admin = Roles.isAdmin(getContext().getServletContext(), getContext().getRequest());
-        System.out.println("Checking for admin role " + getContext().getServletContext().getInitParameter("adminRole") + ": " + admin);
+        log.info("Checking for admin role " + getContext().getServletContext().getInitParameter("adminRole") + ": " + admin);
         return null;
     }
     

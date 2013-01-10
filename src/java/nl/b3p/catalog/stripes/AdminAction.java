@@ -26,7 +26,7 @@ public class AdminAction extends DefaultAction {
     @DefaultHandler
     public Resolution loadOrganisations() {
         try {
-            if(Roles.isAdmin(getContext().getServletContext(), getContext().getRequest()))
+            if(!Roles.isAdmin(getContext().getServletContext(), getContext().getRequest()))
                 throw new B3PCatalogException("User is not an admin");
             organisations = OrganisationsAction.getOrganisations(getContext());
         } catch (Exception ex) {
@@ -38,7 +38,7 @@ public class AdminAction extends DefaultAction {
     
     public Resolution saveOrganisations() {
         try {
-            if(Roles.isAdmin(getContext().getServletContext(), getContext().getRequest()))
+            if(!Roles.isAdmin(getContext().getServletContext(), getContext().getRequest()))
                 throw new B3PCatalogException("User is not an admin");
             OrganisationsAction.setOrganisations(getContext(), organisations);
             return new StreamingResolution("text/plain", "success");
