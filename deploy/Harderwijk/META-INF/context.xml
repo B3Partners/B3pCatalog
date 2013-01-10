@@ -40,7 +40,8 @@
         userSearch="(mail={0})"
         userRoleName="memberOf"
     />
+    
+    <!-- Naam van admin rol -->
+    <Parameter name="adminRole" value="CN=GG_APP_HWK_B3PCatalog_Beheer,OU=Global Groups,OU=Groups,OU=Gemeente Harderwijk,DC=aorta,DC=local" override="false"/>    
 </Context>
 
-
-<!-- userRoleName="memberOf" -->
