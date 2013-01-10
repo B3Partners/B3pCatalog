@@ -4,11 +4,16 @@
  */
 package nl.b3p.catalog;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
 /**
  *
  * @author Erik van de Pol
  */
 public class Roles {
-    public final static String ADMIN = "admin";
-
+    public static boolean isAdmin(ServletContext context, HttpServletRequest request) {
+        return request.isUserInRole(context.getInitParameter("adminRole"));
+        
+    }
 }

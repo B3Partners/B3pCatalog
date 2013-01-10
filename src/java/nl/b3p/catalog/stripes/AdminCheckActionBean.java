@@ -36,7 +36,8 @@ public class AdminCheckActionBean extends DefaultAction {
     }
     
     public Resolution init() {
-        admin = getContext().getRequest().isUserInRole(Roles.ADMIN);
+        admin = Roles.isAdmin(getContext().getServletContext(), getContext().getRequest());
+        System.out.println("Checking for admin role " + getContext().getServletContext().getInitParameter("adminRole") + ": " + admin);
         return null;
     }
     
