@@ -13,6 +13,6 @@
         </div>
     </stripes:layout-component>
     <stripes:layout-component name="content">
-        <stripes:layout-render name="/loginForm.jsp"/>
+        <a href="${contextPath}">Klik om opnieuw in te loggen</a>
     </stripes:layout-component>
 </stripes:layout-render>
