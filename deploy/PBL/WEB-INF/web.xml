@@ -15,7 +15,12 @@
         <param-name>config</param-name>
         <param-value>conf/b3pcatalog/config.xml</param-value>
     </context-param>
-    
+    <context-param>
+        <description>Naam van rol van beheerder</description>
+        <param-name>adminRole</param-name>
+        <param-value>admin</param-value>
+    </context-param>
+        
     <listener>
         <listener-class>nl.b3p.catalog.config.CatalogAppConfig</listener-class>
     </listener>
