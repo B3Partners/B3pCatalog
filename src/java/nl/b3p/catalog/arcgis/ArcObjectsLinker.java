@@ -57,6 +57,7 @@ public class ArcObjectsLinker {
             for(String s: homeEnvVars) {
                 arcObjectsHome = System.getenv(s);
                 if(arcObjectsHome != null) {
+                    log.info("Using environment variable " + s + " to find ArcObjects");
                     break;
                 }
             }
@@ -68,14 +69,43 @@ public class ArcObjectsLinker {
                         : "ArcGIS Engine Runtime must be installed"));
         }   
         
-        String jarPath = arcObjectsHome + File.separator + "java" + File.separator + "lib" + File.separator + "arcobjects.jar";
-        File jarFile = new File(jarPath);
-
-        if(!jarFile.exists()) {
-            throw new Exception("Error: could not find arcobjects.jar at path \"" + jarFile.getAbsolutePath() + "\"");
-        }        
+        // The directory can be set to a JAR itself, the directory arcobjects.jar
+        // is in, or (as in the environment variables) the path with "java/lib" 
+        // subdirectories with arcobjects.jar in it (some reports ArcGIS Server
+        // 10.1 not having these java/lib subdirs).
         
-        log.info(String.format("Using ArcObjects home \"%s\"", arcObjectsHome));
+        File jarFile = null;
+        
+        if(arcObjectsHome.endsWith(".jar")) {
+            jarFile = new File(arcObjectsHome);
+            if(jarFile.exists()) {
+                log.info(String.format("Using full path to ArcObjects JAR file: %s", jarFile.getAbsolutePath()));
+            } else {
+                jarFile = null;
+            }
+        } 
+
+        if(jarFile == null) {
+            String jarPath = arcObjectsHome + File.separator + "arcobjects.jar";
+            jarFile = new File(jarPath);
+
+            if(jarFile.exists()) {
+                log.info(String.format("Using arcobjects.jar found in directory: %s", jarFile.getAbsolutePath()));
+            } else {
+                jarFile = null;
+            }
+        }
+
+        if(jarFile == null) {
+            String jarPath = arcObjectsHome + File.separator + "java" + File.separator + "lib" + File.separator + "arcobjects.jar";
+            jarFile = new File(jarPath);
+
+            if(!jarFile.exists()) {
+                throw new Exception("Error: could not find arcobjects.jar at path \"" + jarFile.getAbsolutePath() + "\"");
+            } else {
+                log.info(String.format("Using ArcObjects home \"%s\"", arcObjectsHome));
+            }                
+        }
 
         // Deze hack is afkomstig van ESRI voorbeelden...
         
