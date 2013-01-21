@@ -127,5 +127,22 @@ public class FGDBHelperProxy {
             rethrow(ncdfex);
         }
     }
+    
+    public static void cleanerTrackObjectsInCurrentThread() throws B3PCatalogException {
+        try {
+            FGDBHelper.cleanerTrackObjectsInCurrentThread();
+        } catch(NoClassDefFoundError ncdfex) {
+            rethrow(ncdfex);
+        }
+    }
+    
+    public static void cleanerReleaseAllInCurrentThread() throws B3PCatalogException {
+        try {
+            FGDBHelper.cleanerReleaseAllInCurrentThread();
+        } catch(NoClassDefFoundError ncdfex) {
+            rethrow(ncdfex);
+        }
+    }
+    
 
 }

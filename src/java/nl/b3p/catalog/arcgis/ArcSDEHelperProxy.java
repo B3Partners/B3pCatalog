@@ -17,6 +17,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ArcSDEHelperProxy {
     private final static Log log = LogFactory.getLog(ArcSDEHelperProxy.class);
+    
+    // TODO Cleaner.track/release current thread methods zoals FGDBHelperProxy
+    // maar alleen indien geen JDBC dataset
 
     static void rethrow(NoClassDefFoundError ncdfex) throws B3PCatalogException {
         String message = "ArcObjects is niet goed geinitialiseerd. Om metadata te bekijken en weg te schrijven in ArcSDE is dit nodig.";

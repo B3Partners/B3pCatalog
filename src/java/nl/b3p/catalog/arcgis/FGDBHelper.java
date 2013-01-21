@@ -12,6 +12,7 @@ import com.esri.arcgis.geodatabase.IMetadata;
 import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.geodatabase.XmlPropertySet;
 import com.esri.arcgis.geodatabase.esriDatasetType;
+import com.esri.arcgis.system.Cleaner;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -133,5 +134,12 @@ public class FGDBHelper {
             log.debug(ds.getType());
         }
     }
-
+    
+    public static void cleanerTrackObjectsInCurrentThread() {
+        Cleaner.trackObjectsInCurrentThread();
+    }
+    
+    public static void cleanerReleaseAllInCurrentThread() {
+        Cleaner.releaseAllInCurrentThread();
+    }
 }

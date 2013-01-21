@@ -12,8 +12,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import net.sourceforge.stripes.action.FileBean;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
@@ -45,8 +43,6 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.json.JSONException;
-import org.opengis.referencing.FactoryException;
 
 public class MetadataAction extends DefaultAction {
     private final static Log log = LogFactory.getLog(MetadataAction.class);
@@ -114,7 +110,12 @@ public class MetadataAction extends DefaultAction {
                 File mdFile = FileListHelper.getFileForPath(root, path);
 
                 if(FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                    metadata = FGDBHelperProxy.getMetadata(mdFile,esriDTFeatureClass);
+                    try {
+                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();                    
+                        metadata = FGDBHelperProxy.getMetadata(mdFile,esriDTFeatureClass);
+                    } finally {
+                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+                    }
                     return new XmlResolution(strictISO19115 ? extractMD_Metadata(metadata) : metadata, extraHeaders);
                 } else {
                     mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
@@ -148,7 +149,7 @@ public class MetadataAction extends DefaultAction {
             }
 
             if(SDE_MODE.equals(mode)) {
-                
+                    
                 Object dataset = ArcSDEHelperProxy.getDataset(root, path);
                 String oldMetadata = ArcSDEHelperProxy.getMetadata(dataset);
                 ArcSDEHelperProxy.saveMetadata(dataset, sanitizeComments(oldMetadata,metadata));
@@ -158,8 +159,13 @@ public class MetadataAction extends DefaultAction {
                 File mdFile = FileListHelper.getFileForPath(root, path);
                 
                 if(FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                    String oldMetadata = FGDBHelperProxy.getMetadata(mdFile,esriDTFeatureClass);
-                    FGDBHelperProxy.setMetadata(mdFile, 5, sanitizeComments(oldMetadata,metadata));
+                    try {
+                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+                        String oldMetadata = FGDBHelperProxy.getMetadata(mdFile,esriDTFeatureClass);
+                        FGDBHelperProxy.setMetadata(mdFile, 5, sanitizeComments(oldMetadata,metadata));
+                    } finally {
+                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+                    }
                 } else {
                     mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
                     
@@ -249,11 +255,23 @@ public class MetadataAction extends DefaultAction {
                 ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();                
                 if(cfg.isEnabled()) {
                     if(isFGDB) {
-                        Object ds = FGDBHelperProxy.getTargetDataset(dataFile, 5 /*esriDatasetType.esriDTFeatureClass*/);
-                        ArcGISSynchronizer.synchronize(xmlDoc, ds, ArcGISSynchronizer.FORMAT_NAME_FGDB);
+                        try {
+                            FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();                    
+                        
+                            Object ds = FGDBHelperProxy.getTargetDataset(dataFile, 5 /*esriDatasetType.esriDTFeatureClass*/);
+                            ArcGISSynchronizer.synchronize(xmlDoc, ds, ArcGISSynchronizer.FORMAT_NAME_FGDB);
+                        } finally {
+                            FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+                        }
                     } else if (path.endsWith(Extensions.SHAPE)) {
-                        Object ds = DatasetHelperProxy.getShapeDataset(dataFile);
-                        ArcGISSynchronizer.synchronize(xmlDoc, ds, ArcGISSynchronizer.FORMAT_NAME_SHAPE);
+                        try {
+                            FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();                    
+                        
+                            Object ds = DatasetHelperProxy.getShapeDataset(dataFile);
+                            ArcGISSynchronizer.synchronize(xmlDoc, ds, ArcGISSynchronizer.FORMAT_NAME_SHAPE);
+                        } finally {
+                            FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+                        }
                     } else {
                         synchronizeRegularMetadata(xmlDoc, dataFile);
                     }
@@ -379,15 +397,21 @@ public class MetadataAction extends DefaultAction {
                 File mdFile = FileListHelper.getFileForPath(root, path);
                 
                 if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                    Document doc = DocumentHelper.getMetadataDocument(FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass));
+                    try {
+                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();                    
+                    
+                        Document doc = DocumentHelper.getMetadataDocument(FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass));
 
-                    addComment(doc, comment);
+                        addComment(doc, comment);
 
-                    String commentedMD = DocumentHelper.getDocumentString(doc);
-                    FGDBHelperProxy.setMetadata(mdFile, esriDTFeatureClass, commentedMD);
+                        String commentedMD = DocumentHelper.getDocumentString(doc);
+                        FGDBHelperProxy.setMetadata(mdFile, esriDTFeatureClass, commentedMD);
 
-                    return new XmlResolution(commentedMD);
-                } else {
+                        return new XmlResolution(commentedMD);
+                    } finally {
+                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+                    }
+            } else {
                     mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
 
                     Document doc = DocumentHelper.getMetadataDocument(mdFile);
