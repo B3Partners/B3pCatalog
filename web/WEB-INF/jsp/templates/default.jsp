@@ -58,10 +58,11 @@
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/wiki2html.js"></script>
 
         <script type="text/javascript" charset="utf-8" src="${orgsUrl}"></script>
-        <script type="text/javascript" src="${contextPath}/scripts/mde/picklists/gemet-nl.js"></script>
+        <script type="text/javascript" src="${contextPath}/scripts/mde/picklists/gemet-inspire-nl.js"></script>
         
         <!-- mde -->
-        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/metadataEditor.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/metadataEditorBasic.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/metadataEditorXslt.js"></script>
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/commonOptions.js"></script>
 
         <!-- B3p libs: -->
