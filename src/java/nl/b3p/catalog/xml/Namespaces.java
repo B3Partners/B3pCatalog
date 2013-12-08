@@ -34,5 +34,29 @@ public class Namespaces {
         PBL,
         NC
     })));
+    
+    
+    public static Namespace getFullNameSpace(String nodeName) throws Exception {
+        Namespace namespace = null;
+        if (nodeName!=null && nodeName.indexOf(":") > 0) {
+            String prefix = nodeName.substring(0, nodeName.indexOf(":"));
+            for(Namespace ns: Namespaces.allNamespaces) {
+                if (ns.getPrefix().equals(prefix) ) {
+                    return ns;
+                }
+            }
+            if (namespace==null) {
+                throw new Exception("Prefix '" + prefix + "' niet gevonden in lijst met prefices.");
+            }
+        }
+        return namespace;
+    }
+    
+    public static String getLocalName(String nodeName) {
+        if (nodeName!=null && nodeName.indexOf(":") > 0) {
+            return nodeName.substring(nodeName.indexOf(":")+1);
+        }
+        return nodeName;
+    }
 }
 

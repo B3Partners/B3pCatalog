@@ -1,15 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package nl.b3p.catalog.resolution;
 
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.Map;
-import javax.servlet.http.HttpServletResponse;
-import net.sourceforge.stripes.action.StreamingResolution;
 import org.jdom.Document;
 import org.jdom.output.XMLOutputter;
 
@@ -17,11 +10,8 @@ import org.jdom.output.XMLOutputter;
  *
  * @author Erik
  */
-public class XmlResolution extends StreamingResolution {
-    protected final static String DEFAULT_CONTENT_TYPE = "text/xml";
-    protected final static String DEFAULT_ENCODING = "UTF-8";
-
-    protected Map<String, String> extraHeaders;
+public class XmlResolution extends ExtraHeadersResolution {
+    protected static String DEFAULT_CONTENT_TYPE = "text/xml";
 
     public XmlResolution(InputStream inputStream) {
         this(inputStream, null);
@@ -46,32 +36,13 @@ public class XmlResolution extends StreamingResolution {
 
     public XmlResolution(Reader reader, Map<String, String> extraHeaders) {
         super(DEFAULT_CONTENT_TYPE, reader);
-        init(extraHeaders);
     }
 
     public XmlResolution(String string, Map<String, String> extraHeaders) {
         super(DEFAULT_CONTENT_TYPE, string);
-        init(extraHeaders);
     }
 
     public XmlResolution(Document doc, Map<String, String> extraHeaders) {
         super(DEFAULT_CONTENT_TYPE, new XMLOutputter().outputString(doc));
-        init(extraHeaders);
     }
-
-    private void init(Map<String, String> extraHeaders) {
-        setCharacterEncoding(DEFAULT_ENCODING);
-        this.extraHeaders = extraHeaders;
-    }
-
-    @Override
-    protected void applyHeaders(HttpServletResponse response) {
-        super.applyHeaders(response);
-        if (extraHeaders != null) {
-            for (Map.Entry<String, String> entry : extraHeaders.entrySet()) {
-                response.setHeader(entry.getKey(), entry.getValue());
-            }
-        }
-    }
-
 }

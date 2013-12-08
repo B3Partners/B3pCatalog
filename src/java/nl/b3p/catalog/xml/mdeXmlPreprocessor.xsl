@@ -774,6 +774,7 @@
 	<xsl:template match="gmd:identificationInfo">
 		<xsl:copy>
 			<xsl:choose>
+				<xsl:when test="not($datasetMode)"/>
 				<xsl:when test="not(gmd:MD_DataIdentification)">
 					<!--Child element missing, create it-->
 					<xsl:call-template name="add-MD_DataIdentification"/>
@@ -784,6 +785,7 @@
 				</xsl:otherwise>
 			</xsl:choose>
 			<xsl:choose>
+				<xsl:when test="not($serviceMode)"/>
 				<xsl:when test="not(srv:SV_ServiceIdentification)">
 					<!--Child element missing, create it-->
 					<xsl:call-template name="add-SV_ServiceIdentification"/>
@@ -1420,6 +1422,24 @@
             ]"/>
 		</xsl:copy>
 	</xsl:template>
+	<xsl:template match="srv:SV_ServiceIdentification/srv:extent">
+		<xsl:copy>
+			<xsl:choose>
+				<xsl:when test="not(gmd:EX_Extent)">
+					<!--Child element missing, create it-->
+					<xsl:call-template name="add-EX_Extent"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<!--Child element exists, copy it-->
+					<xsl:apply-templates select="gmd:EX_Extent"/>
+				</xsl:otherwise>
+			</xsl:choose>
+			<!--Copy everthing else under this node-->
+			<xsl:apply-templates select="@*|node()[
+                                 not(self::gmd:EX_Extent) 
+            ]"/>
+		</xsl:copy>
+	</xsl:template>
 	<xsl:template match="gmd:EX_Extent">
 		<xsl:copy>
             <xsl:choose>
@@ -1432,25 +1452,18 @@
 					<xsl:apply-templates select="gmd:description"/>
 				</xsl:otherwise>
 			</xsl:choose>
-            
 			<xsl:choose>
-				<xsl:when test="not(../../gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox)">
+				<xsl:when test="not(gmd:geographicElement)">
 					<!--Child element missing, create it-->
-                    <xsl:call-template name="add-geographicElement-EX_GeographicBoundingBox"/>
+					<xsl:call-template name="add-geographicElement"/>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:for-each select="gmd:geographicElement/gmd:EX_GeographicBoundingBox">
-						<xsl:element name="gmd:geographicElement">
-							<xsl:apply-templates select="."/>
-						</xsl:element>
-					</xsl:for-each>
+					<!--Child element exists, copy it-->
+					<xsl:apply-templates select="gmd:geographicElement"/>
 				</xsl:otherwise>
 			</xsl:choose>
-			
-            <xsl:apply-templates select="gmd:geographicElement[not(gmd:EX_GeographicBoundingBox)]"/>
-
             <xsl:choose>
-				<xsl:when test="not(../../gmd:extent/gmd:EX_Extent/gmd:temporalElement)">
+				<xsl:when test="not(gmd:temporalElement)">
 					<!--Child element missing, create it-->
 					<xsl:call-template name="add-temporalElement"/>
 				</xsl:when>
@@ -1459,15 +1472,29 @@
 					<xsl:apply-templates select="gmd:temporalElement"/>
 				</xsl:otherwise>
 			</xsl:choose>
-
-            <xsl:apply-templates select="gmd:verticalElement"/>
-            
             <!--Copy everthing else under this node-->
 			<xsl:apply-templates select="@*|node()[
                                  not(self::gmd:description) 
                                  and not(self::gmd:geographicElement) 
                                  and not(self::gmd:temporalElement) 
-                                 and not(self::gmd:verticalElement) 
+            ]"/>
+		</xsl:copy>
+	</xsl:template>
+	<xsl:template match="gmd:geographicElement">
+			<xsl:copy>
+			<xsl:choose>
+				<xsl:when test="not(gmd:EX_GeographicBoundingBox)">
+					<!--Child element missing, create it-->
+					<xsl:call-template name="add-EX_GeographicBoundingBox"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<!--Child element exists, copy it-->
+					<xsl:apply-templates select="gmd:EX_GeographicBoundingBox"/>
+				</xsl:otherwise>
+			</xsl:choose>
+			<!--Copy everthing else under this node-->
+			<xsl:apply-templates select="@*|node()[
+                                 not(self::gmd:EX_GeographicBoundingBox)
             ]"/>
 		</xsl:copy>
 	</xsl:template>
@@ -5003,11 +5030,12 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	</xsl:template>
 	<xsl:template name="add-EX_Extent">
 		<xsl:element name="gmd:EX_Extent">
-			<xsl:call-template name="add-geographicElement-EX_GeographicBoundingBox"/>
+			<xsl:call-template name="add-description"/>
+			<xsl:call-template name="add-geographicElement"/>
 			<xsl:call-template name="add-temporalElement"/>
 		</xsl:element>
 	</xsl:template>
-	<xsl:template name="add-geographicElement-EX_GeographicBoundingBox">
+	<xsl:template name="add-geographicElement">
 		<xsl:element name="gmd:geographicElement">
 			<xsl:call-template name="add-EX_GeographicBoundingBox"/>
 		</xsl:element>
