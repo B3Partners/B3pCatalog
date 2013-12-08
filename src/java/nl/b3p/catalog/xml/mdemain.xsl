@@ -2844,44 +2844,46 @@
 
                 <!-- do special extra stuff depending on data-type -->
                 <xsl:apply-templates select="." mode="data-type"/>
-				
+
                 <xsl:variable name="currentval">
                     <xsl:choose>
-                        <xsl:when test="$picklist != '' ">
-                            <xsl:call-template name="storeCodeListValue">
-                                <xsl:with-param name="readonly" select="$readonly"/>
-                            </xsl:call-template>
-                        </xsl:when>							
+                        <xsl:when test="$picklist != '' and $path/@codeListValue and normalize-space($path/@codeListValue) != '' ">
+                            <xsl:value-of select="$path/@codeListValue"/>
+			</xsl:when>
                         <xsl:when test="normalize-space($path) != '' ">
-                            <xsl:choose>
-                                <xsl:when test="$type = 'rich-text'">
-                                    <!-- do not use normalize-space here in $path; we need all spaces and newlines -->
-                                    <xsl:value-of select="$path"/>
-                                </xsl:when>
-                                <xsl:when test="$link = 'true'">
-                                    <xsl:element name="a">
-                                        <!--<xsl:attribute name="xmlns">http://www.w3.org/1999/xhtml</xsl:attribute>-->
-                                        <xsl:attribute name="href">
-                                            <xsl:value-of select="normalize-space($path)"/>
-                                        </xsl:attribute>
-                                        <xsl:attribute name="target">_blank</xsl:attribute>
-                                        <xsl:value-of select="normalize-space($path)"/>
-                                    </xsl:element>                                
-                                </xsl:when>                                
-                                <xsl:otherwise>
-                                    <!-- print normalized value -->
-                                    <xsl:value-of select="normalize-space($path)"/>
-                                </xsl:otherwise>
-                            </xsl:choose>
+                            <xsl:value-of select="$path"/>
                         </xsl:when>
                     </xsl:choose>
-                </xsl:variable>
-                <xsl:attribute name="ui-mde-current-value">
-                    <xsl:value-of select="$currentval"/>
-                </xsl:attribute>
+                </xsl:variable>				
                 <xsl:choose>
                     <xsl:when test="$currentval != '' ">
-                        <xsl:value-of select="$currentval"/>
+                        <xsl:attribute name="ui-mde-current-value">
+                            <xsl:value-of select="normalize-space($currentval)"/>
+                        </xsl:attribute>
+                        <xsl:if test="$picklist != '' ">
+                            <xsl:attribute name="ui-mde-codelistvalue">
+                                <xsl:value-of select="normalize-space($currentval)"/>
+                            </xsl:attribute>
+                        </xsl:if>							
+                        <xsl:choose>
+                            <xsl:when test="$link = 'true'">
+                                <xsl:element name="a">
+                                    <!--<xsl:attribute name="xmlns">http://www.w3.org/1999/xhtml</xsl:attribute>-->
+                                    <xsl:attribute name="href">
+                                        <xsl:value-of select="normalize-space($currentval)"/>
+                                    </xsl:attribute>
+                                    <xsl:attribute name="target">_blank</xsl:attribute>
+                                    <xsl:value-of select="normalize-space($currentval)"/>
+                                </xsl:element>                                
+                            </xsl:when>                                
+                            <xsl:when test="$type = 'rich-text'">
+                                <!-- do not use normalize-space here in $path; we need all spaces and newlines -->
+                                <xsl:value-of select="$currentval"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="normalize-space($currentval)"/>
+                            </xsl:otherwise>
+                        </xsl:choose>                        
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:choose>
@@ -2920,28 +2922,6 @@
                 </a>
             </xsl:otherwise>
         </xsl:choose>        
-    </xsl:template>
-
-    <xsl:template name="storeCodeListValue">
-        <!--
-        We kijken eerst of er een codeListValue attribuut bestaat.
-        Zo ja dan nemen we die.
-        Als niet, dan nemen we de inhoud van het element.
-        -->
-        <xsl:param name="readonly" select="$globalReadonly"/>
-        <xsl:attribute name="ui-mde-codelistvalue">
-            <xsl:choose>
-                <xsl:when test="@codeListValue and normalize-space(@codeListValue) != '' ">
-                    <xsl:value-of select="normalize-space(@codeListValue)"/>
-                </xsl:when>
-                <xsl:when test="normalize-space(.) = '' and $readonly">
-                    <xsl:value-of select="$GLOBAL_DEFAULT_VIEW"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="normalize-space(.)"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:attribute>
     </xsl:template>
 
     <!-- TEMPLATE: for section-title -->
