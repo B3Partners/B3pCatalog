@@ -212,17 +212,9 @@ public class mdeXml2Html {
             currentIndex++;
         }
         parent.addContent(currentIndex, newNode);
-
-        // create entirely new xhtml representation of xmlDoc and add it to the current page (must be done to get sequence of duplicated nodes right)
-//            Document ppDoc = mdeXml2Html.preprocess(mdDoc);
-//            Document htmlDoc = mdeXml2Html.transform(ppDoc);
-//            // this._addDateStamp(this.xmlDoc); 
-//
-//            StringReader sr = new StringReader(DocumentHelper.getDocumentString(htmlDoc));
-//            return new HtmlResolution(sr);
     }
 
-    public void deleteElementOrSection(Document xmlDoc, String elementOrSectionPath, String notAllowedDeleteText) throws JDOMException, Exception {
+    public static void deleteElementOrSection(Document xmlDoc, String elementOrSectionPath, String notAllowedDeleteText) throws JDOMException, Exception {
         Element parent = getParentElement(xmlDoc, elementOrSectionPath);
         if (parent==null) {
             return;
@@ -231,8 +223,8 @@ public class mdeXml2Html {
         // find section in backend
         Element toBeDeletedNode = XPathHelper.selectSingleElement(xmlDoc, elementOrSectionPath);
         // get nr of same nodes in backend
-        String eName = toBeDeletedNode.getName();
-        List<Element> elems = parent.getChildren(eName);
+        String eName = toBeDeletedNode.getName();        
+        List<Element> elems = parent.getChildren(eName, toBeDeletedNode.getNamespace());
         if (elems.size() < 2) {
             throw new Exception(notAllowedDeleteText);
         }
@@ -240,22 +232,19 @@ public class mdeXml2Html {
         // delete section from xml backend
         parent.removeContent(toBeDeletedNode);
 
-        // create entirely new xhtml representation of xmlDoc and add it to the current page (must be done to get sequence of duplicated nodes right)
-        // no need for preprocessing, since we only removed elements
- //            Document ppDoc = mdeXml2Html.preprocess(mdDoc);
-//            Document htmlDoc = mdeXml2Html.transform(ppDoc);
-//            // this._addDateStamp(this.xmlDoc); 
-//
-//            StringReader sr = new StringReader(DocumentHelper.getDocumentString(htmlDoc));
-//            return new HtmlResolution(sr);
-
      }
 
-    public String getSavedValueOnServerSide(Document xmlDoc, String thePath, String attrName) throws JDOMException {
+    public static String getSavedValueOnServerSide(Document xmlDoc, String thePath, String attrName) throws JDOMException {
         Element xmlElement = XPathHelper.selectSingleElement(xmlDoc, thePath);
         String savedValue = xmlElement.getValue();
         // check if we have an attribute
-        String attributeValue = xmlElement.getAttribute(attrName).getValue();
+        String attributeValue = null;
+        if (attrName!=null) {
+            Attribute a = xmlElement.getAttribute(attrName);
+            if (a!=null) {
+                attributeValue = a.getValue();
+            }
+        }
 
         // check if we are dealing with a picklist
         String codeListValue = xmlElement.getAttribute("codeListValue").getValue();
@@ -267,17 +256,20 @@ public class mdeXml2Html {
         return savedValue;
     };
 
-    public void saveValueOnServerSide(Document xmlDoc, String path, String attrName, String newValue, String newText) throws JDOMException, Exception {
+    public static void saveValueOnServerSide(Document xmlDoc, String path, String attrName, String newValue, String newText) throws JDOMException, Exception {
 
         Element targetNode = XPathHelper.selectSingleElement(xmlDoc, path);
         if (targetNode == null) {
             throw new Exception("Save path in XML document not found. Changes will not be saved.");
         }
-        //this.log($targetNode);
+        
 
         if (targetNode.getAttribute("codeListValue") != null) {
             // is picklist item
             targetNode.setAttribute("codeListValue", newValue);
+            if (newText==null) {
+                newText = newValue;
+            }
             targetNode.setText(newText);
         } else if (targetNode.getAttribute(attrName) != null) {
             targetNode.setAttribute(attrName, newValue);
@@ -359,13 +351,24 @@ public class mdeXml2Html {
         addUUID(ppDoc, true);
         
         addElementOrSection(ppDoc, "/metadata/gmd:MD_Metadata/gmd:fileIdentifier", "/metadata/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString", false);
+        addElementOrSection(ppDoc, "/metadata/gmd:MD_Metadata/gmd:fileIdentifier", "/metadata/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString", false);
+
+        ppDoc = mdeXml2Html.preprocess(ppDoc);
+        deleteElementOrSection(ppDoc, "/metadata/gmd:MD_Metadata/gmd:fileIdentifier[2]", "Minimaal 1 element vereist!");
+        
+       
+        String attrName = null;
+        String newValue = "brabants";
+        String newText = null;
+        saveValueOnServerSide(ppDoc, "/metadata/gmd:MD_Metadata/gmd:language/gmd:LanguageCode", attrName, newValue, newText);
+        String value = getSavedValueOnServerSide(ppDoc, "/metadata/gmd:MD_Metadata/gmd:language/gmd:LanguageCode", attrName);
         
         Document htmlDoc = mdeXml2Html.transform(ppDoc);
-            // this._addDateStamp(this.xmlDoc); 
+        // this._addDateStamp(this.xmlDoc); 
 
 
         System.out.println("-----------------START--------------------");
-                System.out.println(DocumentHelper.getDocumentString(ppDoc));        
+                System.out.println(DocumentHelper.getDocumentString(htmlDoc));        
         System.out.println("-----------------END----------------------");
     }
 
