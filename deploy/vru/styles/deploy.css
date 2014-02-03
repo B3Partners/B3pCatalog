@@ -1,0 +1,160 @@
+/* Override deze file in een deploy structuur met klantspecifieke opmaak */
+
+body {
+    background: #f3f5f6;
+    border-top: 1px solid #535353;
+}
+
+ul.jqueryFileTree a:hover, ul.jqueryFileTree .selected {
+	background: #deebe3;
+    color: #333;
+}
+
+.ui-layout-resizer {
+    background-color: #deebe3;
+    border: 1px solid #deebe3;
+}
+
+.nav-bar {
+    background-color: #a8cad2;
+    border-bottom: 10px solid #deebe3;
+    height: 100px;
+}
+
+.nav-bar .title-bar {
+    background-image: none;
+    background-color: #deebe3;
+    height: 30px;
+}
+
+.nav-bar .title-bar h1 {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    margin: 0px;
+    padding-top: 4px;
+    padding-left: 10px;
+}
+
+.login-info-block {
+    top: 8px;
+    color: black;
+}
+
+.logout-link {
+    color: black;
+}
+
+ul#main-tabs > li.main-tab-selected {
+    background-color: #deebe3;
+}
+
+ul#main-tabs > li.main-tab-hover {
+    background-color: #deebe3;
+}
+
+ul#main-tabs > li.main-tab-selected > a, ul#main-tabs > li > a.main-tab-hover {
+    color: black;
+}
+
+.footer {
+    background-image: none;
+    background-color: #f3f5f6;
+    height: 50px;
+}
+
+.footer .footer-logo {
+    background-image: none;
+    background-color: white;
+    height: auto;
+    border-top: 10px solid #deebe3;
+    text-align: center;
+}
+
+.footer .footer-logo img {
+    margin-top: 13px;
+    background-color: white;
+}
+
+.footer-text {
+    color: #7891A5;
+}
+
+.footer-text-vertical-center {
+    top: 22px;
+}
+
+.search-result-title {
+    color: #154273;
+}
+
+.mde-save-message {
+    background-color: #A8CAD2;
+}
+
+
+
+/* 
+ * Login screen 
+ */
+
+#borderLeft {
+    position: absolute;
+    right: 0px;
+    width: 8px;
+}
+
+#borderRight {
+    position: absolute;
+    left: 0px;
+    width: 8px;
+}
+
+#borderLeftTop, #borderRightTop {
+    background: url(skin/sh_top_left.png);
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    height: 8px;
+    width: 8px;
+    z-index: 30;
+}
+
+#borderLeftMiddle, #borderRightMiddle {
+    background: url(skin/sh_left_small.png);
+    position: absolute;
+    top: 8px;
+    bottom: 17px;
+    right: 0px;
+    width: 8px;
+    z-index: 29;
+}
+
+#borderLeftBottom, #borderRightBottom {
+    background: url(skin/sh_bot_left.png);
+    position: absolute;
+    right: 0px;
+    bottom: 9px;
+    height: 8px;
+    width: 8px;
+    z-index: 30;
+}
+
+#borderRightTop {
+    background: url(skin/sh_top_right.png);
+    right: auto;
+    left: 0px;
+}
+
+#borderRightMiddle {
+    background: url(skin/sh_right_small.png);
+    right: auto;
+    left: 0px;
+}
+
+#borderRightBottom {
+    background: url(skin/sh_bot_right.png);
+    right: auto;
+    left: 0px;
+}
+
+
