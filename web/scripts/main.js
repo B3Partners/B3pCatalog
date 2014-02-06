@@ -489,6 +489,42 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
                 // TODO: on demand van PBL bv: laatst geopende doc opslaan
                 //$.cookie();
                 var access = jqXHR.getResponseHeader("X-MDE-Access");
+                var viewMode = access !== "WRITE";
+                
+                B3pCatalog.createMdeHtml(data, isGeo, viewMode);
+            }
+        }
+    };
+    
+    $("#synchronizeMD").button("option", "disabled", false);       
+   
+    this._loadMetadata(opts);
+};
+
+B3pCatalog.loadMetadata2 = function(mode, path, title, isGeo, cancel) {
+
+    var opts = {
+        done: function() {
+            
+        },
+        cancel: cancel,
+        ajaxOptions: {
+            url: B3pCatalog.metadataUrl,
+            type: "POST",
+            data: {
+                load : "t",
+                mode: mode,
+                path : path
+            },
+            dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
+            success: function(data, textStatus, jqXHR) {
+                //log(data);
+                B3pCatalog.currentFilename = path;
+                B3pCatalog.currentMode = mode;
+                document.title = B3pCatalog.title + B3pCatalog.titleSeparator + title;
+                // TODO: on demand van PBL bv: laatst geopende doc opslaan
+                //$.cookie();
+                var access = jqXHR.getResponseHeader("X-MDE-Access");
                 var viewMode = access != "WRITE";
                 B3pCatalog.createMde(data, isGeo, viewMode);
             }
@@ -721,6 +757,14 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
 B3pCatalog.commentUsername = null;
 
 B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
+    B3pCatalog.createMde2(xmlDoc, null, isGeo, viewMode);
+};
+
+B3pCatalog.createMdeHtml = function(htmlDoc, isGeo, viewMode) {
+     B3pCatalog.createMde2(null, htmlDoc, isGeo, viewMode);
+};
+
+B3pCatalog.createMde2 = function(xmlDoc, htmlDoc, isGeo, viewMode) {
     $("#mde").mde("destroy");
     $("#center-wrapper").html($("<div>", {
         id: "mde"
@@ -729,6 +773,7 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
     log("creating mde...");
     $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xml: xmlDoc,
+        xmlHtml: htmlDoc,
         commentPosted: function(comment) {
             if (!$.trim(comment)) {
                 B3pCatalog.openSimpleErrorDialog("Commentaar kan niet leeg zijn.");

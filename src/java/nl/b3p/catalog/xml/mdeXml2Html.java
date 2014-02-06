@@ -39,6 +39,10 @@ import org.jdom.transform.JDOMResult;
 import org.jdom.transform.JDOMSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jdom.Parent;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.jdom.xpath.XPath;
 
 /**
  *
@@ -182,19 +186,19 @@ public class mdeXml2Html {
         }
     }
 
-    public static void addElementOrSection(Document xmlDoc, String path, String endPath, boolean above) throws JDOMException, Exception {
+    public static Element addElementOrSection(Document xmlDoc, String path, String endPath, boolean above) throws JDOMException, Exception {
 //            var path = $elementOrSection.attr("ui-mde-repeatablepath");
 //            var endPath = $elementOrSection.attr("ui-mde-fullpath");
 
         Element parent = getParentElement(xmlDoc, path);
         if (parent==null) {
-            return;
+            return null;
         }
         Element toBeDuplicatedNode = XPathHelper.selectSingleElement(xmlDoc, path);
 
         if (toBeDuplicatedNode == null) {
             log.debug("Path: '" + path + "' not found.");
-            return;
+            return null;
         }
 
         Element newNode = createPath(calcParentPath(path), endPath);
@@ -212,12 +216,13 @@ public class mdeXml2Html {
             currentIndex++;
         }
         parent.addContent(currentIndex, newNode);
+        return parent;
     }
 
-    public static void deleteElementOrSection(Document xmlDoc, String elementOrSectionPath, String notAllowedDeleteText) throws JDOMException, Exception {
+    public static Element deleteElementOrSection(Document xmlDoc, String elementOrSectionPath, String notAllowedDeleteText) throws JDOMException, Exception {
         Element parent = getParentElement(xmlDoc, elementOrSectionPath);
         if (parent==null) {
-            return;
+            return null;
         }
 
         // find section in backend
@@ -231,7 +236,7 @@ public class mdeXml2Html {
 
         // delete section from xml backend
         parent.removeContent(toBeDeletedNode);
-
+        return parent;
      }
 
     public static String getSavedValueOnServerSide(Document xmlDoc, String thePath, String attrName) throws JDOMException {
@@ -342,21 +347,62 @@ public class mdeXml2Html {
         return XPathHelper.selectSingleElement(xmlDoc, parentPath);
     }
 
+    public static Document convertElem2Doc(Element e) {
+        Document xmlDoc = e.getDocument();
+        e.detach();
+        xmlDoc.setRootElement(e);
+        return xmlDoc;
+    }
+    
+    public static String convertElement2Html(Element e) throws JDOMException, Exception {
+        if (e==null) {
+            return null;
+        }
+        Document eDoc = convertElem2Doc(e);
+        Document htmlDoc = mdeXml2Html.transform(eDoc);
+        return DocumentHelper.getDocumentString(htmlDoc);
+    }
 
+    public static String buildXPath(Element e) {
+        Element e2 = e;
+        String fullName = e.getName();
+        if (e.getNamespacePrefix()!=null && !e.getNamespacePrefix().isEmpty()) {
+            fullName = e.getNamespacePrefix() + ":" + fullName;
+        }
+        StringBuffer sb = new StringBuffer(fullName);
+        Parent p = e.getParent();
+        while (p!=null && p instanceof Element) {
+            int i = p.indexOf(e2);
+            if (i>0) {
+                sb.append("[" + (i+1) + "]");
+            }
+            sb.insert(0,"/");
+            e2 = (Element)p;
+            fullName = e2.getName();
+            if (e2.getNamespacePrefix()!=null && !e2.getNamespacePrefix().isEmpty()) {
+                fullName = e2.getNamespacePrefix() + ":" + fullName;
+            }
+            p = p.getParent();
+            sb.insert(0, fullName);
+        }
+        sb.insert(0,"/");
+        return sb.toString();
+    }
+    
     public static void main(String [] args) throws Exception {
         Document mdDoc = DocumentHelper.getMetadataDocument(DocumentHelper.EMPTY_METADATA);
         
         Document ppDoc = mdeXml2Html.preprocess(mdDoc);
         addDateStamp(ppDoc);
         addUUID(ppDoc, true);
-        
-        addElementOrSection(ppDoc, "/metadata/gmd:MD_Metadata/gmd:fileIdentifier", "/metadata/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString", false);
-        addElementOrSection(ppDoc, "/metadata/gmd:MD_Metadata/gmd:fileIdentifier", "/metadata/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString", false);
+
+        Element parent = null;
+        parent = addElementOrSection(ppDoc, "/metadata/gmd:MD_Metadata/gmd:fileIdentifier", "/metadata/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString", false);
+        parent = addElementOrSection(ppDoc, "/metadata/gmd:MD_Metadata/gmd:fileIdentifier", "/metadata/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString", false);
 
         ppDoc = mdeXml2Html.preprocess(ppDoc);
-        deleteElementOrSection(ppDoc, "/metadata/gmd:MD_Metadata/gmd:fileIdentifier[2]", "Minimaal 1 element vereist!");
+        parent = deleteElementOrSection(ppDoc, "/metadata/gmd:MD_Metadata/gmd:fileIdentifier[2]", "Minimaal 1 element vereist!");
         
-       
         String attrName = null;
         String newValue = "brabants";
         String newText = null;
@@ -366,9 +412,21 @@ public class mdeXml2Html {
         Document htmlDoc = mdeXml2Html.transform(ppDoc);
         // this._addDateStamp(this.xmlDoc); 
 
-
+//        parent = XPathHelper.selectSingleElement(htmlDoc, "//div[@ui-mde-fullpath=\"/gmd:MD_Metadata/gmd:fileIdentifier[1]/gco:CharacterString\"]");
+//        parent = XPathHelper.selectSingleElement(htmlDoc, "/");
+        
+        String xpathString = "//div[@id=\"" + "algemeen" + "\" and @class=\"ui-mde-tab-definition\"]";
+        XPath xpath = XPath.newInstance(xpathString);
+        Object o = xpath.selectSingleNode(htmlDoc);
+        String s = null;
+        if (o!=null) {
+            s = new XMLOutputter(Format.getPrettyFormat()).outputString((Element)o);
+        }
+        
         System.out.println("-----------------START--------------------");
-                System.out.println(DocumentHelper.getDocumentString(htmlDoc));        
+          System.out.println(s);
+//          System.out.println(convertElement2Html(parent));
+ //           System.out.println(DocumentHelper.getDocumentString(htmlDoc));        
         System.out.println("-----------------END----------------------");
     }
 

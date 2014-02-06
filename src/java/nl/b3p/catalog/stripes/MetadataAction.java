@@ -11,7 +11,9 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpSession;
 import net.sourceforge.stripes.action.FileBean;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
@@ -28,6 +30,7 @@ import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.config.*;
 import nl.b3p.catalog.filetree.Extensions;
 import nl.b3p.catalog.filetree.FileListHelper;
+import nl.b3p.catalog.resolution.HtmlResolution;
 import nl.b3p.catalog.resolution.XmlResolution;
 import nl.b3p.catalog.xml.*;
 import org.apache.commons.io.FileUtils;
@@ -45,6 +48,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 public class MetadataAction extends DefaultAction {
+
     private final static Log log = LogFactory.getLog(MetadataAction.class);
 
     private static final String FILE_MODE = "file";
@@ -52,67 +56,67 @@ public class MetadataAction extends DefaultAction {
     private static final String LOCAL_MODE = "local";
 
     private final static DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    
+
     /* XXX niet nodig omdat objecten van verschillende types toch niet dezelfde
      * naam mogen hebben...
      */
     private static final int esriDTFeatureClass = 5; /* esriDatasetType */
 
-    @Validate(required=true, on={"!importMD"})
+    @Validate(required = true, on = {"!importMD"})
     private String path;
 
-    @Validate(required=true, on={"!importMD"})
+    @Validate(required = true, on = {"!importMD"})
     private String mode;
 
-    @Validate(required=true, on={"save", "synchronize"})
+    @Validate(required = true, on = {"save", "synchronize"})
     private String metadata;
 
-    @Validate(required=true, on="postComment")
+    @Validate(required = true, on = "postComment")
     private String comment;
 
-    @Validate(required=true, on="export")
+    @Validate(required = true, on = "export")
     private boolean strictISO19115 = false;
 
     @Validate
     private FileBean importXml;
-    
+
     @Validate
     private String synchronizeData;
-    
+
     @Validate
     private String username;
-    
+
     private Root root;
     private AclAccess rootAccess;
-    private Map<String,String> extraHeaders = new HashMap<String,String>();
+    private Map<String, String> extraHeaders = new HashMap<String, String>();
 
     public void determineRoot() throws B3PCatalogException {
         root = Root.getRootForPath(path, getContext().getRequest(), AclAccess.READ);
         rootAccess = root.getRequestUserHighestAccessLevel(getContext().getRequest());
         extraHeaders.put("X-MDE-Access", rootAccess.name());
     }
-    
+
     public Resolution load() {
 
         try {
-            if(LOCAL_MODE.equals(mode)) {
+            if (LOCAL_MODE.equals(mode)) {
                 return new XmlResolution(strictISO19115 ? extractMD_Metadata(metadata) : metadata);
-            }            
+            }
             determineRoot();
 
-            if(SDE_MODE.equals(mode)) {
-                
+            if (SDE_MODE.equals(mode)) {
+
                 metadata = ArcSDEHelperProxy.getMetadata(root, path);
                 return new XmlResolution(strictISO19115 ? extractMD_Metadata(metadata) : metadata, extraHeaders);
-                
-            } else if(FILE_MODE.equals(mode)) {
-                
+
+            } else if (FILE_MODE.equals(mode)) {
+
                 File mdFile = FileListHelper.getFileForPath(root, path);
 
-                if(FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
+                if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
                     try {
-                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();                    
-                        metadata = FGDBHelperProxy.getMetadata(mdFile,esriDTFeatureClass);
+                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+                        metadata = FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass);
                     } finally {
                         FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
                     }
@@ -123,7 +127,7 @@ public class MetadataAction extends DefaultAction {
                         // create new metadata on client side or show this in exported file:
                         return new XmlResolution(DocumentHelper.EMPTY_METADATA, extraHeaders);
                     } else {
-                        if(strictISO19115) {
+                        if (strictISO19115) {
                             return new XmlResolution(extractMD_Metadata(mdFile), extraHeaders);
                         } else {
                             return new XmlResolution(new BufferedInputStream(FileUtils.openInputStream(mdFile)), extraHeaders);
@@ -140,35 +144,116 @@ public class MetadataAction extends DefaultAction {
         }
     }
 
+    public Resolution loadMdAsHtml() {
+
+        // store corresponding xml doc in session under "MetadataAction.mdDoc" 
+        // when loading md as html 
+        // subsequent changes in html are mirrored in this xml doc
+        HttpSession sess = getContext().getRequest().getSession();
+        Document mdDoc = null;
+
+        try {
+            if (LOCAL_MODE.equals(mode)) {
+                mdDoc = strictISO19115 ? extractMD_MetadataAsDoc(metadata) : DocumentHelper.getMetadataDocument(metadata);
+            }
+            determineRoot();
+
+            if (SDE_MODE.equals(mode)) {
+
+                metadata = ArcSDEHelperProxy.getMetadata(root, path);
+                mdDoc = strictISO19115 ? extractMD_MetadataAsDoc(metadata) : DocumentHelper.getMetadataDocument(metadata);
+
+            } else if (FILE_MODE.equals(mode)) {
+
+                File mdFile = FileListHelper.getFileForPath(root, path);
+
+                if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
+                    try {
+                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+                        metadata = FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass);
+                    } finally {
+                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+                    }
+                    mdDoc = strictISO19115 ? extractMD_MetadataAsDoc(metadata) : DocumentHelper.getMetadataDocument(metadata);
+                } else {
+                    mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
+                    if (!mdFile.exists()) {
+                        // create new metadata on client side or show this in exported file:
+                        mdDoc = DocumentHelper.getMetadataDocument(DocumentHelper.EMPTY_METADATA);
+                    } else {
+                        if (strictISO19115) {
+                            mdDoc = extractMD_MetadataAsDoc(mdFile);
+                        } else {
+                            mdDoc = DocumentHelper.getMetadataDocument(mdFile);
+                        }
+                    }
+                }
+            } else {
+                throw new IllegalArgumentException("Invalid mode: " + mode);
+            }
+
+            sess.setAttribute("MetadataAction.mdDoc", mdDoc);
+
+            Document ppDoc = mdeXml2Html.preprocess(mdDoc);
+            Document htmlDoc = mdeXml2Html.transform(ppDoc);
+            // this._addDateStamp(this.xmlDoc); 
+
+            StringReader sr = new StringReader(DocumentHelper.getDocumentString(htmlDoc));
+            return new HtmlResolution(sr);
+
+        } catch (Exception e) {
+            sess.removeAttribute("MetadataAction.mdDoc");
+            String message = "Kan geen " + mode + " metadata openen van lokatie " + path;
+            log.error(message, e);
+            return new HtmlErrorResolution(message, e);
+        }
+    }
+    
+    public Resolution updateMdfromHtml() {
+        return null;
+    }
+
     public Resolution save() {
         try {
             determineRoot();
-            
-            if(rootAccess.getSecurityLevel() < AclAccess.WRITE.getSecurityLevel()) {
+
+            if (rootAccess.getSecurityLevel() < AclAccess.WRITE.getSecurityLevel()) {
                 throw new B3PCatalogException("Geen rechten om metadata op te slaan op deze locatie");
             }
 
-            if(SDE_MODE.equals(mode)) {
-                    
+            Document toBeSavedXmlDoc = DocumentHelper.getMetadataDocument(metadata);
+            boolean synchroniseDC = false;
+            if (synchroniseDC) {
+                toBeSavedXmlDoc = mdeXml2Html.dCtoISO19115Synchronizer(toBeSavedXmlDoc);
+            }
+            
+            boolean serviceMode = true;
+            boolean datasetMode = false;
+            mdeXml2Html.cleanUpMetadata(toBeSavedXmlDoc, serviceMode, datasetMode);
+            mdeXml2Html.removeEmptyNodes(toBeSavedXmlDoc);
+
+          
+            if (SDE_MODE.equals(mode)) {
+
                 Object dataset = ArcSDEHelperProxy.getDataset(root, path);
                 String oldMetadata = ArcSDEHelperProxy.getMetadata(dataset);
-                ArcSDEHelperProxy.saveMetadata(dataset, sanitizeComments(oldMetadata,metadata));
-                
-            } else if(FILE_MODE.equals(mode)) {
-                
+                ArcSDEHelperProxy.saveMetadata(dataset, sanitizeComments(oldMetadata, metadata));
+
+            } else if (FILE_MODE.equals(mode)) {
+
                 File mdFile = FileListHelper.getFileForPath(root, path);
-                
-                if(FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
+
+                if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
                     try {
                         FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
-                        String oldMetadata = FGDBHelperProxy.getMetadata(mdFile,esriDTFeatureClass);
-                        FGDBHelperProxy.setMetadata(mdFile, 5, sanitizeComments(oldMetadata,metadata));
+                        String oldMetadata = FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass);
+                        FGDBHelperProxy.setMetadata(mdFile, 5, sanitizeComments(oldMetadata, metadata));
                     } finally {
                         FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
                     }
                 } else {
                     mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
-                    
+
                     Document oldMetadata = DocumentHelper.getMetadataDocument(mdFile);
                     metadata = sanitizeComments(oldMetadata, metadata);
 
@@ -179,64 +264,65 @@ public class MetadataAction extends DefaultAction {
             } else {
                 throw new IllegalArgumentException("Invalid mode: " + mode);
             }
-            
+
             return new StreamingResolution("text/plain", "success");
         } catch (Exception e) {
             String message = "Could not write " + mode + " metadata to location " + path;
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }
+
     }
-    
+
     public Resolution synchronizeLocal() throws Exception {
         // metadata string must already have been preprocessed on the clientside
         Document doc = new SAXBuilder().build(new StringReader(metadata));
-                
-        if(path.toLowerCase().endsWith(".shp.xml")) {
-            
+
+        if (path.toLowerCase().endsWith(".shp.xml")) {
+
             ShapefileSynchronizer.synchronizeFromLocalAccessJSON(doc, synchronizeData);
-            
-        } else if(path.toLowerCase().endsWith(".nc.xml")) {
-            
+
+        } else if (path.toLowerCase().endsWith(".nc.xml")) {
+
             doc = NCMLSynchronizer.synchronizeNCML(doc, synchronizeData);
         }
-        return new XmlResolution(doc);        
+        return new XmlResolution(doc);
     }
-    
+
     public Resolution synchronize() {
 
         try {
-            
-            if(LOCAL_MODE.equals(mode)) {
+
+            if (LOCAL_MODE.equals(mode)) {
                 return synchronizeLocal();
             }
-            
+
             determineRoot();
-            
+
             // metadata string must already have been preprocessed on the clientside
             Document xmlDoc = new SAXBuilder().build(new StringReader(metadata));
 
-            if(SDE_MODE.equals(mode)) {
-                
-                Object dataset = ArcSDEHelperProxy.getDataset(root, path); 
-                
-                if(dataset instanceof ArcSDEJDBCDataset) {
-                    
+            if (SDE_MODE.equals(mode)) {
+
+                Object dataset = ArcSDEHelperProxy.getDataset(root, path);
+
+                if (dataset instanceof ArcSDEJDBCDataset) {
+
                     ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();
-                    
-                    if(cfg.isEnabled()) {
+
+                    if (cfg.isEnabled()) {
                         dataset = ArcSDEHelperProxy.getArcObjectsDataset(root, path);
                         ArcGISSynchronizer.synchronize(xmlDoc, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
-                    } else if(cfg.isForkSynchroniser()) {
-                        ArcSDEJDBCDataset ds = (ArcSDEJDBCDataset)dataset;
+                    } else if (cfg.isForkSynchroniser()) {
+                        ArcSDEJDBCDataset ds = (ArcSDEJDBCDataset) dataset;
 
-                        if(ds.getRoot().getArcobjectsConnection() == null) {
+                        if (ds.getRoot().getArcobjectsConnection() == null) {
                             throw new Exception("ArcObjects niet geconfigureerd, synchroniseren niet mogelijk");
                         }
                         xmlDoc = ArcObjectsSynchronizerForker.synchronize(
-                                getContext().getServletContext(),  
+                                getContext().getServletContext(),
                                 ds.getAbsoluteName(),
-                                ArcObjectsSynchronizerMain.TYPE_SDE, 
+                                ArcObjectsSynchronizerMain.TYPE_SDE,
                                 ds.getRoot().getArcobjectsConnection(),
                                 metadata
                         );
@@ -246,18 +332,18 @@ public class MetadataAction extends DefaultAction {
                 } else {
                     ArcGISSynchronizer.synchronize(xmlDoc, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
                 }
-                
-            } else if(FILE_MODE.equals(mode)) {
+
+            } else if (FILE_MODE.equals(mode)) {
 
                 File dataFile = FileListHelper.getFileForPath(root, path);
-            
+
                 boolean isFGDB = FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dataFile);
-                ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();                
-                if(cfg.isEnabled()) {
-                    if(isFGDB) {
+                ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();
+                if (cfg.isEnabled()) {
+                    if (isFGDB) {
                         try {
-                            FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();                    
-                        
+                            FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+
                             Object ds = FGDBHelperProxy.getTargetDataset(dataFile, 5 /*esriDatasetType.esriDTFeatureClass*/);
                             ArcGISSynchronizer.synchronize(xmlDoc, ds, ArcGISSynchronizer.FORMAT_NAME_FGDB);
                         } finally {
@@ -265,8 +351,8 @@ public class MetadataAction extends DefaultAction {
                         }
                     } else if (path.endsWith(Extensions.SHAPE)) {
                         try {
-                            FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();                    
-                        
+                            FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+
                             Object ds = DatasetHelperProxy.getShapeDataset(dataFile);
                             ArcGISSynchronizer.synchronize(xmlDoc, ds, ArcGISSynchronizer.FORMAT_NAME_SHAPE);
                         } finally {
@@ -275,14 +361,14 @@ public class MetadataAction extends DefaultAction {
                     } else {
                         synchronizeRegularMetadata(xmlDoc, dataFile);
                     }
-                } else if(cfg.isForkSynchroniser()) {
+                } else if (cfg.isForkSynchroniser()) {
                     xmlDoc = ArcObjectsSynchronizerForker.synchronize(
-                            getContext().getServletContext(),  
+                            getContext().getServletContext(),
                             FileListHelper.getFileForPath(root, path).getAbsolutePath(),
-                            isFGDB ? ArcObjectsSynchronizerMain.TYPE_FGDB : ArcObjectsSynchronizerMain.TYPE_SHAPE, 
+                            isFGDB ? ArcObjectsSynchronizerMain.TYPE_FGDB : ArcObjectsSynchronizerMain.TYPE_SHAPE,
                             null,
                             metadata
-                    );                    
+                    );
                 }
             } else {
                 throw new IllegalArgumentException("Invalid mode: " + mode);
@@ -294,10 +380,10 @@ public class MetadataAction extends DefaultAction {
             return new HtmlErrorResolution(message, e);
         }
     }
-    
+
     private void synchronizeRegularMetadata(Document xmlDoc, File dataFile) throws IOException, JDOMException {
         String localFilename = dataFile.getName();
-        
+
         String title = "";
         String fileFormat = "";
         int dotIndex = localFilename.lastIndexOf(".");
@@ -310,7 +396,7 @@ public class MetadataAction extends DefaultAction {
         } else if (dotIndex == 0) {
             title = localFilename.substring(1);
         }
-        
+
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, title);
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.FC_TITLE, title);
 
@@ -322,13 +408,13 @@ public class MetadataAction extends DefaultAction {
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.NAME_DATASET, "");
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.PROTOCOL_DATASET, "download");
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DESC_DATASET, "");
-        
+
         //TODO: file type in md opslaan?
     }
 
     public Resolution importMD() {
         log.debug("in importMD");
-        try {    
+        try {
             //return new XmlResolution(filedata.getInputStream());
             String xml = IOUtils.toString(importXml.getInputStream(), "UTF-8");
             // jquery form plugin extracts the value from the textarea. unescaping done afterwards in js success callback
@@ -337,7 +423,7 @@ public class MetadataAction extends DefaultAction {
             StreamingResolution sr = new StreamingResolution("text/html", hackhackXml);
             sr.setCharacterEncoding("UTF-8");
             return sr;
-        } catch(Exception e) {
+        } catch (Exception e) {
             String message = "Could not import file.";
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
@@ -349,57 +435,57 @@ public class MetadataAction extends DefaultAction {
         if (resolution instanceof XmlResolution) {
             String exportName = null;
             int i = path.lastIndexOf("/");
-            if(i == -1) {
+            if (i == -1) {
                 i = path.lastIndexOf("\\");
             }
-            if(i != -1) {
-                exportName = path.substring(i+1);
+            if (i != -1) {
+                exportName = path.substring(i + 1);
             } else {
                 exportName = path;
             }
             if (!exportName.endsWith(".xml")) {
                 exportName = exportName + ".xml";
             }
-            XmlResolution xmlResolution = (XmlResolution)resolution;
+            XmlResolution xmlResolution = (XmlResolution) resolution;
             xmlResolution.setAttachment(true);
             xmlResolution.setFilename(exportName);
         }
         return resolution;
     }
-    
+
     // Comments can be posted by anyone to any ".xml"-file that is a descendant of one of the roots.
     // that has <metadata/> or <gmd:MD_Metadata/> as root. This is by design.
     public Resolution postComment() {
         try {
-            if(LOCAL_MODE.equals(mode)) {
+            if (LOCAL_MODE.equals(mode)) {
                 Document doc = DocumentHelper.getMetadataDocument(metadata);
                 addComment(doc, comment);
                 String commentedMD = DocumentHelper.getDocumentString(doc);
                 return new XmlResolution(commentedMD);
             }
-            
+
             determineRoot();
-            
-            if(rootAccess.getSecurityLevel() < AclAccess.COMMENT.getSecurityLevel()) {
+
+            if (rootAccess.getSecurityLevel() < AclAccess.COMMENT.getSecurityLevel()) {
                 throw new B3PCatalogException("Geen rechten om commentaar aan metadata toe te voegen op deze locatie");
             }
-            
-            if(SDE_MODE.equals(mode)) {
+
+            if (SDE_MODE.equals(mode)) {
                 Object dataset = ArcSDEHelperProxy.getDataset(root, path);
-                
+
                 Document doc = DocumentHelper.getMetadataDocument(ArcSDEHelperProxy.getMetadata(dataset));
                 addComment(doc, comment);
                 String commentedMD = DocumentHelper.getDocumentString(doc);
                 ArcSDEHelperProxy.saveMetadata(dataset, commentedMD);
                 return new XmlResolution(commentedMD);
-            } else if(FILE_MODE.equals(mode)) {
-                
+            } else if (FILE_MODE.equals(mode)) {
+
                 File mdFile = FileListHelper.getFileForPath(root, path);
-                
+
                 if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
                     try {
-                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();                    
-                    
+                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+
                         Document doc = DocumentHelper.getMetadataDocument(FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass));
 
                         addComment(doc, comment);
@@ -411,7 +497,7 @@ public class MetadataAction extends DefaultAction {
                     } finally {
                         FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
                     }
-            } else {
+                } else {
                     mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
 
                     Document doc = DocumentHelper.getMetadataDocument(mdFile);
@@ -427,29 +513,41 @@ public class MetadataAction extends DefaultAction {
             } else {
                 throw new IllegalArgumentException("Invalid mode: " + mode);
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             String message = "Het is niet gelukt om het commentaar (" + comment + ") te posten in " + mode + " op lokatie \"" + path + "\"";
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }
     }
 
-    protected String extractMD_Metadata(String md) throws JDOMException, IOException, B3PCatalogException {
+    protected Document extractMD_MetadataAsDoc(String md) throws JDOMException, IOException, B3PCatalogException {
         Document doc = DocumentHelper.getMetadataDocument(md);
         Element MD_Metadata = DocumentHelper.getMD_Metadata(doc);
 
         MD_Metadata.detach();
         Document extractedDoc = new Document(MD_Metadata);
 
+        return extractedDoc;
+    }
+
+    protected String extractMD_Metadata(String md) throws JDOMException, IOException, B3PCatalogException {
+        Document extractedDoc = extractMD_MetadataAsDoc(md);
+
         return new XMLOutputter(Format.getPrettyFormat()).outputString(extractedDoc);
     }
 
-    protected String extractMD_Metadata(File mdFile) throws JDOMException, IOException, B3PCatalogException {
+    protected Document extractMD_MetadataAsDoc(File mdFile) throws JDOMException, IOException, B3PCatalogException {
         Document doc = DocumentHelper.getMetadataDocument(mdFile);
         Element MD_Metadata = DocumentHelper.getMD_Metadata(doc);
 
         MD_Metadata.detach();
         Document extractedDoc = new Document(MD_Metadata);
+
+        return extractedDoc;
+    }
+
+    protected String extractMD_Metadata(File mdFile) throws JDOMException, IOException, B3PCatalogException {
+        Document extractedDoc = extractMD_MetadataAsDoc(mdFile);
 
         return new XMLOutputter(Format.getPrettyFormat()).outputString(extractedDoc);
     }
@@ -459,15 +557,17 @@ public class MetadataAction extends DefaultAction {
      */
     protected String sanitizeComments(Document oldDoc, String md) throws Exception {
         Element comments = DocumentHelper.getComments(oldDoc);
-        if (comments == null)
+        if (comments == null) {
             throw new B3PCatalogException("Xml Document is non-metadata xml. This is not allowed.");
+        }
         Content safeComments = comments.detach();
         //log.debug("metadata1:\n\n" + md);
         Document doc = new SAXBuilder().build(new StringReader(md));
         //log.debug("metadata2:\n\n" + new XMLOutputter().outputString(doc));
         Element unsafeComments = DocumentHelper.getComments(doc);
-        if (comments == null)
+        if (comments == null) {
             throw new B3PCatalogException("Xml Document is non-metadata xml. This is not allowed.");
+        }
         Element b3pElem = unsafeComments.getParentElement();
         b3pElem.removeContent(unsafeComments);
         b3pElem.addContent(safeComments);
@@ -476,26 +576,27 @@ public class MetadataAction extends DefaultAction {
     }
 
     protected String sanitizeComments(String oldDoc, String md) throws Exception {
-        return sanitizeComments(DocumentHelper.getMetadataDocument(oldDoc),md);
+        return sanitizeComments(DocumentHelper.getMetadataDocument(oldDoc), md);
     }
 
     private void addComment(Document doc, String comment) throws B3PCatalogException {
         Element comments = DocumentHelper.getComments(doc);
-        if (comments == null)
+        if (comments == null) {
             throw new B3PCatalogException("Xml Document is non-metadata xml. This is not allowed.");
+        }
 
         String user = getContext().getRequest().getRemoteUser();
-        if(user == null) {
+        if (user == null) {
             user = username;
         }
         Element newComment = new Element(Names.B3P_COMMENT, Namespaces.B3P).addContent(Arrays.asList(
-            new Element(Names.B3P_USERNAME, Namespaces.B3P).setText(user),
-            new Element(Names.B3P_DATE_TIME, Namespaces.B3P).setText(DATETIME_FORMAT.format(new Date())),
-            new Element(Names.B3P_CONTENT, Namespaces.B3P).setText(comment)
+                new Element(Names.B3P_USERNAME, Namespaces.B3P).setText(user),
+                new Element(Names.B3P_DATE_TIME, Namespaces.B3P).setText(DATETIME_FORMAT.format(new Date())),
+                new Element(Names.B3P_CONTENT, Namespaces.B3P).setText(comment)
         ));
         comments.addContent(newComment);
     }
-
+    
     // <editor-fold defaultstate="collapsed" desc="getters en setters">
     public String getMode() {
         return mode;

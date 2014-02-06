@@ -4,7 +4,7 @@
     <!-- Locatie van XML configuratiebestand. Een relatief pad is ten opzichte
          van CATALINA_BASE. Standaardwaarde in web.xml: conf/b3pcatalog/config.xml
     -->
-    <!--Parameter name="config" value="c:\b3p\b3pcatalog\config.xml" override="false"/-->
+    <Parameter name="config" value="D:\svn\B3pCatalog\configs\www.kaartenbalie.nl\config.xml" override="false"/>
     
     <Resource name="jdbc/arcsde"
         auth="Container"
