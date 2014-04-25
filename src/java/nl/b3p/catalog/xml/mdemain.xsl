@@ -84,11 +84,11 @@
                 <link href="{$basePath}styles/metadata.css" rel="stylesheet" type="text/css"/>
 
                 <!-- jquery -->
-                <script type="text/javascript" src="{$basePath}scripts/mde/includes/jquery/jquery-latest.js"></script>
+                <!--script type="text/javascript" src="{$basePath}scripts/mde/includes/jquery/jquery-latest.js"></script-->
                 <!--script type="text/javascript" src="{$basePath}scripts/mde/includes/jquery/jquery-latest.min.js"></script-->
-                <script type="text/javascript" src="{$basePath}scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.js"></script>
+                <!--script type="text/javascript" src="{$basePath}scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.js"></script-->
                 <!--script type="text/javascript" src="{$basePath}scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.min.js"></script-->
-                <script type="text/javascript" src="{$basePath}scripts/mde/includes/jquery.ui.datepicker-nl/jquery.ui.datepicker-nl.js"></script>
+                <!--script type="text/javascript" src="{$basePath}scripts/mde/includes/jquery.ui.datepicker-nl/jquery.ui.datepicker-nl.js"></script-->
 
                 <!-- mde dependencies -->
                 <script type="text/javascript" src="{$basePath}scripts/mde/includes/Math.uuid.js"></script>
@@ -138,7 +138,7 @@
                 <ul id="ui-mde-tabs" class="ui-helper-reset">
                     <xsl:if test="$dcMode">
                         <li class="ui-corner-top">
-                            <a href="#algemeen" title="Dublin Core voor administratieve metadata">Dublin Core</a>
+                            <a href="#algemeen" title="Dublin Core voor administratieve metadata">Dublin Core (SRV)</a>
                         </li>
                     </xsl:if>
                     <xsl:if test="$serviceMode">

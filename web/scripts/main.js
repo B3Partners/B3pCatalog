@@ -1,6 +1,7 @@
 if (typeof B3pCatalog == "undefined") B3pCatalog = {};
 
 B3pCatalog.hashchange = function(event) {
+    console.log("hashchange", event);
     // get possible cookie set by login page:
     var loginHash = $.cookie("mdeLoginHash");
     if (loginHash && $.trim(loginHash) !== "#") {
@@ -261,7 +262,7 @@ B3pCatalog.loadFiletreeFile = function(selectedFilePath) {
                 title: anchor.attr("title"),
                 isGeo: "true" == anchor.attr("isgeo")
             };
-
+console.log("loadFiletreeFile",newState,$.bbq);
             $.bbq.pushState(newState, 2);
         }
     });
@@ -476,7 +477,7 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
             url: B3pCatalog.metadataUrl,
             type: "POST",
             data: {
-                load : "t",
+                loadMdAsHtml : "t",
                 mode: mode,
                 path : path
             },
@@ -489,15 +490,15 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
                 // TODO: on demand van PBL bv: laatst geopende doc opslaan
                 //$.cookie();
                 var access = jqXHR.getResponseHeader("X-MDE-Access");
-                var viewMode = access !== "WRITE";
-                
+                var viewMode = false; //access != "WRITE";
+                 
                 B3pCatalog.createMdeHtml(data, isGeo, viewMode);
             }
         }
     };
     
-    $("#synchronizeMD").button("option", "disabled", false);       
-   
+    $("#synchronizeMD").button("option", "disabled", false);   
+      
     this._loadMetadata(opts);
 };
 
@@ -525,7 +526,7 @@ B3pCatalog.loadMetadata2 = function(mode, path, title, isGeo, cancel) {
                 // TODO: on demand van PBL bv: laatst geopende doc opslaan
                 //$.cookie();
                 var access = jqXHR.getResponseHeader("X-MDE-Access");
-                var viewMode = access != "WRITE";
+                var viewMode = false; //access != "WRITE";
                 B3pCatalog.createMde(data, isGeo, viewMode);
             }
         }
@@ -534,7 +535,7 @@ B3pCatalog.loadMetadata2 = function(mode, path, title, isGeo, cancel) {
     $("#synchronizeMD").button("option", "disabled", false);       
     
     var me = this;
-    
+    /*
     if(mode == B3pCatalog.modes.LOCAL_MODE) {
 
         opts.noAjax = function() {
@@ -583,7 +584,7 @@ B3pCatalog.loadMetadata2 = function(mode, path, title, isGeo, cancel) {
                 });
             }
         }
-    }
+    }*/
     
     this._loadMetadata(opts);
 };

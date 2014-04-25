@@ -62,11 +62,18 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${reference.b3p-commons-gis.jar}</file>
+                    <file>${reference.b3p-commons-gis-1.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>
-            <web-module-additional-libraries/>
+            <web-module-additional-libraries>
+                <library dirs="200">
+                    <file>${reference.local-access-applet.jar}</file>
+                </library>
+                <library dirs="200">
+                    <file>${file.reference.ncCore-4.2.jar}</file>
+                </library>
+            </web-module-additional-libraries>
             <source-roots>
                 <root id="src.dir"/>
             </source-roots>
@@ -95,7 +102,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>b3p-commons-gis</foreign-project>
+                <foreign-project>b3p-commons-gis-1</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>

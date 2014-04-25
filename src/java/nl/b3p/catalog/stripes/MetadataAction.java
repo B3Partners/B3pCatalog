@@ -198,7 +198,9 @@ public class MetadataAction extends DefaultAction {
             Document htmlDoc = mdeXml2Html.transform(ppDoc);
             // this._addDateStamp(this.xmlDoc); 
 
-            StringReader sr = new StringReader(DocumentHelper.getDocumentString(htmlDoc));
+            String d = DocumentHelper.getDocumentString(htmlDoc);
+            log.debug("serverside rendered html: " + d);
+            StringReader sr = new StringReader(d);
             return new HtmlResolution(sr);
 
         } catch (Exception e) {
@@ -221,16 +223,16 @@ public class MetadataAction extends DefaultAction {
                 throw new B3PCatalogException("Geen rechten om metadata op te slaan op deze locatie");
             }
 
-            Document toBeSavedXmlDoc = DocumentHelper.getMetadataDocument(metadata);
-            boolean synchroniseDC = false;
-            if (synchroniseDC) {
-                toBeSavedXmlDoc = mdeXml2Html.dCtoISO19115Synchronizer(toBeSavedXmlDoc);
-            }
-            
-            boolean serviceMode = true;
-            boolean datasetMode = false;
-            mdeXml2Html.cleanUpMetadata(toBeSavedXmlDoc, serviceMode, datasetMode);
-            mdeXml2Html.removeEmptyNodes(toBeSavedXmlDoc);
+//            Document toBeSavedXmlDoc = DocumentHelper.getMetadataDocument(metadata);
+//            boolean synchroniseDC = false;
+//            if (synchroniseDC) {
+//                toBeSavedXmlDoc = mdeXml2Html.dCtoISO19115Synchronizer(toBeSavedXmlDoc);
+//            }
+//            
+//            boolean serviceMode = true;
+//            boolean datasetMode = false;
+//            mdeXml2Html.cleanUpMetadata(toBeSavedXmlDoc, serviceMode, datasetMode);
+//            mdeXml2Html.removeEmptyNodes(toBeSavedXmlDoc);
 
           
             if (SDE_MODE.equals(mode)) {
