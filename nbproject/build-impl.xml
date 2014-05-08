@@ -884,10 +884,10 @@ exists or setup the property manually. For example like this:
         <ant antfile="${project.b3p-commons-csw}/build.xml" inheritall="false" target="jar">
             <property name="deploy.on.save" value="false"/>
         </ant>
-        <ant antfile="${project.b3p-commons-gis-1}/build.xml" inheritall="false" target="jar">
+        <ant antfile="${project.b3p-commons-gis}/build.xml" inheritall="false" target="jar">
             <property name="deploy.on.save" value="false"/>
         </ant>
-        <ant antfile="${project.securityfilter-b3p}/build.xml" inheritall="false" target="jar">
+        <ant antfile="${project.securityfilter-b3p-1}/build.xml" inheritall="false" target="jar">
             <property name="deploy.on.save" value="false"/>
         </ant>
     </target>
@@ -898,10 +898,10 @@ exists or setup the property manually. For example like this:
         <ant antfile="${project.b3p-commons-csw}/build.xml" inheritall="false" target="jar">
             <property name="deploy.on.save" value="false"/>
         </ant>
-        <ant antfile="${project.b3p-commons-gis-1}/build.xml" inheritall="false" target="jar">
+        <ant antfile="${project.b3p-commons-gis}/build.xml" inheritall="false" target="jar">
             <property name="deploy.on.save" value="false"/>
         </ant>
-        <ant antfile="${project.securityfilter-b3p}/build.xml" inheritall="false" target="jar">
+        <ant antfile="${project.securityfilter-b3p-1}/build.xml" inheritall="false" target="jar">
             <property name="deploy.on.save" value="false"/>
         </ant>
     </target>
@@ -1052,16 +1052,16 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${libs.Stripes.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.Jaxen.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.jstl11.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${reference.securityfilter-b3p.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.SecurityFilterDeps.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${reference.b3p-commons-core.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${reference.securityfilter-b3p-1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.Castor.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${reference.b3p-commons-csw.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.commons-dbutils-1.4.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.commons-cli-1.2.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.GeotoolsFull.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.JTS.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${reference.b3p-commons-gis-1.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${reference.b3p-commons-gis.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${reference.b3p-commons-core.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
         <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update"/>
     </target>
@@ -1070,16 +1070,16 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${libs.Stripes.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.Jaxen.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.jstl11.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${reference.securityfilter-b3p.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.SecurityFilterDeps.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${reference.b3p-commons-core.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${reference.securityfilter-b3p-1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.Castor.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${reference.b3p-commons-csw.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.commons-dbutils-1.4.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${file.reference.commons-cli-1.2.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.GeotoolsFull.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${libs.JTS.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copyfiles files="${reference.b3p-commons-gis-1.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${reference.b3p-commons-gis.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${reference.b3p-commons-core.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
     </target>
     <target depends="init" if="dist.ear.dir" name="-clean-webinf-lib">
         <delete dir="${build.web.dir}/WEB-INF/lib"/>
@@ -1495,8 +1495,8 @@ exists or setup the property manually. For example like this:
     <target depends="init" name="deps-clean" unless="no.deps">
         <ant antfile="${project.b3p-commons-core}/build.xml" inheritall="false" target="clean"/>
         <ant antfile="${project.b3p-commons-csw}/build.xml" inheritall="false" target="clean"/>
-        <ant antfile="${project.b3p-commons-gis-1}/build.xml" inheritall="false" target="clean"/>
-        <ant antfile="${project.securityfilter-b3p}/build.xml" inheritall="false" target="clean"/>
+        <ant antfile="${project.b3p-commons-gis}/build.xml" inheritall="false" target="clean"/>
+        <ant antfile="${project.securityfilter-b3p-1}/build.xml" inheritall="false" target="clean"/>
     </target>
     <target depends="init" name="do-clean">
         <condition property="build.dir.to.clean" value="${build.web.dir}">
