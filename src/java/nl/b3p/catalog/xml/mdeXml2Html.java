@@ -261,21 +261,22 @@ public class mdeXml2Html {
         return savedValue;
     };
 
-    public static void saveValueOnServerSide(Document xmlDoc, String path, String attrName, String newValue, String newText) throws JDOMException, Exception {
+    public static void saveValueOnServerSide(Document xmlDoc, String path, String attrName, String newValue/*, String newText*/) throws JDOMException, Exception {
 
         Element targetNode = XPathHelper.selectSingleElement(xmlDoc, path);
         if (targetNode == null) {
-            throw new Exception("Save path in XML document not found. Changes will not be saved.");
+            throw new Exception("Save path \"" + path + "\" in XML document not found");
         }
         
-
         if (targetNode.getAttribute("codeListValue") != null) {
             // is picklist item
             targetNode.setAttribute("codeListValue", newValue);
-            if (newText==null) {
-                newText = newValue;
-            }
-            targetNode.setText(newText);
+            
+            // Niet nodig toch?
+            //if (newText==null) {
+            //    newText = newValue;
+            //}
+            //targetNode.setText(newText);
         } else if (targetNode.getAttribute(attrName) != null) {
             targetNode.setAttribute(attrName, newValue);
         } else {
@@ -406,7 +407,7 @@ public class mdeXml2Html {
         String attrName = null;
         String newValue = "brabants";
         String newText = null;
-        saveValueOnServerSide(ppDoc, "/metadata/gmd:MD_Metadata/gmd:language/gmd:LanguageCode", attrName, newValue, newText);
+        saveValueOnServerSide(ppDoc, "/metadata/gmd:MD_Metadata/gmd:language/gmd:LanguageCode", attrName, newValue/*, newText*/);
         String value = getSavedValueOnServerSide(ppDoc, "/metadata/gmd:MD_Metadata/gmd:language/gmd:LanguageCode", attrName);
         
         Document htmlDoc = mdeXml2Html.transform(ppDoc);
