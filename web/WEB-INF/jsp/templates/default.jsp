@@ -50,10 +50,6 @@
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/jquery.cookie/jquery.cookie.js"></script>
 
         <!-- mde dependencies -->
-        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/sarissa/sarissa.js"></script>
-        <!--script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/sarissa/sarissa-compressed.js"></script-->
-        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/sarissa/sarissa_ieemu_xpath.js"></script>
-        <!--script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/sarissa/sarissa_ieemu_xpath-compressed.js"></script-->
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/Math.uuid.js"></script>
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/wiki2html.js"></script>
 
@@ -61,9 +57,9 @@
         <script type="text/javascript" src="${contextPath}/scripts/mde/picklists/gemet-inspire-nl.js"></script>
         
         <!-- mde -->
-        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/metadataEditorBasic.js"></script>
-        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/metadataEditorXslt.js"></script>
+        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/mde.js"></script>
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/commonOptions.js"></script>
+        <!--script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/start.js"></script-->
 
         <!-- B3p libs: -->
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/log.js"></script>

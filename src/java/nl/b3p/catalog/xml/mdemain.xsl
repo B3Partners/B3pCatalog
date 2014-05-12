@@ -57,72 +57,9 @@
     </xsl:template>
 
     <xsl:template match="/">
-        <html>
-            <head>
-                <!--
-                <meta name="description" content=""/>
-                <meta name="DCTERMS.identifier" scheme="DCTERMS.URI" content="http://www.provinciaalgeoregister.nl/"/>
-                <meta name="DCTERMS.title" content="Provinciaal GeoRegister - Homepage"/>
-                <meta name="DCTERMS.type" scheme="OVERHEID.informatietype" content="webpagina"/>
-                <meta name="DCTERMS.language" scheme="DCTERMS.RFC4646" content="nl"/>
-                <meta name="DCTERMS.authority" scheme="OVERHEID.Koepelorganisatie" content="Interprovinciaal Overleg"/>
-                <meta name="DCTERMS.creator" scheme="OVERHEID.Koepelorganisatie" content="Interprovinciaal Overleg"/>
-                <meta name="DCTERMS.modified" content="2010-12-01"/>
-                <meta name="DCTERMS.spatial" scheme="OVERHEID.Koninkrijksdeel" content="Nederland"/>
-                -->
-                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-                <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" /-->
-
-
-                <link href="{$basePath}scripts/mde/styles/jquery-ui-latest.custom.css" rel="stylesheet" type="text/css" />
-                <link href="{$basePath}scripts/mde/styles/standalone.css" rel="stylesheet" type="text/css" />
-                <link href="{$basePath}scripts/mde/styles/metadataEdit.css" rel="stylesheet" type="text/css" />
-                <!--[if IE lte 9]> <link href="{$basePath}scripts/mde/styles/metadataEdit-ie.css" rel="stylesheet" type="text/css" /> <![endif]-->
-                <!--[if lte IE 7]> <link href="{$basePath}scripts/mde/styles/metadataEdit-ie7.css" rel="stylesheet" type="text/css" /> <![endif]-->
-
-                <!-- PGR specific overwrite -->
-                <link href="{$basePath}styles/metadata.css" rel="stylesheet" type="text/css"/>
-
-                <!-- jquery -->
-                <!--script type="text/javascript" src="{$basePath}scripts/mde/includes/jquery/jquery-latest.js"></script-->
-                <!--script type="text/javascript" src="{$basePath}scripts/mde/includes/jquery/jquery-latest.min.js"></script-->
-                <!--script type="text/javascript" src="{$basePath}scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.js"></script-->
-                <!--script type="text/javascript" src="{$basePath}scripts/mde/includes/jquery-ui/jquery-ui-latest.custom.min.js"></script-->
-                <!--script type="text/javascript" src="{$basePath}scripts/mde/includes/jquery.ui.datepicker-nl/jquery.ui.datepicker-nl.js"></script-->
-
-                <!-- mde dependencies -->
-                <script type="text/javascript" src="{$basePath}scripts/mde/includes/Math.uuid.js"></script>
-                <script type="text/javascript" src="{$basePath}scripts/mde/includes/wiki2html.js"></script>
-
-                <!-- organisations database. should be filled by customer data. -->
-                <script type="text/javascript" src="{$basePath}scripts/mde/picklists/organisations.js"></script>
-                <script type="text/javascript" src="{$basePath}scripts/mde/picklists/gemet-inspire-nl.js"></script>
-                <!-- mde -->
-                <script type="text/javascript" src="{$basePath}scripts/mde/includes/metadataEditorBasic.js"></script>
-                <script type="text/javascript" src="{$basePath}scripts/mde/includes/metadataEditorXslt.js"></script>
-                <script type="text/javascript" src="{$basePath}scripts/mde/includes/commonOptions.js"></script>
-
-                <script type="text/javascript" src="{$basePath}scripts/mde/includes/start.js"></script>
-                <!--[if lte IE 7]>
-                <style type="text/css">
-                /* Apply this style for IE7, so metadata is visible when openend in a popup */    
-                #metadataEditor {
-                        width: 600px;
-                        height: 470px;
-                    }
-                </style>
-                <![endif]-->
-                <script type="text/javascript">
-                    var readOnly = <xsl:value-of select="$globalReadonly"/>;                    
-                </script>
-
-            </head>
-            <body class="b3p-mde-iframe-body">
-                <div id="metadataEditor">
-                    <xsl:call-template name="editDocRoot"/>
-                </div>
-            </body>
-        </html>
+        <div id="metadataEditor">
+            <xsl:call-template name="editDocRoot"/>
+        </div>
     </xsl:template>
 
     <xsl:template name="editDocRoot">
