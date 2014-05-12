@@ -502,6 +502,33 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
     this._loadMetadata(opts);
 };
 
+B3pCatalog.refreshMde = function() {
+    var mde = $("#mde").data("mde");
+    
+    var changedElements = mde.getChangedElements();
+    var sectionChange = mde.getSectionChange();
+    
+    console.log("refreshMde", changedElements, sectionChange);
+    
+    $.ajax({
+        url: B3pCatalog.metadataUrl,
+        type: "POST",
+        dataType: 'html',
+        data: {
+            updateXml: "t",
+            elementChanges: JSON.stringify(changedElements),
+            sectionChange: sectionChange === null ? null : JSON.stringify(sectionChange)
+        },
+        success: function(data, textStatus, xhr) {
+            console.log("updateXml", data);
+            
+            // TODO: isGeo en viewMode onthouden
+            B3pCatalog.createMdeHtml(data, true, false);            
+        }
+    });    
+    
+}
+
 B3pCatalog.loadMetadata2 = function(mode, path, title, isGeo, cancel) {
 
     var opts = {
@@ -823,6 +850,7 @@ B3pCatalog.createMde2 = function(xmlDoc, htmlDoc, isGeo, viewMode) {
                 return xhr.responseText;
             }
         },
+        onServerTransformRequired: function() { console.log("onServerTransformRequired"); B3pCatalog.refreshMde(); },
         change: function(changed) {            
             $("#saveMD").button("option", "disabled", !changed);
         }
