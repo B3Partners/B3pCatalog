@@ -11,15 +11,12 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpSession;
 import net.sourceforge.stripes.action.FileBean;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.B3PCatalogException;
-import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.arcgis.ArcGISSynchronizer;
 import nl.b3p.catalog.arcgis.ArcObjectsSynchronizerForker;
 import nl.b3p.catalog.arcgis.ArcObjectsSynchronizerMain;
@@ -30,6 +27,7 @@ import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.config.*;
 import nl.b3p.catalog.filetree.Extensions;
 import nl.b3p.catalog.filetree.FileListHelper;
+import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.resolution.HtmlResolution;
 import nl.b3p.catalog.resolution.XmlResolution;
 import nl.b3p.catalog.xml.*;
@@ -46,6 +44,8 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class MetadataAction extends DefaultAction {
 
@@ -55,6 +55,8 @@ public class MetadataAction extends DefaultAction {
     private static final String SDE_MODE = "sde";
     private static final String LOCAL_MODE = "local";
 
+    private static final String SESSION_KEY_METADATA_XML = MetadataAction.class.getName() + ".METADATA_XML";
+    
     private final static DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /* XXX niet nodig omdat objecten van verschillende types toch niet dezelfde
@@ -62,10 +64,10 @@ public class MetadataAction extends DefaultAction {
      */
     private static final int esriDTFeatureClass = 5; /* esriDatasetType */
 
-    @Validate(required = true, on = {"!importMD"})
+    @Validate(required = true, on = {"!importMD","!updateXml"})
     private String path;
 
-    @Validate(required = true, on = {"!importMD"})
+    @Validate(required = true, on = {"!importMD","!updateXml"})
     private String mode;
 
     @Validate(required = true, on = {"save", "synchronize"})
@@ -86,6 +88,14 @@ public class MetadataAction extends DefaultAction {
     @Validate
     private String username;
 
+    /* JSON with changes to be made to metadata XML. [{path: 'xpath here', attrName: 'attribute (if applicable)', newValue: 'val'}, ...] */
+    @Validate(on="updateXml")
+    private String elementChanges;
+    
+    /* JSON with info about requested section addition or deletion. */
+    @Validate(on="updateXml")
+    private String sectionChange;
+    
     private Root root;
     private AclAccess rootAccess;
     private Map<String, String> extraHeaders = new HashMap<String, String>();
@@ -146,10 +156,10 @@ public class MetadataAction extends DefaultAction {
 
     public Resolution loadMdAsHtml() {
 
-        // store corresponding xml doc in session under "MetadataAction.mdDoc" 
+        // store corresponding (preprocessed) xml doc in session under SESSION_KEY_METADATA_XML
         // when loading md as html 
         // subsequent changes in html are mirrored in this xml doc
-        HttpSession sess = getContext().getRequest().getSession();
+        
         Document mdDoc = null;
 
         try {
@@ -191,10 +201,10 @@ public class MetadataAction extends DefaultAction {
             } else {
                 throw new IllegalArgumentException("Invalid mode: " + mode);
             }
-
-            sess.setAttribute("MetadataAction.mdDoc", mdDoc);
-
+            
             Document ppDoc = mdeXml2Html.preprocess(mdDoc);
+            getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
+            
             Document htmlDoc = mdeXml2Html.transform(ppDoc);
             // this._addDateStamp(this.xmlDoc); 
 
@@ -204,15 +214,43 @@ public class MetadataAction extends DefaultAction {
             return new HtmlResolution(sr);
 
         } catch (Exception e) {
-            sess.removeAttribute("MetadataAction.mdDoc");
+            getContext().getRequest().getSession().removeAttribute(SESSION_KEY_METADATA_XML);
             String message = "Kan geen " + mode + " metadata openen van lokatie " + path;
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }
     }
     
-    public Resolution updateMdfromHtml() {
-        return null;
+    public Resolution updateXml() throws Exception {
+        
+        try {
+
+            Document md = (Document)getContext().getRequest().getSession().getAttribute(SESSION_KEY_METADATA_XML);            
+            if(md == null) {
+                throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
+            }
+            
+            if(elementChanges != null) {
+                mdeXml2Html.applyElementChanges(md, new JSONArray(elementChanges));
+            }
+            
+            if(sectionChange != null) {
+                mdeXml2Html.applySectionChange(md, new JSONObject(sectionChange));
+            }
+            
+            log.debug("serverside xml after updating: " + DocumentHelper.getDocumentString(md));            
+            Document ppDoc = mdeXml2Html.preprocess(md);
+            Document htmlDoc = mdeXml2Html.transform(ppDoc);        
+            String html = DocumentHelper.getDocumentString(htmlDoc);
+
+            log.debug("serverside rendered html after updating xml: " + html);            
+            
+            return new HtmlResolution(new StringReader(html));
+        } catch(Exception e) {
+            String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges;
+            log.error(message, e);
+            return new HtmlErrorResolution(message, e);
+        }
     }
 
     public Resolution save() {
@@ -608,6 +646,22 @@ public class MetadataAction extends DefaultAction {
         this.mode = mode;
     }
 
+    public String getElementChanges() {
+        return elementChanges;
+    }
+
+    public void setElementChanges(String elementChanges) {
+        this.elementChanges = elementChanges;
+    }
+
+    public String getSectionChange() {
+        return sectionChange;
+    }
+
+    public void setSectionChange(String sectionChange) {
+        this.sectionChange = sectionChange;
+    }
+    
     public String getPath() {
         return path;
     }

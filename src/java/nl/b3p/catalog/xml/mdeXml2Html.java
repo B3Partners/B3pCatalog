@@ -43,6 +43,8 @@ import org.jdom.Parent;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -185,6 +187,12 @@ public class mdeXml2Html {
             }
         }
     }
+    
+    public static void applySectionChange(Document xmlDoc, JSONObject change) {
+        
+        //String action = change.getString("action");
+        
+    }
 
     public static Element addElementOrSection(Document xmlDoc, String path, String endPath, boolean above) throws JDOMException, Exception {
 //            var path = $elementOrSection.attr("ui-mde-repeatablepath");
@@ -260,12 +268,28 @@ public class mdeXml2Html {
         }
         return savedValue;
     };
+    
+    public static void applyElementChanges(Document xmlDoc, JSONArray changes) throws Exception {
+        if(log.isDebugEnabled()) {
+            log.debug("applyElementChanges(): before xml = " + DocumentHelper.getDocumentString(xmlDoc));
+        }
 
-    public static void saveValueOnServerSide(Document xmlDoc, String path, String attrName, String newValue/*, String newText*/) throws JDOMException, Exception {
+        for(int i = 0; i < changes.length(); i++) {
+            JSONObject change = changes.getJSONObject(i);
 
-        Element targetNode = XPathHelper.selectSingleElement(xmlDoc, path);
+            updateElement(xmlDoc, change.getString("path"), change.getString("attrName"), change.getString("newValue"));
+        }
+        
+        if(log.isDebugEnabled()) {
+            log.debug("applyElementChanges(): after xml = " + DocumentHelper.getDocumentString(xmlDoc));
+        }
+    }    
+
+    public static void updateElement(Document xmlDoc, String xpath, String attrName, String newValue/*, String newText*/) throws JDOMException, Exception {
+
+        Element targetNode = XPathHelper.selectSingleElement(xmlDoc, xpath);
         if (targetNode == null) {
-            throw new Exception("Save path \"" + path + "\" in XML document not found");
+            throw new Exception("Save path \"" + xpath + "\" in XML document not found");
         }
         
         if (targetNode.getAttribute("codeListValue") != null) {
@@ -407,7 +431,7 @@ public class mdeXml2Html {
         String attrName = null;
         String newValue = "brabants";
         String newText = null;
-        saveValueOnServerSide(ppDoc, "/metadata/gmd:MD_Metadata/gmd:language/gmd:LanguageCode", attrName, newValue/*, newText*/);
+        updateElement(ppDoc, "/metadata/gmd:MD_Metadata/gmd:language/gmd:LanguageCode", attrName, newValue/*, newText*/);
         String value = getSavedValueOnServerSide(ppDoc, "/metadata/gmd:MD_Metadata/gmd:language/gmd:LanguageCode", attrName);
         
         Document htmlDoc = mdeXml2Html.transform(ppDoc);
