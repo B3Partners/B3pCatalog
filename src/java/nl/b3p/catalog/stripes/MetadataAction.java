@@ -64,10 +64,10 @@ public class MetadataAction extends DefaultAction {
      */
     private static final int esriDTFeatureClass = 5; /* esriDatasetType */
 
-    @Validate(required = true, on = {"!importMD","!updateXml"})
+    @Validate(required = true, on = {"!importMD","!updateXml","!updateElementsAndGetXml"})
     private String path;
 
-    @Validate(required = true, on = {"!importMD","!updateXml"})
+    @Validate(required = true, on = {"!importMD","!updateXml","!updateElementsAndGetXml"})
     private String mode;
 
     @Validate(required = true, on = {"save", "synchronize"})
