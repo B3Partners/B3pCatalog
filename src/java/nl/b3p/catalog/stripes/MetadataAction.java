@@ -165,41 +165,42 @@ public class MetadataAction extends DefaultAction {
         try {
             if (LOCAL_MODE.equals(mode)) {
                 mdDoc = strictISO19115 ? extractMD_MetadataAsDoc(metadata) : DocumentHelper.getMetadataDocument(metadata);
-            }
-            determineRoot();
+            } else {
+                determineRoot();
 
-            if (SDE_MODE.equals(mode)) {
+                if (SDE_MODE.equals(mode)) {
 
-                metadata = ArcSDEHelperProxy.getMetadata(root, path);
-                mdDoc = strictISO19115 ? extractMD_MetadataAsDoc(metadata) : DocumentHelper.getMetadataDocument(metadata);
-
-            } else if (FILE_MODE.equals(mode)) {
-
-                File mdFile = FileListHelper.getFileForPath(root, path);
-
-                if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                    try {
-                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
-                        metadata = FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass);
-                    } finally {
-                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
-                    }
+                    metadata = ArcSDEHelperProxy.getMetadata(root, path);
                     mdDoc = strictISO19115 ? extractMD_MetadataAsDoc(metadata) : DocumentHelper.getMetadataDocument(metadata);
-                } else {
-                    mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
-                    if (!mdFile.exists()) {
-                        // create new metadata on client side or show this in exported file:
-                        mdDoc = DocumentHelper.getMetadataDocument(DocumentHelper.EMPTY_METADATA);
+
+                } else if (FILE_MODE.equals(mode)) {
+
+                    File mdFile = FileListHelper.getFileForPath(root, path);
+
+                    if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
+                        try {
+                            FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+                            metadata = FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass);
+                        } finally {
+                            FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+                        }
+                        mdDoc = strictISO19115 ? extractMD_MetadataAsDoc(metadata) : DocumentHelper.getMetadataDocument(metadata);
                     } else {
-                        if (strictISO19115) {
-                            mdDoc = extractMD_MetadataAsDoc(mdFile);
+                        mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
+                        if (!mdFile.exists()) {
+                            // create new metadata on client side or show this in exported file:
+                            mdDoc = DocumentHelper.getMetadataDocument(DocumentHelper.EMPTY_METADATA);
                         } else {
-                            mdDoc = DocumentHelper.getMetadataDocument(mdFile);
+                            if (strictISO19115) {
+                                mdDoc = extractMD_MetadataAsDoc(mdFile);
+                            } else {
+                                mdDoc = DocumentHelper.getMetadataDocument(mdFile);
+                            }
                         }
                     }
+                } else {
+                    throw new IllegalArgumentException("Invalid mode: " + mode);
                 }
-            } else {
-                throw new IllegalArgumentException("Invalid mode: " + mode);
             }
             
             Document ppDoc = mdeXml2Html.preprocess(mdDoc);
@@ -250,6 +251,113 @@ public class MetadataAction extends DefaultAction {
             return new HtmlResolution(new StringReader(html));
         } catch(Exception e) {
             String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
+            log.error(message, e);
+            return new HtmlErrorResolution(message, e);
+        }
+    }
+    
+    /**
+     * Past wijzigingen toe en geeft XML terug zodat lokaal kan worden opgeslagen
+     * door local-access-servlet.
+     */
+    public Resolution updateElementsAndGetXml() throws Exception {
+        try {
+            Document md = (Document)getContext().getRequest().getSession().getAttribute(SESSION_KEY_METADATA_XML);            
+            if(md == null) {
+                throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
+            }
+            
+            if(elementChanges != null) {
+                mdeXml2Html.applyElementChanges(md, new JSONArray(elementChanges));
+            }
+
+            // Bij opslaan kunnen geen section changes zijn gedaan, ook geen
+            // preprocessing nodig
+            
+            // TODO: mdeXml2Html.cleanUpMetadata(md, serviceMode, datasetMode);
+            
+            // BUG: java.util.ConcurrentModificationException
+            //mdeXml2Html.removeEmptyNodes(md);
+
+            // Geen XML parsing door browser, geef door als String
+            return new StreamingResolution("text/plain", new StringReader(DocumentHelper.getDocumentString(md)));
+        } catch(Exception e) {
+            String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
+            log.error(message, e);
+            return new HtmlErrorResolution(message, e);
+        }
+    }
+    
+    public Resolution updateAndSaveXml() throws Exception {
+        
+        Document md;
+        
+        try {
+
+            md = (Document)getContext().getRequest().getSession().getAttribute(SESSION_KEY_METADATA_XML);            
+            if(md == null) {
+                throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
+            }
+            
+            if(elementChanges != null) {
+                mdeXml2Html.applyElementChanges(md, new JSONArray(elementChanges));
+            }
+
+            // Bij opslaan kunnen geen section changes zijn gedaan, ook geen
+            // preprocessing nodig
+            
+            // BUG: java.util.ConcurrentModificationException
+            //mdeXml2Html.removeEmptyNodes(md);
+        } catch(Exception e) {
+            String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
+            log.error(message, e);
+            return new HtmlErrorResolution(message, e);
+        }
+        
+        String mdString = DocumentHelper.getDocumentString(md);
+        
+        try {
+            determineRoot();
+
+            if (rootAccess.getSecurityLevel() < AclAccess.WRITE.getSecurityLevel()) {
+                throw new B3PCatalogException("Geen rechten om metadata op te slaan op deze locatie");
+            }
+          
+            if (SDE_MODE.equals(mode)) {
+
+                Object dataset = ArcSDEHelperProxy.getDataset(root, path);
+                String oldMetadata = ArcSDEHelperProxy.getMetadata(dataset);
+                ArcSDEHelperProxy.saveMetadata(dataset, sanitizeComments(oldMetadata, mdString));
+
+            } else if (FILE_MODE.equals(mode)) {
+
+                File mdFile = FileListHelper.getFileForPath(root, path);
+
+                if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
+                    try {
+                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+                        String oldMetadata = FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass);
+                        FGDBHelperProxy.setMetadata(mdFile, 5, sanitizeComments(oldMetadata, mdString));
+                    } finally {
+                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+                    }
+                } else {
+                    mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
+
+                    Document oldMetadata = DocumentHelper.getMetadataDocument(mdFile);
+                    mdString = sanitizeComments(oldMetadata, mdString);
+
+                    OutputStream outputStream = new BufferedOutputStream(FileUtils.openOutputStream(mdFile));
+                    outputStream.write(mdString.getBytes("UTF-8"));
+                    outputStream.close();
+                }
+            } else {
+                throw new IllegalArgumentException("Invalid mode: " + mode);
+            }
+
+            return new StreamingResolution("text/plain", "success");
+        } catch (Exception e) {
+            String message = "Could not write " + mode + " metadata to location " + path;
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }

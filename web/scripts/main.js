@@ -686,27 +686,47 @@ function endsWith(s, n) {
 
 B3pCatalog.saveMetadata = function(settings) {
 
-    var xml = $("#mde").mde("save");
-    
     if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
-        
+
         var me = this;
         
-        me.loadLocal(function() {
-            
-            me.local.callApplet("writeFileUTF8", B3pCatalog.currentFilename, xml,
-                function() {
-                    B3pCatalog.fadeMessage("Metadata succesvol opgeslagen");
-                    $("#saveMD").button("option", "disabled", true);       
-                    if(!endsWith(B3pCatalog.currentFilename.toLowerCase(), ".xml")) {
-                        B3pCatalog.clickedFileAnchor.addClass("with_metadata");
-                    }
-                },
-                function(e) {
-                    B3pCatalog.openSimpleErrorDialog("Fout bij opslaan bestand: " + e);
-                }
-            );
-        });
+        // Get updated XML from server
+        
+        var mde = $("#mde").data("mde");
+        var changedElements = mde.getChangedElements();
+        var sectionChange = mde.getSectionChange();
+    
+        $.ajax({
+            url: B3pCatalog.metadataUrl,
+            type: "POST",
+            dataType: 'html',
+            data: {
+                updateElementsAndGetXml: "t",
+                elementChanges: JSON.stringify(changedElements),
+                sectionChange: sectionChange === null ? null : JSON.stringify(sectionChange)
+            },
+            success: function(data, textStatus, xhr) {
+
+                var xml = data;
+                
+                me.loadLocal(function() {
+
+                    me.local.callApplet("writeFileUTF8", B3pCatalog.currentFilename, xml,
+                        function() {
+                            B3pCatalog.fadeMessage("Metadata succesvol opgeslagen");
+                            $("#saveMD").button("option", "disabled", true);       
+                            if(!endsWith(B3pCatalog.currentFilename.toLowerCase(), ".xml")) {
+                                B3pCatalog.clickedFileAnchor.addClass("with_metadata");
+                            }
+                        },
+                        function(e) {
+                            B3pCatalog.openSimpleErrorDialog("Fout bij opslaan bestand: " + e);
+                        }
+                    );
+                });
+            }
+        });    
+        
     } else {
         var options = $.extend({
             filename: B3pCatalog.currentFilename,
@@ -717,23 +737,27 @@ B3pCatalog.saveMetadata = function(settings) {
         if (!options.filename)
             return;
 
+        var mde = $("#mde").data("mde");
+        var changedElements = mde.getChangedElements();
+        var sectionChange = mde.getSectionChange();
+    
         $.ajax({
             url: B3pCatalog.metadataUrl,
-            async: options.async,
             type: "POST",
+            dataType: 'html',
             data: {
-                save: "t",
+                updateAndSaveXml: "t",
+                elementChanges: JSON.stringify(changedElements),
+                sectionChange: sectionChange === null ? null : JSON.stringify(sectionChange),
                 path: options.filename,
-                mode: B3pCatalog.currentMode,
-                metadata: xml
+                mode: B3pCatalog.currentMode
             },
             success: function(data, textStatus, xhr) {
-                //log("metadata saved succesfully.");
                 B3pCatalog.fadeMessage("Metadata succesvol opgeslagen");
                 if (options.updateUI)
                     $("#saveMD").button("option", "disabled", true);
             }
-        });
+        });    
     }
 };
 
