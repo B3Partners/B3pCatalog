@@ -240,6 +240,8 @@ public class MetadataAction extends DefaultAction {
             
             log.debug("serverside xml after updating: " + DocumentHelper.getDocumentString(md));            
             Document ppDoc = mdeXml2Html.preprocess(md);
+            getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);            
+            
             Document htmlDoc = mdeXml2Html.transform(ppDoc);        
             String html = DocumentHelper.getDocumentString(htmlDoc);
 
@@ -247,7 +249,7 @@ public class MetadataAction extends DefaultAction {
             
             return new HtmlResolution(new StringReader(html));
         } catch(Exception e) {
-            String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges;
+            String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }

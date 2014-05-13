@@ -2885,7 +2885,7 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
             <xsl:attribute name="ui-mde-repeatablepath">
                 <xsl:call-template name="full-path">
                     <xsl:with-param name="theParmNodes" select="$repeatable-path"/>
-                    <xsl:with-param name="extraLeadingString">/</xsl:with-param>
+                    <!--xsl:with-param name="extraLeadingString">/</xsl:with-param-->
                 </xsl:call-template>
             </xsl:attribute>
         </xsl:if>

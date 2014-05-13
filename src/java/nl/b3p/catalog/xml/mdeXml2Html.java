@@ -153,8 +153,15 @@ public class mdeXml2Html {
                         toBeCreatedPath = toBeCreatedPath.substring(1);
                     }
                     String[] pathList = toBeCreatedPath.split("/");
-                    for (int i = 0; i < pathList.length - 1; i++) { // the last value must be created by the preprocessor (for picklists and stuff).
+                    // als endPath maar enkel element, dan toch aanmaken (altijd
+                    // minimaal een element aanmaken in deze methode)
+                    for (int i = 0; i < (pathList.length == 1 ? 1 : pathList.length - 1); i++) { // the last value must be created by the preprocessor (for picklists and stuff).
                         String tempNodeName = pathList[i];
+                        // Verwijder xpath positie conditie van nieuw te maken
+                        // node name (element[1] -> element)
+                        if(tempNodeName.contains("[")) {
+                            tempNodeName = tempNodeName.substring(0, tempNodeName.indexOf("["));
+                        }
                         if (tempNodeName != null) {
                             Namespace tns = Namespaces.getFullNameSpace(tempNodeName);
                             Element tNode = new Element(Namespaces.getLocalName(tempNodeName), tns);
@@ -188,10 +195,19 @@ public class mdeXml2Html {
         }
     }
     
-    public static void applySectionChange(Document xmlDoc, JSONObject change) {
+    public static void applySectionChange(Document xmlDoc, JSONObject change) throws Exception {
         
-        //String action = change.getString("action");
+        String action = change.getString("action");
+        String path = change.getString("path");
         
+        if("add".equals(action)) {
+            boolean above = change.getBoolean("above");
+            String endPath = change.getString("endPath");
+            
+            addElementOrSection(xmlDoc, path, endPath, above);
+        } else {
+            deleteElementOrSection(xmlDoc, path);
+        }
     }
 
     public static Element addElementOrSection(Document xmlDoc, String path, String endPath, boolean above) throws JDOMException, Exception {
@@ -227,7 +243,7 @@ public class mdeXml2Html {
         return parent;
     }
 
-    public static Element deleteElementOrSection(Document xmlDoc, String elementOrSectionPath, String notAllowedDeleteText) throws JDOMException, Exception {
+    public static Element deleteElementOrSection(Document xmlDoc, String elementOrSectionPath) throws JDOMException, Exception {
         Element parent = getParentElement(xmlDoc, elementOrSectionPath);
         if (parent==null) {
             return null;
@@ -239,7 +255,7 @@ public class mdeXml2Html {
         String eName = toBeDeletedNode.getName();        
         List<Element> elems = parent.getChildren(eName, toBeDeletedNode.getNamespace());
         if (elems.size() < 2) {
-            throw new Exception(notAllowedDeleteText);
+            throw new Exception("Laatste element mag niet worden verwijderd op pad " + elementOrSectionPath);
         }
 
         // delete section from xml backend
@@ -277,7 +293,7 @@ public class mdeXml2Html {
         for(int i = 0; i < changes.length(); i++) {
             JSONObject change = changes.getJSONObject(i);
 
-            updateElement(xmlDoc, change.getString("path"), change.getString("attrName"), change.getString("newValue"));
+            updateElement(xmlDoc, change.getString("path"), change.getString("attrName"), change.getString("newValue"), change.getString("newText"));
         }
         
         if(log.isDebugEnabled()) {
@@ -285,7 +301,7 @@ public class mdeXml2Html {
         }
     }    
 
-    public static void updateElement(Document xmlDoc, String xpath, String attrName, String newValue/*, String newText*/) throws JDOMException, Exception {
+    public static void updateElement(Document xmlDoc, String xpath, String attrName, String newValue, String newText) throws JDOMException, Exception {
 
         Element targetNode = XPathHelper.selectSingleElement(xmlDoc, xpath);
         if (targetNode == null) {
@@ -296,11 +312,10 @@ public class mdeXml2Html {
             // is picklist item
             targetNode.setAttribute("codeListValue", newValue);
             
-            // Niet nodig toch?
-            //if (newText==null) {
-            //    newText = newValue;
-            //}
-            //targetNode.setText(newText);
+            if (newText==null) {
+                newText = newValue;
+            }
+            targetNode.setText(newText);
         } else if (targetNode.getAttribute(attrName) != null) {
             targetNode.setAttribute(attrName, newValue);
         } else {
@@ -426,12 +441,12 @@ public class mdeXml2Html {
         parent = addElementOrSection(ppDoc, "/metadata/gmd:MD_Metadata/gmd:fileIdentifier", "/metadata/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString", false);
 
         ppDoc = mdeXml2Html.preprocess(ppDoc);
-        parent = deleteElementOrSection(ppDoc, "/metadata/gmd:MD_Metadata/gmd:fileIdentifier[2]", "Minimaal 1 element vereist!");
+        parent = deleteElementOrSection(ppDoc, "/metadata/gmd:MD_Metadata/gmd:fileIdentifier[2]");
         
         String attrName = null;
         String newValue = "brabants";
         String newText = null;
-        updateElement(ppDoc, "/metadata/gmd:MD_Metadata/gmd:language/gmd:LanguageCode", attrName, newValue/*, newText*/);
+        updateElement(ppDoc, "/metadata/gmd:MD_Metadata/gmd:language/gmd:LanguageCode", attrName, newValue, newText);
         String value = getSavedValueOnServerSide(ppDoc, "/metadata/gmd:MD_Metadata/gmd:language/gmd:LanguageCode", attrName);
         
         Document htmlDoc = mdeXml2Html.transform(ppDoc);
