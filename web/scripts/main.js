@@ -510,6 +510,9 @@ B3pCatalog.refreshMde = function() {
     
     console.log("refreshMde", changedElements, sectionChange);
     
+    var viewMode = mde.options.viewMode;
+    var currentTab = mde.options.currentTab;
+    
     $.ajax({
         url: B3pCatalog.metadataUrl,
         type: "POST",
@@ -522,8 +525,8 @@ B3pCatalog.refreshMde = function() {
         success: function(data, textStatus, xhr) {
             console.log("updateXml", data);
             
-            // TODO: isGeo en viewMode onthouden
-            B3pCatalog.createMdeHtml(data, true, false);            
+            // TODO: isGeo onthouden
+            B3pCatalog.createMdeHtml(data, true, viewMode, { currentTab: currentTab});            
         }
     });    
     
@@ -788,11 +791,11 @@ B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
     B3pCatalog.createMde2(xmlDoc, null, isGeo, viewMode);
 };
 
-B3pCatalog.createMdeHtml = function(htmlDoc, isGeo, viewMode) {
-     B3pCatalog.createMde2(null, htmlDoc, isGeo, viewMode);
+B3pCatalog.createMdeHtml = function(htmlDoc, isGeo, viewMode, extraOptions) {
+     B3pCatalog.createMde2(null, htmlDoc, isGeo, viewMode, extraOptions);
 };
 
-B3pCatalog.createMde2 = function(xmlDoc, htmlDoc, isGeo, viewMode) {
+B3pCatalog.createMde2 = function(xmlDoc, htmlDoc, isGeo, viewMode, extraOptions) {
     $("#mde").mde("destroy");
     $("#center-wrapper").html($("<div>", {
         id: "mde"
@@ -800,7 +803,6 @@ B3pCatalog.createMde2 = function(xmlDoc, htmlDoc, isGeo, viewMode) {
     
     log("creating mde...");
     $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
-        xml: xmlDoc,
         xmlHtml: htmlDoc,
         commentPosted: function(comment) {
             if (!$.trim(comment)) {
@@ -854,7 +856,8 @@ B3pCatalog.createMde2 = function(xmlDoc, htmlDoc, isGeo, viewMode) {
         change: function(changed) {            
             $("#saveMD").button("option", "disabled", !changed);
         }
-    }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)));
+    }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)
+    , extraOptions));
     
     B3pCatalog.createMdeToolbar(viewMode);
 };
