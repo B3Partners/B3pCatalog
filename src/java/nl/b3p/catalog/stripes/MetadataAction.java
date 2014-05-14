@@ -277,7 +277,7 @@ public class MetadataAction extends DefaultAction {
             // TODO: mdeXml2Html.cleanUpMetadata(md, serviceMode, datasetMode);
             
             // BUG: java.util.ConcurrentModificationException
-            //mdeXml2Html.removeEmptyNodes(md);
+            mdeXml2Html.removeEmptyNodes(md);
 
             // Geen XML parsing door browser, geef door als String
             return new StreamingResolution("text/plain", new StringReader(DocumentHelper.getDocumentString(md)));
@@ -307,7 +307,7 @@ public class MetadataAction extends DefaultAction {
             // preprocessing nodig
             
             // BUG: java.util.ConcurrentModificationException
-            //mdeXml2Html.removeEmptyNodes(md);
+            mdeXml2Html.removeEmptyNodes(md);
         } catch(Exception e) {
             String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
             log.error(message, e);

@@ -18,6 +18,7 @@ package nl.b3p.catalog.xml;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,19 +30,19 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 import nl.b3p.catalog.B3PCatalogException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Attribute;
 import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
-import org.jdom.transform.JDOMResult;
-import org.jdom.transform.JDOMSource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jdom.Parent;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.jdom.transform.JDOMResult;
+import org.jdom.transform.JDOMSource;
 import org.jdom.xpath.XPath;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -327,13 +328,17 @@ public class mdeXml2Html {
         boolean deleteOK = true;
         // check children
         List<Element> children = node.getChildren();
+        List<Element> childrenToBeRemoved = new ArrayList<Element>();
         for (Element e : children) {
             if (removeEmptyNode(e)) {
-                node.removeContent(e);
+                childrenToBeRemoved.add(e);
             } else {
                 deleteOK = false;
             }
         }
+        for (Element re : childrenToBeRemoved) {
+                node.removeContent(re);
+        }        
         // check node text
         if (deleteOK) {
             String value = node.getText();
@@ -349,13 +354,22 @@ public class mdeXml2Html {
                 // uom is not relevant
                 // namespace is not relevant
                 String n = a.getName();
-                if (!n.equals("codeList") 
-                        && !n.equals("uom") 
+                if (!n.equals("codeList")
+                        && !n.equals("uom")
                         && !n.startsWith("xmlns:")) {
+
+                    // codeListValue may be present but empty
+                    String value = a.getValue();
+                    if (n.equals("codeListValue")
+                            && value != null 
+                            && value.isEmpty()) {
+                        continue;
+                    }
+
                     deleteOK = false;
                     break;
                 }
-            }
+             }
         }
         return deleteOK;
     }

@@ -23,6 +23,7 @@ public class Namespaces {
     public final static Namespace B3P = Namespace.getNamespace("b3p", "http://www.b3partners.nl/xsd/metadata");
     public final static Namespace PBL = Namespace.getNamespace("pbl", "http://www.pbl.nl/xsd/metadata");
     public final static Namespace NC =  Namespace.getNamespace("nc", "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2");
+    public final static Namespace DC =  Namespace.getNamespace("dc", "http://purl.org/dc/elements/1.1/");
    
     public static final Set<Namespace> allNamespaces = Collections.unmodifiableSet(new HashSet(Arrays.asList(new Namespace[] {
         GMD,
@@ -32,7 +33,8 @@ public class Namespaces {
         GML,
         B3P,
         PBL,
-        NC
+        NC,
+        DC
     })));
     
     
