@@ -276,7 +276,6 @@ public class MetadataAction extends DefaultAction {
             
             // TODO: mdeXml2Html.cleanUpMetadata(md, serviceMode, datasetMode);
             
-            // BUG: java.util.ConcurrentModificationException
             mdeXml2Html.removeEmptyNodes(md);
 
             // Geen XML parsing door browser, geef door als String
@@ -306,7 +305,6 @@ public class MetadataAction extends DefaultAction {
             // Bij opslaan kunnen geen section changes zijn gedaan, ook geen
             // preprocessing nodig
             
-            // BUG: java.util.ConcurrentModificationException
             mdeXml2Html.removeEmptyNodes(md);
         } catch(Exception e) {
             String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
@@ -344,8 +342,10 @@ public class MetadataAction extends DefaultAction {
                 } else {
                     mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
 
-                    Document oldMetadata = DocumentHelper.getMetadataDocument(mdFile);
-                    mdString = sanitizeComments(oldMetadata, mdString);
+                    // waarvoor is dit nodig?
+                    // nieuwe comment wordt weer weggehaald????
+//                    Document oldMetadata = DocumentHelper.getMetadataDocument(mdFile);
+//                    mdString = sanitizeComments(oldMetadata, mdString);
 
                     OutputStream outputStream = new BufferedOutputStream(FileUtils.openOutputStream(mdFile));
                     outputStream.write(mdString.getBytes("UTF-8"));
@@ -362,7 +362,7 @@ public class MetadataAction extends DefaultAction {
             return new HtmlErrorResolution(message, e);
         }
     }
-
+/*
     public Resolution save() {
         try {
             determineRoot();
@@ -423,7 +423,7 @@ public class MetadataAction extends DefaultAction {
         }
 
     }
-
+*/
     public Resolution synchronizeLocal() throws Exception {
         // metadata string must already have been preprocessed on the clientside
         Document doc = new SAXBuilder().build(new StringReader(metadata));
@@ -603,72 +603,110 @@ public class MetadataAction extends DefaultAction {
         return resolution;
     }
 
-    // Comments can be posted by anyone to any ".xml"-file that is a descendant of one of the roots.
-    // that has <metadata/> or <gmd:MD_Metadata/> as root. This is by design.
-    public Resolution postComment() {
+    public Resolution postComment() throws Exception {
+        
         try {
-            if (LOCAL_MODE.equals(mode)) {
-                Document doc = DocumentHelper.getMetadataDocument(metadata);
-                addComment(doc, comment);
-                String commentedMD = DocumentHelper.getDocumentString(doc);
-                return new XmlResolution(commentedMD);
-            }
 
+            Document md = (Document)getContext().getRequest().getSession().getAttribute(SESSION_KEY_METADATA_XML);            
+            if(md == null) {
+                throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
+            }
+            
             determineRoot();
 
             if (rootAccess.getSecurityLevel() < AclAccess.COMMENT.getSecurityLevel()) {
                 throw new B3PCatalogException("Geen rechten om commentaar aan metadata toe te voegen op deze locatie");
             }
+           
+            addComment(md, comment);
+            
+            log.debug("serverside xml after updating: " + DocumentHelper.getDocumentString(md));            
+            Document ppDoc = mdeXml2Html.preprocess(md);
+            
+            log.debug("serverside pp xml after adding comment: " + DocumentHelper.getDocumentString(ppDoc));  
+            
+            getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);            
+            
+            Document htmlDoc = mdeXml2Html.transform(ppDoc);        
+            String html = DocumentHelper.getDocumentString(htmlDoc);
 
-            if (SDE_MODE.equals(mode)) {
-                Object dataset = ArcSDEHelperProxy.getDataset(root, path);
-
-                Document doc = DocumentHelper.getMetadataDocument(ArcSDEHelperProxy.getMetadata(dataset));
-                addComment(doc, comment);
-                String commentedMD = DocumentHelper.getDocumentString(doc);
-                ArcSDEHelperProxy.saveMetadata(dataset, commentedMD);
-                return new XmlResolution(commentedMD);
-            } else if (FILE_MODE.equals(mode)) {
-
-                File mdFile = FileListHelper.getFileForPath(root, path);
-
-                if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                    try {
-                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
-
-                        Document doc = DocumentHelper.getMetadataDocument(FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass));
-
-                        addComment(doc, comment);
-
-                        String commentedMD = DocumentHelper.getDocumentString(doc);
-                        FGDBHelperProxy.setMetadata(mdFile, esriDTFeatureClass, commentedMD);
-
-                        return new XmlResolution(commentedMD);
-                    } finally {
-                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
-                    }
-                } else {
-                    mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
-
-                    Document doc = DocumentHelper.getMetadataDocument(mdFile);
-
-                    addComment(doc, comment);
-
-                    OutputStream outputStream = new BufferedOutputStream(FileUtils.openOutputStream(mdFile));
-                    new XMLOutputter(Format.getPrettyFormat()).output(doc, outputStream);
-                    outputStream.close();
-
-                    return new XmlResolution(new BufferedInputStream(FileUtils.openInputStream(mdFile)));
-                }
-            } else {
-                throw new IllegalArgumentException("Invalid mode: " + mode);
-            }
-        } catch (Exception e) {
+            log.debug("serverside rendered html after updating xml after adding comment: " + html);            
+            
+            return new HtmlResolution(new StringReader(html));
+ 
+        } catch(Exception e) {
             String message = "Het is niet gelukt om het commentaar (" + comment + ") te posten in " + mode + " op lokatie \"" + path + "\"";
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
-        }
+       }
     }
+
+    // Comments can be posted by anyone to any ".xml"-file that is a descendant of one of the roots.
+    // that has <metadata/> or <gmd:MD_Metadata/> as root. This is by design.
+//    public Resolution postComment() {
+//        try {
+//            if (LOCAL_MODE.equals(mode)) {
+//                Document doc = DocumentHelper.getMetadataDocument(metadata);
+//                addComment(doc, comment);
+//                String commentedMD = DocumentHelper.getDocumentString(doc);
+//                return new XmlResolution(commentedMD);
+//            }
+//
+//            determineRoot();
+//
+//            if (rootAccess.getSecurityLevel() < AclAccess.COMMENT.getSecurityLevel()) {
+//                throw new B3PCatalogException("Geen rechten om commentaar aan metadata toe te voegen op deze locatie");
+//            }
+//
+//            if (SDE_MODE.equals(mode)) {
+//                Object dataset = ArcSDEHelperProxy.getDataset(root, path);
+//
+//                Document doc = DocumentHelper.getMetadataDocument(ArcSDEHelperProxy.getMetadata(dataset));
+//                addComment(doc, comment);
+//                String commentedMD = DocumentHelper.getDocumentString(doc);
+//                ArcSDEHelperProxy.saveMetadata(dataset, commentedMD);
+//                return new XmlResolution(commentedMD);
+//            } else if (FILE_MODE.equals(mode)) {
+//
+//                File mdFile = FileListHelper.getFileForPath(root, path);
+//
+//                if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
+//                    try {
+//                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+//
+//                        Document doc = DocumentHelper.getMetadataDocument(FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass));
+//
+//                        addComment(doc, comment);
+//
+//                        String commentedMD = DocumentHelper.getDocumentString(doc);
+//                        FGDBHelperProxy.setMetadata(mdFile, esriDTFeatureClass, commentedMD);
+//
+//                        return new XmlResolution(commentedMD);
+//                    } finally {
+//                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+//                    }
+//                } else {
+//                    mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
+//
+//                    Document doc = DocumentHelper.getMetadataDocument(mdFile);
+//
+//                    addComment(doc, comment);
+//
+//                    OutputStream outputStream = new BufferedOutputStream(FileUtils.openOutputStream(mdFile));
+//                    new XMLOutputter(Format.getPrettyFormat()).output(doc, outputStream);
+//                    outputStream.close();
+//
+//                    return new XmlResolution(new BufferedInputStream(FileUtils.openInputStream(mdFile)));
+//                }
+//            } else {
+//                throw new IllegalArgumentException("Invalid mode: " + mode);
+//            }
+//        } catch (Exception e) {
+//            String message = "Het is niet gelukt om het commentaar (" + comment + ") te posten in " + mode + " op lokatie \"" + path + "\"";
+//            log.error(message, e);
+//            return new HtmlErrorResolution(message, e);
+//        }
+//    }
 
     protected Document extractMD_MetadataAsDoc(String md) throws JDOMException, IOException, B3PCatalogException {
         Document doc = DocumentHelper.getMetadataDocument(md);
@@ -745,6 +783,8 @@ public class MetadataAction extends DefaultAction {
                 new Element(Names.B3P_CONTENT, Namespaces.B3P).setText(comment)
         ));
         comments.addContent(newComment);
+        log.debug("serverside xml after adding new comment: " + DocumentHelper.getDocumentString(doc));            
+
     }
     
     // <editor-fold defaultstate="collapsed" desc="getters en setters">
