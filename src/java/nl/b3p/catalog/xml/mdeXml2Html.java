@@ -65,10 +65,12 @@ public class mdeXml2Html {
         params.put("commentMode", "true");
         params.put("geoTabsMinimizable", "true");
         params.put("geoTabsMinimized", "true");
-        params.put("globalReadonly", "false");
+        params.put("globalReadonly", "false"); //viewMode in js
         params.put("serviceMode", "false");
         params.put("datasetMode", "true");
         params.put("synchroniseDC", "true");
+        params.put("fillDefaults", "true");
+        params.put("synchroniseEsri", "true");
     }
     
     public static Document transform(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {

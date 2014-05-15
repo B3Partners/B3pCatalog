@@ -4,7 +4,6 @@ if (typeof B3pCatalog == "undefined") B3pCatalog = {};
 
 // used for all mde types (view/edit/etc.) for all users.
 B3pCatalog.basicMdeOptions = {
-    synchroniseEsri: false,
     logMode: true,
     richTextMode: true,
     extraTitleAboveTabs: false,
@@ -16,12 +15,6 @@ B3pCatalog.basicMdeOptions = {
 // used for a non-csw editor/viewer
 B3pCatalog.getExtraMdeOptions = function(isGeo, viewMode) {
     var extraOptions = {
-        fcMode: true,
-        dcMode: true,
-        dcPblMode: true,
-        //synchroniseDC: true,
-        iso19115oneTab: true,
-        commentMode: true,
         afterInit: B3pMde.afterInit
     };
     

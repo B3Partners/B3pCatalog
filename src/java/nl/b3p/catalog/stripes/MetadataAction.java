@@ -203,11 +203,12 @@ public class MetadataAction extends DefaultAction {
                 }
             }
             
+            //TODO datestamp and uuid should be added at the server
+
             Document ppDoc = mdeXml2Html.preprocess(mdDoc);
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
             
             Document htmlDoc = mdeXml2Html.transform(ppDoc);
-            // this._addDateStamp(this.xmlDoc); 
 
             String d = DocumentHelper.getDocumentString(htmlDoc);
             log.debug("serverside rendered html: " + d);
@@ -274,7 +275,10 @@ public class MetadataAction extends DefaultAction {
             // Bij opslaan kunnen geen section changes zijn gedaan, ook geen
             // preprocessing nodig
             
-            // TODO: mdeXml2Html.cleanUpMetadata(md, serviceMode, datasetMode);
+            // Hack: we maken alleen dataset md in catalog 
+            boolean serviceMode = false;
+            boolean datasetMode = true;
+            mdeXml2Html.cleanUpMetadata(md, serviceMode, datasetMode);
             
             mdeXml2Html.removeEmptyNodes(md);
 
@@ -304,6 +308,11 @@ public class MetadataAction extends DefaultAction {
 
             // Bij opslaan kunnen geen section changes zijn gedaan, ook geen
             // preprocessing nodig
+            
+            // Hack: we maken alleen dataset md in catalog 
+            boolean serviceMode = false;
+            boolean datasetMode = true;
+            mdeXml2Html.cleanUpMetadata(md, serviceMode, datasetMode);
             
             mdeXml2Html.removeEmptyNodes(md);
         } catch(Exception e) {
@@ -344,6 +353,7 @@ public class MetadataAction extends DefaultAction {
 
                     // waarvoor is dit nodig?
                     // nieuwe comment wordt weer weggehaald????
+// Én bij normale md-save op server altijd meeverzonden comments wéggooien, en alleen comments van de server gebruiken (opnieuw inserten dus.)
 //                    Document oldMetadata = DocumentHelper.getMetadataDocument(mdFile);
 //                    mdString = sanitizeComments(oldMetadata, mdString);
 
