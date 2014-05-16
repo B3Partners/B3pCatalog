@@ -105,6 +105,10 @@ public class MetadataAction extends DefaultAction {
         rootAccess = root.getRequestUserHighestAccessLevel(getContext().getRequest());
         extraHeaders.put("X-MDE-Access", rootAccess.name());
     }
+    
+    public boolean determineViewMode() {
+        return rootAccess==null || rootAccess.getSecurityLevel() < AclAccess.WRITE.getSecurityLevel();
+    }
 
     public Resolution load() {
 
@@ -163,10 +167,11 @@ public class MetadataAction extends DefaultAction {
         Document mdDoc = null;
 
         try {
+            determineRoot();
+            
             if (LOCAL_MODE.equals(mode)) {
                 mdDoc = strictISO19115 ? extractMD_MetadataAsDoc(metadata) : DocumentHelper.getMetadataDocument(metadata);
             } else {
-                determineRoot();
 
                 if (SDE_MODE.equals(mode)) {
 
@@ -204,16 +209,16 @@ public class MetadataAction extends DefaultAction {
             }
             
             //TODO datestamp and uuid should be added at the server
-
-            Document ppDoc = mdeXml2Html.preprocess(mdDoc);
+            
+            Document ppDoc = mdeXml2Html.preprocess(mdDoc, determineViewMode());
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
             
-            Document htmlDoc = mdeXml2Html.transform(ppDoc);
+            Document htmlDoc = mdeXml2Html.transform(ppDoc, determineViewMode());
 
             String d = DocumentHelper.getDocumentString(htmlDoc);
             log.debug("serverside rendered html: " + d);
             StringReader sr = new StringReader(d);
-            return new HtmlResolution(sr);
+            return new HtmlResolution(sr, extraHeaders);
 
         } catch (Exception e) {
             getContext().getRequest().getSession().removeAttribute(SESSION_KEY_METADATA_XML);
@@ -232,24 +237,35 @@ public class MetadataAction extends DefaultAction {
                 throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
             }
             
-            if(elementChanges != null) {
-                mdeXml2Html.applyElementChanges(md, new JSONArray(elementChanges));
-            }
+            determineRoot();
             
-            if(sectionChange != null) {
-                mdeXml2Html.applySectionChange(md, new JSONObject(sectionChange));
+             if (rootAccess.getSecurityLevel() == AclAccess.WRITE.getSecurityLevel()) {
+                // only update when sufficient security level
+                if (elementChanges != null) {
+                    mdeXml2Html.applyElementChanges(md, new JSONArray(elementChanges));
+                }
+
+                if (sectionChange != null) {
+                    mdeXml2Html.applySectionChange(md, new JSONObject(sectionChange));
+                }
             }
-            
+          
             log.debug("serverside xml after updating: " + DocumentHelper.getDocumentString(md));            
-            Document ppDoc = mdeXml2Html.preprocess(md);
+            Document ppDoc = mdeXml2Html.preprocess(md, determineViewMode());
+            
+            Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
+            if (synchroniseDC!=null && synchroniseDC) {
+                ppDoc = mdeXml2Html.dCtoISO19115Synchronizer(ppDoc);
+            }
+             
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);            
             
-            Document htmlDoc = mdeXml2Html.transform(ppDoc);        
+            Document htmlDoc = mdeXml2Html.transform(ppDoc, determineViewMode());        
             String html = DocumentHelper.getDocumentString(htmlDoc);
 
             log.debug("serverside rendered html after updating xml: " + html);            
             
-            return new HtmlResolution(new StringReader(html));
+            return new HtmlResolution(new StringReader(html), extraHeaders);
         } catch(Exception e) {
             String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
             log.error(message, e);
@@ -275,10 +291,14 @@ public class MetadataAction extends DefaultAction {
             // Bij opslaan kunnen geen section changes zijn gedaan, ook geen
             // preprocessing nodig
             
-            // Hack: we maken alleen dataset md in catalog 
-            boolean serviceMode = false;
-            boolean datasetMode = true;
-            mdeXml2Html.cleanUpMetadata(md, serviceMode, datasetMode);
+            Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
+            if (synchroniseDC!=null && synchroniseDC) {
+                md = mdeXml2Html.dCtoISO19115Synchronizer(md);
+            }
+            
+            Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
+            Boolean datasetMode = mdeXml2Html.getXSLParam("datasetMode_init");
+            mdeXml2Html.cleanUpMetadata(md, serviceMode==null?false:serviceMode, datasetMode==null?false:datasetMode);
             
             mdeXml2Html.removeEmptyNodes(md);
 
@@ -309,10 +329,14 @@ public class MetadataAction extends DefaultAction {
             // Bij opslaan kunnen geen section changes zijn gedaan, ook geen
             // preprocessing nodig
             
-            // Hack: we maken alleen dataset md in catalog 
-            boolean serviceMode = false;
-            boolean datasetMode = true;
-            mdeXml2Html.cleanUpMetadata(md, serviceMode, datasetMode);
+            Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
+            if (synchroniseDC!=null && synchroniseDC) {
+                md = mdeXml2Html.dCtoISO19115Synchronizer(md);
+            }
+            
+            Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
+            Boolean datasetMode = mdeXml2Html.getXSLParam("datasetMode_init");
+            mdeXml2Html.cleanUpMetadata(md, serviceMode==null?false:serviceMode, datasetMode==null?false:datasetMode);
             
             mdeXml2Html.removeEmptyNodes(md);
         } catch(Exception e) {
@@ -372,68 +396,7 @@ public class MetadataAction extends DefaultAction {
             return new HtmlErrorResolution(message, e);
         }
     }
-/*
-    public Resolution save() {
-        try {
-            determineRoot();
 
-            if (rootAccess.getSecurityLevel() < AclAccess.WRITE.getSecurityLevel()) {
-                throw new B3PCatalogException("Geen rechten om metadata op te slaan op deze locatie");
-            }
-
-//            Document toBeSavedXmlDoc = DocumentHelper.getMetadataDocument(metadata);
-//            boolean synchroniseDC = false;
-//            if (synchroniseDC) {
-//                toBeSavedXmlDoc = mdeXml2Html.dCtoISO19115Synchronizer(toBeSavedXmlDoc);
-//            }
-//            
-//            boolean serviceMode = true;
-//            boolean datasetMode = false;
-//            mdeXml2Html.cleanUpMetadata(toBeSavedXmlDoc, serviceMode, datasetMode);
-//            mdeXml2Html.removeEmptyNodes(toBeSavedXmlDoc);
-
-          
-            if (SDE_MODE.equals(mode)) {
-
-                Object dataset = ArcSDEHelperProxy.getDataset(root, path);
-                String oldMetadata = ArcSDEHelperProxy.getMetadata(dataset);
-                ArcSDEHelperProxy.saveMetadata(dataset, sanitizeComments(oldMetadata, metadata));
-
-            } else if (FILE_MODE.equals(mode)) {
-
-                File mdFile = FileListHelper.getFileForPath(root, path);
-
-                if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                    try {
-                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
-                        String oldMetadata = FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass);
-                        FGDBHelperProxy.setMetadata(mdFile, 5, sanitizeComments(oldMetadata, metadata));
-                    } finally {
-                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
-                    }
-                } else {
-                    mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
-
-                    Document oldMetadata = DocumentHelper.getMetadataDocument(mdFile);
-                    metadata = sanitizeComments(oldMetadata, metadata);
-
-                    OutputStream outputStream = new BufferedOutputStream(FileUtils.openOutputStream(mdFile));
-                    outputStream.write(metadata.getBytes("UTF-8"));
-                    outputStream.close();
-                }
-            } else {
-                throw new IllegalArgumentException("Invalid mode: " + mode);
-            }
-
-            return new StreamingResolution("text/plain", "success");
-        } catch (Exception e) {
-            String message = "Could not write " + mode + " metadata to location " + path;
-            log.error(message, e);
-            return new HtmlErrorResolution(message, e);
-        }
-
-    }
-*/
     public Resolution synchronizeLocal() throws Exception {
         // metadata string must already have been preprocessed on the clientside
         Document doc = new SAXBuilder().build(new StringReader(metadata));
@@ -627,22 +590,22 @@ public class MetadataAction extends DefaultAction {
             if (rootAccess.getSecurityLevel() < AclAccess.COMMENT.getSecurityLevel()) {
                 throw new B3PCatalogException("Geen rechten om commentaar aan metadata toe te voegen op deze locatie");
             }
-           
+            
             addComment(md, comment);
             
             log.debug("serverside xml after updating: " + DocumentHelper.getDocumentString(md));            
-            Document ppDoc = mdeXml2Html.preprocess(md);
+            Document ppDoc = mdeXml2Html.preprocess(md, determineViewMode());
             
             log.debug("serverside pp xml after adding comment: " + DocumentHelper.getDocumentString(ppDoc));  
             
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);            
             
-            Document htmlDoc = mdeXml2Html.transform(ppDoc);        
+            Document htmlDoc = mdeXml2Html.transform(ppDoc, determineViewMode());        
             String html = DocumentHelper.getDocumentString(htmlDoc);
 
             log.debug("serverside rendered html after updating xml after adding comment: " + html);            
             
-            return new HtmlResolution(new StringReader(html));
+            return new HtmlResolution(new StringReader(html),extraHeaders);
  
         } catch(Exception e) {
             String message = "Het is niet gelukt om het commentaar (" + comment + ") te posten in " + mode + " op lokatie \"" + path + "\"";

@@ -58,27 +58,42 @@ public class mdeXml2Html {
     
     static Map<String, String> params = new HashMap();
     static {
-        params.put("fcMode", "true");
-        params.put("dcMode", "true");
-        params.put("dcPblMode", "true");
-        params.put("iso19115oneTab", "true");
-        params.put("commentMode", "true");
-        params.put("geoTabsMinimizable", "true");
-        params.put("geoTabsMinimized", "true");
-        params.put("globalReadonly", "false"); //viewMode in js
-        params.put("serviceMode", "false");
-        params.put("datasetMode", "true");
-        params.put("synchroniseDC", "true");
-        params.put("fillDefaults", "true");
-        params.put("synchroniseEsri", "true");
+        params.put("fcMode_init", "true");
+        params.put("dcMode_init", "true");
+        params.put("dcPblMode_init", "true");
+        params.put("iso19115oneTab_init", "true");
+        params.put("commentMode_init", "true");
+        params.put("geoTabsMinimizable_init", "true");
+        params.put("geoTabsMinimized_init", "true");
+        params.put("globalReadonly_init", "false"); //viewMode in js
+        params.put("serviceMode_init", "false");
+        params.put("datasetMode_init", "true");
+        params.put("synchroniseDC_init", "true");
+        params.put("fillDefaults_init", "true");
+        params.put("synchroniseEsri_init", "true");
+    }
+    
+    public static Boolean getXSLParam(String param) {
+        String paramValue = params.get(param);
+        if (paramValue == null) {
+            return null;
+        }
+        return Boolean.valueOf(paramValue);
     }
     
     public static Document transform(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        return transform(doc, null);
+    }
+    
+    public static Document transform(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer t = tf.newTransformer(new StreamSource(mdeXml2Html.class.getResourceAsStream("mdemain.xsl")));
         if (params != null) {
             for (Map.Entry<String, String> param : params.entrySet()) {
                 t.setParameter(param.getKey(), param.getValue());
+            }
+            if (viewMode!=null) {
+                t.setParameter("globalReadonly_init", viewMode.toString());
             }
         }
 
@@ -87,13 +102,20 @@ public class mdeXml2Html {
         
         return result.getDocument();
     }
-    
+ 
     public static Document preprocess(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        return preprocess(doc, null);
+    }
+
+    public static Document preprocess(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer t = tf.newTransformer(new StreamSource(mdeXml2Html.class.getResourceAsStream("mdeXmlPreprocessor.xsl")));
         if (params != null) {
             for (Map.Entry<String, String> param : params.entrySet()) {
                 t.setParameter(param.getKey(), param.getValue());
+            }
+            if (viewMode!=null) {
+                t.setParameter("globalReadonly_init", viewMode.toString());
             }
         }
 
@@ -104,11 +126,18 @@ public class mdeXml2Html {
     }
     
     public static Document dCtoISO19115Synchronizer(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        return dCtoISO19115Synchronizer(doc, null);
+    }
+    
+    public static Document dCtoISO19115Synchronizer(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer t = tf.newTransformer(new StreamSource(mdeXml2Html.class.getResourceAsStream("sync_ncml.xsl")));
         if (params != null) {
             for (Map.Entry<String, String> param : params.entrySet()) {
                 t.setParameter(param.getKey(), param.getValue());
+            }
+            if (viewMode!=null) {
+                t.setParameter("globalReadonly_init", viewMode.toString());
             }
         }
 
@@ -413,11 +442,15 @@ public class mdeXml2Html {
     }
     
     public static String convertElement2Html(Element e) throws JDOMException, Exception {
+        return convertElement2Html(e, null);
+        
+    }
+    public static String convertElement2Html(Element e, Boolean viewMode) throws JDOMException, Exception {
         if (e==null) {
             return null;
         }
         Document eDoc = convertElem2Doc(e);
-        Document htmlDoc = mdeXml2Html.transform(eDoc);
+        Document htmlDoc = mdeXml2Html.transform(eDoc, viewMode);
         return DocumentHelper.getDocumentString(htmlDoc);
     }
 

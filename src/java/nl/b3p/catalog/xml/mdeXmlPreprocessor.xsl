@@ -21,23 +21,23 @@
     <xsl:param name="fillDefaults_init">true</xsl:param>
     <!-- do we want to synchronise with esri tags. only checked if fillDefaults is set to true. -->
     <xsl:param name="synchroniseEsri_init">true</xsl:param>
-    <xsl:param name="dcMode_init">false</xsl:param>
+    <xsl:param name="dcMode_init">true</xsl:param>
     <xsl:param name="fcMode_init">true</xsl:param>
-    <xsl:param name="commentMode_init">false</xsl:param>
-    <xsl:param name="dcPblMode_init">false</xsl:param>
+    <xsl:param name="commentMode_init">true</xsl:param>
+    <xsl:param name="dcPblMode_init">true</xsl:param>
     <xsl:param name="serviceMode_init">false</xsl:param>
     <xsl:param name="datasetMode_init">true</xsl:param>
 
     <!-- do we want default values filled in. -->
-    <xsl:param name="fillDefaults" select="$fillDefaults_init"/>
+    <xsl:param name="fillDefaults" select="$fillDefaults_init = 'true'"/>
     <!-- do we want to synchronise with esri tags. only checked if fillDefaults is set to true. -->
-    <xsl:param name="synchroniseEsri" select="$synchroniseEsri_init"/>
-    <xsl:param name="dcMode" select="$dcMode_init"/>
-    <xsl:param name="commentMode" select="$commentMode_init"/>
-    <xsl:param name="fcMode" select="$fcMode_init"/>
-    <xsl:param name="dcPblMode" select="$dcPblMode_init"/>
-    <xsl:param name="serviceMode" select="$serviceMode_init"/>
-    <xsl:param name="datasetMode" select="$datasetMode_init"/>
+    <xsl:param name="synchroniseEsri" select="$synchroniseEsri_init = 'true'"/>
+    <xsl:param name="dcMode" select="$dcMode_init = 'true'"/>
+    <xsl:param name="commentMode" select="$commentMode_init = 'true'"/>
+    <xsl:param name="fcMode" select="$fcMode_init = 'true'"/>
+    <xsl:param name="dcPblMode" select="$dcPblMode_init = 'true'"/>
+    <xsl:param name="serviceMode" select="$serviceMode_init = 'true'"/>
+    <xsl:param name="datasetMode" select="$datasetMode_init = 'true'"/>
 
 	<!--
 	Auteur: Erik van de Pol. B3Partners.
@@ -58,7 +58,7 @@
 		<xsl:element name="metadata">
 			<!-- gmd:MD_Metadata should be added before b3p:B3Partners, since DC-members within b3p:B3Partners may want to sync with gmd:MD_Metadata -->
 			<xsl:choose>
-				<xsl:when test="$datasetMode = 'false' and $serviceMode = 'false'"><!-- skip --></xsl:when>
+				<xsl:when test="not($datasetMode) and not($serviceMode)"><!-- skip --></xsl:when>
 				<xsl:when test="not(gmd:MD_Metadata)">
 					<xsl:call-template name="add-MD_Metadata"/>
 				</xsl:when>
@@ -67,7 +67,7 @@
 				</xsl:otherwise>
 			</xsl:choose>
 			<xsl:choose>
-				<xsl:when test="$fcMode = 'false'"><!-- skip --></xsl:when>
+				<xsl:when test="not($fcMode)"><!-- skip --></xsl:when>
 				<xsl:when test="not(gfc:FC_FeatureCatalogue) ">
 					<!--Child element missing, create it-->
 					<xsl:call-template name="add-gfc_FC_FeatureCatalogue"/>
@@ -78,7 +78,7 @@
 				</xsl:otherwise>
 			</xsl:choose>
 			<xsl:choose>
-				<xsl:when test="$commentMode = 'false' and $dcMode = 'false'"><!-- skip --></xsl:when>
+				<xsl:when test="not($commentMode) and not($dcMode)"><!-- skip --></xsl:when>
 				<xsl:when test="not(b3p:B3Partners)">
 					<!--Child element missing, create it-->
 					<xsl:call-template name="add-B3Partners"/>
@@ -110,7 +110,7 @@
 			</xsl:choose>
 
             <xsl:choose>
-                <xsl:when test="$dcMode = 'false'">
+                <xsl:when test="not($dcMode)">
 					<!--Copy everthing else under this node-->
 					<xsl:apply-templates select="@*|node()[
 										 not(self::b3p:comments)
@@ -772,7 +772,7 @@
 	<xsl:template match="gmd:identificationInfo">
 		<xsl:copy>
 			<xsl:choose>
-				<xsl:when test="$datasetMode = 'false'"/>
+				<xsl:when test="not($datasetMode)"/>
 				<xsl:when test="not(gmd:MD_DataIdentification)">
 					<!--Child element missing, create it-->
 					<xsl:call-template name="add-MD_DataIdentification"/>
@@ -783,7 +783,7 @@
 				</xsl:otherwise>
 			</xsl:choose>
 			<xsl:choose>
-				<xsl:when test="$serviceMode = 'false'"/>
+				<xsl:when test="not($serviceMode)"/>
 				<xsl:when test="not(srv:SV_ServiceIdentification)">
 					<!--Child element missing, create it-->
 					<xsl:call-template name="add-SV_ServiceIdentification"/>
@@ -3221,7 +3221,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-CI_Citation-specification-services">
 		<xsl:element name="gmd:CI_Citation">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 						<xsl:element name="gmd:title">
 							<xsl:element name="gco:CharacterString">Technical Guidance for the implementation of INSPIRE View Services v3.0</xsl:element>
 						</xsl:element>
@@ -3232,7 +3232,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 			</xsl:choose>
 			<xsl:call-template name="add-alternateTitle"/>
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:element name="gmd:date">
 						<xsl:element name="gmd:CI_Date">
 							<xsl:element name="gmd:date">
@@ -3259,7 +3259,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-CI_Citation-specification-datasets">
 		<xsl:element name="gmd:CI_Citation">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 						<xsl:element name="gmd:title">
 							<xsl:element name="gco:CharacterString">"INSPIRE Data Specification on Administrative Units – Guidelines v3.0.1".</xsl:element>
 						</xsl:element>
@@ -3270,7 +3270,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 			</xsl:choose>
 			<xsl:call-template name="add-alternateTitle"/>
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:element name="gmd:CI_Date">
 						<xsl:element name="gmd:date">
 							<xsl:element name="gco:Date">2010-05-03</xsl:element>
@@ -3295,7 +3295,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-CI_Citation-Thesaurus">
 		<xsl:element name="gmd:CI_Citation">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 						<xsl:element name="gmd:title">
 							<xsl:element name="gco:CharacterString">GEMET - INSPIRE themes, version 1.0</xsl:element>
 						</xsl:element>
@@ -3306,7 +3306,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 			</xsl:choose>
 			<xsl:call-template name="add-alternateTitle"/>
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:element name="gmd:date">
 						<xsl:element name="gmd:CI_Date">
 							<xsl:element name="gmd:date">
@@ -4291,7 +4291,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-fileIdentifier">
 		<xsl:element name="gmd:fileIdentifier">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-fileIdentifier-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -4314,7 +4314,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 		<xsl:element name="gmd:LanguageCode">
 			<xsl:attribute name="codeList">http://www.loc.gov/standards/iso639-2/</xsl:attribute>
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-LanguageCode-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -4346,7 +4346,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-dateStamp">
 		<xsl:element name="gmd:dateStamp">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-dateStamp-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -4358,7 +4358,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-metadataStandardName">
 		<xsl:element name="gmd:metadataStandardName">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
                     <xsl:call-template name="add-metadataStandardName-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -4370,7 +4370,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-metadataStandardVersion">
 		<xsl:element name="gmd:metadataStandardVersion">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
                     <xsl:call-template name="add-metadataStandardVersion-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -4403,7 +4403,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-code">
 		<xsl:element name="gmd:code">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
                     <xsl:call-template name="add-code-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -4415,7 +4415,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-codeSpace">
 		<xsl:element name="gmd:codeSpace">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
                     <xsl:call-template name="add-codeSpace-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -4529,7 +4529,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 		<xsl:element name="srv:SV_CouplingType">
 			<xsl:attribute name="codeList">http://www.isotc211.org/2005/iso19119/resources/Codelist/gmxCodelists.xml#SV_CouplingType</xsl:attribute>
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-SV_CouplingType-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -4559,7 +4559,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 		<xsl:element name="srv:DCPList">
 			<xsl:attribute name="codeList">http://www.isotc211.org/2005/iso19119/resources/Codelist/gmxCodelists.xml#DCPList</xsl:attribute>
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-DCPList-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -4670,7 +4670,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-citation-title">
 		<xsl:element name="gmd:title">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-citation-title-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5049,7 +5049,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-westBoundLongitude">
 		<xsl:element name="gmd:westBoundLongitude">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-westBoundLongitude-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5061,7 +5061,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-eastBoundLongitude">
 		<xsl:element name="gmd:eastBoundLongitude">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-eastBoundLongitude-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5073,7 +5073,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-southBoundLatitude">
 		<xsl:element name="gmd:southBoundLatitude">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-southBoundLatitude-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5085,7 +5085,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-northBoundLatitude">
 		<xsl:element name="gmd:northBoundLatitude">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-northBoundLatitude-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5208,7 +5208,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-transferOptions-linkage">
 		<xsl:element name="gmd:linkage">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-transferOptions-linkage-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5220,7 +5220,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-transferOptions-protocol">
 		<xsl:element name="gmd:protocol">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-transferOptions-protocol-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5232,7 +5232,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-transferOptions-name">
 		<xsl:element name="gmd:name">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-transferOptions-name-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5315,7 +5315,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-specification-specification-services">
 		<xsl:element name="gmd:specification">
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-CI_Citation-specification-services"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5468,7 +5468,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 		<xsl:element name="gmd:MD_CharacterSetCode">
 			<xsl:attribute name="codeList">http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode</xsl:attribute>
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-MD_CharacterSetCode-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5481,7 +5481,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 		<xsl:element name="gmd:MD_ProgressCode">
 			<xsl:attribute name="codeList">http://www.isotc211.org/2005/resources/codeList.xml#MD_ProgressCode</xsl:attribute>
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-MD_ProgressCode-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5494,7 +5494,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 		<xsl:element name="gmd:CI_RoleCode">
 			<xsl:attribute name="codeList">http://www.isotc211.org/2005/resources/codeList.xml#CI_RoleCode</xsl:attribute>
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-CI_RoleCode-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5516,7 +5516,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 		<xsl:element name="gmd:MD_ScopeCode">
 			<xsl:attribute name="codeList">http://www.isotc211.org/2005/resources/codeList.xml#MD_ScopeCode</xsl:attribute>
 			<xsl:choose>
-				<xsl:when test="$fillDefaults = 'true'">
+				<xsl:when test="$fillDefaults">
 					<xsl:call-template name="add-MD_ScopeCode-default"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5580,7 +5580,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	</xsl:template>
 	<xsl:template name="add-gfc_FC_FeatureType">
 		<xsl:choose>
-			<xsl:when test="$fillDefaults = 'true'">
+			<xsl:when test="$fillDefaults">
 				<xsl:call-template name="add-gfc_FC_FeatureType-default"/>
 			</xsl:when>
 			<xsl:otherwise>
@@ -5661,7 +5661,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
             <xsl:call-template name="add-comments"/>
             <xsl:if test="$dcMode">
 				<xsl:choose>
-					<xsl:when test="$dcPblMode = 'true'">
+					<xsl:when test="$dcPblMode">
 						<xsl:call-template name="add-metadataPBL"/>
 					</xsl:when>
 					<xsl:otherwise>
@@ -5786,7 +5786,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-fileIdentifier-default">
 		<xsl:element name="gco:CharacterString">
 			<xsl:choose>
-				<xsl:when test="$synchroniseEsri = 'true'">
+				<xsl:when test="$synchroniseEsri">
 					<xsl:call-template name="add-MetaID-esri"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5798,7 +5798,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-dateStamp-default">
 		<xsl:element name="gco:Date">
 			<xsl:choose>
-				<xsl:when test="$synchroniseEsri = 'true'">
+				<xsl:when test="$synchroniseEsri">
 					<xsl:call-template name="dateformat">
 						<xsl:with-param name="date">
 							<xsl:call-template name="add-ModDate-esri"/>
@@ -5846,7 +5846,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-citation-title-default">
 		<xsl:element name="gco:CharacterString">
 			<xsl:choose>
-				<xsl:when test="$synchroniseEsri = 'true'">
+				<xsl:when test="$synchroniseEsri">
 					<xsl:call-template name="add-resTitle-esri"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5858,7 +5858,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-westBoundLongitude-default">
 		<xsl:element name="gco:Decimal">
 			<xsl:choose>
-				<xsl:when test="$synchroniseEsri = 'true'">
+				<xsl:when test="$synchroniseEsri">
 					<xsl:call-template name="add-westBL-esri"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5870,7 +5870,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-eastBoundLongitude-default">
 		<xsl:element name="gco:Decimal">
 			<xsl:choose>
-				<xsl:when test="$synchroniseEsri = 'true'">
+				<xsl:when test="$synchroniseEsri">
 					<xsl:call-template name="add-eastBL-esri"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5882,7 +5882,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-southBoundLatitude-default">
 		<xsl:element name="gco:Decimal">
 			<xsl:choose>
-				<xsl:when test="$synchroniseEsri = 'true'">
+				<xsl:when test="$synchroniseEsri">
 					<xsl:call-template name="add-southBL-esri"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5894,7 +5894,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-northBoundLatitude-default">
 		<xsl:element name="gco:Decimal">
 			<xsl:choose>
-				<xsl:when test="$synchroniseEsri = 'true'">
+				<xsl:when test="$synchroniseEsri">
 					<xsl:call-template name="add-northBL-esri"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5946,7 +5946,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-transferOptions-linkage-default">
 		<xsl:element name="gmd:URL">
 			<xsl:choose>
-				<xsl:when test="$synchroniseEsri = 'true'">
+				<xsl:when test="$synchroniseEsri">
 					<xsl:call-template name="add-linkage-esri"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5958,7 +5958,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-transferOptions-protocol-default">
 		<xsl:element name="gco:CharacterString">
 			<xsl:choose>
-				<xsl:when test="$synchroniseEsri = 'true'">
+				<xsl:when test="$synchroniseEsri">
                     <!-- only set protocol to a default if esri has an url for the online resource. -->
                     <xsl:if test="/*[name()='metadata']/*[name()='distInfo']/*[name()='distributor']/*[name()='distorTran']/*[name()='onLineSrc']/*[name()='linkage']">
                         <xsl:value-of select="'download'"/>
@@ -5973,7 +5973,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-transferOptions-name-default">
 		<xsl:element name="gco:CharacterString">
 			<xsl:choose>
-				<xsl:when test="$synchroniseEsri = 'true'">
+				<xsl:when test="$synchroniseEsri">
 					<xsl:call-template name="add-resTitle-esri"/>
 				</xsl:when>
 				<xsl:otherwise>
@@ -5984,7 +5984,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	</xsl:template>
 	<xsl:template name="add-gfc_FC_FeatureType-default">
 		<xsl:choose>
-			<xsl:when test="$synchroniseEsri = 'true' and /*[name()='metadata']/*[name()='dataset_description']/*[name()='data_definition']/*[name()='object_type']/*[name()='object_type_name']">
+			<xsl:when test="$synchroniseEsri and /*[name()='metadata']/*[name()='dataset_description']/*[name()='data_definition']/*[name()='object_type']/*[name()='object_type_name']">
 				<xsl:call-template name="add-gfc_FC_FeatureType-esri"/>
 			</xsl:when>
 			<xsl:otherwise>

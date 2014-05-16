@@ -17,28 +17,28 @@
         exclude-result-prefixes="xlink gmd gfc gmx gco gml b3p pbl dc srv"
         >
   
-	<!-- These parameters must be set by the browser -->
+	<!-- These parameters must be set by the transformer -->
     <xsl:param name="basePath"/>
     <xsl:param name="dateFormatUserHint">dd-mm-jjjj</xsl:param>
     <xsl:param name="globalReadonly_init">false</xsl:param>
-    <xsl:param name="commentMode_init">false</xsl:param>
-    <xsl:param name="dcMode_init">false</xsl:param>
+    <xsl:param name="commentMode_init">true</xsl:param>
+    <xsl:param name="dcMode_init">true</xsl:param>
     <xsl:param name="serviceMode_init">false</xsl:param>
     <xsl:param name="datasetMode_init">true</xsl:param>
     <xsl:param name="fcMode_init">true</xsl:param>
     <xsl:param name="dcPblMode_init">false</xsl:param>
-    <xsl:param name="iso19115oneTab_init">false</xsl:param>
+    <xsl:param name="iso19115oneTab_init">true</xsl:param>
     <xsl:param name="synchroniseDC_init">false</xsl:param>
 
-    <xsl:param name="globalReadonly" select="$globalReadonly_init"/>
-    <xsl:param name="commentMode" select="$commentMode_init"/>
-    <xsl:param name="dcMode" select="$dcMode_init"/>
-    <xsl:param name="serviceMode" select="$serviceMode_init"/>
-    <xsl:param name="datasetMode" select="$datasetMode_init"/>
-    <xsl:param name="fcMode" select="$fcMode_init"/>
-    <xsl:param name="dcPblMode" select="$dcPblMode_init"/>
-    <xsl:param name="iso19115oneTab" select="$iso19115oneTab_init"/>
-    <xsl:param name="synchroniseDC" select="$synchroniseDC_init"/>
+    <xsl:param name="globalReadonly" select="$globalReadonly_init = 'true'"/>
+    <xsl:param name="commentMode" select="$commentMode_init = 'true'"/>
+    <xsl:param name="dcMode" select="$dcMode_init = 'true'"/>
+    <xsl:param name="serviceMode" select="$serviceMode_init = 'true'"/>
+    <xsl:param name="datasetMode" select="$datasetMode_init = 'true'"/>
+    <xsl:param name="fcMode" select="$fcMode_init = 'true'"/>
+    <xsl:param name="dcPblMode" select="$dcPblMode_init = 'true'"/>
+    <xsl:param name="iso19115oneTab" select="$iso19115oneTab_init = 'true'"/>
+    <xsl:param name="synchroniseDC" select="$synchroniseDC_init = 'true'"/>
     
     <xsl:output  method="html" indent="no" version="4.0"/>  
 	<!--
@@ -73,14 +73,14 @@
             </xsl:for-each-->
             <div id="ui-mde-tabs-container">
                 <ul id="ui-mde-tabs" class="ui-helper-reset">
-                    <xsl:if test="$dcMode = 'true'">
+                    <xsl:if test="$dcMode">
                         <li class="ui-corner-top">
                             <a href="#algemeen" title="Dublin Core voor administratieve metadata">Dublin Core</a>
                         </li>
                     </xsl:if>
-                    <xsl:if test="$serviceMode = 'true'">
+                    <xsl:if test="$serviceMode">
                         <xsl:choose>
-                            <xsl:when test="$iso19115oneTab = 'true'">
+                            <xsl:when test="$iso19115oneTab">
                                 <li class="ui-corner-top">
                                     <a href="#iso19119" title="Metadata voor services">Services</a>
                                 </li>
@@ -89,7 +89,7 @@
                                 <li class="ui-corner-top">
                                     <a href="#service" title="Metadata voor services.">Services (1)</a>
                                 </li>
-                                <xsl:if test="$datasetMode = 'false'">
+                                <xsl:if test="not($datasetMode)">
                                     <li class="ui-corner-top">
                                         <a href="#mdcommon" title="Gemeenschappelijke info voor dataset en service metadata">Services (2)</a>
                                     </li>
@@ -97,9 +97,9 @@
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:if>
-                    <xsl:if test="$datasetMode = 'true'">
+                    <xsl:if test="$datasetMode">
                         <xsl:choose>
-                            <xsl:when test="$iso19115oneTab = 'true'">
+                            <xsl:when test="$iso19115oneTab">
                                 <li class="ui-corner-top">
                                     <a href="#iso19115" title="Metadata voor datasets">Datasets</a>
                                 </li>
@@ -112,7 +112,7 @@
                                     <a href="#specificaties" title="Metadata voor datasets - specificaties">Datasets (2)</a>
                                 </li>
                                 <xsl:choose>
-                                    <xsl:when test="$serviceMode = 'true'">
+                                    <xsl:when test="$serviceMode">
                                         <li class="ui-corner-top">
                                             <a href="#mdcommon" title="Gemeenschappelijke info voor dataset en service metadata">Gemeenschappelijk</a>
                                         </li>
@@ -126,12 +126,12 @@
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:if>
-                    <xsl:if test="$fcMode = 'true'">
+                    <xsl:if test="$fcMode">
                         <li class="ui-corner-top">
                             <a href="#attributen" title="Attribuutinformatie van de dataset">Attributen</a>
                         </li>
                     </xsl:if>
-                    <xsl:if test="$commentMode = 'true'">
+                    <xsl:if test="$commentMode">
                         <li class="ui-corner-top">
                             <a href="#commentaar" title="Commentaar op deze metadata">Commentaar</a>
                         </li>
@@ -147,14 +147,14 @@
 
 
     <xsl:template name="elements">
-        <xsl:if test="$dcMode = 'true'">
+        <xsl:if test="$dcMode">
             <div id="algemeen" class="ui-mde-tab-definition">
                 <xsl:call-template name="dcItems"/>
             </div>
         </xsl:if>
-        <xsl:if test="$serviceMode = 'true'">
+        <xsl:if test="$serviceMode">
             <xsl:choose>
-                <xsl:when test="$iso19115oneTab = 'true'">
+                <xsl:when test="$iso19115oneTab">
                     <div id="iso19119" class="ui-mde-tab-definition">
                         <div class="ui-mde-section">
                             <xsl:call-template name="section-title">
@@ -164,7 +164,7 @@
                                 <xsl:call-template name="serviceItems"/>
                             </div>
                         </div>
-                        <xsl:if test="$datasetMode = 'false'">
+                        <xsl:if test="not($datasetMode)">
                             <div class="ui-mde-section">
                                 <xsl:call-template name="section-title">
                                     <xsl:with-param name="title">Algemene metadata</xsl:with-param>
@@ -180,7 +180,7 @@
                     <div id="service" class="ui-mde-tab-definition">
                         <xsl:call-template name="serviceItems"/>
                     </div>
-                    <xsl:if test="$datasetMode = 'false'">
+                    <xsl:if test="not($datasetMode)">
                         <div id="mdcommon" class="ui-mde-tab-definition">
                             <xsl:call-template name="dataServiceItems"/>
                         </div>
@@ -188,9 +188,9 @@
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:if>
-        <xsl:if test="$datasetMode = 'true'">
+        <xsl:if test="$datasetMode">
             <xsl:choose>
-                <xsl:when test="$iso19115oneTab = 'true'">
+                <xsl:when test="$iso19115oneTab">
                     <div id="iso19115" class="ui-mde-tab-definition">
                         <div class="ui-mde-section">
                             <xsl:call-template name="section-title">
@@ -231,12 +231,12 @@
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:if>
-        <xsl:if test="$fcMode = 'true'">
+        <xsl:if test="$fcMode">
             <div id="attributen" class="ui-mde-tab-definition">
                 <xsl:call-template name="attributeItems"/>
             </div>
         </xsl:if>
-        <xsl:if test="$commentMode = 'true'">
+        <xsl:if test="$commentMode">
             <div id="commentaar" class="ui-mde-tab-definition">
                 <xsl:call-template name="commentItems"/>
             </div>
@@ -2653,7 +2653,7 @@
         <xsl:param name="optionality">optional</xsl:param><!-- 'conditional' of 'mandatory' of 'optional' of leeg (= optional). Dit is feedback voor de user. -->
         <xsl:param name="repeatable" select="false()"/>
         <xsl:param name="repeatable-path" select="."/> <!-- For 19115/19139 fields, the parent (..) should be passed here. This is not the case for, for example, DC -->
-        <xsl:param name="readonly" select="$globalReadonly"/>
+        <xsl:param name="readonly" select="$globalReadonly"/>        <!-- $globalReadonly-->
         <xsl:param name="type">normal</xsl:param><!-- speciaal type: normal, rich-text of image-url (dit zijn allemaal gco:CharacterString's; uit het data-type is dus niets af te leiden) -->
         <xsl:param name="help-text"/>
         <xsl:param name="help-link"/>
@@ -2705,7 +2705,7 @@
 		
         <xsl:variable name="value-class">
             <xsl:text>ui-mde-value</xsl:text>
-            <xsl:if test="$readonly = false()">
+            <xsl:if test="not($readonly)">
                 <xsl:text> ui-mde-clickable</xsl:text>
             </xsl:if>
             <xsl:if test="$picklist = '' and normalize-space($path) = '' ">
@@ -2729,7 +2729,7 @@
                 <xsl:if test="$type = 'rich-text'">
                     <xsl:call-template name="wikiHelpPopupLink"/>
                 </xsl:if>
-                <xsl:if test="$repeatable = true() and $readonly = false()">
+                <xsl:if test="$repeatable and not($readonly)">
                     <xsl:call-template name="repeatable-menu">
                         <xsl:with-param name="type" select="'element'"/>
                     </xsl:call-template>
@@ -2824,7 +2824,7 @@
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:choose>
-                            <xsl:when test="$readonly = true()">
+                            <xsl:when test="$readonly">
                                 <xsl:value-of select="$GLOBAL_DEFAULT_VIEW"/>
                             </xsl:when>
                             <xsl:when test="$default-value != '' ">
@@ -2876,7 +2876,7 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
         <xsl:param name="repeatable-path" select="."/>
         <xsl:param name="readonly" select="$globalReadonly"/>
 		
-        <xsl:if test="$repeatable = true() and $readonly = false()">
+        <xsl:if test="$repeatable and not($readonly)">
             <xsl:attribute name="ui-mde-fullpath">
                 <xsl:call-template name="full-path">
                     <xsl:with-param name="theParmNodes" select="."/>
@@ -2915,7 +2915,7 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
                 </xsl:otherwise>
             </xsl:choose>
 
-            <xsl:if test="$repeatable = true() and $readonly = false()">
+            <xsl:if test="$repeatable and not($readonly)">
                 <xsl:call-template name="repeatable-menu">
                     <xsl:with-param name="type" select="'section'"/>
                 </xsl:call-template>
@@ -3098,7 +3098,7 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
     </xsl:template>
 
     <xsl:template name="wikiHelpPopupLink">
-        <xsl:if test="$globalReadonly = false()">
+        <xsl:if test="not($globalReadonly)">
             <a href="#" class="ui-mde-wiki-help-link">(?)</a>
         </xsl:if>
     </xsl:template>

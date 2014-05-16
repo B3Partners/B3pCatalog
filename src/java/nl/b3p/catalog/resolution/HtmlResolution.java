@@ -35,14 +35,14 @@ public class HtmlResolution extends ExtraHeadersResolution {
     }
 
     public HtmlResolution(Reader reader, Map<String, String> extraHeaders) {
-        super(DEFAULT_CONTENT_TYPE, reader);
+        super(DEFAULT_CONTENT_TYPE, reader, extraHeaders);
     }
 
     public HtmlResolution(String string, Map<String, String> extraHeaders) {
-        super(DEFAULT_CONTENT_TYPE, string);
+        super(DEFAULT_CONTENT_TYPE, string, extraHeaders);
     }
 
     public HtmlResolution(Document doc, Map<String, String> extraHeaders) {
-        super(DEFAULT_CONTENT_TYPE, new XMLOutputter().outputString(doc));
+        super(DEFAULT_CONTENT_TYPE, new XMLOutputter().outputString(doc), extraHeaders);
     }
 }
