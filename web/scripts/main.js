@@ -490,9 +490,9 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
                 // TODO: on demand van PBL bv: laatst geopende doc opslaan
                 //$.cookie();
                 var access = jqXHR.getResponseHeader("X-MDE-Access");
-                var viewMode = false; //access != "WRITE";
+                var viewMode = access != "WRITE";
                  
-                B3pCatalog.createMdeHtml(data, isGeo, viewMode);
+                B3pCatalog.createMdeHtml(data, false, isGeo, viewMode);
             }
         }
     };
@@ -500,6 +500,30 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
     $("#synchronizeMD").button("option", "disabled", false);   
       
     this._loadMetadata(opts);
+};
+
+B3pCatalog.resetMde = function() {
+    var mde = $("#mde").data("mde");
+    
+    console.log("resetMde");
+    
+    var viewMode = mde.options.viewMode;
+    var currentTab = mde.options.currentTab;
+    var isGeo = !mde.options.geoTabsMinimized;
+    
+    $.ajax({
+        url: B3pCatalog.metadataUrl,
+        type: "POST",
+        dataType: 'html',
+        data: {
+            resetXml: "t",
+        },
+        success: function(data, textStatus, xhr) {
+            console.log("resetXml", data);
+            
+            B3pCatalog.createMdeHtml(data, false, isGeo, viewMode, { currentTab: currentTab});            
+        }
+    });    
 };
 
 B3pCatalog.refreshMde = function() {
@@ -526,11 +550,9 @@ B3pCatalog.refreshMde = function() {
         success: function(data, textStatus, xhr) {
             console.log("updateXml", data);
             
-            // TODO: isGeo onthouden
-            B3pCatalog.createMdeHtml(data, isGeo, viewMode, { currentTab: currentTab});            
+            B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, { currentTab: currentTab});            
         }
     });    
-    
 };
 
 B3pCatalog.addComment = function(comment) {
@@ -583,7 +605,7 @@ B3pCatalog.addComment = function(comment) {
             success: function(data, textStatus, xhr) {
                 console.log("updateXml after comment", data);
             
-                B3pCatalog.createMdeHtml(data, isGeo, viewMode, { currentTab: currentTab});            
+                B3pCatalog.createMdeHtml(data, false, isGeo, viewMode, { currentTab: currentTab});            
             }
         });
         
@@ -593,94 +615,6 @@ B3pCatalog.addComment = function(comment) {
         }
     }
 };
-
-
-//B3pCatalog.loadMetadata2 = function(mode, path, title, isGeo, cancel) {
-//
-//    var opts = {
-//        done: function() {
-//            
-//        },
-//        cancel: cancel,
-//        ajaxOptions: {
-//            url: B3pCatalog.metadataUrl,
-//            type: "POST",
-//            data: {
-//                load : "t",
-//                mode: mode,
-//                path : path
-//            },
-//            dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
-//            success: function(data, textStatus, jqXHR) {
-//                //log(data);
-//                B3pCatalog.currentFilename = path;
-//                B3pCatalog.currentMode = mode;
-//                document.title = B3pCatalog.title + B3pCatalog.titleSeparator + title;
-//                // TODO: on demand van PBL bv: laatst geopende doc opslaan
-//                //$.cookie();
-//                var access = jqXHR.getResponseHeader("X-MDE-Access");
-//                var viewMode = false; //access != "WRITE";
-//                B3pCatalog.createMde(data, isGeo, viewMode);
-//            }
-//        }
-//    };
-//    
-//    $("#synchronizeMD").button("option", "disabled", false);       
-//    
-//    var me = this;
-    /*
-    if(mode == B3pCatalog.modes.LOCAL_MODE) {
-
-        opts.noAjax = function() {
-            
-            function loadLocalMetadata(md) {
-                B3pCatalog.currentFilename = path;
-                B3pCatalog.currentMode = mode;
-                document.title = B3pCatalog.title + B3pCatalog.titleSeparator + title;                            
-                B3pCatalog.createMde(md, isGeo, false);                            
-
-                var lpath = path.toLowerCase();
-                if(! (endsWith(lpath, ".shp.xml") || endsWith(lpath, ".nc.xml") || endsWith(lpath, ".cdf.xml"))) {
-                    console.log("disabling synchronize button for "+lpath);
-                    $("#synchronizeMD").button("option", "disabled", true);       
-                }
-            }
-            
-            if(extension(path) == "xml") {
-                
-                me.loadLocal(function() {
-                    me.local.callApplet("readFileUTF8", path,
-                        loadLocalMetadata,
-                        function(e) {
-                            B3pCatalog.openSimpleErrorDialog("Fout bij lezen bestand: " + e);
-                            cancel();
-                            return;
-                        });                
-                });
-            } else {
-                path = path + ".xml";
-                me.loadLocal(function() {
-                    me.local.callApplet("readFileUTF8", path,
-                        function(md) {
-                            if(md == null) {
-                                // XML bestand bestaat nog niet                                
-                                loadLocalMetadata("");
-                            } else {
-                                loadLocalMetadata(md);
-                            }
-                        },
-                        function(e) {
-                            B3pCatalog.openSimpleErrorDialog("Fout bij lezen metadata : " + e);
-                            cancel();
-                        }
-                    );
-                });
-            }
-        }
-    }*/
-//    
-//    this._loadMetadata(opts);
-//};
 
 B3pCatalog.loadMetadataByUUID = function(uuid) {
     this._loadMetadata({
@@ -873,16 +807,9 @@ B3pCatalog.saveDataUserConfirm = function(opts) {
 };
 
 B3pCatalog.commentUsername = null;
+B3pCatalog.mdeChanged = false;
 
-B3pCatalog.createMde = function(xmlDoc, isGeo, viewMode) {
-    B3pCatalog.createMde2(xmlDoc, null, isGeo, viewMode);
-};
-
-B3pCatalog.createMdeHtml = function(htmlDoc, isGeo, viewMode, extraOptions) {
-     B3pCatalog.createMde2(null, htmlDoc, isGeo, viewMode, extraOptions);
-};
-
-B3pCatalog.createMde2 = function(xmlDoc, htmlDoc, isGeo, viewMode, extraOptions) {
+B3pCatalog.createMdeHtml = function(htmlDoc, changedOnServer, isGeo, viewMode, extraOptions) {
     $("#mde").mde("destroy");
     $("#center-wrapper").html($("<div>", {
         id: "mde"
@@ -892,64 +819,44 @@ B3pCatalog.createMde2 = function(xmlDoc, htmlDoc, isGeo, viewMode, extraOptions)
     $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xmlHtml: htmlDoc,
         commentPosted: function(comment) { console.log("onCommentPosted"); B3pCatalog.addComment(comment); },
-//                function(comment) {
-//            if (!$.trim(comment)) {
-//                B3pCatalog.openSimpleErrorDialog("Commentaar kan niet leeg zijn.");
-//                return false;
-//            } else {
-//                var me = B3pCatalog;
-//                
-//                if(me.commentUsername == null) {
-//                    if(me.username != null && me.username.trim().length > 0) {
-//                        me.commentUsername = me.username;
-//                    } else {
-//                        me.commentUsername = $.cookie('commentUsername');
-//                        if(me.commentUsername == null) {
-//                            me.commentUsername = prompt("Onder welke naam wilt u dit commentaar plaatsen?");                        
-//                        }
-//                        if(me.commentUsername == null) {
-//                            return null;
-//                        } else {
-//                            $.cookie("commentUsername", me.commentUsername, {expires: 30});
-//                        }
-//                    }
-//                }
-//
-//                var metadata = "";
-//                
-//                if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
-//                    metadata = $("#mde").mde("save");
-//                }
-//                var xhr = $.ajax({
-//                    url: B3pCatalog.metadataUrl,
-//                    data: {
-//                        postComment: "t",
-//                        comment: comment,
-//                        path: B3pCatalog.currentFilename,
-//                        mode: B3pCatalog.currentMode,
-//                        metadata: metadata,
-//                        username: me.commentUsername
-//                    },
-//                    dataType: "text",
-//                    type: "POST",
-//                    async: false
-//                });
-//                if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
-//                    $("#saveMD").button("option", "disabled", false);              
-//                }                
-//                return xhr.responseText;
-//            }
-//        },
         onServerTransformRequired: function() { console.log("onServerTransformRequired"); B3pCatalog.refreshMde(); },
-        change: function(changed) {            
-            $("#saveMD").button("option", "disabled", !changed);
-        }
+        onResetRequired: function() { console.log("onResetRequired"); B3pCatalog.resetMde(); },
+        change: function(changed) { console.log("onChange"); B3pCatalog.setChanged(changed); }
     }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)
     , extraOptions));
-    
+ 
+    var mde = $("#mde").data("mde");
+    $(window).bind("beforeunload.mde", function(event) {
+        if (mde.options.pageLeaveWarning && B3pCatalog.mdeChanged) {
+            return "Uw wijzigingen in het metadata document zullen verloren gaan als u deze pagina verlaat.";
+        }
+        return undefined;
+    });
+   
     B3pCatalog.createMdeToolbar(viewMode);
+    B3pCatalog.setChanged(changedOnServer);
     B3pCatalog.fadeMessage("Editor gegevens zijn ververst");
 
+};
+
+B3pCatalog.setChanged = function(changed) {
+    var docTitle = "" + document.title;
+    var docTitleLastChar = docTitle.substring(docTitle.length - 1);
+    if (changed) {
+        if (docTitleLastChar !== "*")
+            document.title = docTitle + "*";
+    } else {
+        if (docTitleLastChar === "*")
+            document.title = docTitle.substring(0, docTitle.length - 1);
+    }
+
+    if (!changed) {
+        $(".ui-mde-changed-value", this.element).removeClass("ui-mde-changed-value");
+    }
+
+    $("#saveMD").button("option", "disabled", !changed); 
+
+    B3pCatalog.mdeChanged = changed;
 };
 
 B3pCatalog.createCswMde = function(xmlDoc) {
@@ -1097,6 +1004,8 @@ B3pCatalog.importMetadata = function() {
     $form.append($submitEventInput);
     
     function importMD(xml) {
+        
+        //TODO moet nog aangepast
         $("#mde").mde("option", {
             overwriteUUIDs: $uuidCheckbox.prop("checked"), // moet eerst
             xml: xml // start de mde opnieuw met deze xml
@@ -1142,6 +1051,13 @@ B3pCatalog.importMetadata = function() {
 
 B3pCatalog.synchronizeWithData = function() {
     var me = this;
+    var mde = $("#mde").data("mde");
+    
+    console.log("synchronizeMde");
+    
+    var viewMode = mde.options.viewMode;
+    var currentTab = mde.options.currentTab;
+    var isGeo = !mde.options.geoTabsMinimized;
     
     var doIt = function(synchronizeData) {
         //log($("#mde").mde("save", {postprocess: false}));
@@ -1151,14 +1067,15 @@ B3pCatalog.synchronizeWithData = function() {
                 synchronize: "t",
                 path: B3pCatalog.currentFilename,
                 mode: B3pCatalog.currentMode,
-                metadata: $("#mde").mde("save", {postprocess: false}),
+                metadata: null, // niet meer nodig, staat serverside
                 synchronizeData: synchronizeData
             },
             type: "POST",
             async: false,
-            dataType: "text",
-            success: function(data) {
-                $("#mde").mde("option", "xml", data);
+            dataType: "html",
+            success: function(data, textStatus, xhr) {
+                console.log("synchronizeXml", data);
+                B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, { currentTab: currentTab}); 
                 B3pCatalog.fadeMessage("Synchronisatie succesvol");
             }
         });
@@ -1190,6 +1107,14 @@ B3pCatalog.synchronizeWithData = function() {
 }
 
 B3pCatalog.synchronizeNetCDF = function(fn) {
+    var mde = $("#mde").data("mde");
+    
+    console.log("synchronizeNetCDFMde");
+    
+    var viewMode = mde.options.viewMode;
+    var currentTab = mde.options.currentTab;
+    var isGeo = !mde.options.geoTabsMinimized;
+    
     
     var gotNCML = function(ncml) {
 
@@ -1199,14 +1124,15 @@ B3pCatalog.synchronizeNetCDF = function(fn) {
                 synchronize: "t",
                 path: B3pCatalog.currentFilename,
                 mode: B3pCatalog.currentMode,
-                metadata: $("#mde").mde("save", {postprocess: false}),
+                metadata: null, // niet meer nodig, staat serverside
                 synchronizeData: ncml
             },
             type: "POST",
             async: false,
-            dataType: "text",
-            success: function(data) {
-                $("#mde").mde("option", "xml", data);
+            dataType: "html",
+            success: function(data, textStatus, xhr) {
+                console.log("synchronizeNetCDFXml", data);
+                B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, { currentTab: currentTab}); 
                 B3pCatalog.fadeMessage("NCML ingelezen, exporteer volledige metadata voor <netcdf> XML");
             }
         });        
@@ -1220,14 +1146,12 @@ B3pCatalog.synchronizeNetCDF = function(fn) {
 
 B3pCatalog.publishMetadata = function() {
     
-    var xml = $("#mde").mde("save");
-
     $.ajax({
         url: B3pCatalog.publishUrl,
         type: "POST",
         data: {
             publish: "t",
-            metadata: xml
+            metadata: null, // niet meer nodig, staat serverside
         },
         success: function(data, textStatus, xhr) {
             
@@ -1290,7 +1214,7 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
                     $.okCancel({
                         text: "Weet u zeker dat u alle metadata en commentaren wilt wissen voor dit document? Dit wordt pas definitief als u op \"Opslaan\" klikt.",
                         ok: function() {
-                            $("#mde").mde("reset");
+                            B3pCatalog.resetMde();
                         }
                     });
                     return false;

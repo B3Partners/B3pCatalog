@@ -168,10 +168,12 @@ public class mdeXml2Html {
         }
     }
 
-    public static void addDateStamp(Document xmlDoc) throws JDOMException {
+    public static void addDateStamp(Document xmlDoc, boolean overwrite) throws JDOMException {
         Element dateNode = XPathHelper.selectSingleElement(xmlDoc, "/*/gmd:MD_Metadata/gmd:dateStamp/gco:Date");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        dateNode.setText( sdf.format(new Date()));
+        if (overwrite || dateNode.getTextNormalize().isEmpty()) {
+            dateNode.setText( sdf.format(new Date()));
+        }
     }
 
     // Makes sure that the path to a newly added elem/section is created (path of single elems).
@@ -484,7 +486,7 @@ public class mdeXml2Html {
         Document mdDoc = DocumentHelper.getMetadataDocument(DocumentHelper.EMPTY_METADATA);
         
         Document ppDoc = mdeXml2Html.preprocess(mdDoc);
-        addDateStamp(ppDoc);
+        addDateStamp(ppDoc, false);
         addUUID(ppDoc, true);
 
         Element parent = null;

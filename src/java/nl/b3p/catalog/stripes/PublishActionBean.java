@@ -106,8 +106,8 @@ public class PublishActionBean implements ActionBean {
     }
     
     private Document getISO19139Document() throws Exception {
-        Document doc = DocumentHelper.getMetadataDocument(metadata);
-        Element MD_Metadata = DocumentHelper.getMD_Metadata(doc);
+        Document md = (Document)getContext().getRequest().getSession().getAttribute(MetadataAction.SESSION_KEY_METADATA_XML);            
+        Element MD_Metadata = DocumentHelper.getMD_Metadata(md);
 
         MD_Metadata.detach();
         return new Document(MD_Metadata);        
