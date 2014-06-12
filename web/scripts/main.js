@@ -958,6 +958,7 @@ B3pCatalog.importMetadata = function() {
     
     var $textarea = $("<textarea></textarea>", {
         id: "import-textarea",
+        name: "metadata",
         cols: 50,
         rows: 35, // IE 6/7 pakt 100% height niet
         css: {
@@ -1004,8 +1005,6 @@ B3pCatalog.importMetadata = function() {
     $form.append($submitEventInput);
     
     function importMD(xml) {
-        
-        //TODO moet nog aangepast
         $("#mde").mde("option", {
             overwriteUUIDs: $uuidCheckbox.prop("checked"), // moet eerst
             xml: xml // start de mde opnieuw met deze xml
@@ -1015,7 +1014,7 @@ B3pCatalog.importMetadata = function() {
     }
     
     $form.submit(function() {
-        if ($fileInput.val()) {
+        if ($fileInput.val() || ($textarea.val() && $textarea.val() !== placeholderText)) {
             log("import via fileInput submit");
             $(this).ajaxSubmit({
                 async: false,
@@ -1023,12 +1022,9 @@ B3pCatalog.importMetadata = function() {
                 dataType: "text", // text from textarea must not be treated as xml immediately
                 success: function(data, status, xhr) {
                     log("import success");
-                    importMD(Sarissa.unescape(data));
+                    B3pCatalog.createMdeHtml(data, false, true, false);
                 }
             });
-        } else if ($textarea.val() && $textarea.val() !== placeholderText) {
-            log("import via textarea");
-            importMD($textarea.val());
         } else {
             $.ok({ 
                 text: "Kies een bestand of plak xml in het tekstvak om metadata te importeren."

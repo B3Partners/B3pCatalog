@@ -32,8 +32,6 @@ import nl.b3p.catalog.resolution.HtmlResolution;
 import nl.b3p.catalog.resolution.XmlResolution;
 import nl.b3p.catalog.xml.*;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -576,20 +574,41 @@ public class MetadataAction extends DefaultAction {
     }
 
     public Resolution importMD() {
-        log.debug("in importMD");
+        
         try {
-            //return new XmlResolution(filedata.getInputStream());
-            String xml = IOUtils.toString(importXml.getInputStream(), "UTF-8");
-            // jquery form plugin extracts the value from the textarea. unescaping done afterwards in js success callback
-            String hackhackXml = "<textarea>" + StringEscapeUtils.escapeXml(xml) + "</textarea>";
-            // must be text/html for IE
-            StreamingResolution sr = new StreamingResolution("text/html", hackhackXml);
-            sr.setCharacterEncoding("UTF-8");
-            return sr;
-        } catch (Exception e) {
-            String message = "Could not import file.";
+            Document mdDoc;
+            if(importXml != null) {
+                mdDoc = new SAXBuilder().build(importXml.getInputStream());
+            } else if(metadata != null) {
+                mdDoc = DocumentHelper.getMetadataDocument(metadata);
+            } else {
+                throw new IllegalArgumentException();
+            }
+            
+            Document ppDoc = mdeXml2Html.preprocess(mdDoc, determineViewMode());
+             //datestamp and uuid added when empty
+            mdeXml2Html.addDateStamp(ppDoc, false);
+            mdeXml2Html.addUUID(ppDoc, false);
+            getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
+
+            Document htmlDoc = mdeXml2Html.transform(ppDoc, determineViewMode());
+
+            String d = DocumentHelper.getDocumentString(htmlDoc);
+            log.debug("serverside rendered html: " + d);
+            StringReader sr = new StringReader(d);
+            return new HtmlResolution(sr, extraHeaders);
+        } catch(Exception e) {
+            getContext().getRequest().getSession().removeAttribute(SESSION_KEY_METADATA_XML);
+            String message = "Fout bij laden importeren metadata " + path;
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
+        } finally {
+            try {
+                if(importXml != null) {
+                    importXml.delete();
+                }
+            } catch (IOException ex) {
+            }
         }
     }
 
