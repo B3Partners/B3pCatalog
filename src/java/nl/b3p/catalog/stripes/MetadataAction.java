@@ -113,6 +113,8 @@ public class MetadataAction extends DefaultAction {
     // wolverine. For debugging.
     XStream xstream = new XStream();
 
+    //TODO CvL: moet hier niet net zoals bij viewmode check de versie met
+    // LOCAL_MODE toevoegen?
     public void determineRoot() throws B3PCatalogException {
         root = Root.getRootForPath(path, getContext().getRequest(), AclAccess.READ);
         rootAccess = root.getRequestUserHighestAccessLevel(getContext().getRequest());
@@ -134,6 +136,8 @@ public class MetadataAction extends DefaultAction {
 
     }
 
+    //TODO CvL: wordt dit nog gebruikt? Code lijkt niet nuttig in nieuwe situatie met
+    //transformatie op server.
     public Resolution load() {
 
         try {
@@ -141,6 +145,8 @@ public class MetadataAction extends DefaultAction {
                 // determineRoot(); // wovlerine vrijdag 27 juni added
                 return new XmlResolution(strictISO19115 ? extractMD_Metadata(metadata) : metadata);
             }
+            //TODO CvL: als je het consequent doet dan staat deze methode nu altijd helemaal vooraan.
+            // graag ook checken bij andere methoden
             determineRoot();
 
             if (SDE_MODE.equals(mode)) {
@@ -195,10 +201,17 @@ public class MetadataAction extends DefaultAction {
             if (LOCAL_MODE.equals(mode)) {
                 // When using the applet the access right for a file can't be determined.
                 // Forcing it to WRITE. 
+                //TODO CvL: waarom niet via nieuwe versie van determineroot()?
                 extraHeaders.put("X-MDE-Access", "WRITE");
                 // root = Root.getRootForPath(path);
                 //File mdFile = FileListHelper.getFileForPath(root, path);
+                
+                //TODO CvL: dit kan niet kloppen! het path van het local servlet kan nooit vanaf
+                // de server gevonden worden (hier werkt het toevallig omdat server en client op
+                // de zelfde machine staan!!!!)
+                
                 File mdFile = new File(path); // The applet already supplied the whole filename.
+                //TODO CvL: oorspronkelijke code werkt waarschijnlijk omdat applet metadata meegeeft, niet gecheckt!
                 //mdDoc = strictISO19115 ? extractMD_MetadataAsDoc(metadata) : DocumentHelper.getMetadataDocument(metadata);
 
                 mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
@@ -214,6 +227,7 @@ public class MetadataAction extends DefaultAction {
                 }
 
             } else {
+                //TODO CvL: naar voren?
                 determineRoot();
                 if (SDE_MODE.equals(mode)) {
 
@@ -461,6 +475,7 @@ public class MetadataAction extends DefaultAction {
         // determineRoot(); 
         // When using the applet the access right for a file can't be determined.
         // Forcing it to WRITE. 
+        //TODO CvL: via nieuwe determineroot()?
         extraHeaders.put("X-MDE-Access", "WRITE");
 
         // metadata string must already have been preprocessed on the clientside
@@ -530,7 +545,7 @@ public class MetadataAction extends DefaultAction {
             if (LOCAL_MODE.equals(mode)) {
                 return synchronizeLocal();
             }
-
+//TODO CvL: naar voren?
             determineRoot();
 
             // metadata string must already have been preprocessed on the clientside
@@ -595,8 +610,9 @@ public class MetadataAction extends DefaultAction {
                         } finally {
                             FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
                         }
-                    } else {
-                        synchronizeRegularMetadata(md, dataFile);
+                        //TODO CvL: dit stukje moet verder op
+//                    } else {
+//                        synchronizeRegularMetadata(md, dataFile);
                     }
                 } else if (cfg.isForkSynchroniser()) {
                     md = ArcObjectsSynchronizerForker.synchronize(
@@ -607,6 +623,7 @@ public class MetadataAction extends DefaultAction {
                             metadata
                     );
                 } // Todo: create a real test for it.
+                //TODO CvL: if (path.endsWith(Extensions.SHAPE)) {
                 else if (shapeFileReader == true) {
                     //Shapefiles sf = new Shapefiles();
                     File shapeFile = FileListHelper.getFileForPath(root, path);
@@ -619,6 +636,10 @@ public class MetadataAction extends DefaultAction {
                     log.debug("Returned json by Shapefile.getmetadata" + xstream.toXML(synchronizeData));
 
                 }
+                        //TODO CvL: volgens mij moet dit hier, als laatste poging
+//                     else {
+//                        synchronizeRegularMetadata(md, dataFile);
+//                    }
             } else {
                 throw new IllegalArgumentException("Invalid mode: " + mode);
             }

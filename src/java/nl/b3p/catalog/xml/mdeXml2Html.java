@@ -16,6 +16,7 @@
  */
 package nl.b3p.catalog.xml;
 
+//TODO CvL: XStream kan wel weg
 import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;

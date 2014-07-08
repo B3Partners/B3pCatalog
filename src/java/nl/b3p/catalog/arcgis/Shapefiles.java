@@ -31,6 +31,8 @@ import org.json.JSONObject;
 /**
  * @author Matthijs Laan
  */
+
+//TODO CvL: json tussenstuk er nog tussenuit
 public class Shapefiles {
     /** Returns a JSON object with shapefile and DBF metadata.
      * 
