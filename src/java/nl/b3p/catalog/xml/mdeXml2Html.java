@@ -16,6 +16,7 @@
  */
 package nl.b3p.catalog.xml;
 
+import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,6 +74,10 @@ public class mdeXml2Html {
         params.put("synchroniseEsri_init", "true");
     }
     
+    
+
+    
+    
     public static Boolean getXSLParam(String param) {
         String paramValue = params.get(param);
         if (paramValue == null) {
@@ -108,6 +113,13 @@ public class mdeXml2Html {
     }
 
     public static Document preprocess(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        // Wolverine. For debugging only
+        XStream xstream = new XStream();
+        log.debug("mdeXml2Html.preprocess doc is:" + xstream.toXML(doc));  
+        log.debug("mdeXml2Html.preprocess viewMode is:" + xstream.toXML(viewMode));  
+
+        
+        
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer t = tf.newTransformer(new StreamSource(mdeXml2Html.class.getResourceAsStream("mdeXmlPreprocessor.xsl")));
         if (params != null) {

@@ -1,4 +1,5 @@
-if (typeof B3pCatalog == "undefined") B3pCatalog = {};
+if (typeof B3pCatalog == "undefined")
+    B3pCatalog = {};
 
 B3pCatalog.hashchange = function(event) {
     console.log("hashchange", event);
@@ -19,17 +20,17 @@ B3pCatalog.hashchange = function(event) {
         B3pCatalog.loadFiletreeSDE();
     }
 
-    if(event.getState("page") === "organisations") {
+    if (event.getState("page") === "organisations") {
         B3pCatalog.loadOrganisations();
         return;
     }
 
-    if(event.getState("page") === "csw") {
+    if (event.getState("page") === "csw") {
         showTab($("#main-tabs a[href='#search']"));
         return;
     }
 
-    if(event.getState("page") == "metadata") {
+    if (event.getState("page") == "metadata") {
         $(".selected", "#filetree").removeClass("selected");
         var mode = event.getState("mode");
         var $selectedFile = $("a[rel=\"" + RegExp.escape(event.getState("path")) + "\"]", "#filetree-" + mode);
@@ -42,14 +43,14 @@ B3pCatalog.hashchange = function(event) {
         }
 
         B3pCatalog.loadMetadata(
-            mode,
-            event.getState("path"),
-            event.getState("title"),
-            event.getState("isGeo",true),
-            function() {
-                B3pCatalog.clickedFileAnchor.removeClass("selected");
-                B3pCatalog.getCurrentFileAnchor().addClass("selected").focus();
-            }
+                mode,
+                event.getState("path"),
+                event.getState("title"),
+                event.getState("isGeo", true),
+                function() {
+                    B3pCatalog.clickedFileAnchor.removeClass("selected");
+                    B3pCatalog.getCurrentFileAnchor().addClass("selected").focus();
+                }
         );
         return;
     }
@@ -57,7 +58,7 @@ B3pCatalog.hashchange = function(event) {
 
 B3pCatalog.loadLocal = function(success) {
     var me = this;
-    if(!this.local) {
+    if (!this.local) {
         $.okCancel({
             text: "Voor het openen van lokale mappen is een Java applet nodig. Dit werkt het beste wanneer de laatste versie van Java geinstalleerd is. Doorgaan met het laden van het applet?",
             ok: function() {
@@ -69,18 +70,18 @@ B3pCatalog.loadLocal = function(success) {
         success();
     }
 }
-    
+
 B3pCatalog.connectDirectory = function() {
     var me = this;
-    this.loadLocal( function() {
-        me.local.callApplet("selectDirectory", "Selecteer een map...", 
-            function(dir) { 
-                if(dir != null) {
-                    B3pCatalog.loadFiletreeLocal(dir);
-                }
-            },
-            B3pCatalog.openSimpleErrorDialog
-        );
+    this.loadLocal(function() {
+        me.local.callApplet("selectDirectory", "Selecteer een map...",
+                function(dir) {
+                    if (dir != null) {
+                        B3pCatalog.loadFiletreeLocal(dir);
+                    }
+                },
+                B3pCatalog.openSimpleErrorDialog
+                );
     });
 }
 
@@ -92,21 +93,21 @@ function htmlEncode(str) {
 }
 
 function extension(f) {
-    return f.substring((f.lastIndexOf(".")+1));
+    return f.substring((f.lastIndexOf(".") + 1));
 }
 
 function filterOutMetadataFiles(files) {
     var i = 0;
-    while(i < files.length) {
+    while (i < files.length) {
         var f = files[i];
-        var prev = files[i-1];
-        if(i > 0 && prev.n == f.n.substring(0,prev.n.length)) {
-            if(f.n.substring(prev.n.length) == ".xml") {
+        var prev = files[i - 1];
+        if (i > 0 && prev.n == f.n.substring(0, prev.n.length)) {
+            if (f.n.substring(prev.n.length) == ".xml") {
                 prev.m = true;
-                files.splice(i,1);
+                files.splice(i, 1);
                 continue;
-            }            
-        } 
+            }
+        }
         prev = f.n;
         i++;
     }
@@ -114,23 +115,23 @@ function filterOutMetadataFiles(files) {
 
 function filterOutShapeExtraFiles(files) {
     var shapefiles = [];
-    for(var i = 0; i < files.length; i++) {      
+    for (var i = 0; i < files.length; i++) {
         var f = files[i];
-        if(f.d == 0) {
-            if(extension(f.n) == "shp") {
-                shapefiles[shapefiles.length] = f.n.substring(0,f.n.length - 4);           
+        if (f.d == 0) {
+            if (extension(f.n) == "shp") {
+                shapefiles[shapefiles.length] = f.n.substring(0, f.n.length - 4);
             }
         }
     }
-    
-    for(var i = 0; i < shapefiles.length; i++) {
+
+    for (var i = 0; i < shapefiles.length; i++) {
         var shp = shapefiles[i];
         var j = 0;
-        while(j < files.length) {
+        while (j < files.length) {
             var f = files[j];
-            if(f.n.substring(0,shp.length) == shp) {
-                if(extension(f.n) != "shp") {
-                    files.splice(j,1);
+            if (f.n.substring(0, shp.length) == shp) {
+                if (extension(f.n) != "shp") {
+                    files.splice(j, 1);
                     continue;
                 }
             }
@@ -140,50 +141,50 @@ function filterOutShapeExtraFiles(files) {
 }
 
 B3pCatalog.decodeFileList = function(data, fileJSON, success) {
-    
-    
-    eval("var files = " + fileJSON);    
-    
+
+
+    eval("var files = " + fileJSON);
+
     var s = "<ul class=\"jqueryFileTree\">";
-    
-    files.sort( function(lhs, rhs) {
-        if(lhs.d != rhs.d) {
+
+    files.sort(function(lhs, rhs) {
+        if (lhs.d != rhs.d) {
             return lhs.d < rhs.d ? 1 : -1;
-        }    
+        }
         return lhs.n.localeCompare(rhs.n);
     });
-    
+
     filterOutMetadataFiles(files);
     filterOutShapeExtraFiles(files);
-    
+
     var dir = data.expandTo || data.dir;
-    
-    if(data.expandTo) {
+
+    if (data.expandTo) {
         var d = htmlEncode(data.expandTo);
         s += "<li class=\"directory expanded\">" +
-            "<a href=\"#\" rel=\"" + d + "\" title=\"" + d + "\">" + d + "</a>";
+                "<a href=\"#\" rel=\"" + d + "\" title=\"" + d + "\">" + d + "</a>";
         s += "<ul class=\"jqueryFileTree\">";
-    }                
+    }
 
-    for(i = 0; i < files.length; i++) {
+    for (i = 0; i < files.length; i++) {
         f = files[i];
-        if(f.d != 0) {
+        if (f.d != 0) {
             var en = htmlEncode(f.n);
             s += "<li class=\"directory collapsed\">";
             s += "<a href=\"#\" rel=\"" + htmlEncode(dir) + "/" + en + "\" title=\"" + en + "\">";
-            s += en + "</a></li>";            
-        } else  {
+            s += en + "</a></li>";
+        } else {
             var idx = f.n.lastIndexOf(".");
             var ext = "";
-            if(idx != -1) {
-                ext = f.n.substring(idx+1);
-                if(ext.indexOf(" ") == -1) { // not entirely foolproof
+            if (idx != -1) {
+                ext = f.n.substring(idx + 1);
+                if (ext.indexOf(" ") == -1) { // not entirely foolproof
                     ext = "ext_" + ext;
                 } else {
                     ext = "";
                 }
             }
-            if(f.m) {
+            if (f.m) {
                 ext += " with_metadata";
             }
             s += "<li class=\"file " + ext + "\">";
@@ -192,29 +193,29 @@ B3pCatalog.decodeFileList = function(data, fileJSON, success) {
             s += en + "</a></li>";
         }
     }
-    if(data.expandTo) {
+    if (data.expandTo) {
         s += "</ul></li>";
     }
     s += "</ul>";
     success(s);
 }
-    
+
 B3pCatalog.loadFiletreeLocal = function(dir) {
     log("loadFiletreeLocal", dir);
-    
+
     var me = this;
 
     B3pCatalog._loadFiletree(dir, $("#filetree-local"), {
         noAjax: function(data, success, error) {
-            log("list directory", data.expandTo || data.dir);            
-            me.local.callApplet("listDirectory", data.expandTo || data.dir, 
-                function(files) {
-                    B3pCatalog.decodeFileList(data, files, success)
-                },
-                function(e) {
-                    $.ok({text: e});
-                    error();
-                }
+            log("list directory", data.expandTo || data.dir);
+            me.local.callApplet("listDirectory", data.expandTo || data.dir,
+                    function(files) {
+                        B3pCatalog.decodeFileList(data, files, success)
+                    },
+                    function(e) {
+                        $.ok({text: e});
+                        error();
+                    }
             );
         },
         fileCallback: function(rel, aElement) {
@@ -231,7 +232,7 @@ B3pCatalog.loadFiletreeLocal = function(dir) {
 
             $.bbq.pushState(newState, 2);
         }
-    });    
+    });
 }
 
 /////////////////////////////// Filetree ///////////////////////////////////////
@@ -262,7 +263,7 @@ B3pCatalog.loadFiletreeFile = function(selectedFilePath) {
                 title: anchor.attr("title"),
                 isGeo: "true" == anchor.attr("isgeo")
             };
-console.log("loadFiletreeFile",newState,$.bbq);
+            console.log("loadFiletreeFile", newState, $.bbq);
             $.bbq.pushState(newState, 2);
         }
     });
@@ -282,12 +283,12 @@ B3pCatalog.loadFiletreeSDE = function(selectedFilePath) {
             var anchor = B3pCatalog.clickedFileAnchor = $(aElement);
             if (anchor.length > 0 && anchor.hasClass("selected"))
                 return;
-            
+
             var newState = {
                 page: "metadata",
                 mode: B3pCatalog.modes.SDE_MODE,
                 path: rel,
-                title: anchor.attr("title")                
+                title: anchor.attr("title")
             };
 
             $.bbq.pushState(newState, 2);
@@ -298,7 +299,7 @@ B3pCatalog.loadFiletreeSDE = function(selectedFilePath) {
 B3pCatalog._loadFiletree = function(selectedFilePath, $elem, extraOpts) {
     // used to indicate that the selected file does not need to be selected in readyCallback
     var selectedFileFound = false;
-    
+
     $elem.fileTree($.extend({
         scriptEvent: "",
         script: B3pCatalog.filetreeUrl,
@@ -310,13 +311,14 @@ B3pCatalog._loadFiletree = function(selectedFilePath, $elem, extraOpts) {
         collapseSpeed: 0,
         dragAndDrop: false,
         /*extraAjaxOptions: {
-            global: false
-        },*/
+         global: false
+         },*/
         activeClass: "selected",
         activateDirsOnClick: false,
         expandOnFirstCallTo: selectedFilePath,
         fileCallback: $.noop,
-        dirExpandCallback: function(dir) {},
+        dirExpandCallback: function(dir) {
+        },
         readyCallback: function(root) {
             if (selectedFilePath && !selectedFileFound) {
                 var $selectedFile = $("a[rel=\"" + RegExp.escape(selectedFilePath) + "\"]", root);
@@ -343,22 +345,20 @@ B3pCatalog.filetreeScrollToOptions = {
 
 B3pCatalog.fileTreeScrollTo = function(elem) {
     var $elem = $(elem),
-        $pane = $("#sidebar"),
+            $pane = $("#sidebar"),
+            paneHeight = $pane.height(),
+            paneTop = $pane.offset().top,
+            paneBottom = paneTop + paneHeight,
+            elemHeight = $elem.height(),
+            elemTop = $elem.offset().top,
+            elemBottom = elemTop + elemHeight;
 
-        paneHeight = $pane.height(),
-        paneTop = $pane.offset().top,
-        paneBottom = paneTop + paneHeight,
-
-        elemHeight = $elem.height(),
-        elemTop = $elem.offset().top,
-        elemBottom = elemTop + elemHeight;
-    
     var isScrolledIntoPane = ((elemBottom >= paneTop) && (elemTop <= paneBottom)
-      && (elemBottom <= paneBottom) &&  (elemTop >= paneTop) );
+            && (elemBottom <= paneBottom) && (elemTop >= paneTop));
 
     if (!isScrolledIntoPane) {
         if (elemBottom > paneBottom && elemTop <= paneBottom &&
-            elemTop > paneTop && elemHeight < paneHeight) {
+                elemTop > paneTop && elemHeight < paneHeight) {
             // element is partly out of range at the bottom of the pane: 
             // make sure the element bottom is visible at the bottom of the pane.
             $pane.scrollTo($pane.scrollTop() + elemBottom - paneBottom, B3pCatalog.filetreeScrollToOptions);
@@ -401,11 +401,11 @@ B3pCatalog.openErrorDialog = function(message) {
         width: $("body").calculateDialogWidth(66),
         height: $("body").calculateDialogHeight(80),
         buttons: [{
-            text: "Ok",
-            click: function(event) {
-                $(this).dialog("close");
-            }
-        }],
+                text: "Ok",
+                click: function(event) {
+                    $(this).dialog("close");
+                }
+            }],
         close: function(event) {
             $(this).dialog("destroy").remove();
         }
@@ -421,11 +421,11 @@ B3pCatalog.openSimpleErrorDialog = function(message) {
         title: "Fout",
         modal: true,
         buttons: [{
-            text: "Ok",
-            click: function(event) {
-                $(this).dialog("close");
-            }
-        }],
+                text: "Ok",
+                click: function(event) {
+                    $(this).dialog("close");
+                }
+            }],
         close: function(event) {
             $(this).dialog("destroy").remove();
         }
@@ -447,7 +447,7 @@ B3pCatalog.modes = {
     CSW_MODE: "csw",
     ADMIN_MODE: "admin"
 };
- 
+
 // dit kan wat consistenter:
 B3pCatalog.currentMode = B3pCatalog.modes.NO_MODE;
 
@@ -470,16 +470,16 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
 
     var opts = {
         done: function() {
-            
+
         },
         cancel: cancel,
         ajaxOptions: {
             url: B3pCatalog.metadataUrl,
             type: "POST",
             data: {
-                loadMdAsHtml : "t",
+                loadMdAsHtml: "t",
                 mode: mode,
-                path : path
+                path: path
             },
             dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
             success: function(data, textStatus, jqXHR) {
@@ -491,26 +491,26 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
                 //$.cookie();
                 var access = jqXHR.getResponseHeader("X-MDE-Access");
                 var viewMode = access != "WRITE";
-                 
+
                 B3pCatalog.createMdeHtml(data, false, isGeo, viewMode);
             }
         }
     };
-    
-    $("#synchronizeMD").button("option", "disabled", false);   
-      
+
+    $("#synchronizeMD").button("option", "disabled", false);
+
     this._loadMetadata(opts);
 };
 
 B3pCatalog.resetMde = function() {
     var mde = $("#mde").data("mde");
-    
+
     console.log("resetMde");
-    
+
     var viewMode = mde.options.viewMode;
     var currentTab = mde.options.currentTab;
     var isGeo = !mde.options.geoTabsMinimized;
-    
+
     $.ajax({
         url: B3pCatalog.metadataUrl,
         type: "POST",
@@ -520,24 +520,24 @@ B3pCatalog.resetMde = function() {
         },
         success: function(data, textStatus, xhr) {
             console.log("resetXml", data);
-            
-            B3pCatalog.createMdeHtml(data, false, isGeo, viewMode, { currentTab: currentTab});            
+
+            B3pCatalog.createMdeHtml(data, false, isGeo, viewMode, {currentTab: currentTab});
         }
-    });    
+    });
 };
 
 B3pCatalog.refreshMde = function() {
     var mde = $("#mde").data("mde");
-    
+
     var changedElements = mde.getChangedElements();
     var sectionChange = mde.getSectionChange();
-    
+
     console.log("refreshMde", changedElements, sectionChange);
-    
+
     var viewMode = mde.options.viewMode;
     var currentTab = mde.options.currentTab;
     var isGeo = !mde.options.geoTabsMinimized;
-    
+
     $.ajax({
         url: B3pCatalog.metadataUrl,
         type: "POST",
@@ -549,10 +549,10 @@ B3pCatalog.refreshMde = function() {
         },
         success: function(data, textStatus, xhr) {
             console.log("updateXml", data);
-            
-            B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, { currentTab: currentTab});            
+
+            B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, {currentTab: currentTab});
         }
-    });    
+    });
 };
 
 B3pCatalog.addComment = function(comment) {
@@ -604,11 +604,11 @@ B3pCatalog.addComment = function(comment) {
             },
             success: function(data, textStatus, xhr) {
                 console.log("updateXml after comment", data);
-            
-                B3pCatalog.createMdeHtml(data, false, isGeo, viewMode, { currentTab: currentTab});            
+
+                B3pCatalog.createMdeHtml(data, false, isGeo, viewMode, {currentTab: currentTab});
             }
         });
-        
+
 
         if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
             $("#saveMD").button("option", "disabled", false);
@@ -667,7 +667,7 @@ B3pCatalog._loadMetadata = function(opts) {
 
             document.title = B3pCatalog.title;
             options.done();
-            if(opts.noAjax) {
+            if (opts.noAjax) {
                 opts.noAjax();
             } else {
                 $.ajax(options.ajaxOptions);
@@ -683,16 +683,16 @@ function endsWith(s, n) {
 
 B3pCatalog.saveMetadata = function(settings) {
 
-    if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
+    if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
 
         var me = this;
-        
+
         // Get updated XML from server
-        
+
         var mde = $("#mde").data("mde");
         var changedElements = mde.getChangedElements();
         var sectionChange = mde.getSectionChange();
-    
+
         $.ajax({
             url: B3pCatalog.metadataUrl,
             type: "POST",
@@ -705,25 +705,30 @@ B3pCatalog.saveMetadata = function(settings) {
             success: function(data, textStatus, xhr) {
 
                 var xml = data;
-                
+                // Wolverine. 
+                // Todo: Check why currentFilename is NOT set to *.xml because this
+                // hack can lead to problems later on. 
+                var xmlFile = B3pCatalog.currentFilename + ".xml"; 
+
                 me.loadLocal(function() {
 
-                    me.local.callApplet("writeFileUTF8", B3pCatalog.currentFilename, xml,
-                        function() {
-                            B3pCatalog.fadeMessage("Metadata succesvol opgeslagen");
-                            $("#saveMD").button("option", "disabled", true);       
-                            if(!endsWith(B3pCatalog.currentFilename.toLowerCase(), ".xml")) {
-                                B3pCatalog.clickedFileAnchor.addClass("with_metadata");
+                    // me.local.callApplet("writeFileUTF8", B3pCatalog.currentFilename, xml,
+                    me.local.callApplet("writeFileUTF8", xmlFile, xml,
+                            function() {
+                                B3pCatalog.fadeMessage("Metadata succesvol opgeslagen");
+                                $("#saveMD").button("option", "disabled", true);
+                                if (!endsWith(B3pCatalog.currentFilename.toLowerCase(), ".xml")) {
+                                    B3pCatalog.clickedFileAnchor.addClass("with_metadata");
+                                }
+                            },
+                            function(e) {
+                                B3pCatalog.openSimpleErrorDialog("Fout bij opslaan bestand: " + e);
                             }
-                        },
-                        function(e) {
-                            B3pCatalog.openSimpleErrorDialog("Fout bij opslaan bestand: " + e);
-                        }
                     );
                 });
             }
-        });    
-        
+        });
+
     } else {
         var options = $.extend({
             filename: B3pCatalog.currentFilename,
@@ -737,7 +742,7 @@ B3pCatalog.saveMetadata = function(settings) {
         var mde = $("#mde").data("mde");
         var changedElements = mde.getChangedElements();
         var sectionChange = mde.getSectionChange();
-    
+
         $.ajax({
             url: B3pCatalog.metadataUrl,
             type: "POST",
@@ -754,7 +759,7 @@ B3pCatalog.saveMetadata = function(settings) {
                 if (options.updateUI)
                     $("#saveMD").button("option", "disabled", true);
             }
-        });    
+        });
     }
 };
 
@@ -766,8 +771,8 @@ B3pCatalog.fadeMessage = function(message) {
     });
     $("#center").append($message);
     setTimeout(function() {
-        $message.fadeOut(2000, function() { 
-            $(this).remove(); 
+        $message.fadeOut(2000, function() {
+            $(this).remove();
         });
     }, 2000);
 };
@@ -814,17 +819,29 @@ B3pCatalog.createMdeHtml = function(htmlDoc, changedOnServer, isGeo, viewMode, e
     $("#center-wrapper").html($("<div>", {
         id: "mde"
     }));
-    
+
     log("creating mde...");
     $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
         xmlHtml: htmlDoc,
-        commentPosted: function(comment) { console.log("onCommentPosted"); B3pCatalog.addComment(comment); },
-        onServerTransformRequired: function() { console.log("onServerTransformRequired"); B3pCatalog.refreshMde(); },
-        onResetRequired: function() { console.log("onResetRequired"); B3pCatalog.resetMde(); },
-        change: function(changed) { console.log("onChange"); B3pCatalog.setChanged(changed); }
+        commentPosted: function(comment) {
+            console.log("onCommentPosted");
+            B3pCatalog.addComment(comment);
+        },
+        onServerTransformRequired: function() {
+            console.log("onServerTransformRequired");
+            B3pCatalog.refreshMde();
+        },
+        onResetRequired: function() {
+            console.log("onResetRequired");
+            B3pCatalog.resetMde();
+        },
+        change: function(changed) {
+            console.log("onChange");
+            B3pCatalog.setChanged(changed);
+        }
     }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)
-    , extraOptions));
- 
+            , extraOptions));
+
     var mde = $("#mde").data("mde");
     $(window).bind("beforeunload.mde", function(event) {
         if (mde.options.pageLeaveWarning && B3pCatalog.mdeChanged) {
@@ -832,7 +849,7 @@ B3pCatalog.createMdeHtml = function(htmlDoc, changedOnServer, isGeo, viewMode, e
         }
         return undefined;
     });
-   
+
     B3pCatalog.createMdeToolbar(viewMode);
     B3pCatalog.setChanged(changedOnServer);
     B3pCatalog.fadeMessage("Editor gegevens zijn ververst");
@@ -854,7 +871,7 @@ B3pCatalog.setChanged = function(changed) {
         $(".ui-mde-changed-value", this.element).removeClass("ui-mde-changed-value");
     }
 
-    $("#saveMD").button("option", "disabled", !changed); 
+    $("#saveMD").button("option", "disabled", !changed);
 
     B3pCatalog.mdeChanged = changed;
 };
@@ -874,22 +891,27 @@ B3pCatalog.createCswMde = function(xmlDoc) {
 };
 
 B3pCatalog.exportMetadata = function() {
-    switch(B3pCatalog.currentMode) {
+    switch (B3pCatalog.currentMode) {
         case B3pCatalog.modes.SDE_MODE:
         case B3pCatalog.modes.LOCAL_MODE:
-        case B3pCatalog.modes.FILE_MODE:B3pCatalog._exportMetadata();break;
-        case B3pCatalog.modes.CSW_MODE:B3pCatalog._exportMetadataByUUID();break;
-        default:B3pCatalog.openSimpleErrorDialog(B3pCatalog.title + " is in an illegal mode: " + B3pCatalog.currentMode);
+        case B3pCatalog.modes.FILE_MODE:
+            B3pCatalog._exportMetadata();
+            break;
+        case B3pCatalog.modes.CSW_MODE:
+            B3pCatalog._exportMetadataByUUID();
+            break;
+        default:
+            B3pCatalog.openSimpleErrorDialog(B3pCatalog.title + " is in an illegal mode: " + B3pCatalog.currentMode);
     }
 };
 
 B3pCatalog._exportMetadata = function() {
-    
+
     $.yesNoCancel({
         html: "Wilt u alle metadata exporteren? Indien u nee antwoordt worden alleen de ISO19115 metadata " +
-            " gegevens op de tab \"Geografisch\" geexporteerd.<p>" +
-            "<b>Ja</b>: XML root element <tt>&lt;metadata&gt;</tt> met verschillende soorten metadata, o.a. attributen en commentaar" +
-            "<p><b>Nee</b>: XML root element <tt>&lt;MD_Metadata&gt;</tt> volgens het ISO 19139 XML schema",
+                " gegevens op de tab \"Geografisch\" geexporteerd.<p>" +
+                "<b>Ja</b>: XML root element <tt>&lt;metadata&gt;</tt> met verschillende soorten metadata, o.a. attributen en commentaar" +
+                "<p><b>Nee</b>: XML root element <tt>&lt;MD_Metadata&gt;</tt> volgens het ISO 19139 XML schema",
         yes: function() {
             B3pCatalog._doExportMetadata(false);
         },
@@ -900,28 +922,28 @@ B3pCatalog._exportMetadata = function() {
         }
     });
 }
-    
-B3pCatalog._doExportMetadata = function(strict) {    
+
+B3pCatalog._doExportMetadata = function(strict) {
     $("#mde").mde("option", "pageLeaveWarning", false);
 
-    if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
+    if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
         var metadata = $("#mde").mde("save");
-        
+
         var action = B3pCatalog.metadataUrl + "?" + $.param({
-                "export": "t",
-                "mode": B3pCatalog.currentMode,
-                "path": B3pCatalog.currentFilename,
-                strictISO19115: strict
-                });
-                
+            "export": "t",
+            "mode": B3pCatalog.currentMode,
+            "path": B3pCatalog.currentFilename,
+            strictISO19115: strict
+        });
+
         var form = $("<form>", {
             "method": "POST",
             "action": action
         }).append(
-            $("<textarea>", {
-                "name": "metadata"
-            }).text(metadata).hide()
-        );
+                $("<textarea>", {
+                    "name": "metadata"
+                }).text(metadata).hide()
+                );
         form.appendTo("body").submit();
         form.remove();
     } else {
@@ -949,13 +971,13 @@ B3pCatalog.importMetadata = function() {
         method: "POST",
         action: B3pCatalog.metadataUrl // enctype and encoding set by form plugin
     });
-    
+
     var $chooseXmlDiv = $("<div />", {
         text: "Kies een xml metadata bestand:"
     });
-    
+
     var $fileInput = $("<input type='file' name='importXml' size='50' style='width: 100%' />");
-    
+
     var $textarea = $("<textarea></textarea>", {
         id: "import-textarea",
         name: "metadata",
@@ -963,7 +985,7 @@ B3pCatalog.importMetadata = function() {
         rows: 35, // IE 6/7 pakt 100% height niet
         css: {
             width: "100%",
-            height: "200px",//"100%",
+            height: "200px", //"100%",
             margin: 0,
             padding: 0
         }
@@ -974,27 +996,27 @@ B3pCatalog.importMetadata = function() {
     } else {
         $textarea.text(placeholderText);
     }
-    
+
     var $orDiv = $("<div />", {
         text: "of",
         css: {"margin-top": "1em", "margin-bottom": "1em"}
     })
-    
+
     var $uuidCheckbox = $("<input type='checkbox' id='new-uuid-checkbox' name='new-uuid' />");
     $uuidCheckbox.prop("checked", true);
-    
+
     var $uuidLabel = $("<label for='new-uuid-checkbox'>Genereer nieuwe unieke identifiers (UUID's) voor de metadata en de bron.</label>");
-    
+
     var $submitEventInput = $("<input type='submit' name='importMD' value='Importeren' class='dialog-submit'/>");
 
-    
+
     var $dialogDiv = $("<div/>", {
         "class": "ui-mde-textarea-wrapper",
         css: {
             overflow: "hidden"
         }
     });
-    
+
     $form.append($chooseXmlDiv);
     $form.append($fileInput);
     $form.append($orDiv);
@@ -1003,7 +1025,7 @@ B3pCatalog.importMetadata = function() {
     $form.append($uuidCheckbox);
     $form.append($uuidLabel);
     $form.append($submitEventInput);
-    
+
     function importMD(xml) {
         $("#mde").mde("option", {
             overwriteUUIDs: $uuidCheckbox.prop("checked"), // moet eerst
@@ -1012,27 +1034,44 @@ B3pCatalog.importMetadata = function() {
         $dialogDiv.dialog("close");
         B3pCatalog.fadeMessage("Importeren succesvol");
     }
-    
+
     $form.submit(function() {
         if ($fileInput.val() || ($textarea.val() && $textarea.val() !== placeholderText)) {
-            log("import via fileInput submit");
+            // wolverine
+            // log("import via fileInput submit");
+            log("import via form submit");
             $(this).ajaxSubmit({
+                // wolverine. Dbg. Trying to catch the generated 500.
+                //statusCode: {
+                //    500: function() {
+                //        alert("Ajax call returned http error 500");
+                //    }},
                 async: false,
                 data: {importMD: "t"},
-                dataType: "text", // text from textarea must not be treated as xml immediately
+                dataType: "html", // text from textarea must not be treated as xml immediately
+                // wolverine.
+                //error: function(data, status, xhr) {
+                //    log("Failure import");
+                //},
                 success: function(data, status, xhr) {
                     log("import success");
-                    B3pCatalog.createMdeHtml(data, false, true, false);
+                    // alert("import success")
+                    $dialogDiv.dialog("close");
+                    // change by M.
+                    //B3pCatalog.createMdeHtml(data, false, true, false);
+                    // wolverine: It turns out isGeo (3rd par) must be false
+                    B3pCatalog.createMdeHtml(data, false, false, false);
                 }
             });
         } else {
-            $.ok({ 
+            $.ok({
                 text: "Kies een bestand of plak xml in het tekstvak om metadata te importeren."
             });
         }
         return false;
+        // wolverine. event.preventDefault(); // havok. Resultaat alleen in een window getoond, rest UI is weg.
     });
-    
+
     $dialogDiv.append($form);
     $dialogDiv.appendTo(document.body).dialog({
         title: "Metadata importeren in " + B3pCatalog.currentFilename,
@@ -1048,13 +1087,13 @@ B3pCatalog.importMetadata = function() {
 B3pCatalog.synchronizeWithData = function() {
     var me = this;
     var mde = $("#mde").data("mde");
-    
+
     console.log("synchronizeMde");
-    
+
     var viewMode = mde.options.viewMode;
     var currentTab = mde.options.currentTab;
     var isGeo = !mde.options.geoTabsMinimized;
-    
+
     var doIt = function(synchronizeData) {
         //log($("#mde").mde("save", {postprocess: false}));
         $.ajax({
@@ -1071,27 +1110,27 @@ B3pCatalog.synchronizeWithData = function() {
             dataType: "html",
             success: function(data, textStatus, xhr) {
                 console.log("synchronizeXml", data);
-                B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, { currentTab: currentTab}); 
+                B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, {currentTab: currentTab});
                 B3pCatalog.fadeMessage("Synchronisatie succesvol");
             }
         });
     }
-        
+
     B3pCatalog.saveDataUserConfirm({
         text: "Wilt u uw wijzigingen opslaan alvorens uw metadata te synchroniseren? Als u \"Nee\" kiest gaan uw wijzigingen verloren.",
         done: function() {
-            
-            if(B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {            
+
+            if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
                 var fn = B3pCatalog.currentFilename;
-                if(endsWith(fn, ".xml")) {
-                    fn = fn.substr(0, fn.length-4);
+                if (endsWith(fn, ".xml")) {
+                    fn = fn.substr(0, fn.length - 4);
                 }
-                if(endsWith(fn.toLowerCase(), ".shp")) {
+                if (endsWith(fn.toLowerCase(), ".shp")) {
                     me.local.callApplet("getShapefileMetadata",
-                        fn,
-                        doIt,
-                        B3pCatalog.openSimpleErrorDialog);
-                } else if(endsWith(fn.toLowerCase(), ".nc")) {
+                            fn,
+                            doIt,
+                            B3pCatalog.openSimpleErrorDialog);
+                } else if (endsWith(fn.toLowerCase(), ".nc")) {
                     me.synchronizeNetCDF(fn);
                 }
                 return;
@@ -1104,14 +1143,14 @@ B3pCatalog.synchronizeWithData = function() {
 
 B3pCatalog.synchronizeNetCDF = function(fn) {
     var mde = $("#mde").data("mde");
-    
+
     console.log("synchronizeNetCDFMde");
-    
+
     var viewMode = mde.options.viewMode;
     var currentTab = mde.options.currentTab;
     var isGeo = !mde.options.geoTabsMinimized;
-    
-    
+
+
     var gotNCML = function(ncml) {
 
         $.ajax({
@@ -1128,20 +1167,20 @@ B3pCatalog.synchronizeNetCDF = function(fn) {
             dataType: "html",
             success: function(data, textStatus, xhr) {
                 console.log("synchronizeNetCDFXml", data);
-                B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, { currentTab: currentTab}); 
+                B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, {currentTab: currentTab});
                 B3pCatalog.fadeMessage("NCML ingelezen, exporteer volledige metadata voor <netcdf> XML");
             }
-        });        
+        });
     }
-    
+
     this.local.callApplet("getNCML",
-        fn,
-        gotNCML,
-        B3pCatalog.openSimpleErrorDialog);
+            fn,
+            gotNCML,
+            B3pCatalog.openSimpleErrorDialog);
 }
 
 B3pCatalog.publishMetadata = function() {
-    
+
     $.ajax({
         url: B3pCatalog.publishUrl,
         type: "POST",
@@ -1150,10 +1189,10 @@ B3pCatalog.publishMetadata = function() {
             metadata: null, // niet meer nodig, staat serverside
         },
         success: function(data, textStatus, xhr) {
-            
+
             B3pCatalog.fadeMessage("Metadata succesvol gepubliceerd " + (data.exists ? "(update)" : "(nieuw)"));
         }
-    });    
+    });
 }
 
 B3pCatalog.createAdminOrganisationsToolbar = function() {
@@ -1161,21 +1200,21 @@ B3pCatalog.createAdminOrganisationsToolbar = function() {
     toolbar.empty();
 
     toolbar.append(
-        $("<a />", {
-            href: "#",
-            id: "saveOrgs",
-            text: "Opslaan",
-            title: "Organisaties en contactpersonen opslaan",
-            click: function(event) {
-                $(this).removeClass("ui-state-hover");
-                B3pCatalog.saveOrganisations();
-                return false;
-            }
-        }).button({
-            icons: {primary: "ui-icon-b3p-save_16"}
-        })
-    );
-    
+            $("<a />", {
+                href: "#",
+                id: "saveOrgs",
+                text: "Opslaan",
+                title: "Organisaties en contactpersonen opslaan",
+                click: function(event) {
+                    $(this).removeClass("ui-state-hover");
+                    B3pCatalog.saveOrganisations();
+                    return false;
+                }
+            }).button({
+        icons: {primary: "ui-icon-b3p-save_16"}
+    })
+            );
+
     B3pCatalog.resizeTabsAndToolbar();
 }
 
@@ -1184,124 +1223,124 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
     toolbar.empty();
     if (viewMode === false) {
         toolbar.append(
-            $("<a />", {
-                href: "#",
-                id: "saveMD",
-                text: "Opslaan",
-                title: "Metadatadocument opslaan",
-                click: function(event) {
-                    $(this).removeClass("ui-state-hover");
-                    B3pCatalog.saveMetadata();
-                    return false;
-                }
-            }).button({
-                disabled: true,
-                icons: {primary: "ui-icon-b3p-save_16"}
-            })
-        );
+                $("<a />", {
+                    href: "#",
+                    id: "saveMD",
+                    text: "Opslaan",
+                    title: "Metadatadocument opslaan",
+                    click: function(event) {
+                        $(this).removeClass("ui-state-hover");
+                        B3pCatalog.saveMetadata();
+                        return false;
+                    }
+                }).button({
+            disabled: true,
+            icons: {primary: "ui-icon-b3p-save_16"}
+        })
+                );
         toolbar.append(
-            $("<a />", {
-                href: "#",
-                id: "resetMD",
-                text: "Legen",
-                title: "Metadatadocument volledig leeg maken. Wordt nog niet opgeslagen.",
-                click: function(event) {
-                    $(this).removeClass("ui-state-hover");
-                    $.okCancel({
-                        text: "Weet u zeker dat u alle metadata en commentaren wilt wissen voor dit document? Dit wordt pas definitief als u op \"Opslaan\" klikt.",
-                        ok: function() {
-                            B3pCatalog.resetMde();
-                        }
-                    });
-                    return false;
-                }
-            }).button({
-                disabled: false,
-                icons: {primary: "ui-icon-b3p-delete_16"}
-            })
-        );
+                $("<a />", {
+                    href: "#",
+                    id: "resetMD",
+                    text: "Legen",
+                    title: "Metadatadocument volledig leeg maken. Wordt nog niet opgeslagen.",
+                    click: function(event) {
+                        $(this).removeClass("ui-state-hover");
+                        $.okCancel({
+                            text: "Weet u zeker dat u alle metadata en commentaren wilt wissen voor dit document? Dit wordt pas definitief als u op \"Opslaan\" klikt.",
+                            ok: function() {
+                                B3pCatalog.resetMde();
+                            }
+                        });
+                        return false;
+                    }
+                }).button({
+            disabled: false,
+            icons: {primary: "ui-icon-b3p-delete_16"}
+        })
+                );
         toolbar.append(
-            $("<a />", {
-                href: "#",
-                id: "synchronizeMD",
-                text: "Synchroniseren",
-                title: "Metadatadocument synchroniseren met bijbehorend data-document. Wijzigingen in de data, zoals bijvoorbeeld een andere omgrenzende rechthoek, worden doorgevoerd in de metadata.",
-                click: function(event) {
-                    $(this).removeClass("ui-state-hover");
-                    B3pCatalog.synchronizeWithData();
-                    return false;
-                }
-            }).button({
-                disabled: false,
-                icons: {primary: "ui-icon-b3p-sync_16"}
-            })
-        );
+                $("<a />", {
+                    href: "#",
+                    id: "synchronizeMD",
+                    text: "Synchroniseren",
+                    title: "Metadatadocument synchroniseren met bijbehorend data-document. Wijzigingen in de data, zoals bijvoorbeeld een andere omgrenzende rechthoek, worden doorgevoerd in de metadata.",
+                    click: function(event) {
+                        $(this).removeClass("ui-state-hover");
+                        B3pCatalog.synchronizeWithData();
+                        return false;
+                    }
+                }).button({
+            disabled: false,
+            icons: {primary: "ui-icon-b3p-sync_16"}
+        })
+                );
         toolbar.append(
-            $("<a />", {
-                href: "#",
-                id: "importMD",
-                text: "Importeren",
-                title: "Metadatadocument importeren en over huidige metadatadocument heen kopiëren. Wordt nog niet opgeslagen.",
-                click: function(event) {
-                    $(this).removeClass("ui-state-hover");
-                    B3pCatalog.importMetadata();
-                    return false;
-                }
-            }).button({
-                disabled: false,
-                icons: {primary: "ui-icon-b3p-down_16"}
-            })
-        );
+                $("<a />", {
+                    href: "#",
+                    id: "importMD",
+                    text: "Importeren",
+                    title: "Metadatadocument importeren en over huidige metadatadocument heen kopiëren. Wordt nog niet opgeslagen.",
+                    click: function(event) {
+                        $(this).removeClass("ui-state-hover");
+                        B3pCatalog.importMetadata();
+                        return false;
+                    }
+                }).button({
+            disabled: false,
+            icons: {primary: "ui-icon-b3p-down_16"}
+        })
+                );
     }
     toolbar.append(
-        $("<a />", {
-            href: "#",
-            id: "exportMD",
-            text: "Exporteren",
-            title: "Metadatadocument exporteren.",
-            click: function(event) {
-                $(this).removeClass("ui-state-hover");
-                B3pCatalog.saveDataUserConfirm({
-                    done: function() {
-                        B3pCatalog.exportMetadata();
-                    },
-                    text: "Wilt u uw wijzigingen opslaan alvorens de metadata te exporteren?",
-                    asyncSave: false // data needs to be saved already when we do our export request
-                });
-                return false;
-            }
-        }).button({
-            disabled: false,
-            icons: {primary: "ui-icon-b3p-up_16"}
-        })
-    );
-           
-    if(B3pCatalog.username != null && B3pCatalog.haveCsw) {
-        toolbar.append(
             $("<a />", {
                 href: "#",
-                id: "publishMD",
-                text: "Publiceren",
-                title: "Metadatadocument publiceren naar CSW",
+                id: "exportMD",
+                text: "Exporteren",
+                title: "Metadatadocument exporteren.",
                 click: function(event) {
                     $(this).removeClass("ui-state-hover");
                     B3pCatalog.saveDataUserConfirm({
                         done: function() {
-                            B3pCatalog.publishMetadata();
+                            B3pCatalog.exportMetadata();
                         },
-                        text: "Wilt u uw wijzigingen opslaan alvorens de metadata te publiceren?",
-                        asyncSave: false // data needs to be saved already when we do our publish request
+                        text: "Wilt u uw wijzigingen opslaan alvorens de metadata te exporteren?",
+                        asyncSave: false // data needs to be saved already when we do our export request
                     });
                     return false;
                 }
             }).button({
-                disabled: false,
-                icons: {primary: "ui-icon-b3p-sync_alt_16"}
-            })
-        );
-        
+        disabled: false,
+        icons: {primary: "ui-icon-b3p-up_16"}
+    })
+            );
+
+    if (B3pCatalog.username != null && B3pCatalog.haveCsw) {
+        toolbar.append(
+                $("<a />", {
+                    href: "#",
+                    id: "publishMD",
+                    text: "Publiceren",
+                    title: "Metadatadocument publiceren naar CSW",
+                    click: function(event) {
+                        $(this).removeClass("ui-state-hover");
+                        B3pCatalog.saveDataUserConfirm({
+                            done: function() {
+                                B3pCatalog.publishMetadata();
+                            },
+                            text: "Wilt u uw wijzigingen opslaan alvorens de metadata te publiceren?",
+                            asyncSave: false // data needs to be saved already when we do our publish request
+                        });
+                        return false;
+                    }
+                }).button({
+            disabled: false,
+            icons: {primary: "ui-icon-b3p-sync_alt_16"}
+        })
+                );
+
     }
-       
+
     B3pCatalog.resizeTabsAndToolbar();
 };
 
@@ -1358,10 +1397,10 @@ B3pCatalog.saveOrganisations = function() {
             no: $.noop,
             cancel: $.noop
         }, opts);
-        
+
         var div = $("<div/>");
-        
-        if(options.html) {
+
+        if (options.html) {
             div.html(options.html);
         } else {
             div.text(options.text);
@@ -1370,23 +1409,23 @@ B3pCatalog.saveOrganisations = function() {
             title: "Vraag",
             modal: true,
             buttons: [{
-                text: "Ja",
-                click: function(event) {
-                    options.yes();
-                    $(this).dialog("destroy").remove();
-                }
-            }, {
-                text: "Nee",
-                click: function(event) {
-                    options.no();
-                    $(this).dialog("destroy").remove();
-                }
-            }, {
-                text: "Annuleren",
-                click: function(event) {
-                    $(this).dialog("close"); // close does cancel
-                }
-            }],
+                    text: "Ja",
+                    click: function(event) {
+                        options.yes();
+                        $(this).dialog("destroy").remove();
+                    }
+                }, {
+                    text: "Nee",
+                    click: function(event) {
+                        options.no();
+                        $(this).dialog("destroy").remove();
+                    }
+                }, {
+                    text: "Annuleren",
+                    click: function(event) {
+                        $(this).dialog("close"); // close does cancel
+                    }
+                }],
             close: function(event) {
                 options.cancel();
                 $(this).dialog("destroy").remove();
@@ -1404,17 +1443,17 @@ B3pCatalog.saveOrganisations = function() {
             title: "Vraag",
             modal: true,
             buttons: [{
-                text: "OK",
-                click: function(event) {
-                    options.ok();
-                    $(this).dialog("destroy").remove();
-                }
-            }, {
-                text: "Annuleren",
-                click: function(event) {
-                    $(this).dialog("close"); // close does cancel
-                }
-            }],
+                    text: "OK",
+                    click: function(event) {
+                        options.ok();
+                        $(this).dialog("destroy").remove();
+                    }
+                }, {
+                    text: "Annuleren",
+                    click: function(event) {
+                        $(this).dialog("close"); // close does cancel
+                    }
+                }],
             close: function(event) {
                 options.cancel();
                 $(this).dialog("destroy").remove();
@@ -1431,11 +1470,11 @@ B3pCatalog.saveOrganisations = function() {
             title: "Opmerking",
             modal: true,
             buttons: [{
-                text: "OK",
-                click: function(event) {
-                    $(this).dialog("close"); // close does ok
-                }
-            }],
+                    text: "OK",
+                    click: function(event) {
+                        $(this).dialog("close"); // close does ok
+                    }
+                }],
             close: function(event) {
                 options.ok();
                 $(this).dialog("destroy").remove();

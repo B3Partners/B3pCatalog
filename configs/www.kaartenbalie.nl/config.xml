@@ -73,7 +73,7 @@
              synchroniseren van Esri file geodatabases is een ArcView licentie 
              nodig.
         -->
-        <fileRoot name="GIS data" path="/opt/b3pcatalog/root">
+        <fileRoot name="GIS data" path="/home/janbessels/dev/metadata">
         
 			<!-- Autorisatie voor deze root
 
@@ -101,15 +101,30 @@
     <geoFileExtensions>gml shp dxf dgn sdf sdl lyr ecw sid tif tiff asc mdb</geoFileExtensions>
 
     <!-- CSW server configuratie voor de "Catalog doorzoeken" tab -->
-    <cswServer>
+<!--    <cswServer>
         <url>http://dev.b3p.nl/geonetwork/srv/en/csw</url>
         
-        <!-- Volgende elementen zijn optioneel: -->
+         Volgende elementen zijn optioneel: 
         <loginUrl>http://dev.b3p.nl/geonetwork/srv/en/xml.user.login</loginUrl>
         <username>admin</username>
         <password>***REMOVED***</password>
         
     </cswServer>
+    -->
+    
+        <cswServer>
+<!--        <url>http://dev.b3p.nl/geonetwork/srv/en/csw</url>-->
+        <url>http://x13.b3p.nl:8080/geonetwork/srv/en/csw</url>
+        
+         Volgende elementen zijn optioneel: 
+<!--        <loginUrl>http://dev.b3p.nl/geonetwork/srv/en/xml.user.login</loginUrl>-->
+            <loginUrl>http://x13.b3p.nl:8080/geonetwork/srv/en/xml.user.login</loginUrl>
+        <username>admin</username>
+        <password>***REMOVED***</password>
+        
+    </cswServer>
+    
+    
     
     <!-- Bestand met voorgedefinieerde informatie over organisaties en 
          contactpersonen die in de metadataeditor snel kan worden ingevuld.
