@@ -16,24 +16,18 @@
  */
 package nl.b3p.catalog.stripes;
 
-import com.esri.arcgis.geodatabase.esriDatasetType;
-import com.thoughtworks.xstream.XStream;
+
 import java.io.StringReader;
-import java.io.StringWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stax.StAXSource;
-import javax.xml.transform.stream.StreamResult;
-import net.sourceforge.stripes.action.*;
+import net.sourceforge.stripes.action.ActionBean;
+import net.sourceforge.stripes.action.ActionBeanContext;
+import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.StreamingResolution;
+import net.sourceforge.stripes.action.StrictBinding;
 import net.sourceforge.stripes.validation.Validate;
-import nl.b3p.catalog.arcgis.FGDBHelper;
 import nl.b3p.catalog.config.CSWServerConfig;
 import nl.b3p.catalog.config.CatalogAppConfig;
-import static nl.b3p.catalog.stripes.MetadataAction.SESSION_KEY_METADATA_XML;
 import nl.b3p.catalog.xml.DocumentHelper;
 import nl.b3p.csw.client.CswClient;
 import nl.b3p.csw.client.InputById;
@@ -47,7 +41,6 @@ import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.json.JSONObject;
-import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 /**
@@ -57,14 +50,14 @@ import org.xml.sax.InputSource;
 @StrictBinding
 public class PublishActionBean implements ActionBean {
 
-    private ActionBeanContext context;
 
-    // wolverine
+    
     private final static Log log = LogFactory.getLog(PublishActionBean.class);
+    private ActionBeanContext context;
 
     @Validate
     private String metadata;
-
+   
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     public ActionBeanContext getContext() {
         return context;
@@ -82,9 +75,6 @@ public class PublishActionBean implements ActionBean {
         this.metadata = metadata;
     }
     //</editor-fold>
-
-    // wolverine. For debugging.
-    XStream xstream = new XStream();
 
     private CswClient getCswClient() {
         CSWServerConfig cfg = CatalogAppConfig.getConfig().getCswServer();
@@ -122,8 +112,7 @@ public class PublishActionBean implements ActionBean {
         org.w3c.dom.Document doc = db.parse(new InputSource(new StringReader(mdString)));
 
         TransactionResponse response = exists ? csw.update(fileIdentifier, doc) : csw.insert(doc);
-        log.debug("GeoNetworks response is:" + xstream.toXML(response));
-        
+             
         jo.put("totalInserted", response.getValue().getTransactionSummary().getTotalInserted());
         jo.put("totalUpdated", response.getValue().getTransactionSummary().getTotalUpdated());
 
@@ -134,45 +123,20 @@ public class PublishActionBean implements ActionBean {
     private Document getISO19139Document() throws Exception {
 
         Document md = (Document) getContext().getRequest().getSession().getAttribute(MetadataAction.SESSION_KEY_METADATA_XML);
-        //Document mdBackup = (Document) getContext().getRequest().getSession().getAttribute(MetadataAction.SESSION_KEY_METADATA_XML);
-
-        //log.debug("In method getISO19139Documentm md: (wolverine) " + xstream.toXML(md));
-        //log.debug("In method getISO19139Documentm mdBackup: " + xstream.toXML(mdBackup));
-
-        // This seems to work, as in the fileIdentifier gets successfully extracted later
-        // on which means no data is lost. TODO: Check for any side effects !!
+   
+        /* The MD_Metadata.detach() causes that when doing multiple 'publishing' actions 
+           for the same file that the FileIdentifier can't be after the first publish.
+           The md gets changed on Tomcat and its impossible to do multiple publish actions.
+           Removing .detach is not possible because then another exeption is thrown 'duplicate objectid'
+           A copy of md is created and used.
+        */
+                
         Document mdCopy = new Document((Element) md.getRootElement().clone());
-        //Element MD_Metadata = DocumentHelper.getMD_Metadata(md);
+        
         Element MD_Metadata = DocumentHelper.getMD_Metadata(mdCopy);
-
-//        
-//        TransformerFactory tf = TransformerFactory.newInstance();
-//        Transformer transformer = tf.newTransformer();
-//        StringWriter sw = new StringWriter();
-//        //transformer.transform(new StAXSource(xer), new StreamResult(sw));
-//        transformer.transform(new DOMSource((Node) md.getRootElement()), new StreamResult(sw));
-//       
-        
-//        
-//        Document mdCopy = new Document();
-//        TransformerFactory tfactory = TransformerFactory.newInstance();
-//        Transformer tx = tfactory.newTransformer();
-//        DOMSource source = new DOMSource(md);
-//        DOMResult result = new DOMResult();
-//        tx.transform(source, result);
-//        
-        
-        //mdCopy=  (Document) result.getNode();
-        //log.debug("In method getISO19139Documentm mdCopy:  " + xstream.toXML(mdCopy));
         MD_Metadata.detach();
-        // The detach causes that when doing multiple 'publishing' for the same 
-        // file that the FileIdentifier can't be found for the seconds time.
-        // removing .detach not possible because then another exeption is thrown 'duplicate objectid'
-        // Storing the Document with the original content of SESSION_KEY_METADATA_XML.
+       
 
-       //getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, mdBackup);
-       // log.debug("In method getISO19139Documentm mdBackup: " + xstream.toXML(mdCopy));
-       // log.debug("In method getISO19139Documentm MD_Metadata to return:" + xstream.toXML(MD_Metadata));
         return new Document(MD_Metadata);
     }
 }
