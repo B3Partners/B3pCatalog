@@ -1,14 +1,11 @@
 package nl.b3p.catalog.stripes;
 
-import com.thoughtworks.xstream.XStream;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -110,15 +107,19 @@ public class MetadataAction extends DefaultAction {
     private AclAccess rootAccess;
     private Map<String, String> extraHeaders = new HashMap<String, String>();
 
-    // wolverine. For debugging.
-    XStream xstream = new XStream();
-
-    //TODO CvL: moet hier niet net zoals bij viewmode check de versie met
-    // LOCAL_MODE toevoegen?
     public void determineRoot() throws B3PCatalogException {
-        root = Root.getRootForPath(path, getContext().getRequest(), AclAccess.READ);
-        rootAccess = root.getRequestUserHighestAccessLevel(getContext().getRequest());
-        extraHeaders.put("X-MDE-Access", rootAccess.name());
+        
+        if (LOCAL_MODE.equals(mode)) {
+
+            // When using the Java applet for selecting a file the access rights for a file 
+            // can't be determined. Forcing it to WRITE, which in effect means the metadata 
+            // can be edited.
+            extraHeaders.put("X-MDE-Access", "WRITE");
+        } else {
+            root = Root.getRootForPath(path, getContext().getRequest(), AclAccess.READ);
+            rootAccess = root.getRequestUserHighestAccessLevel(getContext().getRequest());
+            extraHeaders.put("X-MDE-Access", rootAccess.name());
+        }
     }
 
     public boolean determineViewMode() {
@@ -129,7 +130,7 @@ public class MetadataAction extends DefaultAction {
         if (LOCAL_MODE.equals(mode)) {
             viewMode = false;
         } else {
-            // old situation.
+            // Filetree
             viewMode = rootAccess == null || rootAccess.getSecurityLevel() < AclAccess.WRITE.getSecurityLevel();
         }
         return viewMode;
@@ -138,18 +139,17 @@ public class MetadataAction extends DefaultAction {
 
     //TODO CvL: wordt dit nog gebruikt? Code lijkt niet nuttig in nieuwe situatie met
     //transformatie op server.
+    //TODO. jb: Check/test later. 
     public Resolution load() {
 
         try {
+            
+            determineRoot(); // select edit or view mode.
+            
+            // Java applet.
             if (LOCAL_MODE.equals(mode)) {
-                // determineRoot(); // wovlerine vrijdag 27 juni added
                 return new XmlResolution(strictISO19115 ? extractMD_Metadata(metadata) : metadata);
-            }
-            //TODO CvL: als je het consequent doet dan staat deze methode nu altijd helemaal vooraan.
-            // graag ook checken bij andere methoden
-            determineRoot();
-
-            if (SDE_MODE.equals(mode)) {
+            } else if (SDE_MODE.equals(mode)) {
 
                 metadata = ArcSDEHelperProxy.getMetadata(root, path);
                 return new XmlResolution(strictISO19115 ? extractMD_Metadata(metadata) : metadata, extraHeaders);
@@ -191,18 +191,17 @@ public class MetadataAction extends DefaultAction {
 
     public Resolution loadMdAsHtml() {
 
-        // store corresponding (preprocessed) xml doc in session under SESSION_KEY_METADATA_XML
+        // Store corresponding (preprocessed) xml doc in session under SESSION_KEY_METADATA_XML
         // when loading md as html 
         // subsequent changes in html are mirrored in this xml doc
         Document mdDoc = null;
 
         try {
+            
+            determineRoot(); // select edit or view mode.
+            
             // Java applet is used.
             if (LOCAL_MODE.equals(mode)) {
-                // When using the applet the access right for a file can't be determined.
-                // Forcing it to WRITE. 
-                //TODO CvL: waarom niet via nieuwe versie van determineroot()?
-                extraHeaders.put("X-MDE-Access", "WRITE");
                 // root = Root.getRootForPath(path);
                 //File mdFile = FileListHelper.getFileForPath(root, path);
                 
@@ -227,8 +226,6 @@ public class MetadataAction extends DefaultAction {
                 }
 
             } else {
-                //TODO CvL: naar voren?
-                determineRoot();
                 if (SDE_MODE.equals(mode)) {
 
                     metadata = ArcSDEHelperProxy.getMetadata(root, path);
@@ -264,7 +261,6 @@ public class MetadataAction extends DefaultAction {
                 }
             }
 
-            log.debug("MetadataAction.loadMdAsHtml calling mdeXml2Html.preprocess");
             Document ppDoc = mdeXml2Html.preprocess(mdDoc, determineViewMode());
             //datestamp and uuid added when empty
             mdeXml2Html.addDateStamp(ppDoc, false);
@@ -274,8 +270,7 @@ public class MetadataAction extends DefaultAction {
             Document htmlDoc = mdeXml2Html.transform(ppDoc, determineViewMode());
 
             String d = DocumentHelper.getDocumentString(htmlDoc);
-            log.debug("serverside rendered html: " + d);
-            log.debug("serverside rendered html (for method loadMdAsHtml) : " + d);
+            log.debug("serverside rendered html for method loadMdAsHtml: " + d);
             StringReader sr = new StringReader(d);
             return new HtmlResolution(sr, extraHeaders);
 
@@ -378,8 +373,8 @@ public class MetadataAction extends DefaultAction {
 
             Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
             Boolean datasetMode = mdeXml2Html.getXSLParam("datasetMode_init");
+            
             mdeXml2Html.cleanUpMetadata(md, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
-
             mdeXml2Html.removeEmptyNodes(md);
 
             // Geen XML parsing door browser, geef door als String
@@ -470,13 +465,7 @@ public class MetadataAction extends DefaultAction {
 
     public Resolution synchronizeLocal() throws Exception {
 
-        // wolverine. Possibly borked, check.
-        // removed.
-        // determineRoot(); 
-        // When using the applet the access right for a file can't be determined.
-        // Forcing it to WRITE. 
-        //TODO CvL: via nieuwe determineroot()?
-        extraHeaders.put("X-MDE-Access", "WRITE");
+        determineRoot(); // select edit or view mode.
 
         // metadata string must already have been preprocessed on the clientside
         Document md = (Document) getContext().getRequest().getSession().getAttribute(SESSION_KEY_METADATA_XML);
@@ -484,8 +473,8 @@ public class MetadataAction extends DefaultAction {
             throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
         }
 
-        // Changed check for .shp.xml into .shp as afaik the filetree and java applet filter out 
-        // .xml files. Check the filetree code to be 100% sure. 
+        // Changed check for .shp.xml into .shp as afaik the filetree and java applet filter 
+        // out .xml files. 
         if (path.toLowerCase().endsWith(".shp")) {
 
             ShapefileSynchronizer.synchronizeFromLocalAccessJSON(md, synchronizeData);
@@ -503,50 +492,16 @@ public class MetadataAction extends DefaultAction {
         return new HtmlResolution(new StringReader(html), extraHeaders);
     }
 
-    // Wolverine. original version.
-    public Resolution __synchronizeLocal() throws Exception {
-
-        // wolverine. Possibly borked, check.
-        // removed.
-        // determineRoot(); 
-        // When using the applet the access right for a file can't be determined.
-        // Forcing it to WRITE. 
-        extraHeaders.put("X-MDE-Access", "WRITE");
-
-        // metadata string must already have been preprocessed on the clientside
-        Document md = (Document) getContext().getRequest().getSession().getAttribute(SESSION_KEY_METADATA_XML);
-        if (md == null) {
-            throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
-        }
-
-        if (path.toLowerCase().endsWith(".shp.xml")) {
-
-            ShapefileSynchronizer.synchronizeFromLocalAccessJSON(md, synchronizeData);
-
-        } else if (path.toLowerCase().endsWith(".nc.xml")) {
-
-            md = NCMLSynchronizer.synchronizeNCML(md, synchronizeData);
-        }
-        getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
-        Document htmlDoc = mdeXml2Html.transform(md);
-        String html = DocumentHelper.getDocumentString(htmlDoc);
-
-        log.debug("serverside rendered html after syncing xml: " + html);
-
-        return new HtmlResolution(new StringReader(html), extraHeaders);
-    }
 
     public Resolution synchronize() {
 
-        // wolverine. Debugging.
-        boolean shapeFileReader = true; // force synchronize to use Matthijs Shapefile reader.
         try {
 
             if (LOCAL_MODE.equals(mode)) {
-                return synchronizeLocal();
+                return synchronizeLocal(); // already calls determineRoot(); 
             }
-//TODO CvL: naar voren?
-            determineRoot();
+            
+            determineRoot(); // select view or edit mode. 
 
             // metadata string must already have been preprocessed on the clientside
             Document md = (Document) getContext().getRequest().getSession().getAttribute(SESSION_KEY_METADATA_XML);
@@ -622,18 +577,15 @@ public class MetadataAction extends DefaultAction {
                             null,
                             metadata
                     );
-                } // Todo: create a real test for it.
-                //TODO CvL: if (path.endsWith(Extensions.SHAPE)) {
-                else if (shapeFileReader == true) {
-                    //Shapefiles sf = new Shapefiles();
+                } 
+                else if (path.endsWith(Extensions.SHAPE)) {
                     File shapeFile = FileListHelper.getFileForPath(root, path);
-                    // String shapeFileStr = new String(Files.readAllBytes(Paths.get("/tmp/b3p-request.xml"))).toString(); 
 
-                    // Todo: Create a new method which combines the two. No point in first creating 
+                    // TODO: Create a new method which combines the two. No point in first creating 
                     // A JSON object and then saving it. The JSON step has to go.
+                    // Implement this after all other requirements are done/tested.
                     String synchronizeData = Shapefiles.getMetadata(shapeFile.getCanonicalPath());
                     ShapefileSynchronizer.synchronizeFromLocalAccessJSON(md, synchronizeData);
-                    log.debug("Returned json by Shapefile.getmetadata" + xstream.toXML(synchronizeData));
 
                 }
                         //TODO CvL: volgens mij moet dit hier, als laatste poging
@@ -694,7 +646,6 @@ public class MetadataAction extends DefaultAction {
 
         try {
             Document mdDoc;
-            boolean viewMode = false;
 
             if (importXml != null) {
                 mdDoc = new SAXBuilder().build(importXml.getInputStream());
@@ -704,29 +655,22 @@ public class MetadataAction extends DefaultAction {
                 throw new IllegalArgumentException();
             }
 
-            // wolverine. viewMode explicitely set to FALSE otherwise the returned XML misses some data.
-            log.debug("MetadataAction.ImportMD calling mdeXml2Html.preprocess");
-            //  Document ppDoc = mdeXml2Html.preprocess(mdDoc, determineViewMode());
-            Document ppDoc = mdeXml2Html.preprocess(mdDoc, viewMode);
+            // log.debug("MetadataAction.ImportMD calling mdeXml2Html.preprocess");
+            Document ppDoc = mdeXml2Html.preprocess(mdDoc, determineViewMode());
+            
             //datestamp and uuid added when empty
             mdeXml2Html.addDateStamp(ppDoc, false);
             mdeXml2Html.addUUID(ppDoc, false);
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
 
-            //Document htmlDoc = mdeXml2Html.transform(ppDoc, determineViewMode());
-            Document htmlDoc = mdeXml2Html.transform(ppDoc, viewMode);
+            Document htmlDoc = mdeXml2Html.transform(ppDoc, determineViewMode());
 
             String d = DocumentHelper.getDocumentString(htmlDoc);
 
-            // wolverine
-            // log.debug("serverside rendered html: " + d);
             log.debug("serverside rendered html (for method importdMD): " + d);
             StringReader sr = new StringReader(d);
             return new HtmlResolution(sr, extraHeaders);
 
-            // String fromFile = new String(Files.readAllBytes(Paths.get("/tmp/10206-lines-with-text.txt"))).toString(); 
-            // String fromFile = new String(Files.readAllBytes(Paths.get("/tmp/b3p-request.xml"))).toString(); 
-            // return new HtmlResolution(fromFile, extraHeaders);
         } catch (Exception e) {
             getContext().getRequest().getSession().removeAttribute(SESSION_KEY_METADATA_XML);
             String message = "Fout bij laden importeren metadata " + path;
