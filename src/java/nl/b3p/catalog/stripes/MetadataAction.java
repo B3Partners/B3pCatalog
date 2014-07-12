@@ -213,14 +213,13 @@ public class MetadataAction extends DefaultAction {
                 // is also called but this time the variable metadata does not contain XML but the 
                 // string "null". Hence this test.
                 // 
-                   if (metadata.equals("null"))  {
-                    mdDoc = DocumentHelper.getMetadataDocument(DocumentHelper.EMPTY_METADATA);
+                if (metadata.equals("null"))  {
+                    metadata = DocumentHelper.EMPTY_METADATA;
+                }
+                if (strictISO19115) {
+                    mdDoc = extractMD_MetadataAsDoc(metadata);
                 } else {
-                    if (strictISO19115) {
-                        mdDoc = extractMD_MetadataAsDoc(metadata);
-                    } else {
-                        mdDoc = DocumentHelper.getMetadataDocument(metadata);
-                    }
+                    mdDoc = DocumentHelper.getMetadataDocument(metadata);
                 }
             } else {
                 if (SDE_MODE.equals(mode)) {

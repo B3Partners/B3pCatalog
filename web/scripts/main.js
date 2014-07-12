@@ -520,6 +520,9 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
                     // still called but will now return a 'virgin' html document which 
                     // will be transformed into a mde document. 
                     function(e) {
+                        //TODO CvL, moet dit niet gewoon loadLocalMetadata("") zijn,
+                        //want dit is functie aanroep, in backend komt dan waarschijnlijk
+                        //geen aparte check op regel 216 van MetadataAction nodig.
                         loadLocalMetadata;
                     });
             });
