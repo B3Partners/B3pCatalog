@@ -472,11 +472,10 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
     if (mode == B3pCatalog.modes.LOCAL_MODE) {
 
         var me = this;
-        var xmlFileW = path + ".xml"
+        var xmlFile = path + ".xml"
 
-        // md contains the contents of the clicked file
-        function loadLocalMetadata (md) {
-            var wolvie = "lets do it";
+        // md contains the contents of the file selected with the Java applet.
+        function loadLocalMetadata(md) {
             var opts = {
                 done: function() {
 
@@ -488,7 +487,7 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
                     data: {
                         loadMdAsHtml: "t",
                         mode: mode,
-                        xml: md,  // wolverine. Added extra parameter which contains contents selected file in Java applet filetree.
+                        metadata: md, // Added metadata parameter. Contains contents of a selected file with the Java applet.
                         path: path
                     },
                     dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
@@ -508,61 +507,60 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
             };
 
             $("#synchronizeMD").button("option", "disabled", false);
-  
+
             B3pCatalog._loadMetadata(opts);
         }
-     
 
-        if (extension(xmlFileW) == "xml") {
+        me.loadLocal(function() {
+            me.local.callApplet("readFileUTF8", xmlFile,
+                    // called when contents file xmlFile (file.XML)could be read.
+                    loadLocalMetadata,
+                    
+                    // called when file file.XML does not exist. loadLocalMetadata is
+                    // still called but will now return a 'virgin' html document which 
+                    // will be transformed into a mde document. 
+                    function(e) {
+                        loadLocalMetadata;
+                    });
+            });
 
-            me.loadLocal(function() {
-                me.local.callApplet("readFileUTF8", xmlFileW,
-                        loadLocalMetadata,
-                        function(e) {
-                            B3pCatalog.openSimpleErrorDialog("Fout bij lezen bestand: " + e);
-                            cancel();
-                            return;
-                        });
-           });
-                        
-        }
-        // file mode
-    } else {
-        var opts = {
-            done: function() {
+                        // file mode
+                    } else {
+                var opts = {
+                    done: function() {
 
-            },
-            cancel: cancel,
-            ajaxOptions: {
-                url: B3pCatalog.metadataUrl,
-                type: "POST",
-                data: {
-                    loadMdAsHtml: "t",
-                    mode: mode,
-                    path: path
-                },
-                dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
-                success: function(data, textStatus, jqXHR) {
-                    //log(data);
-                    B3pCatalog.currentFilename = path;
-                    B3pCatalog.currentMode = mode;
-                    document.title = B3pCatalog.title + B3pCatalog.titleSeparator + title;
-                    // TODO: on demand van PBL bv: laatst geopende doc opslaan
-                    //$.cookie();
-                    var access = jqXHR.getResponseHeader("X-MDE-Access");
-                    var viewMode = access != "WRITE";
+                    },
+                    cancel: cancel,
+                    ajaxOptions: {
+                        url: B3pCatalog.metadataUrl,
+                        type: "POST",
+                        data: {
+                            loadMdAsHtml: "t",
+                            mode: mode,
+                            path: path
+                        },
+                        dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
+                        success: function(data, textStatus, jqXHR) {
+                            //log(data);
+                            B3pCatalog.currentFilename = path;
+                            B3pCatalog.currentMode = mode;
+                            document.title = B3pCatalog.title + B3pCatalog.titleSeparator + title;
+                            // TODO: on demand van PBL bv: laatst geopende doc opslaan
+                            //$.cookie();
+                            var access = jqXHR.getResponseHeader("X-MDE-Access");
+                            var viewMode = access != "WRITE";
 
-                    B3pCatalog.createMdeHtml(data, false, isGeo, viewMode);
-                }
+                            B3pCatalog.createMdeHtml(data, false, isGeo, viewMode);
+                        }
+                    }
+                };
+
+                $("#synchronizeMD").button("option", "disabled", false);
+                var me = this;
+
+                this._loadMetadata(opts);
             }
         };
-
-        $("#synchronizeMD").button("option", "disabled", false);
-        var me = this;
-
-        this._loadMetadata(opts);
-    }
-};
 
 B3pCatalog.resetMde = function() {
     var mde = $("#mde").data("mde");
@@ -648,7 +646,7 @@ B3pCatalog.addComment = function(comment) {
         var currentTab = mde.options.currentTab;
         var isGeo = !mde.options.geoTabsMinimized;
 
-        // wolverine. fat change.
+        // wolverine. fat change. Probably wrong. CHECK. 
         if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
             metadata = $("#mde").mde("save");
         }
@@ -776,12 +774,22 @@ B3pCatalog.saveMetadata = function(settings) {
 
                 me.loadLocal(function() {
 
+                    // JB. Had to change it because currentFilename never end with .xml (filtered out).
                     // me.local.callApplet("writeFileUTF8", B3pCatalog.currentFilename, xml,
                     me.local.callApplet("writeFileUTF8", xmlFile, xml,
                             function() {
                                 B3pCatalog.fadeMessage("Metadata succesvol opgeslagen");
                                 $("#saveMD").button("option", "disabled", true);
-                                if (!endsWith(B3pCatalog.currentFilename.toLowerCase(), ".xml")) {
+                                // TODO. JB. Check with Matthijs or Chris what this is supposed todo
+                                // curentFilename is set in two places atm, the succes part of an ajax call in function loadmetadata
+                                // The original ajax call when in file_mode (code M) and my own ajax call when local_mode is selected.
+                                // It is set to contents of var path. path is given as a parameter to loadmetadata and is set 
+                                // in B3pCatalog.hashchange. In both file_mode and local_mode (java applet) the output is filtered.
+                                // As in files with extension .xml are NOT shown. Hence path can't end with .xml and hence
+                                // currentFilename can't end with .xml. 
+                                
+                                //if (!endsWith(B3pCatalog.currentFilename.toLowerCase(), ".xml")) {
+                                if (!endsWith(xmlFile.toLowerCase(), ".xml")) {
                                     B3pCatalog.clickedFileAnchor.addClass("with_metadata");
                                 }
                             },
@@ -815,7 +823,7 @@ B3pCatalog.saveMetadata = function(settings) {
                 updateAndSaveXml: "t",
                 elementChanges: JSON.stringify(changedElements),
                 sectionChange: sectionChange === null ? null : JSON.stringify(sectionChange),
-                path: options.filename,
+                path: options.filename, // JB. Does not on .xml. When reading contents file in updateAndSaveXml .xml is added to the filename.
                 mode: B3pCatalog.currentMode
             },
             success: function(data, textStatus, xhr) {
@@ -1101,29 +1109,15 @@ B3pCatalog.importMetadata = function() {
 
     $form.submit(function() {
         if ($fileInput.val() || ($textarea.val() && $textarea.val() !== placeholderText)) {
-            // wolverine
-            // log("import via fileInput submit");
             log("import via form submit");
             $(this).ajaxSubmit({
-                // wolverine. Dbg. Trying to catch the generated 500.
-                //statusCode: {
-                //    500: function() {
-                //        alert("Ajax call returned http error 500");
-                //    }},
                 async: false,
                 data: {importMD: "t"},
                 dataType: "html", // text from textarea must not be treated as xml immediately
-                // wolverine.
-                //error: function(data, status, xhr) {
-                //    log("Failure import");
-                //},
                 success: function(data, status, xhr) {
                     log("import success");
-                    // alert("import success")
                     $dialogDiv.dialog("close");
-                    // change by M.
-                    //B3pCatalog.createMdeHtml(data, false, true, false);
-                    // wolverine: It turns out isGeo (3rd par) must be false
+                    // isGeo (3rd paramter) must be false
                     B3pCatalog.createMdeHtml(data, false, false, false);
                 }
             });
@@ -1133,7 +1127,6 @@ B3pCatalog.importMetadata = function() {
             });
         }
         return false;
-        // wolverine. event.preventDefault(); // havok. Resultaat alleen in een window getoond, rest UI is weg.
     });
 
     $dialogDiv.append($form);

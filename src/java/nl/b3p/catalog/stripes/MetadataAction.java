@@ -103,20 +103,7 @@ public class MetadataAction extends DefaultAction {
     @Validate(on = "updateXml")
     private String sectionChange;
     
-    // wolverine xml
-    @Validate
-    private String xml;
-
-    // wolverine: Move later to the bottom
-    public String getXml() {
-        return xml;
-    }
-
-    public void setXml(String xml) {
-        this.xml = xml;
-    }
-
-
+    
     private Root root;
     private AclAccess rootAccess;
     private Map<String, String> extraHeaders = new HashMap<String, String>();
@@ -153,7 +140,7 @@ public class MetadataAction extends DefaultAction {
 
     //TODO CvL: wordt dit nog gebruikt? Code lijkt niet nuttig in nieuwe situatie met
     //transformatie op server.
-    //TODO. jb: Check/test later. 
+    //TODO. JB: Check/test later. Its currently used in method eport()
     public Resolution load() {
 
         try {
@@ -206,9 +193,9 @@ public class MetadataAction extends DefaultAction {
     public Resolution loadMdAsHtml() {
 
         // Store corresponding (preprocessed) xml doc in session under SESSION_KEY_METADATA_XML
-        // when loading md as html 
-        // subsequent changes in html are mirrored in this xml doc
+        // when loading md as html. subsequent changes in html are mirrored in this xml doc
         Document mdDoc = null;
+     
 
         try {
 
@@ -217,12 +204,23 @@ public class MetadataAction extends DefaultAction {
             // Java applet is used.
             if (LOCAL_MODE.equals(mode)) {
 
-                String xmlString = xml;
-                // copied stuff from the file_mode part.
-                if (strictISO19115) {
-                    mdDoc = extractMD_MetadataAsDoc(xmlString);
+                // copied stuff from the file_mode part. 
+
+                // metadata contains the string "null" when the following happens.
+                // In the java applet a file is selected called X. The javascript then calls a Java applet
+                // to read file X.xml. If this succeeds the methode loadAsHtml is called and metadata contains 
+                // the xml contents of X.xml. If the applet fails (happens when no .xml exists) method loadMdHtml
+                // is also called but this time the variable metadata does not contain XML but the 
+                // string "null". Hence this test.
+                // 
+                   if (metadata.equals("null"))  {
+                    mdDoc = DocumentHelper.getMetadataDocument(DocumentHelper.EMPTY_METADATA);
                 } else {
-                    mdDoc = DocumentHelper.getMetadataDocument(xmlString);
+                    if (strictISO19115) {
+                        mdDoc = extractMD_MetadataAsDoc(metadata);
+                    } else {
+                        mdDoc = DocumentHelper.getMetadataDocument(metadata);
+                    }
                 }
             } else {
                 if (SDE_MODE.equals(mode)) {
@@ -497,9 +495,9 @@ public class MetadataAction extends DefaultAction {
         try {
 
             if (LOCAL_MODE.equals(mode)) {
-                return synchronizeLocal(); // already calls determineRoot(); 
+                return synchronizeLocal(); // Already calls determineRoot(); 
             }
-            
+
             determineRoot(); // select view or edit mode. 
 
             // metadata string must already have been preprocessed on the clientside
@@ -564,9 +562,6 @@ public class MetadataAction extends DefaultAction {
                         } finally {
                             FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
                         }
-                        //TODO CvL: dit stukje moet verder op
-//                    } else {
-//                        synchronizeRegularMetadata(md, dataFile);
                     }
                 } else if (cfg.isForkSynchroniser()) {
                     md = ArcObjectsSynchronizerForker.synchronize(
@@ -576,8 +571,7 @@ public class MetadataAction extends DefaultAction {
                             null,
                             metadata
                     );
-                } 
-                else if (path.endsWith(Extensions.SHAPE)) {
+                } else if (path.endsWith(Extensions.SHAPE)) {
                     File shapeFile = FileListHelper.getFileForPath(root, path);
 
                     // TODO: Create a new method which combines the two. No point in first creating 
@@ -586,11 +580,9 @@ public class MetadataAction extends DefaultAction {
                     String synchronizeData = Shapefiles.getMetadata(shapeFile.getCanonicalPath());
                     ShapefileSynchronizer.synchronizeFromLocalAccessJSON(md, synchronizeData);
 
+                } else {
+                    synchronizeRegularMetadata(md, dataFile);
                 }
-                        //TODO CvL: volgens mij moet dit hier, als laatste poging
-//                     else {
-//                        synchronizeRegularMetadata(md, dataFile);
-//                    }
             } else {
                 throw new IllegalArgumentException("Invalid mode: " + mode);
             }
@@ -717,7 +709,7 @@ public class MetadataAction extends DefaultAction {
                 throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
             }
             // wolverine. Check and test.
-            determineRoot();
+            determineRoot(); 
 
             if (rootAccess.getSecurityLevel() < AclAccess.COMMENT.getSecurityLevel()) {
                 throw new B3PCatalogException("Geen rechten om commentaar aan metadata toe te voegen op deze locatie");
@@ -745,7 +737,7 @@ public class MetadataAction extends DefaultAction {
 
     protected Document extractMD_MetadataAsDoc(String md) throws JDOMException, IOException, B3PCatalogException {
         Document doc = DocumentHelper.getMetadataDocument(md);
-        Element MD_Metadata = DocumentHelper.getMD_Metadata(doc); // wolverine. possibly change this one.
+        Element MD_Metadata = DocumentHelper.getMD_Metadata(doc); 
 
         MD_Metadata.detach();
         Document extractedDoc = new Document(MD_Metadata);
