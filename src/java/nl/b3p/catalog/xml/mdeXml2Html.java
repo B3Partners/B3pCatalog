@@ -16,8 +16,6 @@
  */
 package nl.b3p.catalog.xml;
 
-//TODO CvL: XStream kan wel weg
-import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,12 +61,12 @@ public class mdeXml2Html {
         params.put("fcMode_init", "true");
         params.put("dcMode_init", "true");
         params.put("dcPblMode_init", "true");
-        params.put("iso19115oneTab_init", "true");
+        params.put("iso19115oneTab_init", "false");
         params.put("commentMode_init", "true");
         params.put("geoTabsMinimizable_init", "true");
-        params.put("geoTabsMinimized_init", "true");
+        params.put("geoTabsMinimized_init", "false");
         params.put("globalReadonly_init", "false"); //viewMode in js
-        params.put("serviceMode_init", "false");
+        params.put("serviceMode_init", "true");
         params.put("datasetMode_init", "true");
         params.put("synchroniseDC_init", "true");
         params.put("fillDefaults_init", "true");
@@ -114,15 +112,30 @@ public class mdeXml2Html {
     }
 
     public static Document preprocess(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
-        // Wolverine. For debugging only
-        XStream xstream = new XStream();
-        log.debug("mdeXml2Html.preprocess doc is:" + xstream.toXML(doc));  
-        log.debug("mdeXml2Html.preprocess viewMode is:" + xstream.toXML(viewMode));  
-
-        
-        
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer t = tf.newTransformer(new StreamSource(mdeXml2Html.class.getResourceAsStream("mdeXmlPreprocessor.xsl")));
+        if (params != null) {
+            for (Map.Entry<String, String> param : params.entrySet()) {
+                t.setParameter(param.getKey(), param.getValue());
+            }
+            if (viewMode!=null) {
+                t.setParameter("globalReadonly_init", viewMode.toString());
+            }
+        }
+
+        JDOMResult result = new JDOMResult();
+        t.transform(new JDOMSource(doc), result);
+        
+        return result.getDocument();
+    }
+    
+    public static Document iSO19115toDCSynchronizer(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        return iSO19115toDCSynchronizer(doc, null);
+    }
+    
+    public static Document iSO19115toDCSynchronizer(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        TransformerFactory tf = TransformerFactory.newInstance();
+        Transformer t = tf.newTransformer(new StreamSource(mdeXml2Html.class.getResourceAsStream("ISO19115toDC.xsl")));
         if (params != null) {
             for (Map.Entry<String, String> param : params.entrySet()) {
                 t.setParameter(param.getKey(), param.getValue());
@@ -144,7 +157,7 @@ public class mdeXml2Html {
     
     public static Document dCtoISO19115Synchronizer(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
         TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer t = tf.newTransformer(new StreamSource(mdeXml2Html.class.getResourceAsStream("sync_ncml.xsl")));
+        Transformer t = tf.newTransformer(new StreamSource(mdeXml2Html.class.getResourceAsStream("DCtoISO19115.xsl")));
         if (params != null) {
             for (Map.Entry<String, String> param : params.entrySet()) {
                 t.setParameter(param.getKey(), param.getValue());

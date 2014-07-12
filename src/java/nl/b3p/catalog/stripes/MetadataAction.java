@@ -328,6 +328,8 @@ public class MetadataAction extends DefaultAction {
             Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
             if (synchroniseDC != null && synchroniseDC) {
                 ppDoc = mdeXml2Html.dCtoISO19115Synchronizer(ppDoc);
+                // TODO zijn de volgende syncs nodig?
+//                ppDoc = mdeXml2Html.iSO19115toDCSynchronizer(ppDoc);
             }
 
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
@@ -365,6 +367,8 @@ public class MetadataAction extends DefaultAction {
             Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
             if (synchroniseDC != null && synchroniseDC) {
                 md = mdeXml2Html.dCtoISO19115Synchronizer(md);
+                 // TODO zijn de volgende syncs nodig?
+//                md = mdeXml2Html.iSO19115toDCSynchronizer(md);
             }
 
             Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
@@ -402,6 +406,8 @@ public class MetadataAction extends DefaultAction {
             Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
             if (synchroniseDC != null && synchroniseDC) {
                 md = mdeXml2Html.dCtoISO19115Synchronizer(md);
+                // TODO zijn de volgende syncs nodig?
+//                md = mdeXml2Html.iSO19115toDCSynchronizer(md);
             }
 
             Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
