@@ -468,38 +468,100 @@ B3pCatalog.getCurrentFileAnchor = function() {
 
 B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
 
-    var opts = {
-        done: function() {
+    // local mode aka Java applet
+    if (mode == B3pCatalog.modes.LOCAL_MODE) {
 
-        },
-        cancel: cancel,
-        ajaxOptions: {
-            url: B3pCatalog.metadataUrl,
-            type: "POST",
-            data: {
-                loadMdAsHtml: "t",
-                mode: mode,
-                path: path
-            },
-            dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
-            success: function(data, textStatus, jqXHR) {
-                //log(data);
-                B3pCatalog.currentFilename = path;
-                B3pCatalog.currentMode = mode;
-                document.title = B3pCatalog.title + B3pCatalog.titleSeparator + title;
-                // TODO: on demand van PBL bv: laatst geopende doc opslaan
-                //$.cookie();
-                var access = jqXHR.getResponseHeader("X-MDE-Access");
-                var viewMode = access != "WRITE";
+        var me = this;
+        var xmlFileW = path + ".xml"
 
-                B3pCatalog.createMdeHtml(data, false, isGeo, viewMode);
-            }
+        // md contains the contents of the clicked file
+        function loadLocalMetadata (md) {
+            var wolvie = "lets do it";
+            var opts = {
+                done: function() {
+
+                },
+                cancel: cancel,
+                ajaxOptions: {
+                    url: B3pCatalog.metadataUrl,
+                    type: "POST",
+                    data: {
+                        loadMdAsHtml: "t",
+                        mode: mode,
+                        xml: md,  // wolverine. Added extra parameter which contains contents selected file in Java applet filetree.
+                        path: path
+                    },
+                    dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
+                    success: function(data, textStatus, jqXHR) {
+                        //log(data);
+                        B3pCatalog.currentFilename = path;
+                        B3pCatalog.currentMode = mode;
+                        document.title = B3pCatalog.title + B3pCatalog.titleSeparator + title;
+                        // TODO: on demand van PBL bv: laatst geopende doc opslaan
+                        //$.cookie();
+                        var access = jqXHR.getResponseHeader("X-MDE-Access");
+                        var viewMode = access != "WRITE";
+
+                        B3pCatalog.createMdeHtml(data, false, isGeo, viewMode);
+                    }
+                }
+            };
+
+            $("#synchronizeMD").button("option", "disabled", false);
+  
+            B3pCatalog._loadMetadata(opts);
         }
-    };
+     
 
-    $("#synchronizeMD").button("option", "disabled", false);
+        if (extension(xmlFileW) == "xml") {
 
-    this._loadMetadata(opts);
+            me.loadLocal(function() {
+                me.local.callApplet("readFileUTF8", xmlFileW,
+                        loadLocalMetadata,
+                        function(e) {
+                            B3pCatalog.openSimpleErrorDialog("Fout bij lezen bestand: " + e);
+                            cancel();
+                            return;
+                        });
+           });
+                        
+        }
+        // file mode
+    } else {
+        var opts = {
+            done: function() {
+
+            },
+            cancel: cancel,
+            ajaxOptions: {
+                url: B3pCatalog.metadataUrl,
+                type: "POST",
+                data: {
+                    loadMdAsHtml: "t",
+                    mode: mode,
+                    path: path
+                },
+                dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
+                success: function(data, textStatus, jqXHR) {
+                    //log(data);
+                    B3pCatalog.currentFilename = path;
+                    B3pCatalog.currentMode = mode;
+                    document.title = B3pCatalog.title + B3pCatalog.titleSeparator + title;
+                    // TODO: on demand van PBL bv: laatst geopende doc opslaan
+                    //$.cookie();
+                    var access = jqXHR.getResponseHeader("X-MDE-Access");
+                    var viewMode = access != "WRITE";
+
+                    B3pCatalog.createMdeHtml(data, false, isGeo, viewMode);
+                }
+            }
+        };
+
+        $("#synchronizeMD").button("option", "disabled", false);
+        var me = this;
+
+        this._loadMetadata(opts);
+    }
 };
 
 B3pCatalog.resetMde = function() {
@@ -586,6 +648,7 @@ B3pCatalog.addComment = function(comment) {
         var currentTab = mde.options.currentTab;
         var isGeo = !mde.options.geoTabsMinimized;
 
+        // wolverine. fat change.
         if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
             metadata = $("#mde").mde("save");
         }
@@ -683,13 +746,14 @@ function endsWith(s, n) {
 
 B3pCatalog.saveMetadata = function(settings) {
 
+
     if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
 
         var me = this;
 
         // Get updated XML from server
 
-        var mde = $("#mde").data("mde");
+        var mde = $("#mde").data("mde"); // All the mde data.
         var changedElements = mde.getChangedElements();
         var sectionChange = mde.getSectionChange();
 
@@ -708,7 +772,7 @@ B3pCatalog.saveMetadata = function(settings) {
                 // Wolverine. 
                 // Todo: Check why currentFilename is NOT set to *.xml because this
                 // hack can lead to problems later on. 
-                var xmlFile = B3pCatalog.currentFilename + ".xml"; 
+                var xmlFile = B3pCatalog.currentFilename + ".xml";
 
                 me.loadLocal(function() {
 

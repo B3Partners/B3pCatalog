@@ -102,6 +102,20 @@ public class MetadataAction extends DefaultAction {
     /* JSON with info about requested section addition or deletion. */
     @Validate(on = "updateXml")
     private String sectionChange;
+    
+    // wolverine xml
+    @Validate
+    private String xml;
+
+    // wolverine: Move later to the bottom
+    public String getXml() {
+        return xml;
+    }
+
+    public void setXml(String xml) {
+        this.xml = xml;
+    }
+
 
     private Root root;
     private AclAccess rootAccess;
@@ -197,34 +211,19 @@ public class MetadataAction extends DefaultAction {
         Document mdDoc = null;
 
         try {
-            
+
             determineRoot(); // select edit or view mode.
-            
+
             // Java applet is used.
             if (LOCAL_MODE.equals(mode)) {
-                // root = Root.getRootForPath(path);
-                //File mdFile = FileListHelper.getFileForPath(root, path);
-                
-                //TODO CvL: dit kan niet kloppen! het path van het local servlet kan nooit vanaf
-                // de server gevonden worden (hier werkt het toevallig omdat server en client op
-                // de zelfde machine staan!!!!)
-                
-                File mdFile = new File(path); // The applet already supplied the whole filename.
-                //TODO CvL: oorspronkelijke code werkt waarschijnlijk omdat applet metadata meegeeft, niet gecheckt!
-                //mdDoc = strictISO19115 ? extractMD_MetadataAsDoc(metadata) : DocumentHelper.getMetadataDocument(metadata);
 
-                mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
-                if (!mdFile.exists()) {
-                    // create new metadata on client side or show this in exported file:
-                    mdDoc = DocumentHelper.getMetadataDocument(DocumentHelper.EMPTY_METADATA);
+                String xmlString = xml;
+                // copied stuff from the file_mode part.
+                if (strictISO19115) {
+                    mdDoc = extractMD_MetadataAsDoc(xmlString);
                 } else {
-                    if (strictISO19115) {
-                        mdDoc = extractMD_MetadataAsDoc(mdFile);
-                    } else {
-                        mdDoc = DocumentHelper.getMetadataDocument(mdFile);
-                    }
+                    mdDoc = DocumentHelper.getMetadataDocument(xmlString);
                 }
-
             } else {
                 if (SDE_MODE.equals(mode)) {
 
