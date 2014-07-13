@@ -141,6 +141,10 @@ public class MetadataAction extends DefaultAction {
     //TODO CvL: wordt dit nog gebruikt? Code lijkt niet nuttig in nieuwe situatie met
     //transformatie op server.
     //TODO. JB: Check/test later. Its currently used in method eport()
+    // Remark sunday: Its not only used for LOCAL_MODE and FILE_MODE but also 
+    // for SCE_MODE. Hence I leave it for the moment. But its a likely candidate to 
+    // dish when work on new requirements will start. Again: Leaving it alone for the 
+    // moment. 
     public Resolution load() {
 
         try {
@@ -328,7 +332,7 @@ public class MetadataAction extends DefaultAction {
             Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
             if (synchroniseDC != null && synchroniseDC) {
                 ppDoc = mdeXml2Html.dCtoISO19115Synchronizer(ppDoc);
-                // TODO zijn de volgende syncs nodig?
+                // TODO CvL: zijn de volgende syncs nodig?
 //                ppDoc = mdeXml2Html.iSO19115toDCSynchronizer(ppDoc);
             }
 
@@ -367,7 +371,7 @@ public class MetadataAction extends DefaultAction {
             Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
             if (synchroniseDC != null && synchroniseDC) {
                 md = mdeXml2Html.dCtoISO19115Synchronizer(md);
-                 // TODO zijn de volgende syncs nodig?
+                 // TODO Cvl: zijn de volgende syncs nodig?
 //                md = mdeXml2Html.iSO19115toDCSynchronizer(md);
             }
 
@@ -406,7 +410,7 @@ public class MetadataAction extends DefaultAction {
             Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
             if (synchroniseDC != null && synchroniseDC) {
                 md = mdeXml2Html.dCtoISO19115Synchronizer(md);
-                // TODO zijn de volgende syncs nodig?
+                // TODO  CvL: zijn de volgende syncs nodig?
 //                md = mdeXml2Html.iSO19115toDCSynchronizer(md);
             }
 
@@ -682,6 +686,10 @@ public class MetadataAction extends DefaultAction {
         }
     }
 
+    
+    // export uses load() which is a candidate for removal but I don't want to 
+    // mess with it as it works - and I'm not sure what the consequences will be
+    // when I tinker with it. Leaving it alone for the 'new requirements' phase. 
     public Resolution export() {
         Resolution resolution = load();
         if (resolution instanceof XmlResolution) {

@@ -516,7 +516,7 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
                     // called when contents file xmlFile (file.XML)could be read.
                     loadLocalMetadata,
                     
-                    // called when file file.XML does not exist. loadLocalMetadata is
+                    // called when file <file>.XML does not exist. loadLocalMetadata is
                     // still called but will now return a 'virgin' html document which 
                     // will be transformed into a mde document. 
                     function(e) {
@@ -1001,26 +1001,47 @@ B3pCatalog._exportMetadata = function() {
 B3pCatalog._doExportMetadata = function(strict) {
     $("#mde").mde("option", "pageLeaveWarning", false);
 
+    // local_mode
     if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
-        var metadata = $("#mde").mde("save");
+// Start of original code
+//         
+//        var metadata = $("#mde").mde("save");
+//
+//        var action = B3pCatalog.metadataUrl + "?" + $.param({
+//            "export": "t",
+//            "mode": B3pCatalog.currentMode,
+//            "path": B3pCatalog.currentFilename,
+//            strictISO19115: strict
+//        });
+//
+//        var form = $("<form>", {
+//            "method": "POST",
+//            "action": action
+//        }).append(
+//                $("<textarea>", {
+//                    "name": "metadata"
+//                }).text(metadata).hide()
+//                );
+//        form.appendTo("body").submit();
+//        form.remove();
+//        
+// End of original code       
 
-        var action = B3pCatalog.metadataUrl + "?" + $.param({
+        // Although inefficent but with local_mode I'm doing the same as with 
+        // file_mod BUT I sent an extra parameter "metadata", Java is called and 
+        // metadata is returned and then saved. BUT for some reason with the Java applet we
+        // don't even end up here in _doExportMetadata. The 'save file popup' appears but 
+        // whatever you do one does NOT progress. NO ***** clue why this...
+        var metadata = $("#mde").mde("save");
+        window.location = B3pCatalog.metadataUrl + "?" + $.param({
             "export": "t",
-            "mode": B3pCatalog.currentMode,
-            "path": B3pCatalog.currentFilename,
+            path: B3pCatalog.currentFilename,
+            mode: B3pCatalog.currentMode,
+            metadata: metadata, // JB. not sure in which format metadata will be.
             strictISO19115: strict
         });
 
-        var form = $("<form>", {
-            "method": "POST",
-            "action": action
-        }).append(
-                $("<textarea>", {
-                    "name": "metadata"
-                }).text(metadata).hide()
-                );
-        form.appendTo("body").submit();
-        form.remove();
+        // file_mode
     } else {
         window.location = B3pCatalog.metadataUrl + "?" + $.param({
             "export": "t",
@@ -1120,7 +1141,7 @@ B3pCatalog.importMetadata = function() {
                 success: function(data, status, xhr) {
                     log("import success");
                     $dialogDiv.dialog("close");
-                    // isGeo (3rd paramter) must be false
+                    // isGeo (3rd parameter) must be false
                     B3pCatalog.createMdeHtml(data, false, false, false);
                 }
             });
