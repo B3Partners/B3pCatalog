@@ -63,19 +63,15 @@ public class mdeXml2Html {
         params.put("dcPblMode_init", "true");
         params.put("iso19115oneTab_init", "false");
         params.put("commentMode_init", "true");
-        params.put("geoTabsMinimizable_init", "true");
-        params.put("geoTabsMinimized_init", "false");
         params.put("globalReadonly_init", "false"); //viewMode in js
         params.put("serviceMode_init", "true");
         params.put("datasetMode_init", "true");
-        params.put("synchroniseDC_init", "true");
+        // TODO synchroniseDC werkt niet goed icm service mode omdat de sync 
+        // templates hier niet op aangepast zijn.
+        params.put("synchroniseDC_init", "false"); 
         params.put("fillDefaults_init", "true");
         params.put("synchroniseEsri_init", "true");
     }
-    
-    
-
-    
     
     public static Boolean getXSLParam(String param) {
         String paramValue = params.get(param);

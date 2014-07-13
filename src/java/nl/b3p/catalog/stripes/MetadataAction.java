@@ -1,6 +1,5 @@
 package nl.b3p.catalog.stripes;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +32,6 @@ import nl.b3p.catalog.filetree.Extensions;
 import nl.b3p.catalog.filetree.FileListHelper;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.resolution.HtmlResolution;
-import nl.b3p.catalog.resolution.XmlResolution;
 import nl.b3p.catalog.xml.DocumentHelper;
 import nl.b3p.catalog.xml.NCMLSynchronizer;
 import nl.b3p.catalog.xml.Names;
@@ -136,62 +134,6 @@ public class MetadataAction extends DefaultAction {
         }
         return viewMode;
 
-    }
-
-    //TODO CvL: wordt dit nog gebruikt? Code lijkt niet nuttig in nieuwe situatie met
-    //transformatie op server.
-    //TODO. JB: Check/test later. Its currently used in method eport()
-    // Remark sunday: Its not only used for LOCAL_MODE and FILE_MODE but also 
-    // for SCE_MODE. Hence I leave it for the moment. But its a likely candidate to 
-    // dish when work on new requirements will start. Again: Leaving it alone for the 
-    // moment. 
-    public Resolution load() {
-
-        try {
-            
-            determineRoot(); // select edit or view mode.
-            
-            // Java applet.
-            if (LOCAL_MODE.equals(mode)) {
-                return new XmlResolution(strictISO19115 ? extractMD_Metadata(metadata) : metadata);
-            } else if (SDE_MODE.equals(mode)) {
-
-                metadata = ArcSDEHelperProxy.getMetadata(root, path);
-                return new XmlResolution(strictISO19115 ? extractMD_Metadata(metadata) : metadata, extraHeaders);
-
-            } else if (FILE_MODE.equals(mode)) {
-
-                File mdFile = FileListHelper.getFileForPath(root, path);
-
-                if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                    try {
-                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
-                        metadata = FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass);
-                    } finally {
-                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
-                    }
-                    return new XmlResolution(strictISO19115 ? extractMD_Metadata(metadata) : metadata, extraHeaders);
-                } else {
-                    mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
-                    if (!mdFile.exists()) {
-                        // create new metadata on client side or show this in exported file:
-                        return new XmlResolution(DocumentHelper.EMPTY_METADATA, extraHeaders);
-                    } else {
-                        if (strictISO19115) {
-                            return new XmlResolution(extractMD_Metadata(mdFile), extraHeaders);
-                        } else {
-                            return new XmlResolution(new BufferedInputStream(FileUtils.openInputStream(mdFile)), extraHeaders);
-                        }
-                    }
-                }
-            } else {
-                throw new IllegalArgumentException("Invalid mode: " + mode);
-            }
-        } catch (Exception e) {
-            String message = "Kan geen " + mode + " metadata openen van lokatie " + path;
-            log.error(message, e);
-            return new HtmlErrorResolution(message, e);
-        }
     }
 
     public Resolution loadMdAsHtml() {
@@ -332,7 +274,7 @@ public class MetadataAction extends DefaultAction {
             Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
             if (synchroniseDC != null && synchroniseDC) {
                 ppDoc = mdeXml2Html.dCtoISO19115Synchronizer(ppDoc);
-                // TODO CvL: zijn de volgende syncs nodig?
+                // TODO zijn de volgende syncs nodig?
 //                ppDoc = mdeXml2Html.iSO19115toDCSynchronizer(ppDoc);
             }
 
@@ -371,7 +313,7 @@ public class MetadataAction extends DefaultAction {
             Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
             if (synchroniseDC != null && synchroniseDC) {
                 md = mdeXml2Html.dCtoISO19115Synchronizer(md);
-                 // TODO Cvl: zijn de volgende syncs nodig?
+                 // TODO zijn de volgende syncs nodig?
 //                md = mdeXml2Html.iSO19115toDCSynchronizer(md);
             }
 
@@ -380,6 +322,13 @@ public class MetadataAction extends DefaultAction {
             
             mdeXml2Html.cleanUpMetadata(md, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
             mdeXml2Html.removeEmptyNodes(md);
+            
+            if (strictISO19115) {
+                Document mdCopy = new Document((Element) md.getRootElement().clone());
+                Element MD_Metadata = DocumentHelper.getMD_Metadata(mdCopy);
+                MD_Metadata.detach();
+                md = new Document(MD_Metadata);
+            }
 
             // Geen XML parsing door browser, geef door als String
             return new StreamingResolution("text/plain", new StringReader(DocumentHelper.getDocumentString(md)));
@@ -410,7 +359,7 @@ public class MetadataAction extends DefaultAction {
             Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
             if (synchroniseDC != null && synchroniseDC) {
                 md = mdeXml2Html.dCtoISO19115Synchronizer(md);
-                // TODO  CvL: zijn de volgende syncs nodig?
+                // TODO zijn de volgende syncs nodig?
 //                md = mdeXml2Html.iSO19115toDCSynchronizer(md);
             }
 
@@ -686,13 +635,10 @@ public class MetadataAction extends DefaultAction {
         }
     }
 
-    
-    // export uses load() which is a candidate for removal but I don't want to 
-    // mess with it as it works - and I'm not sure what the consequences will be
-    // when I tinker with it. Leaving it alone for the 'new requirements' phase. 
-    public Resolution export() {
-        Resolution resolution = load();
-        if (resolution instanceof XmlResolution) {
+    public Resolution export() throws Exception {
+        Resolution resolution = updateElementsAndGetXml();
+
+        if (resolution instanceof StreamingResolution) {
             String exportName = null;
             int i = path.lastIndexOf("/");
             if (i == -1) {
@@ -706,9 +652,9 @@ public class MetadataAction extends DefaultAction {
             if (!exportName.endsWith(".xml")) {
                 exportName = exportName + ".xml";
             }
-            XmlResolution xmlResolution = (XmlResolution) resolution;
-            xmlResolution.setAttachment(true);
-            xmlResolution.setFilename(exportName);
+            StreamingResolution sr = (StreamingResolution) resolution;
+            sr.setAttachment(true);
+            sr.setFilename(exportName);
         }
         return resolution;
     }
@@ -748,14 +694,23 @@ public class MetadataAction extends DefaultAction {
         }
     }
 
-    protected Document extractMD_MetadataAsDoc(String md) throws JDOMException, IOException, B3PCatalogException {
-        Document doc = DocumentHelper.getMetadataDocument(md);
+    protected Document extractMD_MetadataAsDoc(Document doc) throws JDOMException, IOException, B3PCatalogException {
         Element MD_Metadata = DocumentHelper.getMD_Metadata(doc); 
 
         MD_Metadata.detach();
         Document extractedDoc = new Document(MD_Metadata);
 
         return extractedDoc;
+    }
+    
+    protected String extractMD_Metadata(Document doc) throws JDOMException, IOException, B3PCatalogException {
+        Document extractedDoc = extractMD_MetadataAsDoc(doc);
+        return new XMLOutputter(Format.getPrettyFormat()).outputString(extractedDoc);
+    }
+
+    protected Document extractMD_MetadataAsDoc(String md) throws JDOMException, IOException, B3PCatalogException {
+        Document doc = DocumentHelper.getMetadataDocument(md);
+        return extractMD_MetadataAsDoc(doc);
     }
 
     protected String extractMD_Metadata(String md) throws JDOMException, IOException, B3PCatalogException {
@@ -766,12 +721,7 @@ public class MetadataAction extends DefaultAction {
 
     protected Document extractMD_MetadataAsDoc(File mdFile) throws JDOMException, IOException, B3PCatalogException {
         Document doc = DocumentHelper.getMetadataDocument(mdFile);
-        Element MD_Metadata = DocumentHelper.getMD_Metadata(doc);
-
-        MD_Metadata.detach();
-        Document extractedDoc = new Document(MD_Metadata);
-
-        return extractedDoc;
+        return extractMD_MetadataAsDoc(doc);
     }
 
     protected String extractMD_Metadata(File mdFile) throws JDOMException, IOException, B3PCatalogException {

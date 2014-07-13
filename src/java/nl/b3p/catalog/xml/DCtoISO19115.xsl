@@ -1,67 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet
-        version="1.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        xmlns:gmd="http://www.isotc211.org/2005/gmd"
-        xmlns:gfc="http://www.isotc211.org/2005/gfc"
-        xmlns:gmx="http://www.isotc211.org/2005/gmx"
-        xmlns:gco="http://www.isotc211.org/2005/gco"
-        xmlns:gml="http://www.opengis.net/gml"
-        xmlns:b3p="http://www.b3partners.nl/xsd/metadata"
-        xmlns:pbl="http://www.pbl.nl/xsd/metadata"
-        xmlns:dc="http://purl.org/dc/elements/1.1/"
-        >
-            
+<xsl:stylesheet version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gfc="http://www.isotc211.org/2005/gfc" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml" xmlns:b3p="http://www.b3partners.nl/xsd/metadata" xmlns:pbl="http://www.pbl.nl/xsd/metadata" xmlns:dc="http://purl.org/dc/elements/1.1/">
 	<xsl:output method="xml" indent="yes"/>
-	
-	
 	<!-- 
 		Syncs DC metadata by B3Partners to ISO19115. 
 		This stylesheet assumes there are nodes present for every template. 
 		Therefore it is best to create empty nodes for every possible element before running this sheet. 
 	-->
-
-
 	<!-- default template: copy all nodes and attributes-->
 	<xsl:template match="@*|node()">
 		<xsl:copy>
 			<xsl:apply-templates select="@*|node()"/>
 		</xsl:copy>
 	</xsl:template>
-
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString">
-		<xsl:copy><xsl:value-of select="/*/b3p:B3Partners/*/dc:title"/></xsl:copy>
+		<xsl:copy>
+			<xsl:value-of select="/*/b3p:B3Partners/*/dc:title"/>
+		</xsl:copy>
 	</xsl:template>
-	
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString">
-		<xsl:copy><xsl:value-of select="/*/b3p:B3Partners/*/dc:description"/></xsl:copy>
+		<xsl:copy>
+			<xsl:value-of select="/*/b3p:B3Partners/*/dc:description"/>
+		</xsl:copy>
 	</xsl:template>
-
 	<!-- Subjects are always saved in 19115 with the first thesaurus -->
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[1]/gmd:MD_Keywords">
 		<xsl:copy>
 			<xsl:for-each select="/*/b3p:B3Partners/*/dc:subject">
 				<xsl:element name="gmd:keyword">
-					<xsl:element name="gco:CharacterString"><xsl:value-of select="."/></xsl:element>
+					<xsl:element name="gco:CharacterString">
+						<xsl:value-of select="."/>
+					</xsl:element>
 				</xsl:element>
 			</xsl:for-each>
 			<xsl:apply-templates select="@*|node()[not(self::gmd:keyword)]"/>
 		</xsl:copy>
 	</xsl:template>
-	
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation">
 		<xsl:copy>
 			<xsl:apply-templates select="gmd:title"/>
 			<xsl:apply-templates select="gmd:alternateTitle"/>
-			
 			<xsl:choose>
 				<xsl:when test="not(gmd:date[gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue = 'creation'])">
 					<xsl:element name="gmd:date">
 						<xsl:element name="gmd:CI_Date">
 							<xsl:element name="gmd:date">
-								<xsl:element name="gco:Date"><xsl:value-of select="/*/b3p:B3Partners/*/dc:date"/></xsl:element>
+								<xsl:element name="gco:Date">
+									<xsl:value-of select="/*/b3p:B3Partners/*/dc:date"/>
+								</xsl:element>
 							</xsl:element>
 							<xsl:element name="gmd:dateType">
 								<xsl:element name="gmd:CI_DateTypeCode">
@@ -78,27 +63,29 @@
 					<xsl:apply-templates select="gmd:date"/>
 				</xsl:otherwise>
 			</xsl:choose>
-			
 			<xsl:apply-templates select="gmd:identifier"/>
 			<xsl:apply-templates select="@*"/>
 		</xsl:copy>
 	</xsl:template>
-	
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[gmd:dateType/gmd:CI_DateTypeCode/@codeListValue = 'creation']/gmd:date/gco:Date |
 										/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[gmd:dateType/gmd:CI_DateTypeCode/@codeListValue = 'creation']/gmd:date/gco:DateTime">
-		<xsl:copy><xsl:value-of select="/*/b3p:B3Partners/*/dc:date"/></xsl:copy>
+		<xsl:copy>
+			<xsl:value-of select="/*/b3p:B3Partners/*/dc:date"/>
+		</xsl:copy>
 	</xsl:template>
-	
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:language/gco:CharacterString">
-		<xsl:copy><xsl:value-of select="/*/b3p:B3Partners/*/dc:language"/></xsl:copy>
+		<xsl:copy>
+			<xsl:value-of select="/*/b3p:B3Partners/*/dc:language"/>
+		</xsl:copy>
 	</xsl:template>
-	
 	<!-- TODO: zoek keywords uit de juiste thesaurus op en vervang deze door de nieuwe uit DC -->
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[1]/gmd:MD_Keywords">
 		<xsl:copy>
 			<xsl:for-each select="/*/b3p:B3Partners/*/dc:subject">
 				<xsl:element name="gmd:keyword">
-					<xsl:element name="gco:CharacterString"><xsl:value-of select="."/></xsl:element>
+					<xsl:element name="gco:CharacterString">
+						<xsl:value-of select="."/>
+					</xsl:element>
 				</xsl:element>
 			</xsl:for-each>
 			<xsl:apply-templates select="gmd:type"/>
@@ -106,7 +93,6 @@
 			<xsl:apply-templates select="@*"/>
 		</xsl:copy>
 	</xsl:template>
-
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode">
 		<xsl:copy>
 			<xsl:attribute name="codeList"><xsl:value-of select="@codeList"/></xsl:attribute>
@@ -114,7 +100,6 @@
 			<xsl:value-of select="/*/b3p:B3Partners/*/dc:type"/>
 		</xsl:copy>
 	</xsl:template>
-	
 	<xsl:template match="/*/gmd:MD_Metadata">
 		<xsl:copy>
 			<xsl:apply-templates select="gmd:fileIdentifier"/>
@@ -123,7 +108,6 @@
 			<xsl:apply-templates select="gmd:parentIdentifier"/>
 			<xsl:apply-templates select="gmd:hierarchyLevel"/>
 			<xsl:apply-templates select="gmd:hierarchyLevelName"/>
-
 			<xsl:for-each select="/*/b3p:B3Partners/*/dc:contributor">
 				<xsl:variable name="contact-position" select="position()"/>
 				<xsl:variable name="contact" select="/*/gmd:MD_Metadata/gmd:contact[$contact-position]"/>
@@ -142,7 +126,6 @@
 					</xsl:choose>
 				</xsl:element>
 			</xsl:for-each>
-			
 			<xsl:apply-templates select="gmd:dateStamp"/>
 			<xsl:apply-templates select="gmd:metadataStandardName"/>
 			<xsl:apply-templates select="gmd:metadataStandardVersion"/>
@@ -153,14 +136,12 @@
 			<xsl:apply-templates select="@*"/>
 		</xsl:copy>
 	</xsl:template>
-	
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification">
 		<xsl:copy>
 			<xsl:apply-templates select="gmd:citation"/>
 			<xsl:apply-templates select="gmd:abstract"/>
 			<xsl:apply-templates select="gmd:purpose"/>
 			<xsl:apply-templates select="gmd:status"/>
-			
 			<xsl:for-each select="/*/b3p:B3Partners/*/dc:creator">
 				<xsl:variable name="contact-position" select="position()"/>
 				<xsl:variable name="contact" select="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact[$contact-position]"/>
@@ -179,12 +160,10 @@
 					</xsl:choose>
 				</xsl:element>
 			</xsl:for-each>
-			
 			<xsl:apply-templates select="gmd:resourceMaintenance"/>
 			<xsl:apply-templates select="gmd:graphicOverview"/>
 			<xsl:apply-templates select="gmd:descriptiveKeywords"/>
 			<xsl:apply-templates select="gmd:resourceConstraints"/>
-			
 			<xsl:variable name="MD_DataIdentification" select="."/>
 			<xsl:for-each select="/*/b3p:B3Partners/*/dc:relation">
 				<xsl:variable name="relation-position" select="position()"/>
@@ -198,7 +177,9 @@
 								<xsl:element name="gmd:aggregateDataSetName">
 									<xsl:element name="gmd:CI_Citation">
 										<xsl:element name="gmd:title">
-											<xsl:element name="gco:CharacterString"><xsl:value-of select="."/></xsl:element>
+											<xsl:element name="gco:CharacterString">
+												<xsl:value-of select="."/>
+											</xsl:element>
 										</xsl:element>
 										<xsl:element name="gmd:date">
 											<xsl:element name="gmd:CI_Date">
@@ -227,7 +208,6 @@
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:for-each>
-			
 			<xsl:apply-templates select="gmd:spatialRepresentationType"/>
 			<xsl:apply-templates select="gmd:spatialResolution"/>
 			<xsl:apply-templates select="gmd:language"/>
@@ -237,11 +217,11 @@
 			<xsl:apply-templates select="@*"/>
 		</xsl:copy>
 	</xsl:template>
-	
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:aggregationInfo/gmd:MD_AggregateInformation/gmd:aggregateDataSetName/gmd:CI_Citation/gmd:title/gco:CharacterString">
-		<xsl:copy><xsl:value-of select="/*/b3p:B3Partners/*/dc:relation[count(current()/../../../../../preceding-sibling::gmd:aggregationInfo) + 1]"/></xsl:copy>
+		<xsl:copy>
+			<xsl:value-of select="/*/b3p:B3Partners/*/dc:relation[count(current()/../../../../../preceding-sibling::gmd:aggregationInfo) + 1]"/>
+		</xsl:copy>
 	</xsl:template>
-	
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:aggregationInfo/gmd:MD_AggregateInformation/gmd:associationType/gmd:DS_AssociationTypeCode">
 		<xsl:copy>
 			<xsl:if test="normalize-space(/*/b3p:B3Partners/*/dc:relation[count(current()/../../../preceding-sibling::gmd:aggregationInfo) + 1])">
@@ -251,7 +231,6 @@
 			</xsl:if>
 		</xsl:copy>
 	</xsl:template>
-	
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceAndUpdateFrequency/gmd:MD_MaintenanceFrequencyCode">
 		<xsl:copy>
 			<xsl:attribute name="codeList"><xsl:value-of select="@codeList"/></xsl:attribute>
@@ -259,11 +238,11 @@
 			<xsl:value-of select="/*/b3p:B3Partners/pbl:metadataPBL/pbl:frequency"/>
 		</xsl:copy>
 	</xsl:template>
-	
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat[1]/gmd:MD_Format/gmd:name/gco:CharacterString">
-		<xsl:copy><xsl:value-of select="/*/b3p:B3Partners/*/dc:format"/></xsl:copy>
+		<xsl:copy>
+			<xsl:value-of select="/*/b3p:B3Partners/*/dc:format"/>
+		</xsl:copy>
 	</xsl:template>
-	
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat[1]/gmd:MD_Format/gmd:version/gco:CharacterString">
 		<xsl:copy>
 			<xsl:choose>
@@ -276,7 +255,6 @@
 			</xsl:choose>
 		</xsl:copy>
 	</xsl:template>
-	
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor">
 		<xsl:copy>
 			<xsl:for-each select="/*/b3p:B3Partners/*/dc:publisher">
@@ -297,72 +275,97 @@
 					</xsl:choose>
 				</xsl:element>
 			</xsl:for-each>
-
 			<xsl:apply-templates select="gmd:distributionOrderProcess"/>
 			<xsl:apply-templates select="gmd:distributorFormat"/>
 			<xsl:apply-templates select="gmd:distributorTransferOptions"/>
 			<xsl:apply-templates select="@*"/>
 		</xsl:copy>
 	</xsl:template>
-	
 	<xsl:template match="
 			/*/gmd:MD_Metadata/gmd:contact | 
 			/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact |
 			/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorContact
 			">
-		<xsl:param name="individualName"><xsl:value-of select="gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/></xsl:param>
-		<xsl:param name="organisationName"><xsl:value-of select="gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString"/></xsl:param>
+		<xsl:param name="individualName">
+			<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/>
+		</xsl:param>
+		<xsl:param name="organisationName">
+			<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString"/>
+		</xsl:param>
 		<xsl:call-template name="create-contact">
 			<xsl:with-param name="individualName" select="$individualName"/>
 			<xsl:with-param name="organisationName" select="$organisationName"/>
 		</xsl:call-template>
 	</xsl:template>
-	
 	<xsl:template name="create-contact">
-		<xsl:param name="individualName"><xsl:value-of select="gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/></xsl:param>
-		<xsl:param name="organisationName"><xsl:value-of select="gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString"/></xsl:param>
+		<xsl:param name="individualName">
+			<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/>
+		</xsl:param>
+		<xsl:param name="organisationName">
+			<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString"/>
+		</xsl:param>
 		<xsl:element name="gmd:CI_ResponsibleParty">
 			<xsl:element name="gmd:individualName">
-				<xsl:element name="gco:CharacterString"><xsl:value-of select="$individualName"/></xsl:element>
+				<xsl:element name="gco:CharacterString">
+					<xsl:value-of select="$individualName"/>
+				</xsl:element>
 			</xsl:element>
 			<xsl:element name="gmd:organisationName">
-				<xsl:element name="gco:CharacterString"><xsl:value-of select="$organisationName"/></xsl:element>
+				<xsl:element name="gco:CharacterString">
+					<xsl:value-of select="$organisationName"/>
+				</xsl:element>
 			</xsl:element>
 			<xsl:element name="gmd:contactInfo">
 				<xsl:element name="gmd:CI_Contact">
 					<xsl:element name="gmd:phone">
 						<xsl:element name="gmd:CI_Telephone">
 							<xsl:element name="gmd:voice">
-								<xsl:element name="gco:CharacterString"><xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString"/></xsl:element>
+								<xsl:element name="gco:CharacterString">
+									<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString"/>
+								</xsl:element>
 							</xsl:element>
 						</xsl:element>
 					</xsl:element>
 					<xsl:element name="gmd:address">
 						<xsl:element name="gmd:CI_Address">
 							<xsl:element name="gmd:deliveryPoint">
-								<xsl:element name="gco:CharacterString"><xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:deliveryPoint/gco:CharacterString"/></xsl:element>
+								<xsl:element name="gco:CharacterString">
+									<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:deliveryPoint/gco:CharacterString"/>
+								</xsl:element>
 							</xsl:element>
 							<xsl:element name="gmd:city">
-								<xsl:element name="gco:CharacterString"><xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:city/gco:CharacterString"/></xsl:element>
+								<xsl:element name="gco:CharacterString">
+									<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:city/gco:CharacterString"/>
+								</xsl:element>
 							</xsl:element>
 							<xsl:element name="gmd:administrativeArea">
-								<xsl:element name="gco:CharacterString"><xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:administrativeArea/gco:CharacterString"/></xsl:element>
+								<xsl:element name="gco:CharacterString">
+									<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:administrativeArea/gco:CharacterString"/>
+								</xsl:element>
 							</xsl:element>
 							<xsl:element name="gmd:postalCode">
-								<xsl:element name="gco:CharacterString"><xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:postalCode/gco:CharacterString"/></xsl:element>
+								<xsl:element name="gco:CharacterString">
+									<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:postalCode/gco:CharacterString"/>
+								</xsl:element>
 							</xsl:element>
 							<xsl:element name="gmd:country">
-								<xsl:element name="gco:CharacterString"><xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:country/gco:CharacterString"/></xsl:element>
+								<xsl:element name="gco:CharacterString">
+									<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:country/gco:CharacterString"/>
+								</xsl:element>
 							</xsl:element>
 							<xsl:element name="gmd:electronicMailAddress">
-								<xsl:element name="gco:CharacterString"><xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString"/></xsl:element>
+								<xsl:element name="gco:CharacterString">
+									<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString"/>
+								</xsl:element>
 							</xsl:element>
 						</xsl:element>
 					</xsl:element>
 					<xsl:element name="gmd:onlineResource">
 						<xsl:element name="gmd:CI_OnlineResource">
 							<xsl:element name="gmd:linkage">
-								<xsl:element name="gmd:URL"><xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL"/></xsl:element>
+								<xsl:element name="gmd:URL">
+									<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL"/>
+								</xsl:element>
 							</xsl:element>
 						</xsl:element>
 					</xsl:element>
@@ -377,7 +380,6 @@
 			</xsl:element>
 		</xsl:element>
 	</xsl:template>
-	
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints[count(preceding-sibling::gmd:resourceConstraints/gmd:MD_LegalConstraints) = 0]/gmd:MD_LegalConstraints">
 		<xsl:copy>
 			<xsl:for-each select="/*/b3p:B3Partners/*/dc:rights">
@@ -389,11 +391,9 @@
 					</xsl:element>
 				</xsl:element>
 			</xsl:for-each>
-
 			<xsl:apply-templates select="gmd:useConstraints"/>
 			<xsl:apply-templates select="gmd:otherConstraints"/>
 			<xsl:apply-templates select="@*"/>
 		</xsl:copy>
 	</xsl:template>
-	
 </xsl:stylesheet>

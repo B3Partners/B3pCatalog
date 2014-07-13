@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.config.CatalogAppConfig;
@@ -101,7 +102,16 @@ public class FileListHelper {
                 DirEntry newFile = new DirEntry();
                 newFile.setName(file.getName());
                 newFile.setPath(currentPath + file.getName());
-                newFile.setIsGeo(CatalogAppConfig.getConfig().getGeoFileExtensions().contains(newFile.getExtension()));
+                
+                boolean isGeo = true;
+                Set<String> geoFileExtensions = 
+                        CatalogAppConfig.getConfig().getGeoFileExtensions();
+                if (!geoFileExtensions.isEmpty() 
+                        && !geoFileExtensions.contains(newFile.getExtension())) {
+                    isGeo = false;
+                }
+                
+                newFile.setIsGeo(isGeo);
                 dc.getFiles().add(newFile);
             }
         }

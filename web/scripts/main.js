@@ -529,41 +529,41 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
 
                         // file mode
                     } else {
-                var opts = {
-                    done: function() {
+        var opts = {
+            done: function() {
 
-                    },
-                    cancel: cancel,
-                    ajaxOptions: {
-                        url: B3pCatalog.metadataUrl,
-                        type: "POST",
-                        data: {
-                            loadMdAsHtml: "t",
-                            mode: mode,
-                            path: path
-                        },
-                        dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
-                        success: function(data, textStatus, jqXHR) {
-                            //log(data);
-                            B3pCatalog.currentFilename = path;
-                            B3pCatalog.currentMode = mode;
-                            document.title = B3pCatalog.title + B3pCatalog.titleSeparator + title;
-                            // TODO: on demand van PBL bv: laatst geopende doc opslaan
-                            //$.cookie();
-                            var access = jqXHR.getResponseHeader("X-MDE-Access");
-                            var viewMode = access != "WRITE";
+            },
+            cancel: cancel,
+            ajaxOptions: {
+                url: B3pCatalog.metadataUrl,
+                type: "POST",
+                data: {
+                    loadMdAsHtml: "t",
+                    mode: mode,
+                    path: path
+                },
+                dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
+                success: function(data, textStatus, jqXHR) {
+                    //log(data);
+                    B3pCatalog.currentFilename = path;
+                    B3pCatalog.currentMode = mode;
+                    document.title = B3pCatalog.title + B3pCatalog.titleSeparator + title;
+                    // TODO: on demand van PBL bv: laatst geopende doc opslaan
+                    //$.cookie();
+                    var access = jqXHR.getResponseHeader("X-MDE-Access");
+                    var viewMode = access != "WRITE";
 
-                            B3pCatalog.createMdeHtml(data, false, isGeo, viewMode);
-                        }
-                    }
-                };
-
-                $("#synchronizeMD").button("option", "disabled", false);
-                var me = this;
-
-                this._loadMetadata(opts);
+                    B3pCatalog.createMdeHtml(data, false, isGeo, viewMode);
+                }
             }
         };
+
+        $("#synchronizeMD").button("option", "disabled", false);
+        var me = this;
+
+        this._loadMetadata(opts);
+    }
+};
 
 B3pCatalog.resetMde = function() {
     var mde = $("#mde").data("mde");
@@ -649,10 +649,6 @@ B3pCatalog.addComment = function(comment) {
         var currentTab = mde.options.currentTab;
         var isGeo = !mde.options.geoTabsMinimized;
 
-        // wolverine. fat change. Probably wrong. CHECK. 
-        if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
-            metadata = $("#mde").mde("save");
-        }
         $.ajax({
             url: B3pCatalog.metadataUrl,
             dataType: "html",
@@ -669,14 +665,9 @@ B3pCatalog.addComment = function(comment) {
             success: function(data, textStatus, xhr) {
                 console.log("updateXml after comment", data);
 
-                B3pCatalog.createMdeHtml(data, false, isGeo, viewMode, {currentTab: currentTab});
+                B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, {currentTab: currentTab});
             }
         });
-
-
-        if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
-            $("#saveMD").button("option", "disabled", false);
-        }
     }
 };
 
@@ -707,7 +698,6 @@ B3pCatalog.loadMetadataByUUID = function(uuid) {
 };
 
 B3pCatalog._loadMetadata = function(opts) {
-    //log("Loading metadata...");
     var options = $.extend({
         done: $.noop,
         cancel: $.noop,
@@ -715,14 +705,16 @@ B3pCatalog._loadMetadata = function(opts) {
     }, opts);
     B3pCatalog.saveDataUserConfirm({
         done: function() {
+            
             $("#toolbar").empty();
             $("#mde").mde("destroy");
             var spinner = $("<img />", {
                 src: B3pCatalog.contextPath + "/styles/images/spinner.gif",
                 "class": "spinner"
             });
-            $("#mde").html(spinner);
-            var scrollable = $("#mde").closest(":scrollable");
+            //use center-wrapper insteadof mde as mde may not yet been created
+            $("#center-wrapper").html(spinner);
+            var scrollable = $("#center-wrapper").closest(":scrollable");
             spinner.position({
                 of: scrollable.length > 0 ? scrollable : $(window),
                 my: "center center",
@@ -1001,10 +993,16 @@ B3pCatalog._exportMetadata = function() {
 B3pCatalog._doExportMetadata = function(strict) {
     $("#mde").mde("option", "pageLeaveWarning", false);
 
-    // local_mode
-    if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
-// Start of original code
-//         
+    //TODO CvL is dit special blok voor local export nodig?
+    //metadata xml staat op de server net als voor file mode!
+    //
+    // Although inefficent but with local_mode I'm doing the same as with 
+    // file_mod BUT I sent an extra parameter "metadata", Java is called and 
+    // metadata is returned and then saved. BUT for some reason with the Java applet we
+    // don't even end up here in _doExportMetadata. The 'save file popup' appears but 
+    // whatever you do one does NOT progress. NO ***** clue why this...
+    // CvL: in code JB stond else if verkeerd
+//    if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
 //        var metadata = $("#mde").mde("save");
 //
 //        var action = B3pCatalog.metadataUrl + "?" + $.param({
@@ -1024,32 +1022,14 @@ B3pCatalog._doExportMetadata = function(strict) {
 //                );
 //        form.appendTo("body").submit();
 //        form.remove();
-//        
-// End of original code       
-
-        // Although inefficent but with local_mode I'm doing the same as with 
-        // file_mod BUT I sent an extra parameter "metadata", Java is called and 
-        // metadata is returned and then saved. BUT for some reason with the Java applet we
-        // don't even end up here in _doExportMetadata. The 'save file popup' appears but 
-        // whatever you do one does NOT progress. NO ***** clue why this...
-        var metadata = $("#mde").mde("save");
-        window.location = B3pCatalog.metadataUrl + "?" + $.param({
-            "export": "t",
-            path: B3pCatalog.currentFilename,
-            mode: B3pCatalog.currentMode,
-            metadata: metadata, // JB. not sure in which format metadata will be.
-            strictISO19115: strict
-        });
-
-        // file_mode
-    } else {
+//    } else {
         window.location = B3pCatalog.metadataUrl + "?" + $.param({
             "export": "t",
             path: B3pCatalog.currentFilename,
             mode: B3pCatalog.currentMode,
             strictISO19115: strict
         });
-    }
+//    }
     $("#mde").mde("option", "pageLeaveWarning", true);
 };
 
