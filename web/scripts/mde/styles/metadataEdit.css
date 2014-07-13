@@ -1,0 +1,437 @@
+/*Auteur: Erik van de Pol. B3Partners.*/
+
+.ui-mde {
+    margin: 0px;
+    padding: 0px;
+    font-weight: normal;
+    font-style: normal;
+    color: #1962a0;
+}
+
+.ui-mde #edit-doc-root {
+    /*position: relative;  IE7 fix: necessary for all absolute inputfield and picklist */
+}
+
+.ui-mde hr {
+    background-color: #1962a0;
+    height: 3px;
+    border: 0px none;
+}
+
+.ui-mde h1 {
+    font-size: 2em;
+    margin: .67em 0;
+}
+
+.ui-mde h2 {
+    font-size: 1.5em;
+    margin: .75em 0;
+}
+
+.ui-mde h3 {
+    font-size: 1.17em;
+    margin: .83em 0;
+}
+
+.ui-mde h4 {
+    font-size: 1em;
+    margin: 1.12em 0;
+}
+
+.ui-mde h5 {
+    font-size: .83em;
+    margin: 1.5em 0;
+}
+
+.ui-mde h6 {
+    font-size: .75em;
+    margin: 1.67em 0;
+}
+
+.ui-mde #ui-mde-title {
+    margin-left: 1em;
+}
+
+.ui-mde > .preview-image {
+    margin-left: 1em;
+}
+
+.ui-mde a {
+    text-decoration: none;
+    color: #1962a0;
+}
+
+/* pop-up menus */
+
+.ui-mde ul.menu {
+    margin: 0px;
+    padding: 0px;
+    background-color: #fff;
+    border: 1px solid #999;
+    position: absolute;  /* key attribute for hovering menu */
+    z-index: 10; /* needs position: absolute; */
+    list-style: none;
+    list-style-type: none;
+    font-weight: normal;
+}
+
+.ui-mde ul.menu li {
+    margin: 1px 5px 1px 5px;
+    padding: 1px 5px 1px 10px;
+    width: 210px;
+}
+
+.ui-mde ul.menu li a {
+    color: black;
+}
+
+.ui-mde ul.menu li a:hover {
+    text-decoration: underline;
+}
+
+
+
+/* elements / sections */
+.ui-mde .ui-mde-element {
+    margin-left: 0px;
+    margin-bottom: 10px;
+    /*position: relative;  IE7 fix: necessary for all absolute inputfield and picklist */
+}
+
+.ui-mde .ui-mde-element-ro {
+    color: lightgrey;
+}
+
+/* key / value pairs */
+.ui-mde .ui-mde-key {
+    display: inline;
+    font-weight: bold;
+    vertical-align: top;/*baseline;*/
+    /*position: relative;  IE7 fix: necessary for all absolute inputfield and picklist */
+}
+
+.ui-mde .ui-mde-key a {
+    text-decoration: none;
+    /*color: inherit;*/ /* werkt uiteraard weer niet in IE7, grrrr */
+}
+.ui-mde .ui-mde-key a:hover {
+    text-decoration: underline;
+}
+
+.ui-mde .ui-mde-key-mandatory {
+    color: #EE0000;
+}
+
+.ui-mde .ui-mde-key-conditional {
+    color: #00EE00;
+}
+
+.ui-mde .ui-mde-value {
+    display: inline;
+    padding-right: 2px;
+}
+
+.ui-mde-value_bold {
+    display: inline;
+    padding-right: 2px;
+    font-weight: bold;
+}
+
+.ui-mde .ui-mde-changed-value {
+    color: purple;
+}
+
+.ui-mde .ui-mde-default-value {
+    color: lightsteelblue;
+}
+
+.ui-mde .ui-mde-rich-text-value {
+    display: block;
+}
+
+.ui-mde .ui-mde-clickable {
+    cursor: pointer;
+    cursor: hand;
+}
+
+/* these options make the input field appear with exactly the same font and
+at exactly the same spot as the text in Firefox (not in IE ofcourse) */
+.ui-mde .ui-mde-element input.inputfield {
+    font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
+    font-size: 1em;
+    position: absolute;
+    margin-top: -2px;
+    margin-left: 2px;
+    border: 1px lightsteelblue solid;
+}
+
+.ui-mde .ui-resizable-se {
+    right: 0px;
+    bottom: 0px;
+}
+
+.ui-mde textarea {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    width: 100%;
+    height: 200px;
+}
+
+.ui-mde .ui-mde-element textarea {
+    font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
+    font-size: 1em;
+    margin-top: 1em;
+    margin-left: -2px;
+    border: 1px lightsteelblue solid;
+    display: block;
+    line-height: 1em;
+}
+
+/* IE 7 fix for textarea 100% width */
+.ui-mde #algemeen, .ui-mde #geografisch, .ui-mde #overzicht {
+    overflow-x: hidden;
+}
+/* For modern browsers */
+.ui-mde-element:before,
+.ui-mde-element:after {
+    content:"";
+    display:table;
+}
+.ui-mde-element:after {
+    clear:both;
+}
+/* For IE 6/7 (trigger hasLayout) */
+.ui-mde-element {
+    zoom:1;
+} 
+
+.ui-mde .ui-mde-element p {
+    margin: 0;
+    /*margin-top: .875em;
+    margin-bottom: .875em;*/
+    padding: 0;
+    padding-top: 1em;
+}
+
+/* these options make the picklist appear with exactly the same font and
+at exactly the same spot as the text in Firefox (not in IE ofcourse) */
+.ui-mde .ui-mde-element select.ui-mde-picklist {
+    font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
+    font-size: 1em;
+    position: absolute;
+    margin-top: -2px;
+    margin-left: -1px;
+    /*border: 1px lightsteelblue solid;*/
+}
+
+.ui-mde .ui-mde-section {
+    margin-bottom: 10px;
+    /*position: relative;  IE7 fix: necessary for all absolute inputfield and picklist */
+}
+
+.ui-mde .ui-mde-section-content {
+    margin: 0px;
+    margin-left: 16px;
+    /*position: relative;  IE7 fix: necessary for all absolute inputfield and picklist */
+}
+
+.ui-mde .ui-mde-section-header {
+    margin-bottom: 10px;
+    margin-left: -16px;
+}
+
+.ui-mde .ui-mde-section-title {
+    font-size: 1.2em;
+    text-decoration: none;
+    font-weight: bold;
+    padding-left: 0px;
+    margin-left: 0px;
+}
+
+.ui-mde .ui-mde-section-title-hover {
+    color: #FFD207;
+}
+
+.ui-mde .menu-wrapper {
+    /*position: relative;  IE7 fix: necessary for all absolute inputfield and picklist */
+}
+
+.ui-mde .menu-img {
+    /*vertical-align: baseline;bottom;*/
+}
+
+.ui-mde .menu-img-hover {
+    cursor: pointer;
+    cursor: hand;
+}
+
+.ui-mde img.plus-minus {
+    border: 0px solid #fff;
+    padding: 0px;
+    margin: 0px;
+    margin-right: 5px;
+}
+
+/* misc */
+.ui-mde div.hidden {
+    display: none;
+}
+
+.ui-mde .ui-mde-tab-definition {
+    display: none;
+    padding-top: 15px;
+    padding-left: 20px; /* can never be less then 16px because of the negative indentation of the plus/minux signs */
+    padding-right: 4px;
+    /*position: relative;  IE7 fix: necessary for all absolute inputfield and picklist */
+}
+
+#ui-mde-tabs-container {
+    border-bottom: 3px solid #1962a0;
+    position: relative;
+    height: 3em;
+}
+
+#ui-mde-geoTabsToggle-container {
+    position: absolute;
+    right: 1em;
+    bottom: 0;
+}
+
+ul#ui-mde-tabs {
+    list-style: none outside none;
+    position: absolute;
+    left: 2em;
+    bottom: 0;
+}
+
+ul#ui-mde-tabs li {
+    background-color: #FFD96B;
+    list-style: none outside none;
+    float: left;
+    padding: 5px 10px;
+    margin-right: 5px;
+    font-size: 1.2em;
+    font-weight: bold;
+    font-family: Arial, Verdana, Tahoma, Helvetica, sans-serif;
+}
+
+ul#ui-mde-tabs li a {
+    text-decoration: none;
+    color: black;
+}
+
+ul#ui-mde-tabs li.ui-mde-tab-selected {
+    background-color: #1962a0;/* #1962a0*/
+}
+
+ul#ui-mde-tabs li.ui-mde-tab-selected a {
+    color: white;
+}
+
+ul#ui-mde-tabs li.ui-mde-tab-hover {
+    background-color: #1962a0;
+    cursor: pointer;
+    cursor: hand;
+}
+
+ul#ui-mde-tabs li a.ui-mde-tab-hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.ui-mde .ui-mde-no-comments {
+    font-style: italic;
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+
+.ui-mde .ui-mde-comments .ui-mde-comment {
+    margin-top: 2em;
+    margin-bottom: 2em;
+    margin-right: 1em;
+}
+
+.ui-mde .ui-mde-comments .ui-mde-comment .ui-mde-comment-username {
+    display: inline;
+}
+
+.ui-mde .ui-mde-comments .ui-mde-comment .ui-mde-comment-dateTime {
+    display: inline;
+    float: right;
+}
+
+.ui-mde .ui-mde-comments .ui-mde-comment .ui-mde-comment-content {
+}
+
+.ui-mde .ui-mde-comments .ui-mde-comment .ui-mde-comment-date {
+    display: inline;
+}
+
+.ui-mde .ui-mde-comments .ui-mde-comment .ui-mde-comment-time {
+    display: inline;
+}
+
+.ui-mde .ui-mde-comments .ui-mde-comment .ui-mde-comment-header {
+    padding: 0.5em;
+    color: white;
+}
+
+.ui-mde .ui-mde-comments .ui-mde-comment .ui-mde-comment-content {
+    padding: 0.5em;
+}
+
+.ui-mde a.ui-mde-wiki-help-link {
+    color: #1962a0;
+    font-weight: normal;
+}
+
+.ui-mde a:hover.ui-mde-wiki-help-link {
+    color: #1962a0;
+    text-decoration: underline;
+}
+
+.ui-mde a.ui-mde-thesaurus-link {
+    margin-left: 1em;
+}
+
+.ui-mde a:hover.ui-mde-thesaurus-link {
+    text-decoration: underline;
+}
+
+.ui-mde .ui-mde-margin-top-bottom-area {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.ui-mde-textarea-wrapper {
+    margin: 0;
+    padding: 0;
+    margin-right: 1em;
+    overflow: hidden;
+    /*border: 1px solid red*/
+}
+
+.ui-mde .ui-mde-external-link img {
+    border: none;
+}
+
+.ui-autocomplete {
+	max-height: 250px;
+	font-size: 12px;
+	overflow-y: auto;
+	/* prevent horizontal scrollbar */
+	overflow-x: hidden;
+	/* add padding to account for vertical scrollbar */
+	padding-right: 20px;
+}
+/* IE 6 doesn't support max-height
+ * we use height instead, but this forces the menu to always be this tall
+ */
+* html .ui-autocomplete {
+	height: 250px;
+}
+.not-bold{
+    font-weight: normal !important;
+}

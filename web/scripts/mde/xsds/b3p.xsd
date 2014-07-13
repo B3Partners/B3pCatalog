@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:b3p="http://www.b3partners.nl/xsd/metadata" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://www.b3partners.nl/xsd/metadata">
+	<xs:include schemaLocation="comments.xsd"/>
+	
+	<xs:complexType name="abstractB3PElementType" abstract="true"/>
+	<xs:element name="abstractB3PElement" type="b3p:abstractB3PElementType"/>
+	
+	<xs:complexType name="B3PartnersType">
+		<xs:sequence>
+			<xs:element ref="b3p:abstractB3PElement" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="B3Partners" type="b3p:B3PartnersType">
+		<xs:annotation>
+			<xs:documentation>Root B3p element. Can be placed anywhere. For example under a metadata (no ns) root element.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	
+</xs:schema>
