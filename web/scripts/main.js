@@ -678,7 +678,7 @@ B3pCatalog.loadMetadataByUUID = function(uuid) {
         ajaxOptions: {
             url: B3pCatalog.catalogUrl,
             data: {
-                load: "t",
+                loadMdAsHtml: "t",
                 uuid: uuid
             },
             type: "POST",
@@ -688,11 +688,12 @@ B3pCatalog.loadMetadataByUUID = function(uuid) {
                 B3pCatalog.currentMode = B3pCatalog.modes.CSW_MODE;
                 // TODO: title kan geëxtract worden uit het xml
                 document.title = B3pCatalog.title;
-                B3pCatalog.createCswMde(data);
+//                B3pCatalog.createCswMde(data);
+                B3pCatalog.createMdeHtml(data, false, true, true);
             }
         }
     });
-};
+ };
 
 B3pCatalog._loadMetadata = function(opts) {
     var options = $.extend({
@@ -977,13 +978,13 @@ B3pCatalog._exportMetadata = function() {
 B3pCatalog._doExportMetadata = function(strict) {
     $("#mde").mde("option", "pageLeaveWarning", false);
 
-        window.location = B3pCatalog.metadataUrl + "?" + $.param({
-            "export": "t",
-            path: B3pCatalog.currentFilename,
-            mode: B3pCatalog.currentMode,
-            strictISO19115: strict
-        });
-//    }
+    window.location = B3pCatalog.metadataUrl + "?" + $.param({
+        "export": "t",
+        path: B3pCatalog.currentFilename,
+        mode: B3pCatalog.currentMode,
+        strictISO19115: strict
+    });
+        
     $("#mde").mde("option", "pageLeaveWarning", true);
 };
 

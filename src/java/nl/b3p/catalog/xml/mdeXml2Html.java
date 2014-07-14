@@ -30,6 +30,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 import nl.b3p.catalog.B3PCatalogException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Attribute;
@@ -239,19 +240,37 @@ public class mdeXml2Html {
     
     public static void cleanUpMetadata(Document doc, boolean serviceMode, boolean datasetMode) throws B3PCatalogException {
         Element mdNode = DocumentHelper.getMD_Metadata(doc);
+        List<String> elementsToBeRemoved = new ArrayList<String>();
+        if (!serviceMode) {
+            elementsToBeRemoved.add("SV_ServiceIdentification");
+        }
+        if (!datasetMode) {
+            elementsToBeRemoved.add("MD_DataIdentification");
+        }
+        cleanUpMetadata(mdNode, elementsToBeRemoved);
+    }
+    
+    public static void cleanUpMetadata(Element mdNode, List<String> elementsToBeRemoved) throws B3PCatalogException {
         List<Element> mdChildren = mdNode.getChildren();
+        List<Element> childrenToBeRemoved = new ArrayList<Element>();
         for (Element e : mdChildren) {
             String localName = e.getName();
-            if (!serviceMode && localName.equals("SV_ServiceIdentification")) {
-                //remove srv:SV_ServiceIdentification (no dataset)
-                mdNode.removeContent(e);
+            boolean removed = false;
+            for (String etbr : elementsToBeRemoved) {
+                if (localName.equals(etbr)) {
+                    childrenToBeRemoved.add(e);
+                    //do not check children
+                    removed = true;
+                }
             }
-            if (!datasetMode && localName.equals("MD_Distribution")) {
-                //remove gmd:MD_Distribution (no service)
-                mdNode.removeContent(e);
+            if (!removed) {
+                cleanUpMetadata(e, elementsToBeRemoved);
             }
-        }
-    }
+         }
+         for (Element re : childrenToBeRemoved) {
+             mdNode.removeContent(re);
+         }
+ }
     
     public static void applySectionChange(Document xmlDoc, JSONObject change) throws Exception {
         
@@ -398,7 +417,7 @@ public class mdeXml2Html {
         }        
         // check node text
         if (deleteOK) {
-            String value = node.getText();
+            String value = StringUtils.deleteWhitespace(node.getText());
             if (value != null && !value.isEmpty()) {
                 deleteOK = false;
             }
@@ -418,16 +437,37 @@ public class mdeXml2Html {
                     // codeListValue may be present but empty
                     String value = a.getValue();
                     if (n.equals("codeListValue")
-                            && value != null 
-                            && value.isEmpty()) {
+                            && (value == null || value.isEmpty())) {
                         continue;
                     }
-
+                    
                     deleteOK = false;
                     break;
                 }
              }
         }
+        // if CI_RoleCode check if there is a
+        // organisation name present, if not ignore
+        if (!deleteOK && node.getName().equals("CI_RoleCode")) {
+            deleteOK = true;
+            Element oe = node.getParentElement().getParentElement();
+            List<Element> oecs = oe.getChildren();
+            for (Element e : oecs) {
+                if (e.getName().equals("organisationName")) {
+                    List<Element> ecs = e.getChildren();
+                    for (Element o : ecs) {
+                        if (o.getName().equals("CharacterString")) {
+                            String value = StringUtils.deleteWhitespace(o.getText());
+                            if (value != null && !value.isEmpty()) {
+                                deleteOK = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+             }
+        }
+        
         return deleteOK;
     }
         

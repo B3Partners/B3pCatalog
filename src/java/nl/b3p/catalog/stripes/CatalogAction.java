@@ -5,6 +5,8 @@
 
 package nl.b3p.catalog.stripes;
 
+import java.io.File;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBException;
@@ -14,10 +16,18 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.validation.Validate;
+import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
+import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.config.CSWServerConfig;
 import nl.b3p.catalog.config.CatalogAppConfig;
+import nl.b3p.catalog.filetree.Extensions;
+import nl.b3p.catalog.filetree.FileListHelper;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
+import nl.b3p.catalog.resolution.HtmlResolution;
 import nl.b3p.catalog.resolution.XmlResolution;
+import static nl.b3p.catalog.stripes.MetadataAction.SESSION_KEY_METADATA_XML;
+import nl.b3p.catalog.xml.DocumentHelper;
+import nl.b3p.catalog.xml.mdeXml2Html;
 import nl.b3p.csw.client.CswClient;
 import nl.b3p.csw.client.CswRequestCreator;
 import nl.b3p.csw.client.CswSmartRequestCreator;
@@ -30,6 +40,7 @@ import nl.b3p.csw.jaxb.csw.GetRecords;
 import nl.b3p.csw.server.GeoNetworkCswServer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
@@ -50,7 +61,7 @@ public class CatalogAction extends DefaultAction {
 
     private List<MetadataBean> metadataList;
 
-    @Validate(required=true, on="load")
+    @Validate(required = true, on = {"load", "loadMdAsHtml"})
     private String uuid;
 
     public Resolution search() {
@@ -76,6 +87,36 @@ public class CatalogAction extends DefaultAction {
             return new ForwardResolution(SEARCH_RESULTS_JSP);
         } catch (Exception e) {
             String message = "Fout bij het zoeken naar de metadata";
+            log.error(message, e);
+            return new HtmlErrorResolution(message, e);
+        }
+    }
+    
+    public Resolution loadMdAsHtml() {
+        
+        Document mdDoc;
+        
+        try {
+            CswClient client = getCswClient();
+            OutputById output = client.search(new InputById(uuid));
+            //log.debug(new XMLOutputter().outputString(output.getXml()));
+            
+            if(output.getSearchResult() == null) {
+                throw new IllegalArgumentException(String.format("Metadata document met UUID \"%s\" kon niet worden gevonden bij CSW-service", uuid));
+            }
+
+            String metadata = output.getSearchResultString();
+            mdDoc = DocumentHelper.getMetadataDocument(metadata);
+
+            Document htmlDoc = mdeXml2Html.transform(mdDoc, true);
+
+            String d = DocumentHelper.getDocumentString(htmlDoc);
+            log.debug("serverside rendered html for method loadMdAsHtml: " + d);
+            StringReader sr = new StringReader(d);
+            return new HtmlResolution(sr);
+
+        } catch (Exception e) {
+            String message = "Fout bij het laden van de metadata.";
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }

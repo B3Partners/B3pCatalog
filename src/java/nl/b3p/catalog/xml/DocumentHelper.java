@@ -42,16 +42,20 @@ public class DocumentHelper {
         } else {
             doc = new Document(new Element(Names.METADATA));
         }
+        // check and add wrapper
+        getRoot(doc);
         return doc;
     }
 
     public static Document getMetadataDocument(String md) throws IOException, JDOMException, B3PCatalogException {
         Document doc = null;
-        if (StringUtils.isBlank(md) || EMPTY_METADATA.equals(md)) {
+        if (md == null || StringUtils.isBlank(md) || EMPTY_METADATA.equals(md)) {
             doc = new Document(new Element(Names.METADATA));
         } else {
             doc = new SAXBuilder().build(new StringReader(md));
         }
+        // check and add wrapper
+        getRoot(doc);
         return doc;
     }
 

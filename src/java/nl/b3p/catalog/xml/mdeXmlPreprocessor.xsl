@@ -387,8 +387,7 @@
     
 	<xsl:template match="gmd:MD_Metadata">
 		<xsl:copy>
-			<!-- Chrome can't handle namespaced attributes -->
-            <!--xsl:attribute name="xsi:schemaLocation">http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd</xsl:attribute-->
+                        <xsl:attribute name="xsi:schemaLocation">http://www.isotc211.org/2005/gmd http://schemas.opengis.net/iso/19139/20060504/gmd/gmd.xsd http://www.isotc211.org/2005/gmd http://schemas.opengis.net/csw/2.0.2/profiles/apiso/1.0.0/apiso.xsd</xsl:attribute>
 			<!-- ISO 2 Metadata ID MD_Metadata.fileIdentifier -->
 			<xsl:choose>
 				<xsl:when test="not(gmd:fileIdentifier)">
@@ -1552,6 +1551,10 @@
 	</xsl:template>
 	<xsl:template match="gml:TimePeriod">
 		<xsl:copy>
+                        <xsl:if test="not(@gml:id)">
+                                <!--fix for missing gml:id, value not relevant-->
+                                <xsl:attribute name="gml:id">t1</xsl:attribute>
+                        </xsl:if>
 			<xsl:choose>
 				<xsl:when test="not(gml:begin)">
 					<!--Child element missing, create it-->
@@ -4264,8 +4267,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 
     <xsl:template name="add-MD_Metadata">
 		<xsl:element name="gmd:MD_Metadata">
-			<!-- Chrome can't handle namepaced attributes -->
-            <!--xsl:attribute name="xsi:schemaLocation">http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd</xsl:attribute-->
+                        <xsl:attribute name="xsi:schemaLocation">http://www.isotc211.org/2005/gmd http://schemas.opengis.net/iso/19139/20060504/gmd/gmd.xsd http://www.isotc211.org/2005/gmd http://schemas.opengis.net/csw/2.0.2/profiles/apiso/1.0.0/apiso.xsd</xsl:attribute>
 			<xsl:call-template name="add-fileIdentifier"/> <!-- service en dataset-->
 			<xsl:if test="$datasetMode">
 				<xsl:call-template name="add-parentIdentifier"/> <!-- dataset -->
@@ -5111,7 +5113,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	</xsl:template>
 	<xsl:template name="add-TimePeriod">
 		<xsl:element name="gml:TimePeriod">
-			<!--xsl:attribute name="gml:id">extent</xsl:attribute-->
+			<xsl:attribute name="gml:id">t1</xsl:attribute>
 			<xsl:call-template name="add-beginPosition"/>
 			<xsl:call-template name="add-endPosition"/>
 		</xsl:element>
@@ -5119,7 +5121,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-beginPosition">
 		<xsl:element name="gml:begin">
 			<xsl:element name="gml:TimeInstant">
-				<!--xsl:attribute name="gml:id">t11</xsl:attribute-->
+				<xsl:attribute name="gml:id">t11</xsl:attribute>
 				<xsl:element name="gml:timePosition"/>
 			</xsl:element>
 		</xsl:element>
@@ -5127,7 +5129,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-endPosition">
 		<xsl:element name="gml:end">
 			<xsl:element name="gml:TimeInstant">
-				<!--xsl:attribute name="gml:id">t12</xsl:attribute-->
+				<xsl:attribute name="gml:id">t12</xsl:attribute>
 				<xsl:element name="gml:timePosition"/>
 			</xsl:element>
 		</xsl:element>

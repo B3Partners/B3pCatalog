@@ -101,6 +101,9 @@ public class MetadataAction extends DefaultAction {
     @Validate(on = "updateXml")
     private String sectionChange;
     
+    @Validate
+    private String type = "dataset";
+
     
     private Root root;
     private AclAccess rootAccess;
@@ -148,31 +151,24 @@ public class MetadataAction extends DefaultAction {
 
             determineRoot(); // select edit or view mode.
 
-            // Java applet is used.
+            // Java applet is used, metadata in request param metadata
             if (LOCAL_MODE.equals(mode)) {
-
-                // copied stuff from the file_mode part. 
-
                 // metadata contains the string "null" when the following happens.
                 // In the java applet a file is selected called X. The javascript then calls a Java applet
                 // to read file X.xml. If this succeeds the methode loadAsHtml is called and metadata contains 
                 // the xml contents of X.xml. If the applet fails (happens when no .xml exists) method loadMdHtml
                 // is also called but this time the variable metadata does not contain XML but the 
                 // string "null". Hence this test.
-                // 
                 if (metadata.equals("null"))  {
                     metadata = DocumentHelper.EMPTY_METADATA;
                 }
-                if (strictISO19115) {
-                    mdDoc = extractMD_MetadataAsDoc(metadata);
-                } else {
-                    mdDoc = DocumentHelper.getMetadataDocument(metadata);
-                }
+                mdDoc = DocumentHelper.getMetadataDocument(metadata);
+                
             } else {
                 if (SDE_MODE.equals(mode)) {
 
                     metadata = ArcSDEHelperProxy.getMetadata(root, path);
-                    mdDoc = strictISO19115 ? extractMD_MetadataAsDoc(metadata) : DocumentHelper.getMetadataDocument(metadata);
+                    mdDoc = DocumentHelper.getMetadataDocument(metadata);
 
                 } else if (FILE_MODE.equals(mode)) {
 
@@ -185,18 +181,15 @@ public class MetadataAction extends DefaultAction {
                         } finally {
                             FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
                         }
-                        mdDoc = strictISO19115 ? extractMD_MetadataAsDoc(metadata) : DocumentHelper.getMetadataDocument(metadata);
+                        mdDoc = DocumentHelper.getMetadataDocument(metadata);
+                        
                     } else {
                         mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
                         if (!mdFile.exists()) {
                             // create new metadata on client side or show this in exported file:
                             mdDoc = DocumentHelper.getMetadataDocument(DocumentHelper.EMPTY_METADATA);
                         } else {
-                            if (strictISO19115) {
-                                mdDoc = extractMD_MetadataAsDoc(mdFile);
-                            } else {
-                                mdDoc = DocumentHelper.getMetadataDocument(mdFile);
-                            }
+                            mdDoc = DocumentHelper.getMetadataDocument(mdFile);
                         }
                     }
                 } else {
@@ -320,7 +313,20 @@ public class MetadataAction extends DefaultAction {
 
             Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
             Boolean datasetMode = mdeXml2Html.getXSLParam("datasetMode_init");
-            
+            //TODO ask user what he wants dataset or service
+            //for now assume dataset
+            //only applicable when strict xml is required
+            if (strictISO19115) {
+                if (serviceMode != null && serviceMode.booleanValue()
+                        && datasetMode != null && datasetMode.booleanValue()) {
+                    if (type.equalsIgnoreCase("dataset")) {
+                        serviceMode = Boolean.FALSE;
+                    } else {
+                        datasetMode = Boolean.FALSE;
+                    }
+                }
+            }
+             
             mdeXml2Html.cleanUpMetadata(md, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
             mdeXml2Html.removeEmptyNodes(md);
             
@@ -831,4 +837,18 @@ public class MetadataAction extends DefaultAction {
         this.username = username;
     }
     // </editor-fold>
+
+    /**
+     * @return the type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
 }
