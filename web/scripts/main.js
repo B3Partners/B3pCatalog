@@ -513,18 +513,15 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
 
         me.loadLocal(function() {
             me.local.callApplet("readFileUTF8", xmlFile,
+                    
                     // called when contents file xmlFile (file.XML)could be read.
                     loadLocalMetadata,
                     
-                    // called when file <file>.XML does not exist. loadLocalMetadata is
+                    // Error callback. Called when file <file>.XML does not exist. loadLocalMetadata is
                     // still called but will now return a 'virgin' html document which 
                     // will be transformed into a mde document. 
-                    function(e) {
-                        //TODO CvL, moet dit niet gewoon loadLocalMetadata("") zijn,
-                        //want dit is functie aanroep, in backend komt dan waarschijnlijk
-                        //geen aparte check op regel 216 van MetadataAction nodig.
-                        loadLocalMetadata;
-                    });
+                    loadLocalMetadata
+                    );
             });
 
                         // file mode
@@ -762,28 +759,15 @@ B3pCatalog.saveMetadata = function(settings) {
             success: function(data, textStatus, xhr) {
 
                 var xml = data;
-                // Wolverine. 
-                // Todo: Check why currentFilename is NOT set to *.xml because this
-                // hack can lead to problems later on. 
                 var xmlFile = B3pCatalog.currentFilename + ".xml";
 
                 me.loadLocal(function() {
 
-                    // JB. Had to change it because currentFilename never end with .xml (filtered out).
-                    // me.local.callApplet("writeFileUTF8", B3pCatalog.currentFilename, xml,
                     me.local.callApplet("writeFileUTF8", xmlFile, xml,
                             function() {
                                 B3pCatalog.fadeMessage("Metadata succesvol opgeslagen");
                                 $("#saveMD").button("option", "disabled", true);
-                                // TODO. JB. Check with Matthijs or Chris what this is supposed todo
-                                // curentFilename is set in two places atm, the succes part of an ajax call in function loadmetadata
-                                // The original ajax call when in file_mode (code M) and my own ajax call when local_mode is selected.
-                                // It is set to contents of var path. path is given as a parameter to loadmetadata and is set 
-                                // in B3pCatalog.hashchange. In both file_mode and local_mode (java applet) the output is filtered.
-                                // As in files with extension .xml are NOT shown. Hence path can't end with .xml and hence
-                                // currentFilename can't end with .xml. 
-                                
-                                //if (!endsWith(B3pCatalog.currentFilename.toLowerCase(), ".xml")) {
+                       
                                 if (!endsWith(xmlFile.toLowerCase(), ".xml")) {
                                     B3pCatalog.clickedFileAnchor.addClass("with_metadata");
                                 }
@@ -818,7 +802,7 @@ B3pCatalog.saveMetadata = function(settings) {
                 updateAndSaveXml: "t",
                 elementChanges: JSON.stringify(changedElements),
                 sectionChange: sectionChange === null ? null : JSON.stringify(sectionChange),
-                path: options.filename, // JB. Does not on .xml. When reading contents file in updateAndSaveXml .xml is added to the filename.
+                path: options.filename, 
                 mode: B3pCatalog.currentMode
             },
             success: function(data, textStatus, xhr) {
@@ -993,36 +977,6 @@ B3pCatalog._exportMetadata = function() {
 B3pCatalog._doExportMetadata = function(strict) {
     $("#mde").mde("option", "pageLeaveWarning", false);
 
-    //TODO CvL is dit special blok voor local export nodig?
-    //metadata xml staat op de server net als voor file mode!
-    //
-    // Although inefficent but with local_mode I'm doing the same as with 
-    // file_mod BUT I sent an extra parameter "metadata", Java is called and 
-    // metadata is returned and then saved. BUT for some reason with the Java applet we
-    // don't even end up here in _doExportMetadata. The 'save file popup' appears but 
-    // whatever you do one does NOT progress. NO ***** clue why this...
-    // CvL: in code JB stond else if verkeerd
-//    if (B3pCatalog.currentMode == B3pCatalog.modes.LOCAL_MODE) {
-//        var metadata = $("#mde").mde("save");
-//
-//        var action = B3pCatalog.metadataUrl + "?" + $.param({
-//            "export": "t",
-//            "mode": B3pCatalog.currentMode,
-//            "path": B3pCatalog.currentFilename,
-//            strictISO19115: strict
-//        });
-//
-//        var form = $("<form>", {
-//            "method": "POST",
-//            "action": action
-//        }).append(
-//                $("<textarea>", {
-//                    "name": "metadata"
-//                }).text(metadata).hide()
-//                );
-//        form.appendTo("body").submit();
-//        form.remove();
-//    } else {
         window.location = B3pCatalog.metadataUrl + "?" + $.param({
             "export": "t",
             path: B3pCatalog.currentFilename,

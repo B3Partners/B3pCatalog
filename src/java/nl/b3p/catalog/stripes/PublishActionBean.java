@@ -107,7 +107,6 @@ public class PublishActionBean implements ActionBean {
         jo.put("totalInserted", response.getValue().getTransactionSummary().getTotalInserted());
         jo.put("totalUpdated", response.getValue().getTransactionSummary().getTotalUpdated());
 
-        //log.debug("Method publish. At END contents key SESSION_KEY_METADATA_XML:" + xstream.toXML((Document) getContext().getRequest().getSession().getAttribute(SESSION_KEY_METADATA_XML)));
         return new StreamingResolution("application/json", new StringReader(jo.toString()));
     }
 
