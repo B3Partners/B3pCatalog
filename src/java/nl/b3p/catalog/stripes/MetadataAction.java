@@ -113,6 +113,7 @@ public class MetadataAction extends DefaultAction {
             // When using the Java applet for selecting a file the access rights for a file 
             // can't be determined. Forcing it to WRITE, which in effect means the metadata 
             // can be edited.
+            rootAccess = AclAccess.WRITE;  
             extraHeaders.put("X-MDE-Access", "WRITE");
         } else {
             root = Root.getRootForPath(path, getContext().getRequest(), AclAccess.READ);
