@@ -668,7 +668,7 @@ public class MetadataAction extends DefaultAction {
             if (md == null) {
                 throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
             }
-            // wolverine. Check and test.
+
             determineRoot(); 
 
             if (rootAccess.getSecurityLevel() < AclAccess.COMMENT.getSecurityLevel()) {

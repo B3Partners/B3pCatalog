@@ -27,7 +27,7 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${reference.securityfilter-b3p-1.jar}</file>
+                    <file>${reference.securityfilter-b3p.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
@@ -120,7 +120,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>securityfilter-b3p-1</foreign-project>
+                <foreign-project>securityfilter-b3p</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>
