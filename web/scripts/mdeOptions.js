@@ -9,6 +9,7 @@ B3pCatalog.basicMdeOptions = {
     extraTitleAboveTabs: false,
     iso19115PreviewImageInsideGeotab: true,
     tabContainerSelector: "#page-tabs",
+    //TODO CvL: deze mag weg
     organisations: organisations
 };
 

@@ -44,6 +44,8 @@ $.widget("ui.mde", {
         changed: false, // modify externally whether the mde is in changed mode. Use with care. (add/removes star in title and calls change callback...)
         tabContainerSelector: "#ui-mde-tabs-container", // the default tab container is residing above the md document.
         organisations: {}, // autocomplete organisations and contacts; see organisations.js for examples
+        //TODO CvL
+//        getOrganisations: function() { console.log("default..."); return {}; },
         wiki2htmlHelpUrl: "http://nl.wikipedia.org/wiki/Wikipedia:Spiekbriefje", // hulpmiddel voor richtext elems
         thesauri: [
                 new Thesaurus("GEMET thesaurus","http://www.eionet.europa.eu/gemet/inspire_themes?langcode=nl", /* loadJsonTerms("picklists/gemet-nl.json") */ gemetInspireNlTerms)
@@ -629,6 +631,8 @@ $.widget("ui.mde", {
     _postprocessHtmlDoc: function() {
 
         this.log("Postprocessing...");
+        //TODO CvL
+        //this._getOrganisationsJson();
         this._setPrettyPicklistStrings();
         this._setFormattedDates();
         this._createRichTextElements(); 
@@ -639,7 +643,13 @@ $.widget("ui.mde", {
         // do not expose the entire mde:
         this.options.afterInit.apply(this.element, []);
     },
-
+    
+    //TODO CvL
+//    _getOrganisationsJson: function() {
+//	this.options.organisations = this.options.getOrganisations();
+//
+//    },
+    
     //////////////////////////////// Rich text /////////////////////////////////////    
 
     _createRichTextElements: function() {
@@ -1195,18 +1205,9 @@ $.widget("ui.mde", {
     _getSavedValueOnClientSide: function($element) {
         var text = $element.text();
         return text.startsWith("Klik om te bewerken") ? null : text;
-            // TODO check of voorgaande altijd werkt.
-//        var thePath = $element.attr("ui-mde-fullpath");
-            //this.log(thePath);
-//        var attrName = $element.attr("attrname");
-            //this.log(attrName);
-//        var currentval = $element.attr("ui-mde-current-value");
-            //this.log(currentval);
-//        return xmlUnescape(currentval);
     },
 
     _saveValueOnClientSide: function($element, newValue, newText) {
-        var self = this;
         //this.log($element);
         var path = $element.attr("ui-mde-fullpath");
 	//this.log(path);
@@ -1289,7 +1290,7 @@ $.widget("ui.mde", {
         var $node = this._findOrganisationContactNode($section, xpathEnd);
         if (sanitizedNewValue && $node.length) {
             this._saveValueOnClientSide($node, sanitizedNewValue);
-            $node.text(Sarissa.unescape(sanitizedNewValue));
+            $node.text(sanitizedNewValue);
         }
     },
 

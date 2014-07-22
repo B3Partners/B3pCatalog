@@ -890,7 +890,12 @@ B3pCatalog.createMdeHtml = function(htmlDoc, changedOnServer, isGeo, viewMode, e
         change: function(changed) {
             console.log("onChange");
             B3pCatalog.setChanged(changed);
-        }
+        },
+        //TODO CvL
+//        getOrganisations: function() {
+//            console.log("onLoadOrganisations");
+//            return B3pCatalog.getOrganisations();
+//        }
     }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)
             , extraOptions));
 
@@ -908,6 +913,18 @@ B3pCatalog.createMdeHtml = function(htmlDoc, changedOnServer, isGeo, viewMode, e
 
 };
 
+//TODO CvL
+//B3pCatalog.getOrganisations = function() {
+//
+//    $.ajax({
+//        url: B3pCatalog.orgsUrl,
+//        type: "POST",
+//        success: function(data, textStatus, xhr) {
+//            return data; // hier zit dan organisations json in
+//        }
+//    });
+//}
+    
 B3pCatalog.setChanged = function(changed) {
     var docTitle = "" + document.title;
     var docTitleLastChar = docTitle.substring(docTitle.length - 1);
@@ -1396,6 +1413,7 @@ B3pCatalog.saveOrganisations = function() {
         type: "POST",
         success: function(data) {
             $.globalEval(orgs);
+            //TODO CvL voor beheer, maar klopt niet meer
             B3pCatalog.basicMdeOptions.organisations = organisations;
             B3pCatalog.fadeMessage("Organisaties en contacten succesvol opgeslagen");
         }
