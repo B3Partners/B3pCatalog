@@ -335,18 +335,19 @@ public class MetadataAction extends DefaultAction {
                 }
             }
              
-            mdeXml2Html.cleanUpMetadata(md, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
-            mdeXml2Html.removeEmptyNodes(md);
+            // create copy because instance in session variable should not be cleaned
+            Document mdCopy = new Document((Element) md.getRootElement().clone());
+            mdeXml2Html.cleanUpMetadata(mdCopy, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
+            mdeXml2Html.removeEmptyNodes(mdCopy);
             
             if (strictISO19115) {
-                Document mdCopy = new Document((Element) md.getRootElement().clone());
                 Element MD_Metadata = DocumentHelper.getMD_Metadata(mdCopy);
                 MD_Metadata.detach();
-                md = new Document(MD_Metadata);
+                mdCopy = new Document(MD_Metadata);
             }
 
             // Geen XML parsing door browser, geef door als String
-            return new StreamingResolution("text/plain", new StringReader(DocumentHelper.getDocumentString(md)));
+            return new StreamingResolution("text/plain", new StringReader(DocumentHelper.getDocumentString(mdCopy)));
         } catch (Exception e) {
             String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
             log.error(message, e);
@@ -357,6 +358,7 @@ public class MetadataAction extends DefaultAction {
     public Resolution updateAndSaveXml() throws Exception {
 
         Document md;
+        Document mdCopy;
 
         try {
 
@@ -378,18 +380,21 @@ public class MetadataAction extends DefaultAction {
 //                md = mdeXml2Html.iSO19115toDCSynchronizer(md);
             }
 
+            // create copy because instance in session variable should not be cleaned
+            mdCopy = new Document((Element) md.getRootElement().clone());
+            
             Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
             Boolean datasetMode = mdeXml2Html.getXSLParam("datasetMode_init");
-            mdeXml2Html.cleanUpMetadata(md, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
+            mdeXml2Html.cleanUpMetadata(mdCopy, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
 
-            mdeXml2Html.removeEmptyNodes(md);
+            mdeXml2Html.removeEmptyNodes(mdCopy);
         } catch (Exception e) {
             String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
         }
 
-        String mdString = DocumentHelper.getDocumentString(md);
+        String mdString = DocumentHelper.getDocumentString(mdCopy);
 
         try {
             determineRoot();

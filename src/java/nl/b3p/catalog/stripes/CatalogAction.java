@@ -5,7 +5,6 @@
 
 package nl.b3p.catalog.stripes;
 
-import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,16 +15,11 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.validation.Validate;
-import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
-import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.config.CSWServerConfig;
 import nl.b3p.catalog.config.CatalogAppConfig;
-import nl.b3p.catalog.filetree.Extensions;
-import nl.b3p.catalog.filetree.FileListHelper;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.resolution.HtmlResolution;
 import nl.b3p.catalog.resolution.XmlResolution;
-import static nl.b3p.catalog.stripes.MetadataAction.SESSION_KEY_METADATA_XML;
 import nl.b3p.catalog.xml.DocumentHelper;
 import nl.b3p.catalog.xml.mdeXml2Html;
 import nl.b3p.csw.client.CswClient;
