@@ -30,6 +30,8 @@ import nl.b3p.catalog.config.CatalogAppConfig;
 import nl.b3p.catalog.config.Root;
 import nl.b3p.catalog.filetree.Extensions;
 import nl.b3p.catalog.filetree.FileListHelper;
+import nl.b3p.catalog.kaartenbalie.KbJDBCHelper;
+import nl.b3p.catalog.kaartenbalie.KbJDBCHelperProxy;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.resolution.HtmlResolution;
 import nl.b3p.catalog.xml.DocumentHelper;
@@ -59,6 +61,7 @@ public class MetadataAction extends DefaultAction {
     private static final String FILE_MODE = "file";
     private static final String SDE_MODE = "sde";
     private static final String LOCAL_MODE = "local";
+    private static final String KB_MODE = "kaartenbalie";
 
     public static final String SESSION_KEY_METADATA_XML = MetadataAction.class.getName() + ".METADATA_XML";
 
@@ -165,7 +168,12 @@ public class MetadataAction extends DefaultAction {
                 mdDoc = DocumentHelper.getMetadataDocument(metadata);
                 
             } else {
-                if (SDE_MODE.equals(mode)) {
+                if (KB_MODE.equals(mode)) {
+
+                    metadata = KbJDBCHelperProxy.getMetadata(root, path);
+                    mdDoc = DocumentHelper.getMetadataDocument(metadata);
+
+                } else if (SDE_MODE.equals(mode)) {
 
                     metadata = ArcSDEHelperProxy.getMetadata(root, path);
                     mdDoc = DocumentHelper.getMetadataDocument(metadata);
@@ -390,7 +398,11 @@ public class MetadataAction extends DefaultAction {
                 throw new B3PCatalogException("Geen rechten om metadata op te slaan op deze locatie");
             }
 
-            if (SDE_MODE.equals(mode)) {
+            if (KB_MODE.equals(mode)) {
+
+                KbJDBCHelperProxy.saveMetadata(root, path, mdString);
+
+            } else if (SDE_MODE.equals(mode)) {
 
                 Object dataset = ArcSDEHelperProxy.getDataset(root, path);
                 ArcSDEHelperProxy.saveMetadata(dataset, mdString);
@@ -471,7 +483,13 @@ public class MetadataAction extends DefaultAction {
                 throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
             }
 
-            if (SDE_MODE.equals(mode)) {
+            if (KB_MODE.equals(mode)) {
+                
+                String mdString = DocumentHelper.getDocumentString(md);
+                mdString = KbJDBCHelperProxy.syncMetadata(root, path, mdString);
+                md = DocumentHelper.getMetadataDocument(mdString);
+                
+            } else if (SDE_MODE.equals(mode)) {
 
                 Object dataset = ArcSDEHelperProxy.getDataset(root, path);
 

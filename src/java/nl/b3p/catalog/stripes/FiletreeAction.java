@@ -1,15 +1,14 @@
 package nl.b3p.catalog.stripes;
 
 import java.util.List;
-import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StrictBinding;
 import net.sourceforge.stripes.validation.Validate;
-import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.config.AclAccess;
 import nl.b3p.catalog.config.CatalogAppConfig;
 import nl.b3p.catalog.config.FileRoot;
+import nl.b3p.catalog.config.KBRoot;
 import nl.b3p.catalog.config.Root;
 import nl.b3p.catalog.config.SDERoot;
 import nl.b3p.catalog.filetree.Dir;
@@ -41,6 +40,11 @@ public class FiletreeAction extends DefaultAction {
     public Resolution listSDEDir() {
         log.debug("listDir: " + dir);
         return list(SDERoot.class);
+    }
+    
+    public Resolution listKBDir() {
+        log.debug("listDir: " + dir);
+        return list(KBRoot.class);
     }    
         
     private Resolution list(Class clazz) {

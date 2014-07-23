@@ -123,14 +123,21 @@ public abstract class Root {
     }
     
     public AclAccess getRequestUserHighestAccessLevel(HttpServletRequest request) {
-        if(request.getUserPrincipal() == null) {
-            return AclAccess.NONE;
-        }
-        for(RoleAccess ra: getRoleAccessList()) {
-            if("*".equals(ra.getRole()) || request.isUserInRole(ra.getRole())) {
+        for (RoleAccess ra : getRoleAccessList()) {
+            if ("none".equals(ra.getRole())) {
+                if (request.getUserPrincipal() == null) {
+                    return ra.getAccess();
+                } else {
+                    return AclAccess.NONE;
+                }
+            }
+            if ("*".equals(ra.getRole()) && request.getUserPrincipal() != null) {
                 return ra.getAccess();
             }
-        } 
+            if (request.isUserInRole(ra.getRole())) {
+                return ra.getAccess();
+            }
+        }
         return AclAccess.NONE;
     }
     

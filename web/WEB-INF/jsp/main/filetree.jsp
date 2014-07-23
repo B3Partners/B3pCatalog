@@ -13,5 +13,6 @@
 <div id="filetree" class="tab-definition">
     <div id="filetree-file"></div>
     <div id="filetree-sde"></div>
+    <div id="filetree-kb"></div>
     <div id="filetree-local"></div>      
 </div>

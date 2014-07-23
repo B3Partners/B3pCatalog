@@ -18,6 +18,7 @@ B3pCatalog.hashchange = function(event) {
         // first run:
         B3pCatalog.loadFiletreeFile();
         B3pCatalog.loadFiletreeSDE();
+        B3pCatalog.loadFiletreeKB();
     }
 
     if (event.getState("page") === "organisations") {
@@ -296,6 +297,33 @@ B3pCatalog.loadFiletreeSDE = function(selectedFilePath) {
     });
 };
 
+// zou niet meer nodig moeten zijn nu.
+B3pCatalog.loadingFiletreeKB = false;
+
+B3pCatalog.loadFiletreeKB = function(selectedFilePath) {
+    if (B3pCatalog.loadingFiletreeKB)
+        return;
+    B3pCatalog.loadingFiletreeKB = true;
+
+    B3pCatalog._loadFiletree(selectedFilePath, $("#filetree-kb"), {
+        scriptEvent: "listKBDir",
+        fileCallback: function(rel, aElement) {
+            var anchor = B3pCatalog.clickedFileAnchor = $(aElement);
+            if (anchor.length > 0 && anchor.hasClass("selected"))
+                return;
+
+            var newState = {
+                page: "metadata",
+                mode: B3pCatalog.modes.KB_MODE,
+                path: rel,
+                title: anchor.attr("title")
+            };
+
+            $.bbq.pushState(newState, 2);
+        }
+    });
+};
+
 B3pCatalog._loadFiletree = function(selectedFilePath, $elem, extraOpts) {
     // used to indicate that the selected file does not need to be selected in readyCallback
     var selectedFileFound = false;
@@ -443,6 +471,7 @@ B3pCatalog.modes = {
     NO_MODE: "none",
     FILE_MODE: "file",
     SDE_MODE: "sde",
+    KB_MODE: "kaartenbalie",
     LOCAL_MODE: "local",
     CSW_MODE: "csw",
     ADMIN_MODE: "admin"

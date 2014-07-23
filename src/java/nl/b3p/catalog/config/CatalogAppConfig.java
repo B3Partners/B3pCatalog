@@ -62,7 +62,8 @@ public class CatalogAppConfig implements ServletContextListener {
     @XmlElementWrapper(name="roots")
     @XmlElements({
         @XmlElement(name="fileRoot", type=FileRoot.class),
-        @XmlElement(name="sdeRoot", type=SDERoot.class)
+        @XmlElement(name="sdeRoot", type=SDERoot.class),
+        @XmlElement(name="kbRoot", type=KBRoot.class)
     })
     private List<Root> roots = new ArrayList<Root>();
     
