@@ -34,17 +34,16 @@ organisations = {
         "voice": "<telefoonnummer>",
     }
 };
-
 etc...
 */
 
 /* DEZE REGEL NIET WIJZIGEN */ organisations = {
     "B3Partners BV": {
-        "address": "Zonnebaan 12C",
+        "address": "Zonnebaan 12&",
         "city": "Utrecht",
         "state": "Utrecht",
-        "postalCode": "3542 EC",
-        "country": "Nederland",
+        "postalCode": "3542 <EC>",
+        "country": "Nederland's",
         "url": "http://www.b3partners.nl",
         "email": "info@b3partners.nl",
         "voice": "030-214 20 81",
@@ -53,5 +52,21 @@ etc...
                 "email": "chrisvanlith@b3partners.nl"
             }
         }
+    },
+    "Rijksdienst voor Ondernemend Nederland (RvO)": {
+        "address": "Slachthuisstraat 71",
+        "city": "Roermond",
+        "state": "Limburg",
+        "postalCode": "6041 CB",
+        "country": "Nederland",
+        "url": "www.rvo.nl",
+        "email": "Lydia.Dijkshoorn@rvo.nl",
+        "voice": "+31 88-6022277",
+        "contacts": {
+            "Lydia Dijkshoorn": {
+                "email": "Lydia.Dijkshoorn@rvo.nl"
+            }
+        }
     }
+
 };

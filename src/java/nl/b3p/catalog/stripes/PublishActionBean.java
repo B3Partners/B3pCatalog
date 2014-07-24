@@ -70,7 +70,7 @@ public class PublishActionBean implements ActionBean {
     //</editor-fold>
 
     private CswClient getCswClient() {
-        CSWServerConfig cfg = CatalogAppConfig.getConfig().getCswServer();
+        CSWServerConfig cfg = CatalogAppConfig.getConfig().getDefaultCswServer();
         return new CswClient(new GeoNetworkCswServer(
                 cfg.getLoginUrl(),
                 cfg.getUrl(),

@@ -16,7 +16,11 @@
  */
 package nl.b3p.catalog.xml;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,12 +28,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 import nl.b3p.catalog.B3PCatalogException;
+import nl.b3p.catalog.config.CatalogAppConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,121 +61,296 @@ import org.json.JSONObject;
 public class mdeXml2Html {
     
     private final static Log log = LogFactory.getLog(mdeXml2Html.class);
+    
+    /**
+     * cache of transformer templates to speed up xsl reading
+     */
+    private static TransformerFactory transformerFactory;
+    private static Map<String, Templates> transformerTemplates = new HashMap<String, Templates>();
 
-    
-    static Map<String, String> params = new HashMap();
-    static {
-        params.put("fcMode_init", "true");
-        params.put("dcMode_init", "true");
-        params.put("dcPblMode_init", "true");
-        params.put("iso19115oneTab_init", "false");
-        params.put("commentMode_init", "true");
-        params.put("globalReadonly_init", "false"); //viewMode in js
-        params.put("serviceMode_init", "true");
-        params.put("datasetMode_init", "true");
-        // TODO synchroniseDC werkt niet goed icm service mode omdat de sync 
-        // templates hier niet op aangepast zijn.
-        params.put("synchroniseDC_init", "false"); 
-        params.put("fillDefaults_init", "true");
-        params.put("synchroniseEsri_init", "true");
-    }
-    
-    public static Boolean getXSLParam(String param) {
+    /**
+     * The following parameters should be present in mdeConfig
+     * <li> fcMode_init: maak attributen tab (feature catalog)
+     * <li> dcMode_init: maak dublin core tab
+     * <li> dcPblMode_init: voeg speciale PBL extra's toe aan dublin core tab
+     * <li> iso19115oneTab_init: zet alle metadata voor datasets op een enkele tab
+     * <li> commentMode_init: maak tab met commentaar mogelijkheid
+     * <li> globalReadonly_init: maak editor read-only, viewMode in js
+     * <li> serviceModemaak_init: metadata voor services
+     * <li> datasetModemaak_init: metadata voor datasets
+     * <li> synchroniseDC_init: gebruik dc om md tags mee te vullen
+     * <li> fillDefaults_init: gebruik defaults vooringevuld
+     * <li> synchroniseEsri_init: gebruik esri tags om md mee te vullen TODO
+     * 
+     * Extra parameters will be passed to transformer automatically.
+     * 
+     * LET OP: synchroniseDC werkt niet goed icm service mode omdat de sync templates
+     * hier niet op aangepast zijn.
+     *
+     * @param param
+     * @return
+     * @throws B3PCatalogException
+     */
+    public static Boolean getXSLParam(String param) throws B3PCatalogException {
+        Map<String, String> params = CatalogAppConfig.getConfig().getMdeConfig();
+        if (params == null) {
+            throw new B3PCatalogException("Transformer params missing from configuration!");
+        }
         String paramValue = params.get(param);
         if (paramValue == null) {
             return null;
         }
         return Boolean.valueOf(paramValue);
     }
+
+    /**
+     * The following transformers should be present in de configuration under
+     * mdeConfig:
+     * <li> mdemain
+     * <li> mdeXmlPreprocessor
+     * <li> ISO19115toDC
+     * <li> DCtoISO19115
+     * The next transformers may be present:
+     * <li> extrapreprocessor1
+     * <li> extrapreprocessor2
+     * <li> extrasync1
+     * <li> extrasync2
+     * <li> extrapostprocessor1
+     * 
+     * @param xslName
+     * @return inputstream to transformer
+     * @throws TransformerConfigurationException
+     * @throws FileNotFoundException 
+     */
+    private static InputStream getXslStream(String xslName) throws TransformerConfigurationException, FileNotFoundException  {
+        CatalogAppConfig cfg = CatalogAppConfig.getConfig();
+        Map<String, String> params = cfg.getMdeConfig();
+        if (params == null) {
+            throw new TransformerConfigurationException("Transformers are missing from configuration!");
+        }
+        String xslPath = params.get(xslName);
+        if (xslPath == null) {
+            return null;
+        }
+        File f = new File(xslPath);
+        if(!f.isAbsolute()) {
+            f = new File(cfg.getConfigFilePath(), xslPath);
+        }
+        
+        return new FileInputStream(f);
+    }
+
+    private static Document transformIntern(Document doc, String xslName, Boolean viewMode, boolean ignoreAllowed) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        Templates aTemplates = null;
+
+        if (!transformerTemplates.containsKey(xslName)) {
+            InputStream is = getXslStream(xslName);
+            if (is!=null) {
+                if (transformerFactory == null) {
+                    transformerFactory = TransformerFactory.newInstance();
+                }
+                aTemplates = transformerFactory.newTemplates(new StreamSource(is));
+            }
+            transformerTemplates.put(xslName, aTemplates);
+        } else {
+            aTemplates = transformerTemplates.get(xslName);
+        }
+
+        if (aTemplates == null) {
+            if (ignoreAllowed) {
+                // ignore transformer
+                return doc;
+            } else {
+                throw new TransformerConfigurationException("Transformer [" + xslName + "] is missing from configuration!");
+            }
+        }
+        
+        Transformer t = aTemplates.newTransformer();
+        
+        Map<String, String> params = CatalogAppConfig.getConfig().getMdeConfig();
+        if (params != null) {
+            for (Map.Entry<String, String> param : params.entrySet()) {
+                t.setParameter(param.getKey(), param.getValue());
+            }
+            if (viewMode!=null) {
+                t.setParameter("globalReadonly_init", viewMode.toString());
+            }
+        }
+
+        JDOMResult result = new JDOMResult();
+        t.transform(new JDOMSource(doc), result);
+        
+        return result.getDocument();
+    }
     
+    /**
+     * Main transformer that converts xml to html for use in browser
+     * @param doc
+     * @return
+     * @throws JDOMException
+     * @throws IOException
+     * @throws TransformerConfigurationException
+     * @throws TransformerException 
+     */
     public static Document transform(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
         return transform(doc, null);
     }
-    
     public static Document transform(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer t = tf.newTransformer(new StreamSource(mdeXml2Html.class.getResourceAsStream("mdemain.xsl")));
-        if (params != null) {
-            for (Map.Entry<String, String> param : params.entrySet()) {
-                t.setParameter(param.getKey(), param.getValue());
-            }
-            if (viewMode!=null) {
-                t.setParameter("globalReadonly_init", viewMode.toString());
-            }
-        }
-
-        JDOMResult result = new JDOMResult();
-        t.transform(new JDOMSource(doc), result);
-        
-        return result.getDocument();
+        return transformIntern(doc, "mdemain", viewMode, false);
     }
  
+    /**
+     * Main preprocessor that adds all missing elements to xml to form a complete
+     * metadata document according to standards
+     * 
+     * @param doc
+     * @return
+     * @throws JDOMException
+     * @throws IOException
+     * @throws TransformerConfigurationException
+     * @throws TransformerException 
+     */
     public static Document preprocess(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
-        return preprocess(doc, null);
+         return preprocess(doc, null);
     }
 
     public static Document preprocess(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer t = tf.newTransformer(new StreamSource(mdeXml2Html.class.getResourceAsStream("mdeXmlPreprocessor.xsl")));
-        if (params != null) {
-            for (Map.Entry<String, String> param : params.entrySet()) {
-                t.setParameter(param.getKey(), param.getValue());
-            }
-            if (viewMode!=null) {
-                t.setParameter("globalReadonly_init", viewMode.toString());
-            }
-        }
-
-        JDOMResult result = new JDOMResult();
-        t.transform(new JDOMSource(doc), result);
-        
-        return result.getDocument();
+        return transformIntern(doc, "mdeXmlPreprocessor", viewMode, false);
     }
     
+    /**
+     * Preprocessor that syncs elements from the iso19115 branch to the
+     * dublin core branche
+     * 
+     * @param doc
+     * @return
+     * @throws JDOMException
+     * @throws IOException
+     * @throws TransformerConfigurationException
+     * @throws TransformerException 
+     */
     public static Document iSO19115toDCSynchronizer(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
         return iSO19115toDCSynchronizer(doc, null);
     }
     
     public static Document iSO19115toDCSynchronizer(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer t = tf.newTransformer(new StreamSource(mdeXml2Html.class.getResourceAsStream("ISO19115toDC.xsl")));
-        if (params != null) {
-            for (Map.Entry<String, String> param : params.entrySet()) {
-                t.setParameter(param.getKey(), param.getValue());
-            }
-            if (viewMode!=null) {
-                t.setParameter("globalReadonly_init", viewMode.toString());
-            }
-        }
-
-        JDOMResult result = new JDOMResult();
-        t.transform(new JDOMSource(doc), result);
-        
-        return result.getDocument();
+        return transformIntern(doc, "ISO19115toDC", viewMode, true);
     }
     
+    /**
+     * Preprocessor that syncs elements from the dublin core branch to the
+     * iso19115 branche
+     * 
+     * @param doc
+     * @return
+     * @throws JDOMException
+     * @throws IOException
+     * @throws TransformerConfigurationException
+     * @throws TransformerException 
+     */
     public static Document dCtoISO19115Synchronizer(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
         return dCtoISO19115Synchronizer(doc, null);
     }
     
     public static Document dCtoISO19115Synchronizer(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer t = tf.newTransformer(new StreamSource(mdeXml2Html.class.getResourceAsStream("DCtoISO19115.xsl")));
-        if (params != null) {
-            for (Map.Entry<String, String> param : params.entrySet()) {
-                t.setParameter(param.getKey(), param.getValue());
-            }
-            if (viewMode!=null) {
-                t.setParameter("globalReadonly_init", viewMode.toString());
-            }
-        }
-
-        JDOMResult result = new JDOMResult();
-        t.transform(new JDOMSource(doc), result);
-        
-        return result.getDocument();
+        return transformIntern(doc, "DCtoISO19115", viewMode, true);
     }
     
+    /**
+     * Extra sync transformer for client specific use
+     * 
+     * @param doc
+     * @param viewMode
+     * @return
+     * @throws JDOMException
+     * @throws IOException
+     * @throws TransformerConfigurationException
+     * @throws TransformerException 
+     */
+    public static Document extraSync1(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        return dCtoISO19115Synchronizer(doc, null);
+    }
+    
+    public static Document extraSync1(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        return transformIntern(doc, "extrasync1", viewMode, true);
+    }
+    
+    /**
+     * Extra sync transformer for client specific use
+     * 
+     * @param doc
+     * @param viewMode
+     * @return
+     * @throws JDOMException
+     * @throws IOException
+     * @throws TransformerConfigurationException
+     * @throws TransformerException 
+     */
+    public static Document extraSync2(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        return dCtoISO19115Synchronizer(doc, null);
+    }
+    
+    public static Document extraSync2(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        return transformIntern(doc, "extrasync2", viewMode, true);
+    }
+
+    /**
+     * Extra preprocesser that works on xml and may add customer specific elements 
+     * or defaults
+     * 
+     * @param doc
+     * @return
+     * @throws JDOMException
+     * @throws IOException
+     * @throws TransformerConfigurationException
+     * @throws TransformerException 
+     */
+    public static Document extraPreprocessor1(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        return dCtoISO19115Synchronizer(doc, null);
+    }
+    
+    public static Document extraPreprocessor1(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        return transformIntern(doc, "extrapreprocessor1", viewMode, true);
+    }
+
+    /**
+     * Extra preprocesser that works on xml and may add customer specific elements 
+     * or defaults
+     * 
+     * @param doc
+     * @return
+     * @throws JDOMException
+     * @throws IOException
+     * @throws TransformerConfigurationException
+     * @throws TransformerException 
+     */
+    public static Document extraPreprocessor2(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        return dCtoISO19115Synchronizer(doc, null);
+    }
+    
+    public static Document extraPreprocessor2(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        return transformIntern(doc, "extrapreprocessor2", viewMode, true);
+    }
+
+    /**
+     * Extra postprocessor that works on transformed html and may change e.g. css
+     * client specific.
+     * 
+     * @param doc
+     * @return
+     * @throws JDOMException
+     * @throws IOException
+     * @throws TransformerConfigurationException
+     * @throws TransformerException 
+     */
+    public static Document extraPostprocessor1(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        return dCtoISO19115Synchronizer(doc, null);
+    }
+    
+    public static Document extraPostprocessor1(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        return transformIntern(doc, "extrapostprocessor1", viewMode, true);
+    }
+   
     public static void addUUID(Document xmlDoc, boolean overwriteUUIDs) throws JDOMException {
         Element mdNode = XPathHelper.selectSingleElement(xmlDoc, "/*/gmd:MD_Metadata");
         if (mdNode==null) {

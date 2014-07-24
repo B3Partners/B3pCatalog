@@ -7,7 +7,9 @@ package nl.b3p.catalog.stripes;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -15,6 +17,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.validation.Validate;
+import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.config.CSWServerConfig;
 import nl.b3p.catalog.config.CatalogAppConfig;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
@@ -62,17 +65,17 @@ public class CatalogAction extends DefaultAction {
         if (searchString == null || searchString.trim().equals(""))
             searchString = "*";
 
-        CswClient client = getCswClient();
-
-        GetRecords getRecords = null;
-        if (searchType.equalsIgnoreCase("title")) { // dit faciliteert full title search icm de SimpleAnalyzer in Lucene in Geonetwork
-            //getRecords = CswRequestCreator.createCswRequestPropertyIsEqual(searchString, searchType, "", "", "", false);
-            getRecords = CswSmartRequestCreator.createSmartCswRequest(searchString, searchType);
-        } else {
-            getRecords = CswRequestCreator.createCswRequest(searchString, searchType, "", "", "", true);
-        }
-
         try {
+            CswClient client = getCswClient();
+
+            GetRecords getRecords = null;
+            if (searchType.equalsIgnoreCase("title")) { // dit faciliteert full title search icm de SimpleAnalyzer in Lucene in Geonetwork
+                //getRecords = CswRequestCreator.createCswRequestPropertyIsEqual(searchString, searchType, "", "", "", false);
+                getRecords = CswSmartRequestCreator.createSmartCswRequest(searchString, searchType);
+            } else {
+                getRecords = CswRequestCreator.createCswRequest(searchString, searchType, "", "", "", true);
+            }
+
             OutputBySearch output = client.search(new InputBySearch(getRecords));
             //log.debug(new XMLOutputter().outputString(output.getXml()));
 
@@ -145,15 +148,18 @@ public class CatalogAction extends DefaultAction {
         }
         return resolution;
     }
-
-    private CswClient getCswClient() {
-        CSWServerConfig cfg = CatalogAppConfig.getConfig().getCswServer();
+   
+    private CswClient getCswClient() throws B3PCatalogException {
+        CSWServerConfig cfg = CatalogAppConfig.getConfig().getDefaultCswServer();
+        if (cfg==null) {
+            throw new B3PCatalogException("Geen CSW server geconfigureerd!");
+        }
         return new CswClient(new GeoNetworkCswServer(
-                cfg.getLoginUrl(),
-                cfg.getUrl(),
-                cfg.getUsername(),
-                cfg.getPassword()
-        ));
+                 cfg.getLoginUrl(),
+                 cfg.getUrl(),
+                 cfg.getUsername(),
+                 cfg.getPassword()
+         ));
     }
 
     protected List<MetadataBean> createMetadataList(OutputBySearch output) throws TransformerConfigurationException, TransformerFactoryConfigurationError, TransformerException, JDOMException, JAXBException, OwsException {

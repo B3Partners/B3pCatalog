@@ -21,8 +21,10 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -72,7 +74,14 @@ public class CatalogAppConfig implements ServletContextListener {
             new String[] {"gml", "shp", "dxf", "dgn", "sdf", "sdl", "lyr", "ecw", "sid", "tif", "tiff", "asc", "mdb"}
     ));
     
-    private CSWServerConfig cswServer = null;
+    @XmlElementWrapper
+    @XmlElements({
+        @XmlElement(name="cswServer")
+    })
+    private List<CSWServerConfig> cswServers = new ArrayList<CSWServerConfig>();
+   
+    @XmlElementWrapper
+    private Map<String, String> mdeConfig = new HashMap<String, String>();
 
     private String organizationsJsonFile = "organizations.json";
 
@@ -103,12 +112,13 @@ public class CatalogAppConfig implements ServletContextListener {
         this.arcObjectsConfig = arcObjectsConfig;
     }
 
-    public CSWServerConfig getCswServer() {
-        return cswServer;
+    @XmlTransient
+    public List<CSWServerConfig> getCswServers() {
+        return cswServers;
     }
     
-    public void setCswServer(CSWServerConfig cswServer) {
-        this.cswServer = cswServer;
+    public void setCswServers(List<CSWServerConfig> cswServers) {
+        this.cswServers = cswServers;
     }
 
     @XmlTransient
@@ -129,6 +139,15 @@ public class CatalogAppConfig implements ServletContextListener {
         this.geoFileExtensions = geoFileExtensions;
     }
 
+    @XmlTransient
+    public Map<String, String> getMdeConfig() {
+        return mdeConfig;
+    }
+
+    public void setMdeConfig(Map<String, String> mdeConfig) {
+        this.mdeConfig = mdeConfig;
+    }
+    
     public String getOrganizationsJsonFile() {
         return organizationsJsonFile;
     }
@@ -137,6 +156,14 @@ public class CatalogAppConfig implements ServletContextListener {
         this.organizationsJsonFile = organizationsJsonFile;
     }
     //</editor-fold>
+
+    public CSWServerConfig getDefaultCswServer() {
+       List<CSWServerConfig> csws = getCswServers();
+        if (csws==null || csws.isEmpty()) {
+            return null;
+        }
+        return csws.get(0);
+    }
 
     public static CatalogAppConfig getConfig() {
         return config;

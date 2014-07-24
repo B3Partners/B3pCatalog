@@ -16,11 +16,18 @@
  */
 package nl.b3p.catalog.config;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+
 /**
  *
  * @author Matthijs Laan
  */
 public class CSWServerConfig {
+    
+    @XmlElement(name="name")
+    private String cswName;
+    
     private String url;
     private String loginUrl;
     private String username;
@@ -56,5 +63,20 @@ public class CSWServerConfig {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    /**
+     * @return the name
+     */
+    @XmlTransient
+    public String getCswName() {
+        return cswName;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setCswName(String cswName) {
+        this.cswName = cswName;
     }
 }

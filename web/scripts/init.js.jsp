@@ -23,7 +23,7 @@ B3pCatalog.publishUrl = "${publishUrl}";
 B3pCatalog.username = "${pageContext.request.remoteUser}";
 
 <stripes:useActionBean beanclass="nl.b3p.catalog.stripes.AppConfigCheckActionBean" event="init" var="b"/>
-B3pCatalog.haveCsw = ${!empty b.config.cswServer && b.config.cswServer.url != null};
+B3pCatalog.haveCsw = ${!empty b.config.defaultCswServer && b.config.defaultCswServer.url != null};
 
 
 B3pCatalog.title = "${title}";

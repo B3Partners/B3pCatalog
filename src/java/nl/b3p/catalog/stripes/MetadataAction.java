@@ -206,12 +206,16 @@ public class MetadataAction extends DefaultAction {
             }
 
             Document ppDoc = mdeXml2Html.preprocess(mdDoc, determineViewMode());
+            ppDoc = mdeXml2Html.extraPreprocessor1(ppDoc, determineViewMode());
+            ppDoc = mdeXml2Html.extraPreprocessor2(ppDoc, determineViewMode());
+            
             //datestamp and uuid added when empty
             mdeXml2Html.addDateStamp(ppDoc, false);
             mdeXml2Html.addUUID(ppDoc, false);
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
 
             Document htmlDoc = mdeXml2Html.transform(ppDoc, determineViewMode());
+            htmlDoc = mdeXml2Html.extraPostprocessor1(htmlDoc, determineViewMode());
 
             String d = DocumentHelper.getDocumentString(htmlDoc);
             log.debug("serverside rendered html for method loadMdAsHtml: " + d);
@@ -235,12 +239,17 @@ public class MetadataAction extends DefaultAction {
             Document md = DocumentHelper.getMetadataDocument("");
 
             Document ppDoc = mdeXml2Html.preprocess(md);
+            ppDoc = mdeXml2Html.extraPreprocessor1(ppDoc);
+            ppDoc = mdeXml2Html.extraPreprocessor2(ppDoc);
+            
             //datestamp and uuid added when empty
             mdeXml2Html.addDateStamp(ppDoc, false);
             mdeXml2Html.addUUID(ppDoc, false);
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
 
             Document htmlDoc = mdeXml2Html.transform(ppDoc);
+            htmlDoc = mdeXml2Html.extraPostprocessor1(htmlDoc);
+            
             String html = DocumentHelper.getDocumentString(htmlDoc);
 
             log.debug("serverside rendered html after resetting xml: " + html);
@@ -272,6 +281,8 @@ public class MetadataAction extends DefaultAction {
 
             log.debug("serverside xml after updating: " + DocumentHelper.getDocumentString(md));
             Document ppDoc = mdeXml2Html.preprocess(md);
+            ppDoc = mdeXml2Html.extraPreprocessor1(ppDoc);
+            ppDoc = mdeXml2Html.extraPreprocessor2(ppDoc);
 
             Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
             if (synchroniseDC != null && synchroniseDC) {
@@ -279,10 +290,14 @@ public class MetadataAction extends DefaultAction {
                 // TODO zijn de volgende syncs nodig?
 //                ppDoc = mdeXml2Html.iSO19115toDCSynchronizer(ppDoc);
             }
+            ppDoc = mdeXml2Html.extraSync1(ppDoc);
+            ppDoc = mdeXml2Html.extraSync2(ppDoc);
 
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
 
             Document htmlDoc = mdeXml2Html.transform(ppDoc);
+            htmlDoc = mdeXml2Html.extraPostprocessor1(htmlDoc);
+            
             String html = DocumentHelper.getDocumentString(htmlDoc);
 
             log.debug("serverside rendered html after updating xml: " + html);
@@ -318,6 +333,8 @@ public class MetadataAction extends DefaultAction {
                  // TODO zijn de volgende syncs nodig?
 //                md = mdeXml2Html.iSO19115toDCSynchronizer(md);
             }
+            md = mdeXml2Html.extraSync1(md);
+            md = mdeXml2Html.extraSync2(md);
 
             Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
             Boolean datasetMode = mdeXml2Html.getXSLParam("datasetMode_init");
@@ -379,6 +396,8 @@ public class MetadataAction extends DefaultAction {
                 // TODO zijn de volgende syncs nodig?
 //                md = mdeXml2Html.iSO19115toDCSynchronizer(md);
             }
+            md = mdeXml2Html.extraSync1(md);
+            md = mdeXml2Html.extraSync2(md);
 
             // create copy because instance in session variable should not be cleaned
             mdCopy = new Document((Element) md.getRootElement().clone());
@@ -636,6 +655,8 @@ public class MetadataAction extends DefaultAction {
 
             // log.debug("MetadataAction.ImportMD calling mdeXml2Html.preprocess");
             Document ppDoc = mdeXml2Html.preprocess(mdDoc, determineViewMode());
+            ppDoc = mdeXml2Html.extraPreprocessor1(ppDoc, determineViewMode());
+            ppDoc = mdeXml2Html.extraPreprocessor2(ppDoc, determineViewMode());
             
             //datestamp and uuid added when empty
             mdeXml2Html.addDateStamp(ppDoc, false);
@@ -643,6 +664,7 @@ public class MetadataAction extends DefaultAction {
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
 
             Document htmlDoc = mdeXml2Html.transform(ppDoc, determineViewMode());
+            htmlDoc = mdeXml2Html.extraPostprocessor1(htmlDoc, determineViewMode());
 
             String d = DocumentHelper.getDocumentString(htmlDoc);
 
@@ -706,11 +728,15 @@ public class MetadataAction extends DefaultAction {
             addComment(md, comment);
 
             Document ppDoc = mdeXml2Html.preprocess(md, determineViewMode());
+            ppDoc = mdeXml2Html.extraPreprocessor1(ppDoc, determineViewMode());
+            ppDoc = mdeXml2Html.extraPreprocessor2(ppDoc, determineViewMode());
             log.debug("serverside pp xml after adding comment: " + DocumentHelper.getDocumentString(ppDoc));
 
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
 
             Document htmlDoc = mdeXml2Html.transform(ppDoc, determineViewMode());
+            htmlDoc = mdeXml2Html.extraPostprocessor1(htmlDoc, determineViewMode());
+            
             String html = DocumentHelper.getDocumentString(htmlDoc);
             log.debug("serverside rendered html after updating xml after adding comment: " + html);
 

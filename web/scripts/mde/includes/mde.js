@@ -669,7 +669,7 @@ $.widget("ui.mde", {
         if (!!richTextValue) {
             $element.html(richTextValue);
         } else {
-            $element.html("<p>" + $element.text() + "</p>");
+            $element.html("<p>" + rawTextValue + "</p>");
         }
     },
 
@@ -677,9 +677,6 @@ $.widget("ui.mde", {
         if (!stringValue || 0 === stringValue.length) {
             return stringValue;
         }
-        //this.log(stringValue.replace(/\r/g, "\\r").replace(/\n/g, "\\n"));
-        // necessary for IE:
-        stringValue = stringValue.replace(/\r/g, "");
         // raw rich-text value needs to be escaped first, because we are going to add html tags in wiki2html.
          // we need to keep ' (and ") for wikitext. Therefore no full escaping:
         stringValue = stringValue.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&/g, "&amp;");
@@ -940,7 +937,7 @@ $.widget("ui.mde", {
     },
     ////////////////////////////////// Misc ////////////////////////////////////////    
 
-    _sanitizeInput: function(value) {
+    _encodeNewLines: function(value) {
         if (typeof value == "undefined" || value === null || value === "")
             return "";
 
@@ -949,6 +946,18 @@ $.widget("ui.mde", {
         // nodig voor IE. IE maak van \n input \r\n output. Tweede lijn is voor compatibiliteit met *nix.
         value = value.replace(/\r\n/g, "\n");
         value = value.replace(/\r/g, "\n");
+        value = value.replace(/\n/g, "\\n");
+
+        return value;
+    },
+    _decodeNewLines: function(value) {
+        if (typeof value == "undefined" || value === null || value === "")
+            return "";
+
+        value = $.trim(value);
+
+        // nodig voor IE. IE maak van \n input \r\n output. Tweede lijn is voor compatibiliteit met *nix.
+        value = value.replace(/\\n/g, "\n");
 
         return value;
     },
@@ -1203,8 +1212,11 @@ $.widget("ui.mde", {
     },
 
     _getSavedValueOnClientSide: function($element) {
-        var text = $element.text();
-        return text.startsWith("Klik om te bewerken") ? null : text;
+        var savedValue = xmlUnescape($element.attr("ui-mde-current-value"));
+        this.log("_getSavedValueOnClientSide (voor decode): " + savedValue);
+        savedValue = this._decodeNewLines(savedValue);
+        this.log("_getSavedValueOnClientSide (na decode): " + savedValue);
+        return savedValue;
     },
 
     _saveValueOnClientSide: function($element, newValue, newText) {
@@ -1213,9 +1225,11 @@ $.widget("ui.mde", {
 	//this.log(path);
         var attrName = $element.attr("attrname");
         //this.log(attrName);
-
-        newValue = this._sanitizeInput(newValue);
-        newText = this._sanitizeInput(newText);
+        
+        this.log("_saveValueOnClientSide (voor decode): " + newValue);
+        newValue = this._encodeNewLines(newValue);
+        newText = this._encodeNewLines(newText);
+        this.log("_saveValueOnClientSide (na decode): " + newValue);
 
         var change = {
             path: path,
@@ -1225,6 +1239,7 @@ $.widget("ui.mde", {
         };
         this.changedElements.push(change);
 
+        $element.attr("ui-mde-current-value", xmlEscape(newValue));
         $element.removeClass("ui-mde-default-value").addClass("ui-mde-changed-value");
 
         this.options.change(true);
@@ -1285,12 +1300,10 @@ $.widget("ui.mde", {
     },
 
     _fillOrganisationContactValue: function($section, xpathEnd, newValue) {
-        // newValue is entered in json and should thus be escaped when put in xml later.
-        var sanitizedNewValue = this._sanitizeInput(newValue);
         var $node = this._findOrganisationContactNode($section, xpathEnd);
-        if (sanitizedNewValue && $node.length) {
-            this._saveValueOnClientSide($node, sanitizedNewValue);
-            $node.text(sanitizedNewValue);
+        if (newValue && $node.length) {
+            this._saveValueOnClientSide($node, newValue);
+            $node.text(newValue);
         }
     },
 
@@ -1334,5 +1347,13 @@ RegExp.escape = function(text) {
 }
 
 function xmlUnescape(sXml){
+    if (typeof sXml == "undefined" || sXml === null || sXml === "")
+        return "";
     return sXml.replace(/&apos;/g,"'").replace(/&quot;/g,"\"").replace(/&gt;/g,">").replace(/&lt;/g,"<").replace(/&amp;/g,"&");
 }
+
+function xmlEscape(sXml) {
+    if (typeof sXml == "undefined" || sXml === null || sXml === "")
+        return "";
+    return sXml.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+};

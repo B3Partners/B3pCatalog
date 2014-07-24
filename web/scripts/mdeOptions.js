@@ -6,7 +6,6 @@ if (typeof B3pCatalog == "undefined") B3pCatalog = {};
 B3pCatalog.basicMdeOptions = {
     logMode: true,
     richTextMode: true,
-    extraTitleAboveTabs: false,
     iso19115PreviewImageInsideGeotab: true,
     tabContainerSelector: "#page-tabs",
     //TODO CvL: deze mag weg
@@ -18,19 +17,21 @@ B3pCatalog.getExtraMdeOptions = function(isGeo, viewMode) {
     var extraOptions = {
         afterInit: B3pMde.afterInit
     };
-    
-    if (typeof isGeo === "boolean" && !isGeo) {
-        $.extend(extraOptions, {
-            geoTabsMinimizable: true,
-            geoTabsMinimized: true
-        });
-    }
-    if (typeof viewMode === "boolean") {
-        $.extend(extraOptions, {
-            viewMode: viewMode
-        });
-    }
-    
     return extraOptions;
+
+    // TODO CvL: wat hier onder staat gaat niet meer werken omdat dit serverside 
+    // moet gebeuren, ook alle deploys checken
+//    if (typeof isGeo === "boolean" && !isGeo) {
+//        $.extend(extraOptions, {
+//            geoTabsMinimizable: true,
+//            geoTabsMinimized: true
+//        });
+//    }
+//    if (typeof viewMode === "boolean") {
+//        $.extend(extraOptions, {
+//            viewMode: viewMode
+//        });
+//    }
+    
 }
 

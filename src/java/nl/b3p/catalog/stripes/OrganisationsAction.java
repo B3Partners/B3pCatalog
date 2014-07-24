@@ -5,8 +5,6 @@
 package nl.b3p.catalog.stripes;
 
 import java.io.File;
-import java.io.IOException;
-import javax.servlet.ServletContext;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.Resolution;
@@ -27,11 +25,11 @@ public class OrganisationsAction extends DefaultAction {
     
     private static final String ENCODING = "UTF-8";
     
-    private static final String DEFAULT_ORGANISATIONS_FILE = "/scripts/mde/picklists/organisations.js";
+    private static final String DEFAULT_ORGANISATIONS_FILE = "organisations.json";
     
     @DefaultHandler
     public Resolution main() {
-        String organisations = getOrganisations(getContext());
+        String organisations = getOrganisations();
         
         // TODO ipv JavaScript code JSON teruggeven en dit eerst valideren
         // met org.json.JSONObject
@@ -41,9 +39,9 @@ public class OrganisationsAction extends DefaultAction {
         return new StreamingResolution("text/javascript; charset=" + ENCODING, organisations);
     }
     
-    public static String getOrganisations(ActionBeanContext context) {
+    public static String getOrganisations() {
         try {
-            return FileUtils.readFileToString(getOrganisationsConfigFileOrDefault(context.getServletContext()), ENCODING);
+            return FileUtils.readFileToString(getOrganisationsConfigFile(), ENCODING);
         } catch (Exception ex) {
             log.error("Cannot read organisations config file: " + ex.getMessage());
             
@@ -51,7 +49,7 @@ public class OrganisationsAction extends DefaultAction {
         }
     }
     
-    public static void setOrganisations(ActionBeanContext context, String organisations) {
+    public static void setOrganisations(String organisations) {
         // XXX enorme hack
         String search = "/* DEZE REGEL NIET WIJZIGEN */ organisations = ";
         int i = organisations.lastIndexOf(search);
@@ -73,21 +71,16 @@ public class OrganisationsAction extends DefaultAction {
     }
     
     private static File getOrganisationsConfigFile()  {
-        CatalogAppConfig cfg = CatalogAppConfig.getConfig();       
-        File f = new File(cfg.getOrganizationsJsonFile());
+        CatalogAppConfig cfg = CatalogAppConfig.getConfig();
+        String ojf = cfg.getOrganizationsJsonFile();
+        if (ojf==null) {
+            ojf = DEFAULT_ORGANISATIONS_FILE;
+        }
+        File f = new File(ojf);
         if(!f.isAbsolute()) {
             f = new File(cfg.getConfigFilePath(), cfg.getOrganizationsJsonFile());
         }
         return f;
     }
     
-    private static File getOrganisationsConfigFileOrDefault(ServletContext context) throws IOException {
-        File f = getOrganisationsConfigFile();
-        if(!f.exists()) {
-            String oldName = f.getCanonicalPath();
-            f = new File(context.getRealPath(DEFAULT_ORGANISATIONS_FILE));
-            log.warn(String.format("organizationsJsonFile \"%s\" bestaat niet, standaard bestand \"%s\" wordt gebruikt", oldName, f.getCanonicalPath()));
-        }
-        return f;
-    }
 }
