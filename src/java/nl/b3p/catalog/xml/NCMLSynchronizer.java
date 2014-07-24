@@ -16,13 +16,19 @@
  */
 package nl.b3p.catalog.xml;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
+import java.util.Map;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
+import nl.b3p.catalog.config.CatalogAppConfig;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -36,6 +42,12 @@ import org.jdom.transform.JDOMSource;
 public class NCMLSynchronizer {
     
     public static Document synchronizeNCML(Document doc, String ncmlString) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+
+        InputStream is = getXsl("sync_ncml");
+        if (is==null) {
+            // no file defined no error
+            return doc;
+        }
         
         Document ncml = new SAXBuilder().build(new StringReader(ncmlString));   
         // First remove any existing <netcdf> element
@@ -48,10 +60,27 @@ public class NCMLSynchronizer {
         
         // Synchronize using a XSLT instead of using XPathHelper
         TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer t = tf.newTransformer(new StreamSource(NCMLSynchronizer.class.getResourceAsStream("sync_ncml.xsl")));
+        Transformer t = tf.newTransformer(new StreamSource(is));
         JDOMResult result = new JDOMResult();
         t.transform(new JDOMSource(doc), result);
         
         return result.getDocument();
+    }
+    
+    static InputStream getXsl(String xsl) throws FileNotFoundException {
+        CatalogAppConfig cfg = CatalogAppConfig.getConfig();
+        Map<String, String> params = cfg.getMdeConfig();
+        if (params == null) {
+            return null;
+        }
+        String xslPath = params.get(xsl);
+        if (xslPath == null) {
+            return null;
+        }
+        File f = new File(xslPath);
+        if(!f.isAbsolute()) {
+            f = new File(cfg.getConfigFilePath(), xslPath);
+        }
+        return new FileInputStream(f);
     }
 }

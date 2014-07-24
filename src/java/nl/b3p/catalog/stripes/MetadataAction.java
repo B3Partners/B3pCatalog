@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.transform.TransformerException;
 import net.sourceforge.stripes.action.FileBean;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
@@ -143,83 +144,35 @@ public class MetadataAction extends DefaultAction {
 
     }
 
+    /**
+     * loads metadata from source
+     * preprocesses metadata to hold all elements
+     * adds date and uuid when required to metadata
+     * saves metadata on session
+     * transforms metadata to html fragment
+     * @return transformed html fragment
+     */
     public Resolution loadMdAsHtml() {
 
         // Store corresponding (preprocessed) xml doc in session under SESSION_KEY_METADATA_XML
         // when loading md as html. subsequent changes in html are mirrored in this xml doc
-        Document mdDoc = null;
-     
+        Document md = null;
 
         try {
 
             determineRoot(); // select edit or view mode.
+            
+            md = loadXmlFromSource(md);
 
-            // Java applet is used, metadata in request param metadata
-            if (LOCAL_MODE.equals(mode)) {
-                // metadata contains the string "null" when the following happens.
-                // In the java applet a file is selected called X. The javascript then calls a Java applet
-                // to read file X.xml. If this succeeds the methode loadAsHtml is called and metadata contains 
-                // the xml contents of X.xml. If the applet fails (happens when no .xml exists) method loadMdHtml
-                // is also called but this time the variable metadata does not contain XML but the 
-                // string "null". Hence this test.
-                if (metadata.equals("null"))  {
-                    metadata = DocumentHelper.EMPTY_METADATA;
-                }
-                mdDoc = DocumentHelper.getMetadataDocument(metadata);
-                
-            } else {
-                if (KB_MODE.equals(mode)) {
-
-                    metadata = KbJDBCHelperProxy.getMetadata(root, path);
-                    mdDoc = DocumentHelper.getMetadataDocument(metadata);
-
-                } else if (SDE_MODE.equals(mode)) {
-
-                    metadata = ArcSDEHelperProxy.getMetadata(root, path);
-                    mdDoc = DocumentHelper.getMetadataDocument(metadata);
-
-                } else if (FILE_MODE.equals(mode)) {
-
-                    File mdFile = FileListHelper.getFileForPath(root, path);
-
-                    if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                        try {
-                            FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
-                            metadata = FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass);
-                        } finally {
-                            FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
-                        }
-                        mdDoc = DocumentHelper.getMetadataDocument(metadata);
-                        
-                    } else {
-                        mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
-                        if (!mdFile.exists()) {
-                            // create new metadata on client side or show this in exported file:
-                            mdDoc = DocumentHelper.getMetadataDocument(DocumentHelper.EMPTY_METADATA);
-                        } else {
-                            mdDoc = DocumentHelper.getMetadataDocument(mdFile);
-                        }
-                    }
-                } else {
-                    throw new IllegalArgumentException("Invalid mode: " + mode);
-                }
-            }
-
-            Document ppDoc = mdeXml2Html.preprocess(mdDoc, determineViewMode());
-            ppDoc = mdeXml2Html.extraPreprocessor1(ppDoc, determineViewMode());
-            ppDoc = mdeXml2Html.extraPreprocessor2(ppDoc, determineViewMode());
+            md = preprocessXml(md);
             
             //datestamp and uuid added when empty
-            mdeXml2Html.addDateStamp(ppDoc, false);
-            mdeXml2Html.addUUID(ppDoc, false);
-            getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
+            md = addDateUUID(md);
 
-            Document htmlDoc = mdeXml2Html.transform(ppDoc, determineViewMode());
-            htmlDoc = mdeXml2Html.extraPostprocessor1(htmlDoc, determineViewMode());
+            getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
 
-            String d = DocumentHelper.getDocumentString(htmlDoc);
-            log.debug("serverside rendered html for method loadMdAsHtml: " + d);
-            StringReader sr = new StringReader(d);
+            String html = createHtmlFragment(md);
+            StringReader sr = new StringReader(html);
             return new HtmlResolution(sr, extraHeaders);
 
         } catch (Exception e) {
@@ -230,6 +183,15 @@ public class MetadataAction extends DefaultAction {
         }
     }
 
+   /**
+     * removes metadata from session
+     * creates new empty metadata
+     * preprocesses metadata to hold all elements
+     * adds date and uuid when required to metadata
+     * saves metadata on session
+     * transforms metadata to html fragment
+     * @return transformed html fragment
+     */
     public Resolution resetXml() throws Exception {
 
         try {
@@ -238,22 +200,14 @@ public class MetadataAction extends DefaultAction {
             //create default md doc
             Document md = DocumentHelper.getMetadataDocument("");
 
-            Document ppDoc = mdeXml2Html.preprocess(md);
-            ppDoc = mdeXml2Html.extraPreprocessor1(ppDoc);
-            ppDoc = mdeXml2Html.extraPreprocessor2(ppDoc);
+            md = preprocessXml(md);
             
             //datestamp and uuid added when empty
-            mdeXml2Html.addDateStamp(ppDoc, false);
-            mdeXml2Html.addUUID(ppDoc, false);
-            getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
+            md = addDateUUID(md);
 
-            Document htmlDoc = mdeXml2Html.transform(ppDoc);
-            htmlDoc = mdeXml2Html.extraPostprocessor1(htmlDoc);
-            
-            String html = DocumentHelper.getDocumentString(htmlDoc);
+            getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
 
-            log.debug("serverside rendered html after resetting xml: " + html);
-
+            String html = createHtmlFragment(md);
             return new HtmlResolution(new StringReader(html), extraHeaders);
         } catch (Exception e) {
             String message = "Fout bij reset document";
@@ -262,6 +216,15 @@ public class MetadataAction extends DefaultAction {
         }
     }
 
+   /**
+     * loads metadata from session
+     * applies clientside element en section changes to metadata
+     * preprocesses metadata to hold all elements
+     * synchronises between elements of metadata if configured
+     * saves metadata on session
+     * transforms metadata to html fragment
+     * @return transformed html fragment
+     */
     public Resolution updateXml() throws Exception {
 
         try {
@@ -270,38 +233,16 @@ public class MetadataAction extends DefaultAction {
             if (md == null) {
                 throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
             }
-
-            if (elementChanges != null) {
-                mdeXml2Html.applyElementChanges(md, new JSONArray(elementChanges));
-            }
-
-            if (sectionChange != null) {
-                mdeXml2Html.applySectionChange(md, new JSONObject(sectionChange));
-            }
-
-            log.debug("serverside xml after updating: " + DocumentHelper.getDocumentString(md));
-            Document ppDoc = mdeXml2Html.preprocess(md);
-            ppDoc = mdeXml2Html.extraPreprocessor1(ppDoc);
-            ppDoc = mdeXml2Html.extraPreprocessor2(ppDoc);
-
-            Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
-            if (synchroniseDC != null && synchroniseDC) {
-                ppDoc = mdeXml2Html.dCtoISO19115Synchronizer(ppDoc);
-                // TODO zijn de volgende syncs nodig?
-//                ppDoc = mdeXml2Html.iSO19115toDCSynchronizer(ppDoc);
-            }
-            ppDoc = mdeXml2Html.extraSync1(ppDoc);
-            ppDoc = mdeXml2Html.extraSync2(ppDoc);
-
-            getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
-
-            Document htmlDoc = mdeXml2Html.transform(ppDoc);
-            htmlDoc = mdeXml2Html.extraPostprocessor1(htmlDoc);
             
-            String html = DocumentHelper.getDocumentString(htmlDoc);
+            md = applyChangesXml(md, true);
 
-            log.debug("serverside rendered html after updating xml: " + html);
+            md = preprocessXml(md);
 
+            md = syncBetweenElements(md);
+
+            getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
+
+            String html = createHtmlFragment(md);
             return new HtmlResolution(new StringReader(html), extraHeaders);
         } catch (Exception e) {
             String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
@@ -313,6 +254,13 @@ public class MetadataAction extends DefaultAction {
     /**
      * Past wijzigingen toe en geeft XML terug zodat lokaal kan worden
      * opgeslagen door local-access-servlet.
+     *
+     * loads metadata from session
+     * applies clientside element changes to metadata
+     * synchronises between elements of metadata if configured
+     * cleanup copy of metadata
+     * transforms metadata to xml stream
+     * @return xml stream
      */
     public Resolution updateElementsAndGetXml() throws Exception {
         try {
@@ -321,48 +269,13 @@ public class MetadataAction extends DefaultAction {
                 throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
             }
 
-            if (elementChanges != null) {
-                mdeXml2Html.applyElementChanges(md, new JSONArray(elementChanges));
-            }
-
             // Bij opslaan kunnen geen section changes zijn gedaan, ook geen
             // preprocessing nodig
-            Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
-            if (synchroniseDC != null && synchroniseDC) {
-                md = mdeXml2Html.dCtoISO19115Synchronizer(md);
-                 // TODO zijn de volgende syncs nodig?
-//                md = mdeXml2Html.iSO19115toDCSynchronizer(md);
-            }
-            md = mdeXml2Html.extraSync1(md);
-            md = mdeXml2Html.extraSync2(md);
+            md = applyChangesXml(md, false);
 
-            Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
-            Boolean datasetMode = mdeXml2Html.getXSLParam("datasetMode_init");
-            //TODO ask user what he wants dataset or service
-            //for now assume dataset
-            //only applicable when strict xml is required
-            if (strictISO19115) {
-                if (serviceMode != null && serviceMode.booleanValue()
-                        && datasetMode != null && datasetMode.booleanValue()) {
-                    if (type.equalsIgnoreCase("dataset")) {
-                        serviceMode = Boolean.FALSE;
-                    } else {
-                        datasetMode = Boolean.FALSE;
-                    }
-                }
-            }
-             
-            // create copy because instance in session variable should not be cleaned
-            Document mdCopy = new Document((Element) md.getRootElement().clone());
-            mdeXml2Html.cleanUpMetadata(mdCopy, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
-            mdeXml2Html.removeEmptyNodes(mdCopy);
-            
-            if (strictISO19115) {
-                Element MD_Metadata = DocumentHelper.getMD_Metadata(mdCopy);
-                MD_Metadata.detach();
-                mdCopy = new Document(MD_Metadata);
-            }
+            md = syncBetweenElements(md);
 
+            Document mdCopy = cleanupXmlCopy(md, strictISO19115);
             // Geen XML parsing door browser, geef door als String
             return new StreamingResolution("text/plain", new StringReader(DocumentHelper.getDocumentString(mdCopy)));
         } catch (Exception e) {
@@ -372,6 +285,14 @@ public class MetadataAction extends DefaultAction {
         }
     }
 
+    /**
+     * loads metadata from session
+     * applies clientside element changes to metadata
+     * synchronises between elements of metadata if configured
+     * cleanup copy of metadata
+     * save copy of metadata to source
+     * @return success or throw exception
+     */
     public Resolution updateAndSaveXml() throws Exception {
 
         Document md;
@@ -384,29 +305,15 @@ public class MetadataAction extends DefaultAction {
                 throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
             }
 
-            if (elementChanges != null) {
-                mdeXml2Html.applyElementChanges(md, new JSONArray(elementChanges));
-            }
-
             // Bij opslaan kunnen geen section changes zijn gedaan, ook geen
             // preprocessing nodig
-            Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
-            if (synchroniseDC != null && synchroniseDC) {
-                md = mdeXml2Html.dCtoISO19115Synchronizer(md);
-                // TODO zijn de volgende syncs nodig?
-//                md = mdeXml2Html.iSO19115toDCSynchronizer(md);
-            }
-            md = mdeXml2Html.extraSync1(md);
-            md = mdeXml2Html.extraSync2(md);
+            md = applyChangesXml(md, false);
+
+            md = syncBetweenElements(md);
 
             // create copy because instance in session variable should not be cleaned
-            mdCopy = new Document((Element) md.getRootElement().clone());
-            
-            Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
-            Boolean datasetMode = mdeXml2Html.getXSLParam("datasetMode_init");
-            mdeXml2Html.cleanUpMetadata(mdCopy, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
+            mdCopy = cleanupXmlCopy(md, false);
 
-            mdeXml2Html.removeEmptyNodes(mdCopy);
         } catch (Exception e) {
             String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
             log.error(message, e);
@@ -422,36 +329,7 @@ public class MetadataAction extends DefaultAction {
                 throw new B3PCatalogException("Geen rechten om metadata op te slaan op deze locatie");
             }
 
-            if (KB_MODE.equals(mode)) {
-
-                KbJDBCHelperProxy.saveMetadata(root, path, mdString);
-
-            } else if (SDE_MODE.equals(mode)) {
-
-                Object dataset = ArcSDEHelperProxy.getDataset(root, path);
-                ArcSDEHelperProxy.saveMetadata(dataset, mdString);
-
-            } else if (FILE_MODE.equals(mode)) {
-
-                File mdFile = FileListHelper.getFileForPath(root, path);
-
-                if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
-                    try {
-                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
-                        FGDBHelperProxy.setMetadata(mdFile, 5, mdString);
-                    } finally {
-                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
-                    }
-                } else {
-                    mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
-
-                    OutputStream outputStream = new BufferedOutputStream(FileUtils.openOutputStream(mdFile));
-                    outputStream.write(mdString.getBytes("UTF-8"));
-                    outputStream.close();
-                }
-            } else {
-                throw new IllegalArgumentException("Invalid mode: " + mode);
-            }
+            saveXmlToSource(mdString);
 
             return new StreamingResolution("text/plain", "success");
         } catch (Exception e) {
@@ -461,6 +339,14 @@ public class MetadataAction extends DefaultAction {
         }
     }
 
+    /**
+     * load metadata from session
+     * synchronise by filling elements based on info from datasource
+     * save metadata on session
+     * transforms metadata to html fragment
+     * @return transformed html fragment
+     * @throws Exception 
+     */
     public Resolution synchronizeLocal() throws Exception {
 
         determineRoot(); // select edit or view mode.
@@ -482,15 +368,20 @@ public class MetadataAction extends DefaultAction {
             md = NCMLSynchronizer.synchronizeNCML(md, synchronizeData);
         }
         getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
-        Document htmlDoc = mdeXml2Html.transform(md);
-        String html = DocumentHelper.getDocumentString(htmlDoc);
-
-        log.debug("serverside rendered html after syncing xml: " + html);
-
+        
+        String html = createHtmlFragment(md);
         return new HtmlResolution(new StringReader(html), extraHeaders);
     }
 
 
+    /**
+     * load metadata from session
+     * synchronise by filling elements based on info from datasource
+     * save metadata on session
+     * transforms metadata to html fragment
+     * @return transformed html fragment
+     * @throws Exception 
+     */
     public Resolution synchronize() {
 
         try {
@@ -507,100 +398,11 @@ public class MetadataAction extends DefaultAction {
                 throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
             }
 
-            if (KB_MODE.equals(mode)) {
-                
-                String mdString = DocumentHelper.getDocumentString(md);
-                mdString = KbJDBCHelperProxy.syncMetadata(root, path, mdString);
-                md = DocumentHelper.getMetadataDocument(mdString);
-                
-            } else if (SDE_MODE.equals(mode)) {
-
-                Object dataset = ArcSDEHelperProxy.getDataset(root, path);
-
-                if (dataset instanceof ArcSDEJDBCDataset) {
-
-                    ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();
-
-                    if (cfg.isEnabled()) {
-                        dataset = ArcSDEHelperProxy.getArcObjectsDataset(root, path);
-                        ArcGISSynchronizer.synchronize(md, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
-                    } else if (cfg.isForkSynchroniser()) {
-                        ArcSDEJDBCDataset ds = (ArcSDEJDBCDataset) dataset;
-
-                        if (ds.getRoot().getArcobjectsConnection() == null) {
-                            throw new Exception("ArcObjects niet geconfigureerd, synchroniseren niet mogelijk");
-                        }
-                        md = ArcObjectsSynchronizerForker.synchronize(
-                                getContext().getServletContext(),
-                                ds.getAbsoluteName(),
-                                ArcObjectsSynchronizerMain.TYPE_SDE,
-                                ds.getRoot().getArcobjectsConnection(),
-                                metadata
-                        );
-                    } else {
-                        throw new Exception("ArcObjects niet geconfigureerd, synchroniseren niet mogelijk");
-                    }
-                } else {
-                    ArcGISSynchronizer.synchronize(md, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
-                }
-
-            } else if (FILE_MODE.equals(mode)) {
-
-                File dataFile = FileListHelper.getFileForPath(root, path);
-
-                boolean isFGDB = FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dataFile);
-                ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();
-                if (cfg.isEnabled()) {
-                    if (isFGDB) {
-                        try {
-                            FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
-
-                            Object ds = FGDBHelperProxy.getTargetDataset(dataFile, 5 /*esriDatasetType.esriDTFeatureClass*/);
-                            ArcGISSynchronizer.synchronize(md, ds, ArcGISSynchronizer.FORMAT_NAME_FGDB);
-                        } finally {
-                            FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
-                        }
-                    } else if (path.endsWith(Extensions.SHAPE)) {
-                        try {
-                            FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
-
-                            Object ds = DatasetHelperProxy.getShapeDataset(dataFile);
-                            ArcGISSynchronizer.synchronize(md, ds, ArcGISSynchronizer.FORMAT_NAME_SHAPE);
-                        } finally {
-                            FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
-                        }
-                    }
-                } else if (cfg.isForkSynchroniser()) {
-                    md = ArcObjectsSynchronizerForker.synchronize(
-                            getContext().getServletContext(),
-                            FileListHelper.getFileForPath(root, path).getAbsolutePath(),
-                            isFGDB ? ArcObjectsSynchronizerMain.TYPE_FGDB : ArcObjectsSynchronizerMain.TYPE_SHAPE,
-                            null,
-                            metadata
-                    );
-                } else if (path.endsWith(Extensions.SHAPE)) {
-                    File shapeFile = FileListHelper.getFileForPath(root, path);
-
-                    // TODO: Create a new method which combines the two. No point in first creating 
-                    // A JSON object and then saving it. The JSON step has to go.
-                    // Implement this after all other requirements are done/tested.
-                    String synchronizeData = Shapefiles.getMetadata(shapeFile.getCanonicalPath());
-                    ShapefileSynchronizer.synchronizeFromLocalAccessJSON(md, synchronizeData);
-
-                } else {
-                    synchronizeRegularMetadata(md, dataFile);
-                }
-            } else {
-                throw new IllegalArgumentException("Invalid mode: " + mode);
-            }
+            md = syncXmlFromDataSource(md);
 
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
 
-            Document htmlDoc = mdeXml2Html.transform(md);
-            String html = DocumentHelper.getDocumentString(htmlDoc);
-
-            log.debug("serverside rendered html after updating xml: " + html);
-
+            String html = createHtmlFragment(md);
             return new HtmlResolution(new StringReader(html), extraHeaders);
         } catch (Exception e) {
             String message = "Fout tijdens synchroniseren " + mode + " metadata van lokatie " + path;
@@ -609,6 +411,13 @@ public class MetadataAction extends DefaultAction {
         }
     }
 
+    /**
+     * synchronise by filling elements based on info from datafile
+     * @param xmlDoc
+     * @param dataFile
+     * @throws IOException
+     * @throws JDOMException 
+     */
     private void synchronizeRegularMetadata(Document xmlDoc, File dataFile) throws IOException, JDOMException {
         String localFilename = dataFile.getName();
 
@@ -640,37 +449,37 @@ public class MetadataAction extends DefaultAction {
         //TODO: file type in md opslaan?
     }
 
+
+    /**
+     * loads metadata from import form
+     * preprocesses metadata to hold all elements
+     * adds date and uuid when required to metadata
+     * saves metadata on session
+     * transforms metadata to html fragment
+     * @return html fragment
+     */
     public Resolution importMD() {
 
         try {
-            Document mdDoc;
+            Document md;
 
             if (importXml != null) {
-                mdDoc = new SAXBuilder().build(importXml.getInputStream());
+                md = new SAXBuilder().build(importXml.getInputStream());
             } else if (metadata != null) {
-                mdDoc = DocumentHelper.getMetadataDocument(metadata);
+                md = DocumentHelper.getMetadataDocument(metadata);
             } else {
                 throw new IllegalArgumentException();
             }
 
-            // log.debug("MetadataAction.ImportMD calling mdeXml2Html.preprocess");
-            Document ppDoc = mdeXml2Html.preprocess(mdDoc, determineViewMode());
-            ppDoc = mdeXml2Html.extraPreprocessor1(ppDoc, determineViewMode());
-            ppDoc = mdeXml2Html.extraPreprocessor2(ppDoc, determineViewMode());
-            
+            md = preprocessXml(md);
+           
             //datestamp and uuid added when empty
-            mdeXml2Html.addDateStamp(ppDoc, false);
-            mdeXml2Html.addUUID(ppDoc, false);
-            getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
+            md = addDateUUID(md);
 
-            Document htmlDoc = mdeXml2Html.transform(ppDoc, determineViewMode());
-            htmlDoc = mdeXml2Html.extraPostprocessor1(htmlDoc, determineViewMode());
+            getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
 
-            String d = DocumentHelper.getDocumentString(htmlDoc);
-
-            log.debug("serverside rendered html (for method importdMD): " + d);
-            StringReader sr = new StringReader(d);
-            return new HtmlResolution(sr, extraHeaders);
+            String html = createHtmlFragment(md);
+            return new HtmlResolution(new StringReader(html), extraHeaders);
 
         } catch (Exception e) {
             getContext().getRequest().getSession().removeAttribute(SESSION_KEY_METADATA_XML);
@@ -687,6 +496,12 @@ public class MetadataAction extends DefaultAction {
         }
     }
 
+    /**
+     * execute updateElementsAndGetXml
+     * stream xml
+     * @return xml stream
+     * @throws Exception 
+     */
     public Resolution export() throws Exception {
         Resolution resolution = updateElementsAndGetXml();
 
@@ -711,6 +526,15 @@ public class MetadataAction extends DefaultAction {
         return resolution;
     }
 
+    /**
+     * load metadata from session
+     * add comment
+     * preprocesses metadata to hold all elements
+     * saves metadata on session
+     * transforms metadata to html fragment
+     * @return transformed html fragment
+     * @throws Exception 
+     */
     public Resolution postComment() throws Exception {
 
         try {
@@ -727,19 +551,19 @@ public class MetadataAction extends DefaultAction {
 
             addComment(md, comment);
 
-            Document ppDoc = mdeXml2Html.preprocess(md, determineViewMode());
-            ppDoc = mdeXml2Html.extraPreprocessor1(ppDoc, determineViewMode());
-            ppDoc = mdeXml2Html.extraPreprocessor2(ppDoc, determineViewMode());
-            log.debug("serverside pp xml after adding comment: " + DocumentHelper.getDocumentString(ppDoc));
-
-            getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, ppDoc);
-
-            Document htmlDoc = mdeXml2Html.transform(ppDoc, determineViewMode());
-            htmlDoc = mdeXml2Html.extraPostprocessor1(htmlDoc, determineViewMode());
+            md = preprocessXml(md);
             
-            String html = DocumentHelper.getDocumentString(htmlDoc);
-            log.debug("serverside rendered html after updating xml after adding comment: " + html);
+            getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
 
+            // do save xml with comment when posting, otherwise users with only
+            // comment role will not be able to save
+            if (rootAccess.getSecurityLevel() == AclAccess.COMMENT.getSecurityLevel()) {
+                Document mdCopy = cleanupXmlCopy(md, false);
+                String mdString = DocumentHelper.getDocumentString(mdCopy);
+                saveXmlToSource(mdString);
+            }
+             
+            String html = createHtmlFragment(md);
             return new HtmlResolution(new StringReader(html), extraHeaders);
 
         } catch (Exception e) {
@@ -749,6 +573,332 @@ public class MetadataAction extends DefaultAction {
         }
     }
 
+    /**
+     * preprocesing adds all elements possible
+     * client specific preprocessing possible
+     * @param md
+     * @return
+     * @throws JDOMException
+     * @throws IOException
+     * @throws TransformerException 
+     */
+    private Document preprocessXml(Document md) throws JDOMException, IOException, TransformerException {
+        md = mdeXml2Html.preprocess(md, determineViewMode());
+        md = mdeXml2Html.extraPreprocessor1(md, determineViewMode());
+        md = mdeXml2Html.extraPreprocessor2(md, determineViewMode());
+        log.debug("serverside xml after preprocessing: " + DocumentHelper.getDocumentString(md));
+        return md;
+    }
+    
+    /**
+     * transform xml into html fragment
+     * client specific adaptation of html possible
+     * @param md
+     * @return
+     * @throws JDOMException
+     * @throws IOException
+     * @throws TransformerException 
+     */
+    private String createHtmlFragment(Document md) throws JDOMException, IOException, TransformerException {
+        Document htmlDoc = mdeXml2Html.transform(md, determineViewMode());
+        htmlDoc = mdeXml2Html.extraPostprocessor1(htmlDoc, determineViewMode());
+        String html = DocumentHelper.getDocumentString(htmlDoc);
+        log.debug("serverside rendered html: " + html);
+        return html;
+    }
+
+    private Document addDateUUID(Document md) throws JDOMException {
+        //datestamp and uuid added when empty
+        mdeXml2Html.addDateStamp(md, false);
+        mdeXml2Html.addUUID(md, false);
+        return md;
+    }
+
+    /**
+     * syncing between elements of the xml tree
+     * @param md
+     * @return
+     * @throws B3PCatalogException
+     * @throws JDOMException
+     * @throws IOException
+     * @throws TransformerException 
+     */
+    private Document syncBetweenElements(Document md) throws B3PCatalogException, JDOMException, IOException, TransformerException {
+        Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
+        if (synchroniseDC != null && synchroniseDC) {
+            md = mdeXml2Html.dCtoISO19115Synchronizer(md);
+            // TODO zijn de volgende syncs nodig?
+//                md = mdeXml2Html.iSO19115toDCSynchronizer(md);
+        }
+        md = mdeXml2Html.extraSync1(md);
+        md = mdeXml2Html.extraSync2(md);
+        return md;
+    }
+    
+    /**
+     * load metadata from source specific location:
+     * <li>xml file next to datafile
+     * <li>kaartenbalie tables
+     * <li>sde/shape geometries
+     * <li>fgbd files
+     * @param md
+     * @return
+     * @throws JDOMException
+     * @throws Exception 
+     */
+    private Document loadXmlFromSource(Document md) throws JDOMException, Exception {
+        // Java applet is used, metadata in request param metadata
+        if (LOCAL_MODE.equals(mode)) {
+                // metadata contains the string "null" when the following happens.
+            // In the java applet a file is selected called X. The javascript then calls a Java applet
+            // to read file X.xml. If this succeeds the methode loadAsHtml is called and metadata contains 
+            // the xml contents of X.xml. If the applet fails (happens when no .xml exists) method loadMdHtml
+            // is also called but this time the variable metadata does not contain XML but the 
+            // string "null". Hence this test.
+            if (metadata.equals("null")) {
+                metadata = DocumentHelper.EMPTY_METADATA;
+            }
+            md = DocumentHelper.getMetadataDocument(metadata);
+
+        } else {
+            if (KB_MODE.equals(mode)) {
+
+                metadata = KbJDBCHelperProxy.getMetadata(root, path);
+                md = DocumentHelper.getMetadataDocument(metadata);
+
+            } else if (SDE_MODE.equals(mode)) {
+
+                metadata = ArcSDEHelperProxy.getMetadata(root, path);
+                md = DocumentHelper.getMetadataDocument(metadata);
+
+            } else if (FILE_MODE.equals(mode)) {
+
+                File mdFile = FileListHelper.getFileForPath(root, path);
+
+                if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
+                    try {
+                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+                        metadata = FGDBHelperProxy.getMetadata(mdFile, esriDTFeatureClass);
+                    } finally {
+                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+                    }
+                    md = DocumentHelper.getMetadataDocument(metadata);
+
+                } else {
+                    mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
+                    if (!mdFile.exists()) {
+                        // create new metadata on client side or show this in exported file:
+                        md = DocumentHelper.getMetadataDocument(DocumentHelper.EMPTY_METADATA);
+                    } else {
+                        md = DocumentHelper.getMetadataDocument(mdFile);
+                    }
+                }
+            } else {
+                throw new IllegalArgumentException("Invalid mode: " + mode);
+            }
+        }
+        return md;
+    }
+    
+    /**
+     * save metadata to source specific location
+     * @param mdString
+     * @throws Exception 
+     */
+    private void saveXmlToSource(String mdString) throws Exception {
+        if (KB_MODE.equals(mode)) {
+
+            KbJDBCHelperProxy.saveMetadata(root, path, mdString);
+
+        } else if (SDE_MODE.equals(mode)) {
+
+            Object dataset = ArcSDEHelperProxy.getDataset(root, path);
+            ArcSDEHelperProxy.saveMetadata(dataset, mdString);
+
+        } else if (FILE_MODE.equals(mode)) {
+
+            File mdFile = FileListHelper.getFileForPath(root, path);
+
+            if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(mdFile)) {
+                try {
+                    FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+                    FGDBHelperProxy.setMetadata(mdFile, 5, mdString);
+                } finally {
+                    FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+                }
+            } else {
+                mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
+
+                OutputStream outputStream = new BufferedOutputStream(FileUtils.openOutputStream(mdFile));
+                outputStream.write(mdString.getBytes("UTF-8"));
+                outputStream.close();
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid mode: " + mode);
+        }
+    }   
+    
+    /**
+     * sync metadata by collecting informatie from the dataset:
+     * <li>bbox
+     * <li>title
+     * <li>projection
+     * <li>.....
+     * @param md
+     * @return
+     * @throws JDOMException
+     * @throws Exception 
+     */
+    private Document syncXmlFromDataSource(Document md) throws JDOMException, Exception {
+        if (KB_MODE.equals(mode)) {
+
+            String mdString = DocumentHelper.getDocumentString(md);
+            mdString = KbJDBCHelperProxy.syncMetadata(root, path, mdString);
+            md = DocumentHelper.getMetadataDocument(mdString);
+
+        } else if (SDE_MODE.equals(mode)) {
+
+            Object dataset = ArcSDEHelperProxy.getDataset(root, path);
+
+            if (dataset instanceof ArcSDEJDBCDataset) {
+
+                ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();
+
+                if (cfg.isEnabled()) {
+                    dataset = ArcSDEHelperProxy.getArcObjectsDataset(root, path);
+                    ArcGISSynchronizer.synchronize(md, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
+                } else if (cfg.isForkSynchroniser()) {
+                    ArcSDEJDBCDataset ds = (ArcSDEJDBCDataset) dataset;
+
+                    if (ds.getRoot().getArcobjectsConnection() == null) {
+                        throw new Exception("ArcObjects niet geconfigureerd, synchroniseren niet mogelijk");
+                    }
+                    md = ArcObjectsSynchronizerForker.synchronize(
+                            getContext().getServletContext(),
+                            ds.getAbsoluteName(),
+                            ArcObjectsSynchronizerMain.TYPE_SDE,
+                            ds.getRoot().getArcobjectsConnection(),
+                            metadata
+                    );
+                } else {
+                    throw new Exception("ArcObjects niet geconfigureerd, synchroniseren niet mogelijk");
+                }
+            } else {
+                ArcGISSynchronizer.synchronize(md, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
+            }
+
+        } else if (FILE_MODE.equals(mode)) {
+
+            File dataFile = FileListHelper.getFileForPath(root, path);
+
+            boolean isFGDB = FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dataFile);
+            ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();
+            if (cfg.isEnabled()) {
+                if (isFGDB) {
+                    try {
+                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+
+                        Object ds = FGDBHelperProxy.getTargetDataset(dataFile, 5 /*esriDatasetType.esriDTFeatureClass*/);
+                        ArcGISSynchronizer.synchronize(md, ds, ArcGISSynchronizer.FORMAT_NAME_FGDB);
+                    } finally {
+                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+                    }
+                } else if (path.endsWith(Extensions.SHAPE)) {
+                    try {
+                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+
+                        Object ds = DatasetHelperProxy.getShapeDataset(dataFile);
+                        ArcGISSynchronizer.synchronize(md, ds, ArcGISSynchronizer.FORMAT_NAME_SHAPE);
+                    } finally {
+                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+                    }
+                }
+            } else if (cfg.isForkSynchroniser()) {
+                md = ArcObjectsSynchronizerForker.synchronize(
+                        getContext().getServletContext(),
+                        FileListHelper.getFileForPath(root, path).getAbsolutePath(),
+                        isFGDB ? ArcObjectsSynchronizerMain.TYPE_FGDB : ArcObjectsSynchronizerMain.TYPE_SHAPE,
+                        null,
+                        metadata
+                );
+            } else if (path.endsWith(Extensions.SHAPE)) {
+                File shapeFile = FileListHelper.getFileForPath(root, path);
+
+                    // TODO: Create a new method which combines the two. No point in first creating 
+                // A JSON object and then saving it. The JSON step has to go.
+                // Implement this after all other requirements are done/tested.
+                String synchronizeData = Shapefiles.getMetadata(shapeFile.getCanonicalPath());
+                ShapefileSynchronizer.synchronizeFromLocalAccessJSON(md, synchronizeData);
+
+            } else {
+                synchronizeRegularMetadata(md, dataFile);
+            }
+        } else {
+            throw new IllegalArgumentException("Invalid mode: " + mode);
+        }
+        return md;
+    }
+ 
+    /**
+     * remove empty elements and parts of the xml tree that do not belong there
+     * what belogs or not depends on the type of metadat that is required:
+     * <li>metadata for services
+     * <li>metadata for datasets
+     * <li>full set of metadata
+     * @param md
+     * @param strict
+     * @return
+     * @throws B3PCatalogException 
+     */
+    private Document cleanupXmlCopy(Document md, boolean strict) throws B3PCatalogException {
+        Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
+        Boolean datasetMode = mdeXml2Html.getXSLParam("datasetMode_init");
+            //TODO ask user what he wants dataset or service
+        //for now assume dataset
+        //only applicable when strict xml is required
+        if (strict) {
+            if (serviceMode != null && serviceMode.booleanValue()
+                    && datasetMode != null && datasetMode.booleanValue()) {
+                if (type.equalsIgnoreCase("dataset")) {
+                    serviceMode = Boolean.FALSE;
+                } else {
+                    datasetMode = Boolean.FALSE;
+                }
+            }
+        }
+
+        // create copy because instance in session variable should not be cleaned
+        Document mdCopy = new Document((Element) md.getRootElement().clone());
+        mdeXml2Html.cleanUpMetadata(mdCopy, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
+        mdeXml2Html.removeEmptyNodes(mdCopy);
+
+        if (strict) {
+            Element MD_Metadata = DocumentHelper.getMD_Metadata(mdCopy);
+            MD_Metadata.detach();
+            mdCopy = new Document(MD_Metadata);
+        }
+        return mdCopy;
+    }
+  
+    /**
+     * When editing clientside all edits are collected and send to the backend
+     * in one go using a JSON array. Here the JSON is applied to the xml tree.
+     * @param md
+     * @param doSections
+     * @return
+     * @throws Exception 
+     */
+    private Document applyChangesXml(Document md, boolean doSections) throws Exception {
+        if (elementChanges != null) {
+            mdeXml2Html.applyElementChanges(md, new JSONArray(elementChanges));
+        }
+
+        if (sectionChange != null && doSections) {
+            mdeXml2Html.applySectionChange(md, new JSONObject(sectionChange));
+        }
+        return md;
+    }
+    
     protected Document extractMD_MetadataAsDoc(Document doc) throws JDOMException, IOException, B3PCatalogException {
         Element MD_Metadata = DocumentHelper.getMD_Metadata(doc); 
 
@@ -885,7 +1035,6 @@ public class MetadataAction extends DefaultAction {
     public void setUsername(String username) {
         this.username = username;
     }
-    // </editor-fold>
 
     /**
      * @return the type
@@ -900,4 +1049,6 @@ public class MetadataAction extends DefaultAction {
     public void setType(String type) {
         this.type = type;
     }
+    // </editor-fold>
+
 }

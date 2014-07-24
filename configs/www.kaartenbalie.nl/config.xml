@@ -110,7 +110,7 @@
             -->
 			<acl access="write">
 				<role>editor</role>
-				<role>beheerder</role>
+				<role>admin</role>
 			</acl>
 			<acl access="comment">
 				<role>viewer</role>
@@ -119,7 +119,7 @@
         
         <kbRoot name="Kaartenbalie">
             <acl access="write">
-                    <role>beheerder</role>
+                    <role>admin</role>
             </acl>
             <jndiDataSource>java:comp/env/jdbc/kaartenbalie</jndiDataSource>
          </kbRoot>
@@ -185,6 +185,7 @@
         <entry><key>mdeXmlPreprocessor</key><value>mdeXmlPreprocessor.xsl</value></entry>
         <entry><key>ISO19115toDC</key><value>ISO19115toDC.xsl</value></entry>
         <entry><key>DCtoISO19115</key><value>DCtoISO19115.xsl</value></entry>
+        <entry><key>sync_ncml</key><value>sync_ncml.xsl</value></entry>
         <!-- klantspecifieke transformaties 
         <entry><key>extrapreprocessor1</key><value>preprocessor1.xsl</value></entry>
         <entry><key>extrapreprocessor2</key><value>preprocessor2.xsl</value></entry>

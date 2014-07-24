@@ -669,7 +669,8 @@ $.widget("ui.mde", {
         if (!!richTextValue) {
             $element.html(richTextValue);
         } else {
-            $element.html("<p>" + rawTextValue + "</p>");
+            // used in "previous comment" blocks, saved value is empty
+            $element.html("<p>" + $element.text() + "</p>");
         }
     },
 
