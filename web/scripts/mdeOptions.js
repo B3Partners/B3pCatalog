@@ -17,21 +17,20 @@ B3pCatalog.getExtraMdeOptions = function(isGeo, viewMode) {
     var extraOptions = {
         afterInit: B3pMde.afterInit
     };
-    return extraOptions;
 
-    // TODO CvL: wat hier onder staat gaat niet meer werken omdat dit serverside 
-    // moet gebeuren, ook alle deploys checken
-//    if (typeof isGeo === "boolean" && !isGeo) {
-//        $.extend(extraOptions, {
-//            geoTabsMinimizable: true,
-//            geoTabsMinimized: true
-//        });
-//    }
-//    if (typeof viewMode === "boolean") {
-//        $.extend(extraOptions, {
-//            viewMode: viewMode
-//        });
-//    }
+    if (typeof isGeo === "boolean" && !isGeo) {
+        $.extend(extraOptions, {
+            geoTabsMinimizable: true,
+            geoTabsMinimized: true
+        });
+    }
+    if (typeof viewMode === "boolean") {
+        $.extend(extraOptions, {
+            viewMode: viewMode
+        });
+    }
     
-}
+    return extraOptions;
+    
+};
 

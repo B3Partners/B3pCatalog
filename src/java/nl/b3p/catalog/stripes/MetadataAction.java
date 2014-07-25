@@ -108,12 +108,14 @@ public class MetadataAction extends DefaultAction {
     @Validate
     private String type = "dataset";
 
-    
     private Root root;
     private AclAccess rootAccess;
+    private boolean viewMode;
     private Map<String, String> extraHeaders = new HashMap<String, String>();
 
     public void determineRoot() throws B3PCatalogException {
+        
+        viewMode = false;
         
         if (LOCAL_MODE.equals(mode)) {
 
@@ -122,26 +124,15 @@ public class MetadataAction extends DefaultAction {
             // can be edited.
             rootAccess = AclAccess.WRITE;  
             extraHeaders.put("X-MDE-Access", "WRITE");
-        } else {
+            
+        } else if (path!=null && !path.isEmpty()){
+            // access can only be assessed when a path is present
+            // without path there is no writing or reading so no check
             root = Root.getRootForPath(path, getContext().getRequest(), AclAccess.READ);
             rootAccess = root.getRequestUserHighestAccessLevel(getContext().getRequest());
+            viewMode = rootAccess == null || rootAccess.getSecurityLevel() < AclAccess.WRITE.getSecurityLevel();
             extraHeaders.put("X-MDE-Access", rootAccess.name());
         }
-    }
-
-    public boolean determineViewMode() {
-
-        boolean viewMode = false;
-
-        // Java applet used.  
-        if (LOCAL_MODE.equals(mode)) {
-            viewMode = false;
-        } else {
-            // Filetree
-            viewMode = rootAccess == null || rootAccess.getSecurityLevel() < AclAccess.WRITE.getSecurityLevel();
-        }
-        return viewMode;
-
     }
 
     /**
@@ -172,8 +163,7 @@ public class MetadataAction extends DefaultAction {
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
 
             String html = createHtmlFragment(md);
-            StringReader sr = new StringReader(html);
-            return new HtmlResolution(sr, extraHeaders);
+            return new HtmlResolution(new StringReader(html), extraHeaders);
 
         } catch (Exception e) {
             getContext().getRequest().getSession().removeAttribute(SESSION_KEY_METADATA_XML);
@@ -195,7 +185,9 @@ public class MetadataAction extends DefaultAction {
     public Resolution resetXml() throws Exception {
 
         try {
-
+            // reset xml only possible when write access
+            viewMode = false;
+ 
             getContext().getRequest().getSession().removeAttribute(SESSION_KEY_METADATA_XML);
             //create default md doc
             Document md = DocumentHelper.getMetadataDocument("");
@@ -209,6 +201,7 @@ public class MetadataAction extends DefaultAction {
 
             String html = createHtmlFragment(md);
             return new HtmlResolution(new StringReader(html), extraHeaders);
+            
         } catch (Exception e) {
             String message = "Fout bij reset document";
             log.error(message, e);
@@ -228,7 +221,9 @@ public class MetadataAction extends DefaultAction {
     public Resolution updateXml() throws Exception {
 
         try {
-
+            // update xml only possible when write access
+            viewMode = false;
+            
             Document md = (Document) getContext().getRequest().getSession().getAttribute(SESSION_KEY_METADATA_XML);
             if (md == null) {
                 throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
@@ -244,6 +239,7 @@ public class MetadataAction extends DefaultAction {
 
             String html = createHtmlFragment(md);
             return new HtmlResolution(new StringReader(html), extraHeaders);
+            
         } catch (Exception e) {
             String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
             log.error(message, e);
@@ -264,6 +260,9 @@ public class MetadataAction extends DefaultAction {
      */
     public Resolution updateElementsAndGetXml() throws Exception {
         try {
+            // update xml only possible when write access
+            viewMode = false;
+            
             Document md = (Document) getContext().getRequest().getSession().getAttribute(SESSION_KEY_METADATA_XML);
             if (md == null) {
                 throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
@@ -278,6 +277,7 @@ public class MetadataAction extends DefaultAction {
             Document mdCopy = cleanupXmlCopy(md, strictISO19115);
             // Geen XML parsing door browser, geef door als String
             return new StreamingResolution("text/plain", new StringReader(DocumentHelper.getDocumentString(mdCopy)));
+            
         } catch (Exception e) {
             String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
             log.error(message, e);
@@ -332,6 +332,7 @@ public class MetadataAction extends DefaultAction {
             saveXmlToSource(mdString);
 
             return new StreamingResolution("text/plain", "success");
+            
         } catch (Exception e) {
             String message = "Could not write " + mode + " metadata to location " + path;
             log.error(message, e);
@@ -404,6 +405,7 @@ public class MetadataAction extends DefaultAction {
 
             String html = createHtmlFragment(md);
             return new HtmlResolution(new StringReader(html), extraHeaders);
+            
         } catch (Exception e) {
             String message = "Fout tijdens synchroniseren " + mode + " metadata van lokatie " + path;
             log.error(message, e);
@@ -462,7 +464,10 @@ public class MetadataAction extends DefaultAction {
 
         try {
             Document md;
-
+            
+            // import xml only possible when write access
+            viewMode = false;
+            
             if (importXml != null) {
                 md = new SAXBuilder().build(importXml.getInputStream());
             } else if (metadata != null) {
@@ -583,9 +588,9 @@ public class MetadataAction extends DefaultAction {
      * @throws TransformerException 
      */
     private Document preprocessXml(Document md) throws JDOMException, IOException, TransformerException {
-        md = mdeXml2Html.preprocess(md, determineViewMode());
-        md = mdeXml2Html.extraPreprocessor1(md, determineViewMode());
-        md = mdeXml2Html.extraPreprocessor2(md, determineViewMode());
+        md = mdeXml2Html.preprocess(md, viewMode);
+        md = mdeXml2Html.extraPreprocessor1(md, viewMode);
+        md = mdeXml2Html.extraPreprocessor2(md, viewMode);
         log.debug("serverside xml after preprocessing: " + DocumentHelper.getDocumentString(md));
         return md;
     }
@@ -600,8 +605,8 @@ public class MetadataAction extends DefaultAction {
      * @throws TransformerException 
      */
     private String createHtmlFragment(Document md) throws JDOMException, IOException, TransformerException {
-        Document htmlDoc = mdeXml2Html.transform(md, determineViewMode());
-        htmlDoc = mdeXml2Html.extraPostprocessor1(htmlDoc, determineViewMode());
+        Document htmlDoc = mdeXml2Html.transform(md, viewMode);
+        htmlDoc = mdeXml2Html.extraPostprocessor1(htmlDoc, viewMode);
         String html = DocumentHelper.getDocumentString(htmlDoc);
         log.debug("serverside rendered html: " + html);
         return html;

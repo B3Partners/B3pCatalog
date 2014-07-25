@@ -9,22 +9,25 @@ B3pCatalog.basicMdeOptions = {
     extraTitleAboveTabs: false,
     iso19115PreviewImageInsideGeotab: true,
     tabContainerSelector: "#page-tabs",
+    //TODO CvL: deze mag weg
     organisations: organisations
 };
 
 // used for a non-csw editor/viewer
 B3pCatalog.getExtraMdeOptions = function(isGeo, viewMode) {
     var extraOptions = {
-        fcMode: true,
-        iso19115oneTab: true,
-        commentMode: true,
+        //TODO CvL: dit moet via config.xml
+//        fcMode: true,
+//        iso19115oneTab: true,
+//        commentMode: true,
         afterInit: B3pMde.afterInit
     };
     
     if (typeof isGeo === "boolean" && !isGeo) {
         $.extend(extraOptions, {
-            dcMode: true,
-            dcPblMode: true,
+        //TODO CvL: dit moet via config.xml
+//            dcMode: true,
+//            dcPblMode: true,
             geoTabsMinimizable: true,
             geoTabsMinimized: true
         });
@@ -33,13 +36,14 @@ B3pCatalog.getExtraMdeOptions = function(isGeo, viewMode) {
         $.extend(extraOptions, {
             viewMode: viewMode
         });
-        if (!viewMode) {
-            $.extend(extraOptions, {
-                extraPreprocessors: [
-                    "preprocessors/preprocessorGHW.xsl"
-                ]
-            });
-        }
+        //TODO CvL: dit moet via extra preprocessor in config.xml
+//        if (!viewMode) {
+//            $.extend(extraOptions, {
+//                extraPreprocessors: [
+//                    "preprocessors/preprocessorGHW.xsl"
+//                ]
+//            });
+//        }
     }
     
     return extraOptions;
