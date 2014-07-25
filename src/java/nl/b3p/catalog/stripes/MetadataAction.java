@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.xml.transform.TransformerException;
 import net.sourceforge.stripes.action.FileBean;
+import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.validation.Validate;
@@ -31,7 +32,6 @@ import nl.b3p.catalog.config.CatalogAppConfig;
 import nl.b3p.catalog.config.Root;
 import nl.b3p.catalog.filetree.Extensions;
 import nl.b3p.catalog.filetree.FileListHelper;
-import nl.b3p.catalog.kaartenbalie.KbJDBCHelper;
 import nl.b3p.catalog.kaartenbalie.KbJDBCHelperProxy;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.resolution.HtmlResolution;
@@ -107,15 +107,15 @@ public class MetadataAction extends DefaultAction {
     
     @Validate
     private String type = "dataset";
+    
+    @Validate
+    private Boolean viewMode = null;
 
     private Root root;
     private AclAccess rootAccess;
-    private boolean viewMode;
     private Map<String, String> extraHeaders = new HashMap<String, String>();
 
     public void determineRoot() throws B3PCatalogException {
-        
-        viewMode = false;
         
         if (LOCAL_MODE.equals(mode)) {
 
@@ -124,17 +124,33 @@ public class MetadataAction extends DefaultAction {
             // can be edited.
             rootAccess = AclAccess.WRITE;  
             extraHeaders.put("X-MDE-Access", "WRITE");
+            if (viewMode==null) {
+                viewMode = Boolean.FALSE;
+            }
             
         } else if (path!=null && !path.isEmpty()){
+
             // access can only be assessed when a path is present
             // without path there is no writing or reading so no check
             root = Root.getRootForPath(path, getContext().getRequest(), AclAccess.READ);
             rootAccess = root.getRequestUserHighestAccessLevel(getContext().getRequest());
-            viewMode = rootAccess == null || rootAccess.getSecurityLevel() < AclAccess.WRITE.getSecurityLevel();
+            if (viewMode==null || !viewMode.booleanValue()) {
+                viewMode = rootAccess == null || rootAccess.getSecurityLevel() < AclAccess.WRITE.getSecurityLevel();
+            }
             extraHeaders.put("X-MDE-Access", rootAccess.name());
+
+        } else {
+            
+            viewMode = Boolean.TRUE;
+            
         }
     }
-
+    
+    protected final static String VIEW_METADATA_JSP = "/WEB-INF/jsp/main/mdview.jsp";    
+    public Resolution view() {
+             return new ForwardResolution(VIEW_METADATA_JSP);
+    }
+        
     /**
      * loads metadata from source
      * preprocesses metadata to hold all elements
@@ -1053,6 +1069,20 @@ public class MetadataAction extends DefaultAction {
      */
     public void setType(String type) {
         this.type = type;
+    }
+
+    /**
+     * @return the viewMode
+     */
+    public Boolean getViewMode() {
+        return viewMode;
+    }
+
+    /**
+     * @param viewMode the viewMode to set
+     */
+    public void setViewMode(Boolean viewMode) {
+        this.viewMode = viewMode;
     }
     // </editor-fold>
 

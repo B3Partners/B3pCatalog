@@ -268,7 +268,7 @@ public class mdeXml2Html {
      * @throws TransformerException 
      */
     public static Document extraSync1(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
-        return dCtoISO19115Synchronizer(doc, null);
+        return extraSync1(doc, null);
     }
     
     public static Document extraSync1(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
@@ -287,7 +287,7 @@ public class mdeXml2Html {
      * @throws TransformerException 
      */
     public static Document extraSync2(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
-        return dCtoISO19115Synchronizer(doc, null);
+        return extraSync2(doc, null);
     }
     
     public static Document extraSync2(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
@@ -306,7 +306,7 @@ public class mdeXml2Html {
      * @throws TransformerException 
      */
     public static Document extraPreprocessor1(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
-        return dCtoISO19115Synchronizer(doc, null);
+        return extraPreprocessor1(doc, null);
     }
     
     public static Document extraPreprocessor1(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
@@ -325,7 +325,7 @@ public class mdeXml2Html {
      * @throws TransformerException 
      */
     public static Document extraPreprocessor2(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
-        return dCtoISO19115Synchronizer(doc, null);
+        return extraPreprocessor2(doc, null);
     }
     
     public static Document extraPreprocessor2(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
@@ -344,13 +344,13 @@ public class mdeXml2Html {
      * @throws TransformerException 
      */
     public static Document extraPostprocessor1(Document doc) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
-        return dCtoISO19115Synchronizer(doc, null);
+        return extraPostprocessor1(doc, null);
     }
     
     public static Document extraPostprocessor1(Document doc, Boolean viewMode) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
         return transformIntern(doc, "extrapostprocessor1", viewMode, true);
     }
-   
+    
     public static void addUUID(Document xmlDoc, boolean overwriteUUIDs) throws JDOMException {
         Element mdNode = XPathHelper.selectSingleElement(xmlDoc, "/*/gmd:MD_Metadata");
         if (mdNode==null) {

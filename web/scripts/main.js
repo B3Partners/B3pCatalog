@@ -591,6 +591,42 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
     }
 };
 
+B3pCatalog.loadMetadata4View = function(mode, path, title, isGeo, cancel) {
+
+    if (mode != B3pCatalog.modes.LOCAL_MODE) {
+        
+        var localViewMode = true;
+        
+        var opts = {
+            done: function() {
+
+            },
+            cancel: cancel,
+            ajaxOptions: {
+                url: B3pCatalog.metadataUrl,
+                type: "POST",
+                data: {
+                    loadMdAsHtml: "t",
+                    mode: mode,
+                    path: path,
+                    viewMode: localViewMode
+                },
+                dataType: "text", // jquery returns the limited (non-activeX) xml document version in IE when using the default or 'xml'. Could use dataType adapter override to fix this: text -> xml
+                success: function(data, textStatus, jqXHR) {
+                    //log(data);
+                    B3pCatalog.currentFilename = path;
+                    B3pCatalog.currentMode = mode;
+                    document.title = B3pCatalog.title + B3pCatalog.titleSeparator + title;
+
+                    B3pCatalog.createMdeHtml(data, false, isGeo, localViewMode);
+                }
+            }
+        };
+
+        this._loadMetadata(opts);
+    }
+};
+
 B3pCatalog.resetMde = function() {
     var mde = $("#mde").data("mde");
 
