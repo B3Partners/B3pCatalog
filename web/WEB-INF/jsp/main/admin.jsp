@@ -19,5 +19,12 @@
     </script>
     
     <a href="#" id="organisationsLink">Organisaties en contactpersonen</a>
+    
+    <p>
+    Gebruik de volgende link om direct metadata in te zien, bv in configuratie van gisviewer
+    <ul>
+        <li>${contextPath}/Metadata.action?view=t&path=path_to_file&mode=file</li>
+    </ul>
+
 
 </div>

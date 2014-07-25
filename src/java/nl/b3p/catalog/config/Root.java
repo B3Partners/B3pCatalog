@@ -125,11 +125,7 @@ public abstract class Root {
     public AclAccess getRequestUserHighestAccessLevel(HttpServletRequest request) {
         for (RoleAccess ra : getRoleAccessList()) {
             if ("none".equals(ra.getRole())) {
-                if (request.getUserPrincipal() == null) {
-                    return ra.getAccess();
-                } else {
-                    return AclAccess.NONE;
-                }
+                return ra.getAccess();
             }
             if ("*".equals(ra.getRole()) && request.getUserPrincipal() != null) {
                 return ra.getAccess();
