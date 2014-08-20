@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 rel. 2 sp2 (http://www.altova.com) by chris van lith (B3partners BV) -->
+<?xml-stylesheet type="text/xsl" href="nk_pp.xslt"?>
+<pbl:normenkaderPBL xmlns:pbl="http://www.pbl.nl/xsd/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="hh_12okt">
+	<chris>test</chris>
+	<pbl:nkBeheerItems>
+		<pbl:nka2 type="yesnona">
+			<pbl:nka2Title>texttitle nka2</pbl:nka2Title>
+			<pbl:nka2Checks>
+				<pbl:nka2c2 type="checkbox">
+					<pbl:nka2c2Title>test title a2c2</pbl:nka2c2Title>
+					<pbl:nka2c2Value>1234</pbl:nka2c2Value>
+					<pbl:nka2c2Comment>aaaaaaaaaaaaaaaaaaaaa</pbl:nka2c2Comment>
+				</pbl:nka2c2>
+				<pbl:nka2c3 type="checkbox">
+					<pbl:nka2c3Title>test title a2c3</pbl:nka2c3Title>
+					<pbl:nka2c3Value>1234567890</pbl:nka2c3Value>
+					<pbl:nka2c3Comment>bbbbbbbbbbbbbbbb</pbl:nka2c3Comment>
+				</pbl:nka2c3>
+			</pbl:nka2Checks>
+		</pbl:nka2>
+	</pbl:nkBeheerItems>
+</pbl:normenkaderPBL>
