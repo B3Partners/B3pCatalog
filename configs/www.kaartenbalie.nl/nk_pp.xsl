@@ -1,9 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:stylesheet xmlns:b3p="http://www.b3partners.nl/xsd/metadata" xmlns:gml="http://www.opengis.net/gml" xmlns:pbl="http://www.pbl.nl/xsd/metadata" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/1999/XSL/Transform" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0" exclude-result-prefixes="xs pbl b3p gml xlink xsi">
+<xs:stylesheet xmlns:b3p="http://www.b3partners.nl/xsd/metadata" xmlns:gml="http://www.opengis.net/gml" xmlns:pbl="http://www.pbl.nl/xsd/metadata" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/1999/XSL/Transform" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" exclude-result-prefixes="xs pbl b3p gml xlink xsi">
 	<xs:output method="xml" indent="yes"/>
+	
+    <xs:param name="dcPblMode_init">true</xs:param>
+    <xs:param name="dcPblMode" select="$dcPblMode_init = 'true'"/>
+
 	<xs:template match="@*|node()">
 		<xs:copy>
 			<xs:apply-templates select="@*|node()"/>
+		</xs:copy>
+	</xs:template>
+	<xs:template match="metadata">
+		<xs:element name="metadata">
+			<!--Copy everthing else under this node-->
+			<xs:apply-templates select="@*|node()"/>
+		</xs:element>
+	</xs:template>
+	<xs:template match="b3p:B3Partners">
+		<xs:copy>
+			<xs:choose>
+				<xs:when test="$dcPblMode = 'true'">
+					<!--Copy everthing else under this node-->
+					<xs:apply-templates select="@*|node()[
+												 not(self::pbl:normenkaderPBL)
+							]"/>
+					<xs:choose>
+						<xs:when test="not(pbl:normenkaderPBL)">
+							<xs:call-template name="add-pbl-normenkaderPBL"/>
+						</xs:when>
+						<xs:otherwise>
+							<xs:apply-templates select="pbl:normenkaderPBL"/>
+						</xs:otherwise>
+					</xs:choose>
+				</xs:when>
+				<xs:otherwise>
+					<xs:apply-templates select="@*|node()"/>
+				</xs:otherwise>
+			</xs:choose>
 		</xs:copy>
 	</xs:template>
 	<!--create pbl:normenkaderPBL template-->
@@ -251,7 +284,7 @@
 	</xs:template>
 	<!--create add-pbl-nkalg1Value template-->
 	<xs:template name="add-pbl-nkalg1Value">
-		<xs:element name="pbl:nkalg1Value"></xs:element>
+		<xs:element name="pbl:nkalg1Value"/>
 	</xs:template>
 	<!--create pbl:nkalg2 template-->
 	<xs:template match="pbl:nkalg2">
@@ -307,7 +340,7 @@
 	</xs:template>
 	<!--create add-pbl-nkalg2Value template-->
 	<xs:template name="add-pbl-nkalg2Value">
-		<xs:element name="pbl:nkalg2Value"></xs:element>
+		<xs:element name="pbl:nkalg2Value"/>
 	</xs:template>
 	<!--create pbl:nkalg3 template-->
 	<xs:template match="pbl:nkalg3">
@@ -363,7 +396,7 @@
 	</xs:template>
 	<!--create add-pbl-nkalg3Value template-->
 	<xs:template name="add-pbl-nkalg3Value">
-		<xs:element name="pbl:nkalg3Value"></xs:element>
+		<xs:element name="pbl:nkalg3Value"/>
 	</xs:template>
 	<!--create pbl:nkalg4 template-->
 	<xs:template match="pbl:nkalg4">
@@ -419,7 +452,7 @@
 	</xs:template>
 	<!--create add-pbl-nkalg4Value template-->
 	<xs:template name="add-pbl-nkalg4Value">
-		<xs:element name="pbl:nkalg4Value"></xs:element>
+		<xs:element name="pbl:nkalg4Value"/>
 	</xs:template>
 	<!--create pbl:nkalg5 template-->
 	<xs:template match="pbl:nkalg5">
@@ -475,7 +508,7 @@
 	</xs:template>
 	<!--create add-pbl-nkalg5Value template-->
 	<xs:template name="add-pbl-nkalg5Value">
-		<xs:element name="pbl:nkalg5Value"></xs:element>
+		<xs:element name="pbl:nkalg5Value"/>
 	</xs:template>
 	<!--create pbl:nkalg6 template-->
 	<xs:template match="pbl:nkalg6">
@@ -531,7 +564,7 @@
 	</xs:template>
 	<!--create add-pbl-nkalg6Value template-->
 	<xs:template name="add-pbl-nkalg6Value">
-		<xs:element name="pbl:nkalg6Value"></xs:element>
+		<xs:element name="pbl:nkalg6Value"/>
 	</xs:template>
 	<!--create pbl:nkalg7 template-->
 	<xs:template match="pbl:nkalg7">
@@ -587,7 +620,7 @@
 	</xs:template>
 	<!--create add-pbl-nkalg7Value template-->
 	<xs:template name="add-pbl-nkalg7Value">
-		<xs:element name="pbl:nkalg7Value"></xs:element>
+		<xs:element name="pbl:nkalg7Value"/>
 	</xs:template>
 	<!--create pbl:nkBeheerItems template-->
 	<xs:template match="pbl:nkBeheerItems">
@@ -726,7 +759,7 @@
 	</xs:template>
 	<!--create add-pbl-nka1Value template-->
 	<xs:template name="add-pbl-nka1Value">
-		<xs:element name="pbl:nka1Value"></xs:element>
+		<xs:element name="pbl:nka1Value"/>
 	</xs:template>
 	<!--create pbl:nka1Comment template-->
 	<xs:template match="pbl:nka1Comment">
@@ -736,7 +769,7 @@
 	</xs:template>
 	<!--create add-pbl-nka1Comment template-->
 	<xs:template name="add-pbl-nka1Comment">
-		<xs:element name="pbl:nka1Comment"></xs:element>
+		<xs:element name="pbl:nka1Comment"/>
 	</xs:template>
 	<!--create pbl:nka1Checks template-->
 	<xs:template match="pbl:nka1Checks">
@@ -851,7 +884,7 @@
 	</xs:template>
 	<!--create add-pbl-nka1c1Value template-->
 	<xs:template name="add-pbl-nka1c1Value">
-		<xs:element name="pbl:nka1c1Value"></xs:element>
+		<xs:element name="pbl:nka1c1Value"/>
 	</xs:template>
 	<!--create pbl:nka1c1Comment template-->
 	<xs:template match="pbl:nka1c1Comment">
@@ -861,7 +894,7 @@
 	</xs:template>
 	<!--create add-pbl-nka1c1Comment template-->
 	<xs:template name="add-pbl-nka1c1Comment">
-		<xs:element name="pbl:nka1c1Comment"></xs:element>
+		<xs:element name="pbl:nka1c1Comment"/>
 	</xs:template>
 	<!--create pbl:nka1c2 template-->
 	<xs:template match="pbl:nka1c2">
@@ -929,7 +962,7 @@
 	</xs:template>
 	<!--create add-pbl-nka1c2Value template-->
 	<xs:template name="add-pbl-nka1c2Value">
-		<xs:element name="pbl:nka1c2Value"></xs:element>
+		<xs:element name="pbl:nka1c2Value"/>
 	</xs:template>
 	<!--create pbl:nka1c2Comment template-->
 	<xs:template match="pbl:nka1c2Comment">
@@ -939,7 +972,7 @@
 	</xs:template>
 	<!--create add-pbl-nka1c2Comment template-->
 	<xs:template name="add-pbl-nka1c2Comment">
-		<xs:element name="pbl:nka1c2Comment"></xs:element>
+		<xs:element name="pbl:nka1c2Comment"/>
 	</xs:template>
 	<!--create pbl:nka1c3 template-->
 	<xs:template match="pbl:nka1c3">
@@ -1007,7 +1040,7 @@
 	</xs:template>
 	<!--create add-pbl-nka1c3Value template-->
 	<xs:template name="add-pbl-nka1c3Value">
-		<xs:element name="pbl:nka1c3Value"></xs:element>
+		<xs:element name="pbl:nka1c3Value"/>
 	</xs:template>
 	<!--create pbl:nka1c3Comment template-->
 	<xs:template match="pbl:nka1c3Comment">
@@ -1017,7 +1050,7 @@
 	</xs:template>
 	<!--create add-pbl-nka1c3Comment template-->
 	<xs:template name="add-pbl-nka1c3Comment">
-		<xs:element name="pbl:nka1c3Comment"></xs:element>
+		<xs:element name="pbl:nka1c3Comment"/>
 	</xs:template>
 	<!--create pbl:nka2 template-->
 	<xs:template match="pbl:nka2">
@@ -1097,7 +1130,7 @@
 	</xs:template>
 	<!--create add-pbl-nka2Value template-->
 	<xs:template name="add-pbl-nka2Value">
-		<xs:element name="pbl:nka2Value"></xs:element>
+		<xs:element name="pbl:nka2Value"/>
 	</xs:template>
 	<!--create pbl:nka2Comment template-->
 	<xs:template match="pbl:nka2Comment">
@@ -1107,7 +1140,7 @@
 	</xs:template>
 	<!--create add-pbl-nka2Comment template-->
 	<xs:template name="add-pbl-nka2Comment">
-		<xs:element name="pbl:nka2Comment"></xs:element>
+		<xs:element name="pbl:nka2Comment"/>
 	</xs:template>
 	<!--create pbl:nka2Checks template-->
 	<xs:template match="pbl:nka2Checks">
@@ -1210,7 +1243,7 @@
 	</xs:template>
 	<!--create add-pbl-nka2c1Value template-->
 	<xs:template name="add-pbl-nka2c1Value">
-		<xs:element name="pbl:nka2c1Value"></xs:element>
+		<xs:element name="pbl:nka2c1Value"/>
 	</xs:template>
 	<!--create pbl:nka2c1Comment template-->
 	<xs:template match="pbl:nka2c1Comment">
@@ -1220,7 +1253,7 @@
 	</xs:template>
 	<!--create add-pbl-nka2c1Comment template-->
 	<xs:template name="add-pbl-nka2c1Comment">
-		<xs:element name="pbl:nka2c1Comment"></xs:element>
+		<xs:element name="pbl:nka2c1Comment"/>
 	</xs:template>
 	<!--create pbl:nka2c2 template-->
 	<xs:template match="pbl:nka2c2">
@@ -1288,7 +1321,7 @@
 	</xs:template>
 	<!--create add-pbl-nka2c2Value template-->
 	<xs:template name="add-pbl-nka2c2Value">
-		<xs:element name="pbl:nka2c2Value"></xs:element>
+		<xs:element name="pbl:nka2c2Value"/>
 	</xs:template>
 	<!--create pbl:nka2c2Comment template-->
 	<xs:template match="pbl:nka2c2Comment">
@@ -1298,7 +1331,7 @@
 	</xs:template>
 	<!--create add-pbl-nka2c2Comment template-->
 	<xs:template name="add-pbl-nka2c2Comment">
-		<xs:element name="pbl:nka2c2Comment"></xs:element>
+		<xs:element name="pbl:nka2c2Comment"/>
 	</xs:template>
 	<!--create pbl:nka3 template-->
 	<xs:template match="pbl:nka3">
@@ -1378,7 +1411,7 @@
 	</xs:template>
 	<!--create add-pbl-nka3Value template-->
 	<xs:template name="add-pbl-nka3Value">
-		<xs:element name="pbl:nka3Value"></xs:element>
+		<xs:element name="pbl:nka3Value"/>
 	</xs:template>
 	<!--create pbl:nka3Comment template-->
 	<xs:template match="pbl:nka3Comment">
@@ -1388,7 +1421,7 @@
 	</xs:template>
 	<!--create add-pbl-nka3Comment template-->
 	<xs:template name="add-pbl-nka3Comment">
-		<xs:element name="pbl:nka3Comment"></xs:element>
+		<xs:element name="pbl:nka3Comment"/>
 	</xs:template>
 	<!--create pbl:nka3Checks template-->
 	<xs:template match="pbl:nka3Checks">
@@ -1491,7 +1524,7 @@
 	</xs:template>
 	<!--create add-pbl-nka3c1Value template-->
 	<xs:template name="add-pbl-nka3c1Value">
-		<xs:element name="pbl:nka3c1Value"></xs:element>
+		<xs:element name="pbl:nka3c1Value"/>
 	</xs:template>
 	<!--create pbl:nka3c1Comment template-->
 	<xs:template match="pbl:nka3c1Comment">
@@ -1501,7 +1534,7 @@
 	</xs:template>
 	<!--create add-pbl-nka3c1Comment template-->
 	<xs:template name="add-pbl-nka3c1Comment">
-		<xs:element name="pbl:nka3c1Comment"></xs:element>
+		<xs:element name="pbl:nka3c1Comment"/>
 	</xs:template>
 	<!--create pbl:nka3c2 template-->
 	<xs:template match="pbl:nka3c2">
@@ -1569,7 +1602,7 @@
 	</xs:template>
 	<!--create add-pbl-nka3c2Value template-->
 	<xs:template name="add-pbl-nka3c2Value">
-		<xs:element name="pbl:nka3c2Value"></xs:element>
+		<xs:element name="pbl:nka3c2Value"/>
 	</xs:template>
 	<!--create pbl:nka3c2Comment template-->
 	<xs:template match="pbl:nka3c2Comment">
@@ -1579,7 +1612,7 @@
 	</xs:template>
 	<!--create add-pbl-nka3c2Comment template-->
 	<xs:template name="add-pbl-nka3c2Comment">
-		<xs:element name="pbl:nka3c2Comment"></xs:element>
+		<xs:element name="pbl:nka3c2Comment"/>
 	</xs:template>
 	<!--create pbl:nka4 template-->
 	<xs:template match="pbl:nka4">
@@ -1659,7 +1692,7 @@
 	</xs:template>
 	<!--create add-pbl-nka4Value template-->
 	<xs:template name="add-pbl-nka4Value">
-		<xs:element name="pbl:nka4Value"></xs:element>
+		<xs:element name="pbl:nka4Value"/>
 	</xs:template>
 	<!--create pbl:nka4Comment template-->
 	<xs:template match="pbl:nka4Comment">
@@ -1669,7 +1702,7 @@
 	</xs:template>
 	<!--create add-pbl-nka4Comment template-->
 	<xs:template name="add-pbl-nka4Comment">
-		<xs:element name="pbl:nka4Comment"></xs:element>
+		<xs:element name="pbl:nka4Comment"/>
 	</xs:template>
 	<!--create pbl:nka4Checks template-->
 	<xs:template match="pbl:nka4Checks">
@@ -1784,7 +1817,7 @@
 	</xs:template>
 	<!--create add-pbl-nka4c1Value template-->
 	<xs:template name="add-pbl-nka4c1Value">
-		<xs:element name="pbl:nka4c1Value"></xs:element>
+		<xs:element name="pbl:nka4c1Value"/>
 	</xs:template>
 	<!--create pbl:nka4c1Comment template-->
 	<xs:template match="pbl:nka4c1Comment">
@@ -1794,7 +1827,7 @@
 	</xs:template>
 	<!--create add-pbl-nka4c1Comment template-->
 	<xs:template name="add-pbl-nka4c1Comment">
-		<xs:element name="pbl:nka4c1Comment"></xs:element>
+		<xs:element name="pbl:nka4c1Comment"/>
 	</xs:template>
 	<!--create pbl:nka4c2 template-->
 	<xs:template match="pbl:nka4c2">
@@ -1862,7 +1895,7 @@
 	</xs:template>
 	<!--create add-pbl-nka4c2Value template-->
 	<xs:template name="add-pbl-nka4c2Value">
-		<xs:element name="pbl:nka4c2Value"></xs:element>
+		<xs:element name="pbl:nka4c2Value"/>
 	</xs:template>
 	<!--create pbl:nka4c2Comment template-->
 	<xs:template match="pbl:nka4c2Comment">
@@ -1872,7 +1905,7 @@
 	</xs:template>
 	<!--create add-pbl-nka4c2Comment template-->
 	<xs:template name="add-pbl-nka4c2Comment">
-		<xs:element name="pbl:nka4c2Comment"></xs:element>
+		<xs:element name="pbl:nka4c2Comment"/>
 	</xs:template>
 	<!--create pbl:nka4c3 template-->
 	<xs:template match="pbl:nka4c3">
@@ -1940,7 +1973,7 @@
 	</xs:template>
 	<!--create add-pbl-nka4c3Value template-->
 	<xs:template name="add-pbl-nka4c3Value">
-		<xs:element name="pbl:nka4c3Value"></xs:element>
+		<xs:element name="pbl:nka4c3Value"/>
 	</xs:template>
 	<!--create pbl:nka4c3Comment template-->
 	<xs:template match="pbl:nka4c3Comment">
@@ -1950,7 +1983,7 @@
 	</xs:template>
 	<!--create add-pbl-nka4c3Comment template-->
 	<xs:template name="add-pbl-nka4c3Comment">
-		<xs:element name="pbl:nka4c3Comment"></xs:element>
+		<xs:element name="pbl:nka4c3Comment"/>
 	</xs:template>
 	<!--create pbl:nkBronlijstItems template-->
 	<xs:template match="pbl:nkBronlijstItems">
@@ -2192,7 +2225,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb1Value template-->
 	<xs:template name="add-pbl-nkb1Value">
-		<xs:element name="pbl:nkb1Value"></xs:element>
+		<xs:element name="pbl:nkb1Value"/>
 	</xs:template>
 	<!--create pbl:nkb1Comment template-->
 	<xs:template match="pbl:nkb1Comment">
@@ -2202,7 +2235,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb1Comment template-->
 	<xs:template name="add-pbl-nkb1Comment">
-		<xs:element name="pbl:nkb1Comment"></xs:element>
+		<xs:element name="pbl:nkb1Comment"/>
 	</xs:template>
 	<!--create pbl:nkb1Checks template-->
 	<xs:template match="pbl:nkb1Checks">
@@ -2329,7 +2362,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb1c1Value template-->
 	<xs:template name="add-pbl-nkb1c1Value">
-		<xs:element name="pbl:nkb1c1Value"></xs:element>
+		<xs:element name="pbl:nkb1c1Value"/>
 	</xs:template>
 	<!--create pbl:nkb1c1Comment template-->
 	<xs:template match="pbl:nkb1c1Comment">
@@ -2339,7 +2372,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb1c1Comment template-->
 	<xs:template name="add-pbl-nkb1c1Comment">
-		<xs:element name="pbl:nkb1c1Comment"></xs:element>
+		<xs:element name="pbl:nkb1c1Comment"/>
 	</xs:template>
 	<!--create pbl:nkb1c2 template-->
 	<xs:template match="pbl:nkb1c2">
@@ -2407,7 +2440,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb1c2Value template-->
 	<xs:template name="add-pbl-nkb1c2Value">
-		<xs:element name="pbl:nkb1c2Value"></xs:element>
+		<xs:element name="pbl:nkb1c2Value"/>
 	</xs:template>
 	<!--create pbl:nkb1c2Comment template-->
 	<xs:template match="pbl:nkb1c2Comment">
@@ -2417,7 +2450,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb1c2Comment template-->
 	<xs:template name="add-pbl-nkb1c2Comment">
-		<xs:element name="pbl:nkb1c2Comment"></xs:element>
+		<xs:element name="pbl:nkb1c2Comment"/>
 	</xs:template>
 	<!--create pbl:nkb1c3 template-->
 	<xs:template match="pbl:nkb1c3">
@@ -2485,7 +2518,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb1c3Value template-->
 	<xs:template name="add-pbl-nkb1c3Value">
-		<xs:element name="pbl:nkb1c3Value"></xs:element>
+		<xs:element name="pbl:nkb1c3Value"/>
 	</xs:template>
 	<!--create pbl:nkb1c3Comment template-->
 	<xs:template match="pbl:nkb1c3Comment">
@@ -2495,7 +2528,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb1c3Comment template-->
 	<xs:template name="add-pbl-nkb1c3Comment">
-		<xs:element name="pbl:nkb1c3Comment"></xs:element>
+		<xs:element name="pbl:nkb1c3Comment"/>
 	</xs:template>
 	<!--create pbl:nkb1c4 template-->
 	<xs:template match="pbl:nkb1c4">
@@ -2563,7 +2596,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb1c4Value template-->
 	<xs:template name="add-pbl-nkb1c4Value">
-		<xs:element name="pbl:nkb1c4Value"></xs:element>
+		<xs:element name="pbl:nkb1c4Value"/>
 	</xs:template>
 	<!--create pbl:nkb1c4Comment template-->
 	<xs:template match="pbl:nkb1c4Comment">
@@ -2573,7 +2606,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb1c4Comment template-->
 	<xs:template name="add-pbl-nkb1c4Comment">
-		<xs:element name="pbl:nkb1c4Comment"></xs:element>
+		<xs:element name="pbl:nkb1c4Comment"/>
 	</xs:template>
 	<!--create pbl:nkb2 template-->
 	<xs:template match="pbl:nkb2">
@@ -2653,7 +2686,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb2Value template-->
 	<xs:template name="add-pbl-nkb2Value">
-		<xs:element name="pbl:nkb2Value"></xs:element>
+		<xs:element name="pbl:nkb2Value"/>
 	</xs:template>
 	<!--create pbl:nkb2Comment template-->
 	<xs:template match="pbl:nkb2Comment">
@@ -2663,7 +2696,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb2Comment template-->
 	<xs:template name="add-pbl-nkb2Comment">
-		<xs:element name="pbl:nkb2Comment"></xs:element>
+		<xs:element name="pbl:nkb2Comment"/>
 	</xs:template>
 	<!--create pbl:nkb2Checks template-->
 	<xs:template match="pbl:nkb2Checks">
@@ -2766,7 +2799,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb2c1Value template-->
 	<xs:template name="add-pbl-nkb2c1Value">
-		<xs:element name="pbl:nkb2c1Value"></xs:element>
+		<xs:element name="pbl:nkb2c1Value"/>
 	</xs:template>
 	<!--create pbl:nkb2c1Comment template-->
 	<xs:template match="pbl:nkb2c1Comment">
@@ -2776,7 +2809,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb2c1Comment template-->
 	<xs:template name="add-pbl-nkb2c1Comment">
-		<xs:element name="pbl:nkb2c1Comment"></xs:element>
+		<xs:element name="pbl:nkb2c1Comment"/>
 	</xs:template>
 	<!--create pbl:nkb2c2 template-->
 	<xs:template match="pbl:nkb2c2">
@@ -2844,7 +2877,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb2c2Value template-->
 	<xs:template name="add-pbl-nkb2c2Value">
-		<xs:element name="pbl:nkb2c2Value"></xs:element>
+		<xs:element name="pbl:nkb2c2Value"/>
 	</xs:template>
 	<!--create pbl:nkb2c2Comment template-->
 	<xs:template match="pbl:nkb2c2Comment">
@@ -2854,7 +2887,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb2c2Comment template-->
 	<xs:template name="add-pbl-nkb2c2Comment">
-		<xs:element name="pbl:nkb2c2Comment"></xs:element>
+		<xs:element name="pbl:nkb2c2Comment"/>
 	</xs:template>
 	<!--create pbl:nkb3 template-->
 	<xs:template match="pbl:nkb3">
@@ -2934,7 +2967,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb3Value template-->
 	<xs:template name="add-pbl-nkb3Value">
-		<xs:element name="pbl:nkb3Value"></xs:element>
+		<xs:element name="pbl:nkb3Value"/>
 	</xs:template>
 	<!--create pbl:nkb3Comment template-->
 	<xs:template match="pbl:nkb3Comment">
@@ -2944,7 +2977,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb3Comment template-->
 	<xs:template name="add-pbl-nkb3Comment">
-		<xs:element name="pbl:nkb3Comment"></xs:element>
+		<xs:element name="pbl:nkb3Comment"/>
 	</xs:template>
 	<!--create pbl:nkb3Checks template-->
 	<xs:template match="pbl:nkb3Checks">
@@ -3059,7 +3092,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb3c1Value template-->
 	<xs:template name="add-pbl-nkb3c1Value">
-		<xs:element name="pbl:nkb3c1Value"></xs:element>
+		<xs:element name="pbl:nkb3c1Value"/>
 	</xs:template>
 	<!--create pbl:nkb3c1Comment template-->
 	<xs:template match="pbl:nkb3c1Comment">
@@ -3069,7 +3102,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb3c1Comment template-->
 	<xs:template name="add-pbl-nkb3c1Comment">
-		<xs:element name="pbl:nkb3c1Comment"></xs:element>
+		<xs:element name="pbl:nkb3c1Comment"/>
 	</xs:template>
 	<!--create pbl:nkb3c2 template-->
 	<xs:template match="pbl:nkb3c2">
@@ -3137,7 +3170,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb3cValue template-->
 	<xs:template name="add-pbl-nkb3cValue">
-		<xs:element name="pbl:nkb3cValue"></xs:element>
+		<xs:element name="pbl:nkb3cValue"/>
 	</xs:template>
 	<!--create pbl:nkb3cComment template-->
 	<xs:template match="pbl:nkb3cComment">
@@ -3147,7 +3180,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb3cComment template-->
 	<xs:template name="add-pbl-nkb3cComment">
-		<xs:element name="pbl:nkb3cComment"></xs:element>
+		<xs:element name="pbl:nkb3cComment"/>
 	</xs:template>
 	<!--create pbl:nkb3c3 template-->
 	<xs:template match="pbl:nkb3c3">
@@ -3215,7 +3248,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb3c3Value template-->
 	<xs:template name="add-pbl-nkb3c3Value">
-		<xs:element name="pbl:nkb3c3Value"></xs:element>
+		<xs:element name="pbl:nkb3c3Value"/>
 	</xs:template>
 	<!--create pbl:nkb3c3Comment template-->
 	<xs:template match="pbl:nkb3c3Comment">
@@ -3225,7 +3258,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb3c3Comment template-->
 	<xs:template name="add-pbl-nkb3c3Comment">
-		<xs:element name="pbl:nkb3c3Comment"></xs:element>
+		<xs:element name="pbl:nkb3c3Comment"/>
 	</xs:template>
 	<!--create pbl:nkb4 template-->
 	<xs:template match="pbl:nkb4">
@@ -3305,7 +3338,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb4Value template-->
 	<xs:template name="add-pbl-nkb4Value">
-		<xs:element name="pbl:nkb4Value"></xs:element>
+		<xs:element name="pbl:nkb4Value"/>
 	</xs:template>
 	<!--create pbl:nkb4Comment template-->
 	<xs:template match="pbl:nkb4Comment">
@@ -3315,7 +3348,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb4Comment template-->
 	<xs:template name="add-pbl-nkb4Comment">
-		<xs:element name="pbl:nkb4Comment"></xs:element>
+		<xs:element name="pbl:nkb4Comment"/>
 	</xs:template>
 	<!--create pbl:nkb4Checks template-->
 	<xs:template match="pbl:nkb4Checks">
@@ -3454,7 +3487,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb4c1Value template-->
 	<xs:template name="add-pbl-nkb4c1Value">
-		<xs:element name="pbl:nkb4c1Value"></xs:element>
+		<xs:element name="pbl:nkb4c1Value"/>
 	</xs:template>
 	<!--create pbl:nkb4c1Comment template-->
 	<xs:template match="pbl:nkb4c1Comment">
@@ -3464,7 +3497,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb4c1Comment template-->
 	<xs:template name="add-pbl-nkb4c1Comment">
-		<xs:element name="pbl:nkb4c1Comment"></xs:element>
+		<xs:element name="pbl:nkb4c1Comment"/>
 	</xs:template>
 	<!--create pbl:nkb4c2 template-->
 	<xs:template match="pbl:nkb4c2">
@@ -3532,7 +3565,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb4c2Value template-->
 	<xs:template name="add-pbl-nkb4c2Value">
-		<xs:element name="pbl:nkb4c2Value"></xs:element>
+		<xs:element name="pbl:nkb4c2Value"/>
 	</xs:template>
 	<!--create pbl:nkb4c2Comment template-->
 	<xs:template match="pbl:nkb4c2Comment">
@@ -3542,7 +3575,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb4c2Comment template-->
 	<xs:template name="add-pbl-nkb4c2Comment">
-		<xs:element name="pbl:nkb4c2Comment"></xs:element>
+		<xs:element name="pbl:nkb4c2Comment"/>
 	</xs:template>
 	<!--create pbl:nkb4c3 template-->
 	<xs:template match="pbl:nkb4c3">
@@ -3610,7 +3643,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb4c3Value template-->
 	<xs:template name="add-pbl-nkb4c3Value">
-		<xs:element name="pbl:nkb4c3Value"></xs:element>
+		<xs:element name="pbl:nkb4c3Value"/>
 	</xs:template>
 	<!--create pbl:nkb4c3Comment template-->
 	<xs:template match="pbl:nkb4c3Comment">
@@ -3620,7 +3653,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb4c3Comment template-->
 	<xs:template name="add-pbl-nkb4c3Comment">
-		<xs:element name="pbl:nkb4c3Comment"></xs:element>
+		<xs:element name="pbl:nkb4c3Comment"/>
 	</xs:template>
 	<!--create pbl:nkb4c4 template-->
 	<xs:template match="pbl:nkb4c4">
@@ -3688,7 +3721,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb4c4Value template-->
 	<xs:template name="add-pbl-nkb4c4Value">
-		<xs:element name="pbl:nkb4c4Value"></xs:element>
+		<xs:element name="pbl:nkb4c4Value"/>
 	</xs:template>
 	<!--create pbl:nkb4c4Comment template-->
 	<xs:template match="pbl:nkb4c4Comment">
@@ -3698,7 +3731,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb4c4Comment template-->
 	<xs:template name="add-pbl-nkb4c4Comment">
-		<xs:element name="pbl:nkb4c4Comment"></xs:element>
+		<xs:element name="pbl:nkb4c4Comment"/>
 	</xs:template>
 	<!--create pbl:nkb4c5 template-->
 	<xs:template match="pbl:nkb4c5">
@@ -3766,7 +3799,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb4c5Value template-->
 	<xs:template name="add-pbl-nkb4c5Value">
-		<xs:element name="pbl:nkb4c5Value"></xs:element>
+		<xs:element name="pbl:nkb4c5Value"/>
 	</xs:template>
 	<!--create pbl:nkb4c5Comment template-->
 	<xs:template match="pbl:nkb4c5Comment">
@@ -3776,7 +3809,7 @@
 	</xs:template>
 	<!--create add-pbl-nkb4c5Comment template-->
 	<xs:template name="add-pbl-nkb4c5Comment">
-		<xs:element name="pbl:nkb4c5Comment"></xs:element>
+		<xs:element name="pbl:nkb4c5Comment"/>
 	</xs:template>
 	<!--create pbl:nkGebruikItems template-->
 	<xs:template match="pbl:nkGebruikItems">
@@ -3903,7 +3936,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc1Value template-->
 	<xs:template name="add-pbl-nkc1Value">
-		<xs:element name="pbl:nkc1Value"></xs:element>
+		<xs:element name="pbl:nkc1Value"/>
 	</xs:template>
 	<!--create pbl:nkc1Comment template-->
 	<xs:template match="pbl:nkc1Comment">
@@ -3913,7 +3946,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc1Comment template-->
 	<xs:template name="add-pbl-nkc1Comment">
-		<xs:element name="pbl:nkc1Comment"></xs:element>
+		<xs:element name="pbl:nkc1Comment"/>
 	</xs:template>
 	<!--create pbl:nkc1Checks template-->
 	<xs:template match="pbl:nkc1Checks">
@@ -4004,7 +4037,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc1c1Value template-->
 	<xs:template name="add-pbl-nkc1c1Value">
-		<xs:element name="pbl:nkc1c1Value"></xs:element>
+		<xs:element name="pbl:nkc1c1Value"/>
 	</xs:template>
 	<!--create pbl:nkc1c1Comment template-->
 	<xs:template match="pbl:nkc1c1Comment">
@@ -4014,7 +4047,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc1c1Comment template-->
 	<xs:template name="add-pbl-nkc1c1Comment">
-		<xs:element name="pbl:nkc1c1Comment"></xs:element>
+		<xs:element name="pbl:nkc1c1Comment"/>
 	</xs:template>
 	<!--create pbl:nkc2 template-->
 	<xs:template match="pbl:nkc2">
@@ -4094,7 +4127,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc2Value template-->
 	<xs:template name="add-pbl-nkc2Value">
-		<xs:element name="pbl:nkc2Value"></xs:element>
+		<xs:element name="pbl:nkc2Value"/>
 	</xs:template>
 	<!--create pbl:nkc2Comment template-->
 	<xs:template match="pbl:nkc2Comment">
@@ -4104,7 +4137,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc2Comment template-->
 	<xs:template name="add-pbl-nkc2Comment">
-		<xs:element name="pbl:nkc2Comment"></xs:element>
+		<xs:element name="pbl:nkc2Comment"/>
 	</xs:template>
 	<!--create pbl:nkc2Checks template-->
 	<xs:template match="pbl:nkc2Checks">
@@ -4243,7 +4276,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc2c1Value template-->
 	<xs:template name="add-pbl-nkc2c1Value">
-		<xs:element name="pbl:nkc2c1Value"></xs:element>
+		<xs:element name="pbl:nkc2c1Value"/>
 	</xs:template>
 	<!--create pbl:nkc2c1Comment template-->
 	<xs:template match="pbl:nkc2c1Comment">
@@ -4253,7 +4286,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc2c1Comment template-->
 	<xs:template name="add-pbl-nkc2c1Comment">
-		<xs:element name="pbl:nkc2c1Comment"></xs:element>
+		<xs:element name="pbl:nkc2c1Comment"/>
 	</xs:template>
 	<!--create pbl:nkc2c2 template-->
 	<xs:template match="pbl:nkc2c2">
@@ -4321,7 +4354,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc2c2Value template-->
 	<xs:template name="add-pbl-nkc2c2Value">
-		<xs:element name="pbl:nkc2c2Value"></xs:element>
+		<xs:element name="pbl:nkc2c2Value"/>
 	</xs:template>
 	<!--create pbl:nkc2c2Comment template-->
 	<xs:template match="pbl:nkc2c2Comment">
@@ -4331,7 +4364,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc2c2Comment template-->
 	<xs:template name="add-pbl-nkc2c2Comment">
-		<xs:element name="pbl:nkc2c2Comment"></xs:element>
+		<xs:element name="pbl:nkc2c2Comment"/>
 	</xs:template>
 	<!--create pbl:nkc2c3 template-->
 	<xs:template match="pbl:nkc2c3">
@@ -4399,7 +4432,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc2c3Value template-->
 	<xs:template name="add-pbl-nkc2c3Value">
-		<xs:element name="pbl:nkc2c3Value"></xs:element>
+		<xs:element name="pbl:nkc2c3Value"/>
 	</xs:template>
 	<!--create pbl:nkc2c3Comment template-->
 	<xs:template match="pbl:nkc2c3Comment">
@@ -4409,7 +4442,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc2c3Comment template-->
 	<xs:template name="add-pbl-nkc2c3Comment">
-		<xs:element name="pbl:nkc2c3Comment"></xs:element>
+		<xs:element name="pbl:nkc2c3Comment"/>
 	</xs:template>
 	<!--create pbl:nkc2c4 template-->
 	<xs:template match="pbl:nkc2c4">
@@ -4477,7 +4510,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc2c4Value template-->
 	<xs:template name="add-pbl-nkc2c4Value">
-		<xs:element name="pbl:nkc2c4Value"></xs:element>
+		<xs:element name="pbl:nkc2c4Value"/>
 	</xs:template>
 	<!--create pbl:nkc2c4Comment template-->
 	<xs:template match="pbl:nkc2c4Comment">
@@ -4487,7 +4520,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc2c4Comment template-->
 	<xs:template name="add-pbl-nkc2c4Comment">
-		<xs:element name="pbl:nkc2c4Comment"></xs:element>
+		<xs:element name="pbl:nkc2c4Comment"/>
 	</xs:template>
 	<!--create pbl:nkc2c5 template-->
 	<xs:template match="pbl:nkc2c5">
@@ -4555,7 +4588,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc2c5Value template-->
 	<xs:template name="add-pbl-nkc2c5Value">
-		<xs:element name="pbl:nkc2c5Value"></xs:element>
+		<xs:element name="pbl:nkc2c5Value"/>
 	</xs:template>
 	<!--create pbl:nkc2c5Comment template-->
 	<xs:template match="pbl:nkc2c5Comment">
@@ -4565,7 +4598,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc2c5Comment template-->
 	<xs:template name="add-pbl-nkc2c5Comment">
-		<xs:element name="pbl:nkc2c5Comment"></xs:element>
+		<xs:element name="pbl:nkc2c5Comment"/>
 	</xs:template>
 	<!--create pbl:nkc3 template-->
 	<xs:template match="pbl:nkc3">
@@ -4645,7 +4678,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3Value template-->
 	<xs:template name="add-pbl-nkc3Value">
-		<xs:element name="pbl:nkc3Value"></xs:element>
+		<xs:element name="pbl:nkc3Value"/>
 	</xs:template>
 	<!--create pbl:nkc3Comment template-->
 	<xs:template match="pbl:nkc3Comment">
@@ -4655,7 +4688,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3Comment template-->
 	<xs:template name="add-pbl-nkc3Comment">
-		<xs:element name="pbl:nkc3Comment"></xs:element>
+		<xs:element name="pbl:nkc3Comment"/>
 	</xs:template>
 	<!--create pbl:nkc3Checks template-->
 	<xs:template match="pbl:nkc3Checks">
@@ -4830,7 +4863,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3c1Value template-->
 	<xs:template name="add-pbl-nkc3c1Value">
-		<xs:element name="pbl:nkc3c1Value"></xs:element>
+		<xs:element name="pbl:nkc3c1Value"/>
 	</xs:template>
 	<!--create pbl:nkc3c1Comment template-->
 	<xs:template match="pbl:nkc3c1Comment">
@@ -4840,7 +4873,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3c1Comment template-->
 	<xs:template name="add-pbl-nkc3c1Comment">
-		<xs:element name="pbl:nkc3c1Comment"></xs:element>
+		<xs:element name="pbl:nkc3c1Comment"/>
 	</xs:template>
 	<!--create pbl:nkc3c2 template-->
 	<xs:template match="pbl:nkc3c2">
@@ -4908,7 +4941,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3cValue template-->
 	<xs:template name="add-pbl-nkc3cValue">
-		<xs:element name="pbl:nkc3cValue"></xs:element>
+		<xs:element name="pbl:nkc3cValue"/>
 	</xs:template>
 	<!--create pbl:nkc3cComment template-->
 	<xs:template match="pbl:nkc3cComment">
@@ -4918,7 +4951,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3cComment template-->
 	<xs:template name="add-pbl-nkc3cComment">
-		<xs:element name="pbl:nkc3cComment"></xs:element>
+		<xs:element name="pbl:nkc3cComment"/>
 	</xs:template>
 	<!--create pbl:nkc3c3 template-->
 	<xs:template match="pbl:nkc3c3">
@@ -4986,7 +5019,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3c3Value template-->
 	<xs:template name="add-pbl-nkc3c3Value">
-		<xs:element name="pbl:nkc3c3Value"></xs:element>
+		<xs:element name="pbl:nkc3c3Value"/>
 	</xs:template>
 	<!--create pbl:nkc3c3Comment template-->
 	<xs:template match="pbl:nkc3c3Comment">
@@ -4996,7 +5029,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3c3Comment template-->
 	<xs:template name="add-pbl-nkc3c3Comment">
-		<xs:element name="pbl:nkc3c3Comment"></xs:element>
+		<xs:element name="pbl:nkc3c3Comment"/>
 	</xs:template>
 	<!--create pbl:nkc3c4 template-->
 	<xs:template match="pbl:nkc3c4">
@@ -5064,7 +5097,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3c4Value template-->
 	<xs:template name="add-pbl-nkc3c4Value">
-		<xs:element name="pbl:nkc3c4Value"></xs:element>
+		<xs:element name="pbl:nkc3c4Value"/>
 	</xs:template>
 	<!--create pbl:nkc3c4Comment template-->
 	<xs:template match="pbl:nkc3c4Comment">
@@ -5074,7 +5107,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3c4Comment template-->
 	<xs:template name="add-pbl-nkc3c4Comment">
-		<xs:element name="pbl:nkc3c4Comment"></xs:element>
+		<xs:element name="pbl:nkc3c4Comment"/>
 	</xs:template>
 	<!--create pbl:nkc3c5 template-->
 	<xs:template match="pbl:nkc3c5">
@@ -5142,7 +5175,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3c5Value template-->
 	<xs:template name="add-pbl-nkc3c5Value">
-		<xs:element name="pbl:nkc3c5Value"></xs:element>
+		<xs:element name="pbl:nkc3c5Value"/>
 	</xs:template>
 	<!--create pbl:nkc3c5Comment template-->
 	<xs:template match="pbl:nkc3c5Comment">
@@ -5152,7 +5185,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3c5Comment template-->
 	<xs:template name="add-pbl-nkc3c5Comment">
-		<xs:element name="pbl:nkc3c5Comment"></xs:element>
+		<xs:element name="pbl:nkc3c5Comment"/>
 	</xs:template>
 	<!--create pbl:nkc3c6 template-->
 	<xs:template match="pbl:nkc3c6">
@@ -5220,7 +5253,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3c6Value template-->
 	<xs:template name="add-pbl-nkc3c6Value">
-		<xs:element name="pbl:nkc3c6Value"></xs:element>
+		<xs:element name="pbl:nkc3c6Value"/>
 	</xs:template>
 	<!--create pbl:nkc3c6Comment template-->
 	<xs:template match="pbl:nkc3c6Comment">
@@ -5230,7 +5263,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3c6Comment template-->
 	<xs:template name="add-pbl-nkc3c6Comment">
-		<xs:element name="pbl:nkc3c6Comment"></xs:element>
+		<xs:element name="pbl:nkc3c6Comment"/>
 	</xs:template>
 	<!--create pbl:nkc3c7 template-->
 	<xs:template match="pbl:nkc3c7">
@@ -5298,7 +5331,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3c7Value template-->
 	<xs:template name="add-pbl-nkc3c7Value">
-		<xs:element name="pbl:nkc3c7Value"></xs:element>
+		<xs:element name="pbl:nkc3c7Value"/>
 	</xs:template>
 	<!--create pbl:nkc3c7Comment template-->
 	<xs:template match="pbl:nkc3c7Comment">
@@ -5308,7 +5341,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3c7Comment template-->
 	<xs:template name="add-pbl-nkc3c7Comment">
-		<xs:element name="pbl:nkc3c7Comment"></xs:element>
+		<xs:element name="pbl:nkc3c7Comment"/>
 	</xs:template>
 	<!--create pbl:nkc3c8 template-->
 	<xs:template match="pbl:nkc3c8">
@@ -5376,7 +5409,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3c8Value template-->
 	<xs:template name="add-pbl-nkc3c8Value">
-		<xs:element name="pbl:nkc3c8Value"></xs:element>
+		<xs:element name="pbl:nkc3c8Value"/>
 	</xs:template>
 	<!--create pbl:nkc3c8Comment template-->
 	<xs:template match="pbl:nkc3c8Comment">
@@ -5386,7 +5419,7 @@
 	</xs:template>
 	<!--create add-pbl-nkc3c8Comment template-->
 	<xs:template name="add-pbl-nkc3c8Comment">
-		<xs:element name="pbl:nkc3c8Comment"></xs:element>
+		<xs:element name="pbl:nkc3c8Comment"/>
 	</xs:template>
 	<!--create pbl:nkInvulhulpItems template-->
 	<xs:template match="pbl:nkInvulhulpItems">
@@ -5568,6 +5601,6 @@
 	</xs:template>
 	<!--create add-pbl-nkhValue template-->
 	<xs:template name="add-pbl-nkhValue">
-		<xs:element name="pbl:nkhValue"></xs:element>
+		<xs:element name="pbl:nkhValue"/>
 	</xs:template>
 </xs:stylesheet>

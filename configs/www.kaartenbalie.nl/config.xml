@@ -186,8 +186,9 @@
         <entry><key>ISO19115toDC</key><value>ISO19115toDC.xsl</value></entry>
         <entry><key>DCtoISO19115</key><value>DCtoISO19115.xsl</value></entry>
         <entry><key>sync_ncml</key><value>sync_ncml.xsl</value></entry>
-        <!-- klantspecifieke transformaties 
-        <entry><key>extrapreprocessor1</key><value>preprocessor1.xsl</value></entry>
+        <!-- klantspecifieke transformaties -->
+        <entry><key>extrapreprocessor1</key><value>nk_pp.xsl</value></entry>
+        <!--
         <entry><key>extrapreprocessor2</key><value>preprocessor2.xsl</value></entry>
         <entry><key>extrasync1</key><value>sync1.xsl</value></entry>
         <entry><key>extrasync2</key><value>sync2.xsl</value></entry>

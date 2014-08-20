@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2008 rel. 2 sp2 (http://www.altova.com) by chris van lith (B3partners BV) -->
-<?xml-stylesheet type="text/xsl" href="nk_pp.xslt"?>
-<pbl:normenkaderPBL xmlns:pbl="http://www.pbl.nl/xsd/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="hh_12okt">
-	<chris>test</chris>
-	<pbl:nkBeheerItems>
-		<pbl:nka2 type="yesnona">
-			<pbl:nka2Title>texttitle nka2</pbl:nka2Title>
-			<pbl:nka2Checks>
-				<pbl:nka2c2 type="checkbox">
-					<pbl:nka2c2Title>test title a2c2</pbl:nka2c2Title>
-					<pbl:nka2c2Value>1234</pbl:nka2c2Value>
-					<pbl:nka2c2Comment>aaaaaaaaaaaaaaaaaaaaa</pbl:nka2c2Comment>
-				</pbl:nka2c2>
-				<pbl:nka2c3 type="checkbox">
-					<pbl:nka2c3Title>test title a2c3</pbl:nka2c3Title>
-					<pbl:nka2c3Value>1234567890</pbl:nka2c3Value>
-					<pbl:nka2c3Comment>bbbbbbbbbbbbbbbb</pbl:nka2c3Comment>
-				</pbl:nka2c3>
-			</pbl:nka2Checks>
-		</pbl:nka2>
-	</pbl:nkBeheerItems>
-</pbl:normenkaderPBL>
+<?xml-stylesheet type="text/xsl" href="nk_pp.xsl"?>
+<metadata>
+	<b3p:B3Partners xmlns:b3p="http://www.b3partners.nl/xsd/metadata">
+		<b3p:comments>
+			<b3p:comment>
+				<b3p:username>viewer</b3p:username>
+				<b3p:dateTime>2014-07-24T22:56:52</b3p:dateTime>
+				<b3p:content>commentaar als viewer</b3p:content>
+			</b3p:comment>
+		</b3p:comments>
+		<pbl:metadataPBL xmlns:pbl="http://www.pbl.nl/xsd/metadata">
+			<dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">ddgdfsgsdfdfghdfg 333333333333 4444 dasdfsaf hjfgjh</dc:title>
+			<dc:subject xmlns:dc="http://purl.org/dc/elements/1.1/">dsadf</dc:subject>
+			<dc:description xmlns:dc="http://purl.org/dc/elements/1.1/">fghdfgh ''dfadfasdf'' asdfasdf PPPP\n\n==asdfasdf== \n&amp;\n\n\nPPPP''asdfasdf''</dc:description>
+			<dc:language xmlns:dc="http://purl.org/dc/elements/1.1/">hun</dc:language>
+			<dc:rights xmlns:dc="http://purl.org/dc/elements/1.1/">license</dc:rights>
+		</pbl:metadataPBL>
+	</b3p:B3Partners>
+</metadata>

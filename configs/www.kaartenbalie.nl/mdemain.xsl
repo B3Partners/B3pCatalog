@@ -4,12 +4,12 @@
 	<xsl:param name="basePath"/>
 	<xsl:param name="dateFormatUserHint">dd-mm-jjjj</xsl:param>
 	<xsl:param name="globalReadonly_init">false</xsl:param>
-	<xsl:param name="commentMode_init">true</xsl:param>
-	<xsl:param name="dcMode_init">true</xsl:param>
+	<xsl:param name="commentMode_init">false</xsl:param>
+	<xsl:param name="dcMode_init">false</xsl:param>
 	<xsl:param name="serviceMode_init">false</xsl:param>
-	<xsl:param name="datasetMode_init">true</xsl:param>
-	<xsl:param name="fcMode_init">true</xsl:param>
-	<xsl:param name="dcPblMode_init">false</xsl:param>
+	<xsl:param name="datasetMode_init">false</xsl:param>
+	<xsl:param name="fcMode_init">false</xsl:param>
+	<xsl:param name="dcPblMode_init">true</xsl:param>
 	<xsl:param name="iso19115oneTab_init">true</xsl:param>
 	<xsl:param name="synchroniseDC_init">false</xsl:param>
 	<xsl:param name="globalReadonly" select="$globalReadonly_init = 'true'"/>
@@ -120,6 +120,11 @@
 					<xsl:if test="$commentMode">
 						<li class="ui-corner-top">
 							<a href="#commentaar" title="Commentaar op deze metadata">Commentaar</a>
+						</li>
+					</xsl:if>
+					<xsl:if test="$dcPblMode">
+						<li class="ui-corner-top">
+							<a href="#normenkader" title="Checklist pbl-normenkader Datakwaliteit">Normenkader</a>
 						</li>
 					</xsl:if>
 				</ul>
@@ -240,6 +245,966 @@
 				<xsl:call-template name="commentItems"/>
 			</div>
 		</xsl:if>
+		<xsl:if test="$dcPblMode">
+			<div id="normenkader" class="ui-mde-tab-definition">
+				<div class="ui-mde-section">
+					<xsl:call-template name="section-title">
+						<xsl:with-param name="title">Bronlijst</xsl:with-param>
+					</xsl:call-template>
+					<div class="ui-mde-section-content">
+						<xsl:apply-templates select="pbl-nkBronlijstItems"/>
+					</div>
+				</div>
+				<div class="ui-mde-section">
+					<xsl:call-template name="section-title">
+						<xsl:with-param name="title">Invulhulp</xsl:with-param>
+					</xsl:call-template>
+					<div class="ui-mde-section-content">
+						<xsl:apply-templates select="pbl-nkInvulhulpItems"/>
+					</div>
+				</div>
+				<div class="ui-mde-section">
+					<xsl:call-template name="section-title">
+						<xsl:with-param name="title">Algemeen</xsl:with-param>
+					</xsl:call-template>
+					<div class="ui-mde-section-content">
+						<xsl:call-template name="pbl-nkAlgemeenItems"/>
+					</div>
+				</div>
+				<div class="ui-mde-section">
+					<xsl:call-template name="section-title">
+						<xsl:with-param name="title">A Beheer</xsl:with-param>
+					</xsl:call-template>
+					<div class="ui-mde-section-content">
+						<xsl:call-template name="pbl-nkBeheerItems"/>
+					</div>
+				</div>
+				<div class="ui-mde-section">
+					<xsl:call-template name="section-title">
+						<xsl:with-param name="title">B Dataobject</xsl:with-param>
+					</xsl:call-template>
+					<div class="ui-mde-section-content">
+						<xsl:apply-templates select="pbl-nkDataobjectItems"/>
+					</div>
+				</div>
+				<div class="ui-mde-section">
+					<xsl:call-template name="section-title">
+						<xsl:with-param name="title">C Gebruik</xsl:with-param>
+					</xsl:call-template>
+					<div class="ui-mde-section-content">
+						<xsl:apply-templates select="pbl-nkGebruikItems"/>
+					</div>
+				</div>
+				<div class="ui-mde-section">
+					<xsl:call-template name="section-title">
+						<xsl:with-param name="title">H Referenties</xsl:with-param>
+					</xsl:call-template>
+					<div class="ui-mde-section-content">
+						<xsl:apply-templates select="pbl-nkReferentiesItems"/>
+					</div>
+				</div>
+			</div>
+		</xsl:if>
+	</xsl:template>
+	<!-- PBL Normenkader -->
+	<xsl:template name="pbl-nkAlgemeenItems">
+		<xsl:for-each select="/metadata/b3p:B3Partners/pbl:normenkaderPBL/pbl:nkAlgemeenItems">
+			<xsl:apply-templates/>
+		</xsl:for-each>
+	</xsl:template>
+	<xsl:template name="pbl-nkBeheerItems">
+		<xsl:for-each select="/metadata/b3p:B3Partners/pbl:normenkaderPBL/pbl:nkBeheerItems">
+			<xsl:apply-templates/>
+		</xsl:for-each>
+	</xsl:template>
+	<xsl:template name="pbl-nkBronlijstItems">
+		<xsl:for-each select="/metadata/b3p:B3Partners/pbl:normenkaderPBL/pbl:nkBronlijstItems">
+			<xsl:apply-templates/>
+		</xsl:for-each>
+	</xsl:template>
+	<xsl:template name="pbl-nkDataobjectItems">
+		<xsl:for-each select="/metadata/b3p:B3Partners/pbl:normenkaderPBL/pbl:nkDataobjectItems">
+			<xsl:apply-templates/>
+		</xsl:for-each>
+	</xsl:template>
+	<xsl:template name="pbl-nkGebruikItems">
+		<xsl:for-each select="/metadata/b3p:B3Partners/pbl:normenkaderPBL/pbl:nkGebruikItems">
+			<xsl:apply-templates/>
+		</xsl:for-each>
+	</xsl:template>
+	<xsl:template name="pbl-nkInvulhulpItems">
+		<xsl:for-each select="/metadata/b3p:B3Partners/pbl:normenkaderPBL/pbl:nkInvulhulpItems">
+			<xsl:apply-templates/>
+		</xsl:for-each>
+	</xsl:template>
+	<xsl:template name="pbl-nkReferentiesItems">
+		<xsl:for-each select="/metadata/b3p:B3Partners/pbl:normenkaderPBL/pbl:nkReferentiesItems">
+			<xsl:apply-templates/>
+		</xsl:for-each>
+	</xsl:template>
+	<xsl:template match="pbl:nkalg1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Naam dataobject'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkalg1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'text'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkalg2Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Locatie (dataobject + metadata)'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkalg2Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'text'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkalg3Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Korte omschrijving'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkalg3Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'text'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkalg4Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'PBL Eigenaar inclusief contactpersoon'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkalg4Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'text'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkalg5Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'PBL Beheerder'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkalg5Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'text'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkalg6Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Datum opname'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkalg6Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'text'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkalg7Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Opgenomen door'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkalg7Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'text'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is het beheer van het dataobject belegd?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesno'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka1Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is het beheer van het dataobject belegd?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka1Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesno'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka1c1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Het beheer van een dataobject kan centraal bij IDM, decentraal binnen de sector of binnen een projectteam belegd zijn. Het antwoord Ja gaat dus altijd vergezeld van de opmerking: bij IDM, bij sector X of bij projectteam Y en, indien van toepassing, door…'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka1c1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka1c1Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Het beheer van een dataobject kan centraal bij IDM, decentraal binnen de sector of binnen een projectteam belegd zijn. Het antwoord Ja gaat dus altijd vergezeld van de opmerking: bij IDM, bij sector X of bij projectteam Y en, indien van toepassing, door…'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka1c1Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka1c2Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'De beheerder is geen persoon, maar een rol. Binnen IDM/de sectoren/het projectteam heeft iemand de rol van beheerder. Voor een projectdata geldt dat het instellen van een beheerder een vrije keuze is'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka1c2Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka1c2Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'De beheerder is geen persoon, maar een rol. Binnen IDM/de sectoren/het projectteam heeft iemand de rol van beheerder. Voor een projectdata geldt dat het instellen van een beheerder een vrije keuze is'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka1c2Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka1c3Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de metadata opgenomen worden in de PBL datazoekapplicatie? Andere gebruikers weten dan ook het dataobject beschibaar is.'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka1c3Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka1c3Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de metadata opgenomen worden in de PBL datazoekapplicatie? Andere gebruikers weten dan ook het dataobject beschibaar is.'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka1c3Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka2Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'texttitle nka2'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka2Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesnona'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka2Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'texttitle nka2'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka2Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesnona'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka2c3Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'test title a2c3'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka2c3Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka2c3Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'test title a2c3'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka2c3Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka2c1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de eigenaar op de hoogte van zijn/haar verantwoordelijkheden?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka2c1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka2c1Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de eigenaar op de hoogte van zijn/haar verantwoordelijkheden?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka2c1Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka2c2Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'test title a2c2'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka2c2Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka2c2Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'test title a2c2'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka2c2Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka3Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de dataexpert bekend?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka3Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesnona'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka3Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de dataexpert bekend?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka3Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesnona'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka3c1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn aandachtspunten voor het gebruik opgenomen in de metadata?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka3c1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka3c1Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn aandachtspunten voor het gebruik opgenomen in de metadata?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka3c1Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka3c2Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Staan in de metadata de projecten waarvoor het dataobject eerder is gebruikt?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka3c2Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka3c2Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Staan in de metadata de projecten waarvoor het dataobject eerder is gebruikt?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka3c2Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka4Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is er versiebeheer voor het dataobjectgeregeld (correcties, aanpassingen, etc)?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka4Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesnona'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka4Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is er versiebeheer voor het dataobjectgeregeld (correcties, aanpassingen, etc)?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka4Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesnona'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka4c1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is versiebeheer nodig?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka4c1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka4c1Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is versiebeheer nodig?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka4c1Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka4c2Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is er beschreven hoe om te gaan met actualisaties van het dataobject?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka4c2Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka4c2Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is er beschreven hoe om te gaan met actualisaties van het dataobject?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka4c2Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka4c3Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Op welke manier wordt het versiebeheer voor het dataobject uitgevoerd?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka4c3Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nka4c3Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Op welke manier wordt het versiebeheer voor het dataobject uitgevoerd?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nka4c3Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is het dataobject voorzien van metadata?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesno'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb1Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is het dataobject voorzien van metadata?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb1Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesno'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb1c1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de metadata beschikbaar volgens de PBL richtlijnen? Richtlijnen maken het mogelijk dataobjecten te zoeken op meerdere ingangen, en om metadata gestructureerd toe te voegen.'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb1c1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb1c1Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de metadata beschikbaar volgens de PBL richtlijnen? Richtlijnen maken het mogelijk dataobjecten te zoeken op meerdere ingangen, en om metadata gestructureerd toe te voegen.'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb1c1Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb1c2Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de metadata voldoende om de waarde voor de gewenste toepassing te kunnen beoordelen?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb1c2Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb1c2Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de metadata voldoende om de waarde voor de gewenste toepassing te kunnen beoordelen?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb1c2Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb1c3Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de metadata actueel, zijn eventuele datachecks en eerdere toepassingen er in opgenomen?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb1c3Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb1c3Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de metadata actueel, zijn eventuele datachecks en eerdere toepassingen er in opgenomen?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb1c3Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb1c4Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Indien er meerdere versies van het dataobject voorkomen, is dan duidelijk met welke versie gewerkt wordt?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb1c4Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb1c4Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Indien er meerdere versies van het dataobject voorkomen, is dan duidelijk met welke versie gewerkt wordt?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb1c4Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb2Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is er een beschrijving van het oorspronkelijke doel en toepassingsbereik van het dataobject?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb2Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesno'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb2Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is er een beschrijving van het oorspronkelijke doel en toepassingsbereik van het dataobject?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb2Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesno'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb2c1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is er informatie beschikbaar in de metadata over het oorspronkelijke doel waarvoor het dataobject is gemaakt? '"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb2c1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb2c1Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is er informatie beschikbaar in de metadata over het oorspronkelijke doel waarvoor het dataobject is gemaakt? '"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb2c1Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb2c2Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is er informatie beschikbaar in de metadata over het toepassingsbereik waarvoor het dataobject is gecreëerd?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb2c2Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb2c2Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is er informatie beschikbaar in de metadata over het toepassingsbereik waarvoor het dataobject is gecreëerd?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb2c2Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb3Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn het datamodel en de attributen van het dataobject beschreven?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb3Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesno'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb3Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn het datamodel en de attributen van het dataobject beschreven?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb3Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesno'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb3c1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is er een verklarende tekst en/of schema beschikbaar?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb3c1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb3c1Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is er een verklarende tekst en/of schema beschikbaar?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb3c1Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb3cValue">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn de relaties tussen de verschillende onderdelen beschreven?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb3cValue!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb3cComment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn de relaties tussen de verschillende onderdelen beschreven?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb3cComment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb3c3Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn de attributen voldoende beschreven?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb3c3Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb3c3Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn de attributen voldoende beschreven?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb3c3Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb4Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn er tests uitgevoerd waarmee de eigen kwaliteit van het dataobject kan worden aangetoond?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb4Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesno'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb4Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn er tests uitgevoerd waarmee de eigen kwaliteit van het dataobject kan worden aangetoond?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb4Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesno'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb4c1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn de testresultaten in de metadata vastgelegd?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb4c1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb4c1Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn de testresultaten in de metadata vastgelegd?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb4c1Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb4c2Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn de tests bij binnenkomst/aanmaak van het dataobject uitgevoerd?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb4c2Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb4c2Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn de tests bij binnenkomst/aanmaak van het dataobject uitgevoerd?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb4c2Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb4c3Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn er geautomatiseerde controles uitgevoerd? Bij terugkerende dataobjecten (reeksen etc) kan er naar worden gestreefd om, waar mogelijk, controles op de eigenschappen van de data te automatiseren.'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb4c3Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb4c3Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Zijn er geautomatiseerde controles uitgevoerd? Bij terugkerende dataobjecten (reeksen etc) kan er naar worden gestreefd om, waar mogelijk, controles op de eigenschappen van de data te automatiseren.'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb4c3Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb4c4Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Hebben testresultaten aanleiding gegeven om het dataobject te corrigeren? Licht toe op welke manier de correcties in de metadata/versiebeheer zijn opgenomen.'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb4c4Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb4c4Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Hebben testresultaten aanleiding gegeven om het dataobject te corrigeren? Licht toe op welke manier de correcties in de metadata/versiebeheer zijn opgenomen.'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb4c4Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb4c5Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Geven test resultaten aanleiding om het dataobject onder voorbehoud of in het geheel niet te gebruiken?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb4c5Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkb4c5Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Geven test resultaten aanleiding om het dataobject onder voorbehoud of in het geheel niet te gebruiken?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkb4c5Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is structureel gebruik van het dataobject voorzien?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesnona'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc1Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is structureel gebruik van het dataobject voorzien?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc1Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesnona'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc1c1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is het aanemelijk dat het dataobject ook gebruikt kan worden voor andere toepassingen dan de huidige toepassing?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc1c1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc1c1Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is het aanemelijk dat het dataobject ook gebruikt kan worden voor andere toepassingen dan de huidige toepassing?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc1c1Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc2Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de motivatie achter het gebruik van het gekozen dataobject beschreven?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc2Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesno'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc2Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de motivatie achter het gebruik van het gekozen dataobject beschreven?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc2Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesno'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc2c1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Als financiële redenen de keuze bepaalde, is het dan duidelijk waarom het dataobject voldoet aan de eisen? En wat eventuele tekortkomingen zijn? Zijn betere, maar niet toegankelijke (bijvoorbeeld te dure) alternatieven bekend?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc2c1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc2c1Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Als financiële redenen de keuze bepaalde, is het dan duidelijk waarom het dataobject voldoet aan de eisen? En wat eventuele tekortkomingen zijn? Zijn betere, maar niet toegankelijke (bijvoorbeeld te dure) alternatieven bekend?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc2c1Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc2c2Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Als het gekozen dataobject goed/het beste (inhoudelijk en/of technisch) aansluit bij de doelen van het onderzoek, is dan duidelijk waarom het beter voldoet dan alternatieven?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc2c2Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc2c2Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Als het gekozen dataobject goed/het beste (inhoudelijk en/of technisch) aansluit bij de doelen van het onderzoek, is dan duidelijk waarom het beter voldoet dan alternatieven?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc2c2Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc2c3Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is er bij de keuze van het dataobject gekeken naar continuïteit in onderzoek? Bijvoorbeeld naar dataobjecten gebruikt in eerdere of parallele onderzoeken (binnen PBL, maar ook binnen de overheid/wetenschap)?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc2c3Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc2c3Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is er bij de keuze van het dataobject gekeken naar continuïteit in onderzoek? Bijvoorbeeld naar dataobjecten gebruikt in eerdere of parallele onderzoeken (binnen PBL, maar ook binnen de overheid/wetenschap)?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc2c3Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc2c4Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is duidelijk omschreven wat de (eventuele) tekortkomingen van het dataobject voor het gebruiksdoel zijn?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc2c4Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc2c4Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is duidelijk omschreven wat de (eventuele) tekortkomingen van het dataobject voor het gebruiksdoel zijn?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc2c4Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc2c5Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de keuze voor een dataobject gemotiveerd met een evalautie van beschikbare opties?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc2c5Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc2c5Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is de keuze voor een dataobject gemotiveerd met een evalautie van beschikbare opties?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc2c5Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is nagegaan of er gebruiksbeperkingen zijn?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesnona'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is nagegaan of er gebruiksbeperkingen zijn?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'yesnona'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3c1Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Wordt in de onderzoeksopzet rekening gehouden met de gebruiksbeperkingen van het dataobject?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3c1Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3c1Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Wordt in de onderzoeksopzet rekening gehouden met de gebruiksbeperkingen van het dataobject?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3c1Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3cValue">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is duidelijk of het dataobject voor een specifiek project of ook voor algemeen gebruik beschikbaar is?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3cValue!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3cComment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is duidelijk of het dataobject voor een specifiek project of ook voor algemeen gebruik beschikbaar is?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3cComment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3c3Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is gezien de inwinningsmethode duidelijk of het dataobject alleen voor bepaalde toepassingen geschikt is (bijv. alleen op een bepaald schaalniveau)?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3c3Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3c3Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is gezien de inwinningsmethode duidelijk of het dataobject alleen voor bepaalde toepassingen geschikt is (bijv. alleen op een bepaald schaalniveau)?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3c3Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3c4Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is duidelijk met welk doel het dataobject door de dataleverancier is verzameld en wat de eventuele discrepantie is met het toepassingdoel in het PBL-onderzoek (mag/kan het dataobject wel voor dit doel worden ingezet)?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3c4Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3c4Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is duidelijk met welk doel het dataobject door de dataleverancier is verzameld en wat de eventuele discrepantie is met het toepassingdoel in het PBL-onderzoek (mag/kan het dataobject wel voor dit doel worden ingezet)?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3c4Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3c5Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is bekend op welk (aggregatie)niveau onderzoeksresultaten gepubliceerd en (digitaal) verspreid mogen worden?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3c5Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3c5Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is bekend op welk (aggregatie)niveau onderzoeksresultaten gepubliceerd en (digitaal) verspreid mogen worden?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3c5Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3c6Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is duidelijk wanneer er sprake is van afgeleide bestanden, en of deze afgeleide bestanden breder beschikbaar gesteld kunnen worden?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3c6Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3c6Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is duidelijk wanneer er sprake is van afgeleide bestanden, en of deze afgeleide bestanden breder beschikbaar gesteld kunnen worden?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3c6Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3c7Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is duidelijk of er beperkingen gesteld worden aan het (tijdelijk) beschikbaar stellen van de dataset aan derden/opdrachtnemers? Is de duur van het gebruiksrecht duidelijk (oneiding of een bepaalde duur), is er nagedacht over een exit strategie bij doorlopende contracten?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3c7Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3c7Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Is duidelijk of er beperkingen gesteld worden aan het (tijdelijk) beschikbaar stellen van de dataset aan derden/opdrachtnemers? Is de duur van het gebruiksrecht duidelijk (oneiding of een bepaalde duur), is er nagedacht over een exit strategie bij doorlopende contracten?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3c7Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3c8Value">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Worden bij het gebruik van de dataset de rechten en plichten rond de dataset bewaakt/gerespecteerd (bijv. geheimhouding; privacy, verspreiding kopieën, delen met derden/samenwerkingspartijen, etc.)? Worden eventuele geheimhoudingsverklaringen goed beheerd?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3c8Value!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkc3c8Comment">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Worden bij het gebruik van de dataset de rechten en plichten rond de dataset bewaakt/gerespecteerd (bijv. geheimhouding; privacy, verspreiding kopieën, delen met derden/samenwerkingspartijen, etc.)? Worden eventuele geheimhoudingsverklaringen goed beheerd?'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkc3c8Comment!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'checkbox'"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="pbl:nkhValue">
+		<xsl:call-template name="element">
+			<xsl:with-param name="title" select="'Referentie'"/>
+			<xsl:with-param name="help" select="'normenkader pbl:nkhValue!'"/>
+			<xsl:with-param name="optionality" select="'optional'"/>
+			<xsl:with-param name="type" select="'text'"/>
+		</xsl:call-template>
 	</xsl:template>
 	<!-- Dublin Core -->
 	<xsl:template name="dcItems">
