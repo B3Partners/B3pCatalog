@@ -81,9 +81,15 @@ public class XPathHelper {
     public final static String FC_TITLE = "/*/gfc:FC_FeatureCatalogue/gmx:name/gco:CharacterString";
 
     public static void applyXPathValuePair(Object context, String xpathString, String value) throws JDOMException {
+        applyXPathValuePair(context, xpathString, value, false);
+    }
+    
+    public static void applyXPathValuePair(Object context, String xpathString, String value, boolean forceOverwrite) throws JDOMException {
         Element element = selectSingleElement(context, xpathString);
         if (element != null) {
-            element.setText(value);
+            if (element.getTextNormalize().isEmpty() || forceOverwrite) {
+                element.setText(value);
+            }
         }
     }
     
