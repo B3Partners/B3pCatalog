@@ -15,6 +15,47 @@ import org.jdom.xpath.XPath;
  * @author Erik van de Pol
  */
 public class XPathHelper {
+    
+    // Xpath for entries how they appear in the MDE.
+    public final static String DOM_DC_TITLE = "/metadata/b3p:B3Partners/pbl:metadataPBL/dc:title";
+    public final static String DOM_DS1_ORGANISATION_NAME = "/metadata/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString";
+    public final static String DOM_DS2_ORGANISATION_NAME = "/metadata/gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:source/gmd:LI_Source/gmd:sourceStep/gmd:LI_ProcessStep/gmd:processor/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString";
+    public final static String DOM_DS3_ORGANISATION_NAME = "/metadata/gmd:MD_Metadata/gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString";
+    
+    public final static String DOM_DS1_ADDRESS = "/metadata/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:deliveryPoint/gco:CharacterString" ;
+    public final static String DOM_DS2_ADDRESS = "";
+    public final static String DOM_DS3_ADDRESS = "";
+    
+    public final static String DOM_DS1_CITY = "/metadata/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:city/gco:CharacterString";
+    public final static String DOM_DS2_CITY = "";
+    public final static String DOM_DS3_CITY = "";
+    
+    public final static String DOM_DS1_POSTCALCODE = "/metadata/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:postalCode/gco:CharacterString";
+    public final static String DOM_DS2_POSTCALCODE = "";
+    public final static String DOM_DS3_POSTCALCODE = "";
+    
+    public final static String DOM_DS1_COUNTRY = "/metadata/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:administrativeArea/gco:CharacterString" ;
+    public final static String DOM_DS2_COUNTRY = "";
+    public final static String DOM_DS3_COUNTRY = "";
+    
+    public final static String DOM_DS1_URL = "/metadata/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL" ;
+    public final static String DOM_DS2_URL = "";
+    public final static String DOM_DS3_URL = "";
+    
+    public final static String DOM_DS1_EMAIL = "/metadata/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString" ;
+    public final static String DOM_DS2_EMAIL = "";
+    public final static String DOM_DS3_EMAIL = "";
+    
+    public final static String DOM_DS1_VOICE = "/metadata/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice/gco:CharacterString" ;
+    public final static String DOM_DS2_VOICE = "";
+    public final static String DOM_DS3_VOICE = "";
+    
+    public final static String DOM_DS1_CONTACTS1_EMAIL = "";
+    public final static String DOM_DS2_CONTACTS1_EMAIL = "";
+    
+    
+    // Xpath for entries in an XML file
+    
     public final static String TITLE = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString";
     public final static String ALT_TITLE = "/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle/gco:CharacterString";
     

@@ -84,6 +84,11 @@ public class ShapefileSynchronizer {
         XPathHelper.applyXPathValuePair(doc, XPathHelper.BBOX_SOUTH, "" + minY);
         XPathHelper.applyXPathValuePair(doc, XPathHelper.BBOX_NORTH, "" + maxY);
         
+        // Wolverine. Added fixed title for testing.
+        XPathHelper.applyXPathValuePair(doc, XPathHelper.TITLE, "" + "DS1_Title_FORCED");
+        XPathHelper.applyXPathValuePair(doc, XPathHelper.ALT_TITLE, "" + "DS1_Alt_Title_FORCED");
+        
+        
         if(md.has("dbf")) {
             JSONArray fields = md.getJSONObject("dbf").getJSONArray("fields");
          

@@ -645,6 +645,9 @@ $.widget("ui.mde", {
     },
     
     //TODO CvL
+    // TODO JB. This functions has to be called when new organizations info is added and
+    // 'opslaan' is selected. In effect this means that the 'organizations' picklist gets 
+    // extended. There is a ticket for this enhancement.  
 //    _getOrganisationsJson: function() {
 //	this.options.organisations = this.options.getOrganisations();
 //
@@ -1300,11 +1303,15 @@ $.widget("ui.mde", {
         }
     },
 
+
     _fillOrganisationContactValue: function($section, xpathEnd, newValue) {
         var $node = this._findOrganisationContactNode($section, xpathEnd);
         if (newValue && $node.length) {
             this._saveValueOnClientSide($node, newValue);
-            $node.text(newValue);
+            
+            // Line beneath has a effect that when an organization is selected in 
+            // a certain tab that all relevant fields in the mde for this tab. 
+            $node.text(newValue); 
         }
     },
 

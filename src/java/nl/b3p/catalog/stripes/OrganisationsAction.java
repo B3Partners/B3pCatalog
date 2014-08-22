@@ -5,6 +5,11 @@
 package nl.b3p.catalog.stripes;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.Resolution;
@@ -26,6 +31,7 @@ public class OrganisationsAction extends DefaultAction {
     private static final String ENCODING = "UTF-8";
     
     private static final String DEFAULT_ORGANISATIONS_FILE = "organisations.json";
+    private static final String DEFAULT_ORGANISATIONS_FILE_TEST = "organisations_test.json";
     
     @DefaultHandler
     public Resolution main() {
@@ -33,8 +39,9 @@ public class OrganisationsAction extends DefaultAction {
         
         // TODO ipv JavaScript code JSON teruggeven en dit eerst valideren
         // met org.json.JSONObject
-        // In MDE niet met <script> tag maar met XHR laden (mogelijk probleem 
-        // met XHR in ArcCatalog plugin?)
+        // In MDE niet met <script> tag maar met XHR laden 
+        // Checked with Matthijs. Niet meer relevant is volgende commentaar: 
+        // (mogelijk probleem met XHR in ArcCatalog plugin?)
         
         return new StreamingResolution("text/javascript; charset=" + ENCODING, organisations);
     }
@@ -48,6 +55,31 @@ public class OrganisationsAction extends DefaultAction {
             return "organisations = {}";
         }
     }
+    
+    // TODO. Decide how to return the exception as multiple ways are used the B3pCatalog.
+    public static String getOrganisationsV2() {
+        
+        String jsonString = ""; 
+        try {
+            String jsonFileContents = "";
+
+            // Basically we are reading in the contents of the file and convert
+            // it to a jsonObject. When no Exception occurs 
+            
+            jsonFileContents =  FileUtils.readFileToString(getOrganisationsConfigFileV2(), ENCODING);
+            JSONObject jsonObj= new JSONObject(jsonFileContents);
+            jsonString = jsonObj.toString(); 
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(OrganisationsAction.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(OrganisationsAction.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(OrganisationsAction.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return jsonString; 
+    }
+
     
     public static void setOrganisations(String organisations) {
         // XXX enorme hack
@@ -70,6 +102,26 @@ public class OrganisationsAction extends DefaultAction {
         }
     }
     
+    
+    public static void setOrganisationsV2 (JSONObject organisations) {
+        try {
+            
+            // This validates the json object as well.
+            String OrganisationsString = organisations.toString(4); // prety print it.
+            
+            String fileName = getOrganisationsConfigFileV2().getAbsolutePath();
+            
+            FileUtils.writeStringToFile(getOrganisationsConfigFileV2(), OrganisationsString, ENCODING);
+        } catch (IOException ex) {
+            Logger.getLogger(OrganisationsAction.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(OrganisationsAction.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
+    
+    
     private static File getOrganisationsConfigFile()  {
         CatalogAppConfig cfg = CatalogAppConfig.getConfig();
         String ojf = cfg.getOrganizationsJsonFile();
@@ -82,5 +134,20 @@ public class OrganisationsAction extends DefaultAction {
         }
         return f;
     }
+
+        // debugging.
+        private static File getOrganisationsConfigFileV2()  {
+//        String ojf = cfg.getOrganizationsJsonFile();/home/janbessels/dev/projects/B3pCatalog/configs/www.kaartenbalie.nl/organisations.json
+            
+        String jsonFile = "/home/janbessels/dev/projects/B3pCatalog/configs/www.kaartenbalie.nl/organisations_test.json"    ;
+            
+       // String ojf = DEFAULT_ORGANISATIONS_FILE_TEST;
+        File f = new File(jsonFile);
+        String absolutePath = f.getAbsolutePath(); 
+        
+        return f;
+    }
+
+    
     
 }

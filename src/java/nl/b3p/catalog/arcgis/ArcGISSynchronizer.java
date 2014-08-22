@@ -30,6 +30,7 @@ import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.xml.Names;
 import nl.b3p.catalog.xml.Namespaces;
 import nl.b3p.catalog.xml.XPathHelper;
+import static nl.b3p.catalog.xml.mdeXml2Html.getXSLParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
@@ -90,8 +91,31 @@ public class ArcGISSynchronizer {
         dataset = DatasetHelper.getIDataset(dataset); // tja, ArcGIS; dataset is in den beginne slechts een IDatasetProxy. Zie verder getIDataset
         
         IObjectClass objectClass = (IObjectClass)dataset;
+     
         
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, dataset.getBrowseName());
+        // Set title if needed in DC or DS
+        // Check if synchroniseDC_init in config.xml is true
+        if (getXSLParam("synchroniseDC_init")) {
+
+            Element dcTitle = XPathHelper.selectSingleElement(xmlDoc, XPathHelper.DOM_DC_TITLE);
+
+                // If title is NOT already filled then synchronize it.
+            // Note: Changes made in the MDE are only picked up after a save of the document.
+            if (dcTitle.getText().isEmpty()) {
+                XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, dataset.getBrowseName());
+            }
+        } else {
+            // set title in DS1.
+
+            Element dsTitle = XPathHelper.selectSingleElement(xmlDoc, XPathHelper.TITLE);
+
+            // If title is NOT already filled then synchronize it.
+            // Note: Changes made in the MDE are only picked up after a save of the document.
+            if (dsTitle.getText().isEmpty()) {
+                XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, dataset.getBrowseName());
+            }
+        }
+        
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.ALT_TITLE, objectClass.getAliasName());
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.SPATIAL_REPR, getSpatialRepresentation(dataset));
         

@@ -67,6 +67,21 @@ etc...
                 "email": "Lydia.Dijkshoorn@rvo.nl"
             }
         }
+    },
+       "Wolv-org organisatie house of snikt": {
+        "address": "wolv-org address",
+        "city": "wolv-org city",
+        "state": "wolv-org state",
+        "postalCode": "wolv-org postalCode",
+        "country": "wolv-org country",
+        "url": "wolv-org url",
+        "email": "wolv-org email",
+        "voice": "wolv-org voice",
+        "contacts": {
+            "wolv-org contacts": {
+                "email": "wolv-org contacts email wolverine2710@gmail.com"
+            }
+        }
     }
 
 };
