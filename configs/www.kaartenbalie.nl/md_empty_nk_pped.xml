@@ -1,338 +1,732 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2008 rel. 2 sp2 (http://www.altova.com) by chris van lith (B3partners BV) -->
-<?xml-stylesheet type="text/xsl" href="mdemain.xsl"?>
+<?xml-stylesheet type="text/xsl" href="nk_mdemain.xsl"?>
 <metadata>
 	<b3p:B3Partners xmlns:b3p="http://www.b3partners.nl/xsd/metadata">
 		<pbl:normenkaderPBL xmlns:pbl="http://www.pbl.nl/xsd/metadata" version="hh_12okt">
-			<chris xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">test</chris>
 			<pbl:nkAlgemeenItems>
 				<pbl:nkalg1 type="text">
-					<pbl:nkalg1Title>Naam dataobject</pbl:nkalg1Title>
-					<pbl:nkalg1Value/>
+					<pbl:nkTitle>Naam dataobject</pbl:nkTitle>
+					<pbl:nkValue/>
 				</pbl:nkalg1>
 				<pbl:nkalg2 type="text">
-					<pbl:nkalg2Title>Locatie (dataobject + metadata)</pbl:nkalg2Title>
-					<pbl:nkalg2Value/>
+					<pbl:nkTitle>Locatie (dataobject + metadata)</pbl:nkTitle>
+					<pbl:nkValue/>
 				</pbl:nkalg2>
 				<pbl:nkalg3 type="text">
-					<pbl:nkalg3Title>Korte omschrijving</pbl:nkalg3Title>
-					<pbl:nkalg3Value/>
+					<pbl:nkTitle>Korte omschrijving</pbl:nkTitle>
+					<pbl:nkValue/>
 				</pbl:nkalg3>
 				<pbl:nkalg4 type="text">
-					<pbl:nkalg4Title>PBL Eigenaar inclusief contactpersoon</pbl:nkalg4Title>
-					<pbl:nkalg4Value/>
+					<pbl:nkTitle>PBL Eigenaar inclusief contactpersoon</pbl:nkTitle>
+					<pbl:nkValue/>
 				</pbl:nkalg4>
 				<pbl:nkalg5 type="text">
-					<pbl:nkalg5Title>PBL Beheerder</pbl:nkalg5Title>
-					<pbl:nkalg5Value/>
+					<pbl:nkTitle>PBL Beheerder</pbl:nkTitle>
+					<pbl:nkValue/>
 				</pbl:nkalg5>
 				<pbl:nkalg6 type="text">
-					<pbl:nkalg6Title>Datum opname</pbl:nkalg6Title>
-					<pbl:nkalg6Value/>
+					<pbl:nkTitle>Datum opname</pbl:nkTitle>
+					<pbl:nkValue/>
 				</pbl:nkalg6>
 				<pbl:nkalg7 type="text">
-					<pbl:nkalg7Title>Opgenomen door</pbl:nkalg7Title>
-					<pbl:nkalg7Value/>
+					<pbl:nkTitle>Opgenomen door</pbl:nkTitle>
+					<pbl:nkValue/>
 				</pbl:nkalg7>
 			</pbl:nkAlgemeenItems>
 			<pbl:nkBeheerItems>
 				<pbl:nka1 type="yesno">
-					<pbl:nka1Title>Is het beheer van het dataobject belegd?</pbl:nka1Title>
-					<pbl:nka1Value/>
-					<pbl:nka1Comment/>
-					<pbl:nka1Checks>
+					<pbl:nkTitle>Is het beheer van het dataobject belegd?</pbl:nkTitle>
+					<pbl:nkValue/>
+					<pbl:nkComment/>
+					<pbl:nkChecks>
 						<pbl:nka1c1 type="checkbox">
-							<pbl:nka1c1Title>Het beheer van een dataobject kan centraal bij IDM, decentraal binnen de sector of binnen een projectteam belegd zijn. Het antwoord Ja gaat dus altijd vergezeld van de opmerking: bij IDM, bij sector X of bij projectteam Y en, indien van toepassing, door…</pbl:nka1c1Title>
-							<pbl:nka1c1Value/>
-							<pbl:nka1c1Comment/>
+							<pbl:nkTitle>Het beheer van een dataobject kan centraal bij IDM, decentraal binnen de sector of binnen een projectteam belegd zijn. Het antwoord Ja gaat dus altijd vergezeld van de opmerking: bij IDM, bij sector X of bij projectteam Y en, indien van toepassing, door…</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nka1c1>
 						<pbl:nka1c2 type="checkbox">
-							<pbl:nka1c2Title>De beheerder is geen persoon, maar een rol. Binnen IDM/de sectoren/het projectteam heeft iemand de rol van beheerder. Voor een projectdata geldt dat het instellen van een beheerder een vrije keuze is</pbl:nka1c2Title>
-							<pbl:nka1c2Value/>
-							<pbl:nka1c2Comment/>
+							<pbl:nkTitle>De beheerder is geen persoon, maar een rol. Binnen IDM/de sectoren/het projectteam heeft iemand de rol van beheerder. Voor een projectdata geldt dat het instellen van een beheerder een vrije keuze is</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nka1c2>
 						<pbl:nka1c3 type="checkbox">
-							<pbl:nka1c3Title>Is de metadata opgenomen worden in de PBL datazoekapplicatie? Andere gebruikers weten dan ook het dataobject beschibaar is.</pbl:nka1c3Title>
-							<pbl:nka1c3Value/>
-							<pbl:nka1c3Comment/>
+							<pbl:nkTitle>Is de metadata opgenomen worden in de PBL datazoekapplicatie? Andere gebruikers weten dan ook het dataobject beschibaar is.</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nka1c3>
-					</pbl:nka1Checks>
+						<pbl:nkc3c1 type="checkbox">
+							<pbl:nkTitle>Wordt in de onderzoeksopzet rekening gehouden met de gebruiksbeperkingen van het dataobject?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c1>
+						<pbl:nkc3c2 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of het dataobject voor een specifiek project of ook voor algemeen gebruik beschikbaar is?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c2>
+						<pbl:nkc3c3 type="checkbox">
+							<pbl:nkTitle>Is gezien de inwinningsmethode duidelijk of het dataobject alleen voor bepaalde toepassingen geschikt is (bijv. alleen op een bepaald schaalniveau)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c3>
+						<pbl:nkc3c4 type="checkbox">
+							<pbl:nkTitle>Is duidelijk met welk doel het dataobject door de dataleverancier is verzameld en wat de eventuele discrepantie is met het toepassingdoel in het PBL-onderzoek (mag/kan het dataobject wel voor dit doel worden ingezet)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c4>
+						<pbl:nkc3c5 type="checkbox">
+							<pbl:nkTitle>Is bekend op welk (aggregatie)niveau onderzoeksresultaten gepubliceerd en (digitaal) verspreid mogen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c5>
+						<pbl:nkc3c6 type="checkbox">
+							<pbl:nkTitle>Is duidelijk wanneer er sprake is van afgeleide bestanden, en of deze afgeleide bestanden breder beschikbaar gesteld kunnen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c6>
+						<pbl:nkc3c7 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of er beperkingen gesteld worden aan het (tijdelijk) beschikbaar stellen van de dataset aan derden/opdrachtnemers? Is de duur van het gebruiksrecht duidelijk (oneiding of een bepaalde duur), is er nagedacht over een exit strategie bij doorlopende contracten?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c7>
+						<pbl:nkc3c8 type="checkbox">
+							<pbl:nkTitle>Worden bij het gebruik van de dataset de rechten en plichten rond de dataset bewaakt/gerespecteerd (bijv. geheimhouding; privacy, verspreiding kopieën, delen met derden/samenwerkingspartijen, etc.)? Worden eventuele geheimhoudingsverklaringen goed beheerd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c8>
+					</pbl:nkChecks>
 				</pbl:nka1>
 				<pbl:nka2 type="yesnona">
-					<pbl:nka2Title>texttitle nka2</pbl:nka2Title>
-					<pbl:nka2Value/>
-					<pbl:nka2Comment/>
-					<pbl:nka2Checks>
-						<pbl:nka2c3 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="checkbox">
-							<pbl:nka2c3Title>test title a2c3</pbl:nka2c3Title>
-							<pbl:nka2c3Value>1234567890</pbl:nka2c3Value>
-							<pbl:nka2c3Comment>bbbbbbbbbbbbbbbb</pbl:nka2c3Comment>
-						</pbl:nka2c3>
+					<pbl:nkTitle>Is het eigenaarschap van het dataobject belegd?</pbl:nkTitle>
+					<pbl:nkValue/>
+					<pbl:nkComment/>
+					<pbl:nkChecks>
 						<pbl:nka2c1 type="checkbox">
-							<pbl:nka2c1Title>Is de eigenaar op de hoogte van zijn/haar verantwoordelijkheden?</pbl:nka2c1Title>
-							<pbl:nka2c1Value/>
-							<pbl:nka2c1Comment/>
+							<pbl:nkTitle>Is de eigenaar op de hoogte van zijn/haar verantwoordelijkheden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nka2c1>
 						<pbl:nka2c2 type="checkbox">
-							<pbl:nka2c2Title>test title a2c2</pbl:nka2c2Title>
-							<pbl:nka2c2Value>1234</pbl:nka2c2Value>
-							<pbl:nka2c2Comment>aaaaaaaaaaaaaaaaaaaaa</pbl:nka2c2Comment>
+							<pbl:nkTitle>Is het eigenaarschap noodzakelijk? Vrij beschikbare dataobjecten hebben geen PBL eigenaar nodig, bestanden met gebruiksbeperkingen hebben wel een PBL eigenaar nodig. </pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nka2c2>
-					</pbl:nka2Checks>
+						<pbl:nkc3c1 type="checkbox">
+							<pbl:nkTitle>Wordt in de onderzoeksopzet rekening gehouden met de gebruiksbeperkingen van het dataobject?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c1>
+						<pbl:nkc3c2 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of het dataobject voor een specifiek project of ook voor algemeen gebruik beschikbaar is?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c2>
+						<pbl:nkc3c3 type="checkbox">
+							<pbl:nkTitle>Is gezien de inwinningsmethode duidelijk of het dataobject alleen voor bepaalde toepassingen geschikt is (bijv. alleen op een bepaald schaalniveau)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c3>
+						<pbl:nkc3c4 type="checkbox">
+							<pbl:nkTitle>Is duidelijk met welk doel het dataobject door de dataleverancier is verzameld en wat de eventuele discrepantie is met het toepassingdoel in het PBL-onderzoek (mag/kan het dataobject wel voor dit doel worden ingezet)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c4>
+						<pbl:nkc3c5 type="checkbox">
+							<pbl:nkTitle>Is bekend op welk (aggregatie)niveau onderzoeksresultaten gepubliceerd en (digitaal) verspreid mogen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c5>
+						<pbl:nkc3c6 type="checkbox">
+							<pbl:nkTitle>Is duidelijk wanneer er sprake is van afgeleide bestanden, en of deze afgeleide bestanden breder beschikbaar gesteld kunnen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c6>
+						<pbl:nkc3c7 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of er beperkingen gesteld worden aan het (tijdelijk) beschikbaar stellen van de dataset aan derden/opdrachtnemers? Is de duur van het gebruiksrecht duidelijk (oneiding of een bepaalde duur), is er nagedacht over een exit strategie bij doorlopende contracten?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c7>
+						<pbl:nkc3c8 type="checkbox">
+							<pbl:nkTitle>Worden bij het gebruik van de dataset de rechten en plichten rond de dataset bewaakt/gerespecteerd (bijv. geheimhouding; privacy, verspreiding kopieën, delen met derden/samenwerkingspartijen, etc.)? Worden eventuele geheimhoudingsverklaringen goed beheerd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c8>
+					</pbl:nkChecks>
 				</pbl:nka2>
 				<pbl:nka3 type="yesnona">
-					<pbl:nka3Title>Is de dataexpert bekend?</pbl:nka3Title>
-					<pbl:nka3Value/>
-					<pbl:nka3Comment/>
-					<pbl:nka3Checks>
+					<pbl:nkTitle>Is de dataexpert bekend?</pbl:nkTitle>
+					<pbl:nkValue/>
+					<pbl:nkComment/>
+					<pbl:nkChecks>
 						<pbl:nka3c1 type="checkbox">
-							<pbl:nka3c1Title>Zijn aandachtspunten voor het gebruik opgenomen in de metadata?</pbl:nka3c1Title>
-							<pbl:nka3c1Value/>
-							<pbl:nka3c1Comment/>
+							<pbl:nkTitle>Zijn aandachtspunten voor het gebruik opgenomen in de metadata?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nka3c1>
 						<pbl:nka3c2 type="checkbox">
-							<pbl:nka3c2Title>Staan in de metadata de projecten waarvoor het dataobject eerder is gebruikt?</pbl:nka3c2Title>
-							<pbl:nka3c2Value/>
-							<pbl:nka3c2Comment/>
+							<pbl:nkTitle>Staan in de metadata de projecten waarvoor het dataobject eerder is gebruikt?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nka3c2>
-					</pbl:nka3Checks>
+						<pbl:nkc3c1 type="checkbox">
+							<pbl:nkTitle>Wordt in de onderzoeksopzet rekening gehouden met de gebruiksbeperkingen van het dataobject?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c1>
+						<pbl:nkc3c2 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of het dataobject voor een specifiek project of ook voor algemeen gebruik beschikbaar is?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c2>
+						<pbl:nkc3c3 type="checkbox">
+							<pbl:nkTitle>Is gezien de inwinningsmethode duidelijk of het dataobject alleen voor bepaalde toepassingen geschikt is (bijv. alleen op een bepaald schaalniveau)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c3>
+						<pbl:nkc3c4 type="checkbox">
+							<pbl:nkTitle>Is duidelijk met welk doel het dataobject door de dataleverancier is verzameld en wat de eventuele discrepantie is met het toepassingdoel in het PBL-onderzoek (mag/kan het dataobject wel voor dit doel worden ingezet)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c4>
+						<pbl:nkc3c5 type="checkbox">
+							<pbl:nkTitle>Is bekend op welk (aggregatie)niveau onderzoeksresultaten gepubliceerd en (digitaal) verspreid mogen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c5>
+						<pbl:nkc3c6 type="checkbox">
+							<pbl:nkTitle>Is duidelijk wanneer er sprake is van afgeleide bestanden, en of deze afgeleide bestanden breder beschikbaar gesteld kunnen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c6>
+						<pbl:nkc3c7 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of er beperkingen gesteld worden aan het (tijdelijk) beschikbaar stellen van de dataset aan derden/opdrachtnemers? Is de duur van het gebruiksrecht duidelijk (oneiding of een bepaalde duur), is er nagedacht over een exit strategie bij doorlopende contracten?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c7>
+						<pbl:nkc3c8 type="checkbox">
+							<pbl:nkTitle>Worden bij het gebruik van de dataset de rechten en plichten rond de dataset bewaakt/gerespecteerd (bijv. geheimhouding; privacy, verspreiding kopieën, delen met derden/samenwerkingspartijen, etc.)? Worden eventuele geheimhoudingsverklaringen goed beheerd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c8>
+					</pbl:nkChecks>
 				</pbl:nka3>
 				<pbl:nka4 type="yesnona">
-					<pbl:nka4Title>Is er versiebeheer voor het dataobjectgeregeld (correcties, aanpassingen, etc)?</pbl:nka4Title>
-					<pbl:nka4Value/>
-					<pbl:nka4Comment/>
-					<pbl:nka4Checks>
+					<pbl:nkTitle>Is er versiebeheer voor het dataobjectgeregeld (correcties, aanpassingen, etc)?</pbl:nkTitle>
+					<pbl:nkValue/>
+					<pbl:nkComment/>
+					<pbl:nkChecks>
 						<pbl:nka4c1 type="checkbox">
-							<pbl:nka4c1Title>Is versiebeheer nodig?</pbl:nka4c1Title>
-							<pbl:nka4c1Value/>
-							<pbl:nka4c1Comment/>
+							<pbl:nkTitle>Is versiebeheer nodig?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nka4c1>
 						<pbl:nka4c2 type="checkbox">
-							<pbl:nka4c2Title>Is er beschreven hoe om te gaan met actualisaties van het dataobject?</pbl:nka4c2Title>
-							<pbl:nka4c2Value/>
-							<pbl:nka4c2Comment/>
+							<pbl:nkTitle>Is er beschreven hoe om te gaan met actualisaties van het dataobject?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nka4c2>
 						<pbl:nka4c3 type="checkbox">
-							<pbl:nka4c3Title>Op welke manier wordt het versiebeheer voor het dataobject uitgevoerd?</pbl:nka4c3Title>
-							<pbl:nka4c3Value/>
-							<pbl:nka4c3Comment/>
+							<pbl:nkTitle>Op welke manier wordt het versiebeheer voor het dataobject uitgevoerd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nka4c3>
-					</pbl:nka4Checks>
+						<pbl:nkc3c1 type="checkbox">
+							<pbl:nkTitle>Wordt in de onderzoeksopzet rekening gehouden met de gebruiksbeperkingen van het dataobject?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c1>
+						<pbl:nkc3c2 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of het dataobject voor een specifiek project of ook voor algemeen gebruik beschikbaar is?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c2>
+						<pbl:nkc3c3 type="checkbox">
+							<pbl:nkTitle>Is gezien de inwinningsmethode duidelijk of het dataobject alleen voor bepaalde toepassingen geschikt is (bijv. alleen op een bepaald schaalniveau)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c3>
+						<pbl:nkc3c4 type="checkbox">
+							<pbl:nkTitle>Is duidelijk met welk doel het dataobject door de dataleverancier is verzameld en wat de eventuele discrepantie is met het toepassingdoel in het PBL-onderzoek (mag/kan het dataobject wel voor dit doel worden ingezet)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c4>
+						<pbl:nkc3c5 type="checkbox">
+							<pbl:nkTitle>Is bekend op welk (aggregatie)niveau onderzoeksresultaten gepubliceerd en (digitaal) verspreid mogen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c5>
+						<pbl:nkc3c6 type="checkbox">
+							<pbl:nkTitle>Is duidelijk wanneer er sprake is van afgeleide bestanden, en of deze afgeleide bestanden breder beschikbaar gesteld kunnen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c6>
+						<pbl:nkc3c7 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of er beperkingen gesteld worden aan het (tijdelijk) beschikbaar stellen van de dataset aan derden/opdrachtnemers? Is de duur van het gebruiksrecht duidelijk (oneiding of een bepaalde duur), is er nagedacht over een exit strategie bij doorlopende contracten?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c7>
+						<pbl:nkc3c8 type="checkbox">
+							<pbl:nkTitle>Worden bij het gebruik van de dataset de rechten en plichten rond de dataset bewaakt/gerespecteerd (bijv. geheimhouding; privacy, verspreiding kopieën, delen met derden/samenwerkingspartijen, etc.)? Worden eventuele geheimhoudingsverklaringen goed beheerd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c8>
+					</pbl:nkChecks>
 				</pbl:nka4>
 			</pbl:nkBeheerItems>
 			<pbl:nkBronlijstItems>
 				<pbl:nkbl1 type="text">
-					<pbl:nkbl1Title>De bronlijst wordt aangemaakt bij aanvang van het project en wordt gedurende het project bijgewerkt (dataobjecten komen er bij en gaan er af). De checklist datakwaliteit wordt toegepast voor alle objecten op de bronlijst. De checklist wordt toegepast voordat een bestaand dataobject gebruikt wordt of voordat een geproduceerd dataobject uitgeleverd wordt.</pbl:nkbl1Title>
+					<pbl:nkTitle>De bronlijst wordt aangemaakt bij aanvang van het project en wordt gedurende het project bijgewerkt (dataobjecten komen er bij en gaan er af). De checklist datakwaliteit wordt toegepast voor alle objecten op de bronlijst. De checklist wordt toegepast voordat een bestaand dataobject gebruikt wordt of voordat een geproduceerd dataobject uitgeleverd wordt.</pbl:nkTitle>
 				</pbl:nkbl1>
 				<pbl:nkbl2 type="text">
-					<pbl:nkbl2Title>Het beheer van de bronlijst wordt uitgevoerd in het project en valt onder de verantwoordelijkheid van de projectleider.</pbl:nkbl2Title>
+					<pbl:nkTitle>Het beheer van de bronlijst wordt uitgevoerd in het project en valt onder de verantwoordelijkheid van de projectleider.</pbl:nkTitle>
 				</pbl:nkbl2>
 			</pbl:nkBronlijstItems>
 			<pbl:nkDataobjectItems>
 				<pbl:nkb1 type="yesno">
-					<pbl:nkb1Title>Is het dataobject voorzien van metadata?</pbl:nkb1Title>
-					<pbl:nkb1Value/>
-					<pbl:nkb1Comment/>
-					<pbl:nkb1Checks>
+					<pbl:nkTitle>Is het dataobject voorzien van metadata?</pbl:nkTitle>
+					<pbl:nkValue/>
+					<pbl:nkComment/>
+					<pbl:nkChecks>
 						<pbl:nkb1c1 type="checkbox">
-							<pbl:nkb1c1Title>Is de metadata beschikbaar volgens de PBL richtlijnen? Richtlijnen maken het mogelijk dataobjecten te zoeken op meerdere ingangen, en om metadata gestructureerd toe te voegen.</pbl:nkb1c1Title>
-							<pbl:nkb1c1Value/>
-							<pbl:nkb1c1Comment/>
+							<pbl:nkTitle>Is de metadata beschikbaar volgens de PBL richtlijnen? Richtlijnen maken het mogelijk dataobjecten te zoeken op meerdere ingangen, en om metadata gestructureerd toe te voegen.</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkb1c1>
 						<pbl:nkb1c2 type="checkbox">
-							<pbl:nkb1c2Title>Is de metadata voldoende om de waarde voor de gewenste toepassing te kunnen beoordelen?</pbl:nkb1c2Title>
-							<pbl:nkb1c2Value/>
-							<pbl:nkb1c2Comment/>
+							<pbl:nkTitle>Is de metadata voldoende om de waarde voor de gewenste toepassing te kunnen beoordelen?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkb1c2>
 						<pbl:nkb1c3 type="checkbox">
-							<pbl:nkb1c3Title>Is de metadata actueel, zijn eventuele datachecks en eerdere toepassingen er in opgenomen?</pbl:nkb1c3Title>
-							<pbl:nkb1c3Value/>
-							<pbl:nkb1c3Comment/>
+							<pbl:nkTitle>Is de metadata actueel, zijn eventuele datachecks en eerdere toepassingen er in opgenomen?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkb1c3>
 						<pbl:nkb1c4 type="checkbox">
-							<pbl:nkb1c4Title>Indien er meerdere versies van het dataobject voorkomen, is dan duidelijk met welke versie gewerkt wordt?</pbl:nkb1c4Title>
-							<pbl:nkb1c4Value/>
-							<pbl:nkb1c4Comment/>
+							<pbl:nkTitle>Indien er meerdere versies van het dataobject voorkomen, is dan duidelijk met welke versie gewerkt wordt?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkb1c4>
-					</pbl:nkb1Checks>
+						<pbl:nkc3c1 type="checkbox">
+							<pbl:nkTitle>Wordt in de onderzoeksopzet rekening gehouden met de gebruiksbeperkingen van het dataobject?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c1>
+						<pbl:nkc3c2 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of het dataobject voor een specifiek project of ook voor algemeen gebruik beschikbaar is?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c2>
+						<pbl:nkc3c3 type="checkbox">
+							<pbl:nkTitle>Is gezien de inwinningsmethode duidelijk of het dataobject alleen voor bepaalde toepassingen geschikt is (bijv. alleen op een bepaald schaalniveau)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c3>
+						<pbl:nkc3c4 type="checkbox">
+							<pbl:nkTitle>Is duidelijk met welk doel het dataobject door de dataleverancier is verzameld en wat de eventuele discrepantie is met het toepassingdoel in het PBL-onderzoek (mag/kan het dataobject wel voor dit doel worden ingezet)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c4>
+						<pbl:nkc3c5 type="checkbox">
+							<pbl:nkTitle>Is bekend op welk (aggregatie)niveau onderzoeksresultaten gepubliceerd en (digitaal) verspreid mogen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c5>
+						<pbl:nkc3c6 type="checkbox">
+							<pbl:nkTitle>Is duidelijk wanneer er sprake is van afgeleide bestanden, en of deze afgeleide bestanden breder beschikbaar gesteld kunnen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c6>
+						<pbl:nkc3c7 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of er beperkingen gesteld worden aan het (tijdelijk) beschikbaar stellen van de dataset aan derden/opdrachtnemers? Is de duur van het gebruiksrecht duidelijk (oneiding of een bepaalde duur), is er nagedacht over een exit strategie bij doorlopende contracten?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c7>
+						<pbl:nkc3c8 type="checkbox">
+							<pbl:nkTitle>Worden bij het gebruik van de dataset de rechten en plichten rond de dataset bewaakt/gerespecteerd (bijv. geheimhouding; privacy, verspreiding kopieën, delen met derden/samenwerkingspartijen, etc.)? Worden eventuele geheimhoudingsverklaringen goed beheerd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c8>
+					</pbl:nkChecks>
 				</pbl:nkb1>
 				<pbl:nkb2 type="yesno">
-					<pbl:nkb2Title>Is er een beschrijving van het oorspronkelijke doel en toepassingsbereik van het dataobject?</pbl:nkb2Title>
-					<pbl:nkb2Value/>
-					<pbl:nkb2Comment/>
-					<pbl:nkb2Checks>
+					<pbl:nkTitle>Is er een beschrijving van het oorspronkelijke doel en toepassingsbereik van het dataobject?</pbl:nkTitle>
+					<pbl:nkValue/>
+					<pbl:nkComment/>
+					<pbl:nkChecks>
 						<pbl:nkb2c1 type="checkbox">
-							<pbl:nkb2c1Title>Is er informatie beschikbaar in de metadata over het oorspronkelijke doel waarvoor het dataobject is gemaakt? </pbl:nkb2c1Title>
-							<pbl:nkb2c1Value/>
-							<pbl:nkb2c1Comment/>
+							<pbl:nkTitle>Is er informatie beschikbaar in de metadata over het oorspronkelijke doel waarvoor het dataobject is gemaakt? </pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkb2c1>
 						<pbl:nkb2c2 type="checkbox">
-							<pbl:nkb2c2Title>Is er informatie beschikbaar in de metadata over het toepassingsbereik waarvoor het dataobject is gecreëerd?</pbl:nkb2c2Title>
-							<pbl:nkb2c2Value/>
-							<pbl:nkb2c2Comment/>
+							<pbl:nkTitle>Is er informatie beschikbaar in de metadata over het toepassingsbereik waarvoor het dataobject is gecreëerd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkb2c2>
-					</pbl:nkb2Checks>
+						<pbl:nkc3c1 type="checkbox">
+							<pbl:nkTitle>Wordt in de onderzoeksopzet rekening gehouden met de gebruiksbeperkingen van het dataobject?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c1>
+						<pbl:nkc3c2 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of het dataobject voor een specifiek project of ook voor algemeen gebruik beschikbaar is?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c2>
+						<pbl:nkc3c3 type="checkbox">
+							<pbl:nkTitle>Is gezien de inwinningsmethode duidelijk of het dataobject alleen voor bepaalde toepassingen geschikt is (bijv. alleen op een bepaald schaalniveau)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c3>
+						<pbl:nkc3c4 type="checkbox">
+							<pbl:nkTitle>Is duidelijk met welk doel het dataobject door de dataleverancier is verzameld en wat de eventuele discrepantie is met het toepassingdoel in het PBL-onderzoek (mag/kan het dataobject wel voor dit doel worden ingezet)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c4>
+						<pbl:nkc3c5 type="checkbox">
+							<pbl:nkTitle>Is bekend op welk (aggregatie)niveau onderzoeksresultaten gepubliceerd en (digitaal) verspreid mogen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c5>
+						<pbl:nkc3c6 type="checkbox">
+							<pbl:nkTitle>Is duidelijk wanneer er sprake is van afgeleide bestanden, en of deze afgeleide bestanden breder beschikbaar gesteld kunnen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c6>
+						<pbl:nkc3c7 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of er beperkingen gesteld worden aan het (tijdelijk) beschikbaar stellen van de dataset aan derden/opdrachtnemers? Is de duur van het gebruiksrecht duidelijk (oneiding of een bepaalde duur), is er nagedacht over een exit strategie bij doorlopende contracten?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c7>
+						<pbl:nkc3c8 type="checkbox">
+							<pbl:nkTitle>Worden bij het gebruik van de dataset de rechten en plichten rond de dataset bewaakt/gerespecteerd (bijv. geheimhouding; privacy, verspreiding kopieën, delen met derden/samenwerkingspartijen, etc.)? Worden eventuele geheimhoudingsverklaringen goed beheerd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c8>
+					</pbl:nkChecks>
 				</pbl:nkb2>
 				<pbl:nkb3 type="yesno">
-					<pbl:nkb3Title>Zijn het datamodel en de attributen van het dataobject beschreven?</pbl:nkb3Title>
-					<pbl:nkb3Value/>
-					<pbl:nkb3Comment/>
-					<pbl:nkb3Checks>
+					<pbl:nkTitle>Zijn het datamodel en de attributen van het dataobject beschreven?</pbl:nkTitle>
+					<pbl:nkValue/>
+					<pbl:nkComment/>
+					<pbl:nkChecks>
 						<pbl:nkb3c1 type="checkbox">
-							<pbl:nkb3c1Title>Is er een verklarende tekst en/of schema beschikbaar?</pbl:nkb3c1Title>
-							<pbl:nkb3c1Value/>
-							<pbl:nkb3c1Comment/>
+							<pbl:nkTitle>Is er een verklarende tekst en/of schema beschikbaar?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkb3c1>
 						<pbl:nkb3c2 type="checkbox">
-							<pbl:nkb3cTitle>Zijn de relaties tussen de verschillende onderdelen beschreven?</pbl:nkb3cTitle>
-							<pbl:nkb3cValue/>
-							<pbl:nkb3cComment/>
+							<pbl:nkTitle>Zijn de relaties tussen de verschillende onderdelen beschreven?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkb3c2>
 						<pbl:nkb3c3 type="checkbox">
-							<pbl:nkb3c3Title>Zijn de attributen voldoende beschreven?</pbl:nkb3c3Title>
-							<pbl:nkb3c3Value/>
-							<pbl:nkb3c3Comment/>
+							<pbl:nkTitle>Zijn de attributen voldoende beschreven?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkb3c3>
-					</pbl:nkb3Checks>
+						<pbl:nkc3c1 type="checkbox">
+							<pbl:nkTitle>Wordt in de onderzoeksopzet rekening gehouden met de gebruiksbeperkingen van het dataobject?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c1>
+						<pbl:nkc3c2 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of het dataobject voor een specifiek project of ook voor algemeen gebruik beschikbaar is?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c2>
+						<pbl:nkc3c3 type="checkbox">
+							<pbl:nkTitle>Is gezien de inwinningsmethode duidelijk of het dataobject alleen voor bepaalde toepassingen geschikt is (bijv. alleen op een bepaald schaalniveau)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c3>
+						<pbl:nkc3c4 type="checkbox">
+							<pbl:nkTitle>Is duidelijk met welk doel het dataobject door de dataleverancier is verzameld en wat de eventuele discrepantie is met het toepassingdoel in het PBL-onderzoek (mag/kan het dataobject wel voor dit doel worden ingezet)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c4>
+						<pbl:nkc3c5 type="checkbox">
+							<pbl:nkTitle>Is bekend op welk (aggregatie)niveau onderzoeksresultaten gepubliceerd en (digitaal) verspreid mogen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c5>
+						<pbl:nkc3c6 type="checkbox">
+							<pbl:nkTitle>Is duidelijk wanneer er sprake is van afgeleide bestanden, en of deze afgeleide bestanden breder beschikbaar gesteld kunnen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c6>
+						<pbl:nkc3c7 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of er beperkingen gesteld worden aan het (tijdelijk) beschikbaar stellen van de dataset aan derden/opdrachtnemers? Is de duur van het gebruiksrecht duidelijk (oneiding of een bepaalde duur), is er nagedacht over een exit strategie bij doorlopende contracten?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c7>
+						<pbl:nkc3c8 type="checkbox">
+							<pbl:nkTitle>Worden bij het gebruik van de dataset de rechten en plichten rond de dataset bewaakt/gerespecteerd (bijv. geheimhouding; privacy, verspreiding kopieën, delen met derden/samenwerkingspartijen, etc.)? Worden eventuele geheimhoudingsverklaringen goed beheerd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c8>
+					</pbl:nkChecks>
 				</pbl:nkb3>
 				<pbl:nkb4 type="yesno">
-					<pbl:nkb4Title>Zijn er tests uitgevoerd waarmee de eigen kwaliteit van het dataobject kan worden aangetoond?</pbl:nkb4Title>
-					<pbl:nkb4Value/>
-					<pbl:nkb4Comment/>
-					<pbl:nkb4Checks>
+					<pbl:nkTitle>Zijn er tests uitgevoerd waarmee de eigen kwaliteit van het dataobject kan worden aangetoond?</pbl:nkTitle>
+					<pbl:nkValue/>
+					<pbl:nkComment/>
+					<pbl:nkChecks>
 						<pbl:nkb4c1 type="checkbox">
-							<pbl:nkb4c1Title>Zijn de testresultaten in de metadata vastgelegd?</pbl:nkb4c1Title>
-							<pbl:nkb4c1Value/>
-							<pbl:nkb4c1Comment/>
+							<pbl:nkTitle>Zijn de testresultaten in de metadata vastgelegd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkb4c1>
 						<pbl:nkb4c2 type="checkbox">
-							<pbl:nkb4c2Title>Zijn de tests bij binnenkomst/aanmaak van het dataobject uitgevoerd?</pbl:nkb4c2Title>
-							<pbl:nkb4c2Value/>
-							<pbl:nkb4c2Comment/>
+							<pbl:nkTitle>Zijn de tests bij binnenkomst/aanmaak van het dataobject uitgevoerd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkb4c2>
 						<pbl:nkb4c3 type="checkbox">
-							<pbl:nkb4c3Title>Zijn er geautomatiseerde controles uitgevoerd? Bij terugkerende dataobjecten (reeksen etc) kan er naar worden gestreefd om, waar mogelijk, controles op de eigenschappen van de data te automatiseren.</pbl:nkb4c3Title>
-							<pbl:nkb4c3Value/>
-							<pbl:nkb4c3Comment/>
+							<pbl:nkTitle>Zijn er geautomatiseerde controles uitgevoerd? Bij terugkerende dataobjecten (reeksen etc) kan er naar worden gestreefd om, waar mogelijk, controles op de eigenschappen van de data te automatiseren.</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkb4c3>
 						<pbl:nkb4c4 type="checkbox">
-							<pbl:nkb4c4Title>Hebben testresultaten aanleiding gegeven om het dataobject te corrigeren? Licht toe op welke manier de correcties in de metadata/versiebeheer zijn opgenomen.</pbl:nkb4c4Title>
-							<pbl:nkb4c4Value/>
-							<pbl:nkb4c4Comment/>
+							<pbl:nkTitle>Hebben testresultaten aanleiding gegeven om het dataobject te corrigeren? Licht toe op welke manier de correcties in de metadata/versiebeheer zijn opgenomen.</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkb4c4>
 						<pbl:nkb4c5 type="checkbox">
-							<pbl:nkb4c5Title>Geven test resultaten aanleiding om het dataobject onder voorbehoud of in het geheel niet te gebruiken?</pbl:nkb4c5Title>
-							<pbl:nkb4c5Value/>
-							<pbl:nkb4c5Comment/>
+							<pbl:nkTitle>Geven test resultaten aanleiding om het dataobject onder voorbehoud of in het geheel niet te gebruiken?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkb4c5>
-					</pbl:nkb4Checks>
+						<pbl:nkc3c1 type="checkbox">
+							<pbl:nkTitle>Wordt in de onderzoeksopzet rekening gehouden met de gebruiksbeperkingen van het dataobject?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c1>
+						<pbl:nkc3c2 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of het dataobject voor een specifiek project of ook voor algemeen gebruik beschikbaar is?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c2>
+						<pbl:nkc3c3 type="checkbox">
+							<pbl:nkTitle>Is gezien de inwinningsmethode duidelijk of het dataobject alleen voor bepaalde toepassingen geschikt is (bijv. alleen op een bepaald schaalniveau)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c3>
+						<pbl:nkc3c4 type="checkbox">
+							<pbl:nkTitle>Is duidelijk met welk doel het dataobject door de dataleverancier is verzameld en wat de eventuele discrepantie is met het toepassingdoel in het PBL-onderzoek (mag/kan het dataobject wel voor dit doel worden ingezet)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c4>
+						<pbl:nkc3c5 type="checkbox">
+							<pbl:nkTitle>Is bekend op welk (aggregatie)niveau onderzoeksresultaten gepubliceerd en (digitaal) verspreid mogen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c5>
+						<pbl:nkc3c6 type="checkbox">
+							<pbl:nkTitle>Is duidelijk wanneer er sprake is van afgeleide bestanden, en of deze afgeleide bestanden breder beschikbaar gesteld kunnen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c6>
+						<pbl:nkc3c7 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of er beperkingen gesteld worden aan het (tijdelijk) beschikbaar stellen van de dataset aan derden/opdrachtnemers? Is de duur van het gebruiksrecht duidelijk (oneiding of een bepaalde duur), is er nagedacht over een exit strategie bij doorlopende contracten?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c7>
+						<pbl:nkc3c8 type="checkbox">
+							<pbl:nkTitle>Worden bij het gebruik van de dataset de rechten en plichten rond de dataset bewaakt/gerespecteerd (bijv. geheimhouding; privacy, verspreiding kopieën, delen met derden/samenwerkingspartijen, etc.)? Worden eventuele geheimhoudingsverklaringen goed beheerd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c8>
+					</pbl:nkChecks>
 				</pbl:nkb4>
 			</pbl:nkDataobjectItems>
 			<pbl:nkGebruikItems>
 				<pbl:nkc1 type="yesnona">
-					<pbl:nkc1Title>Is structureel gebruik van het dataobject voorzien?</pbl:nkc1Title>
-					<pbl:nkc1Value/>
-					<pbl:nkc1Comment/>
-					<pbl:nkc1Checks>
+					<pbl:nkTitle>Is structureel gebruik van het dataobject voorzien?</pbl:nkTitle>
+					<pbl:nkValue/>
+					<pbl:nkComment/>
+					<pbl:nkChecks>
 						<pbl:nkc1c1 type="checkbox">
-							<pbl:nkc1c1Title>Is het aanemelijk dat het dataobject ook gebruikt kan worden voor andere toepassingen dan de huidige toepassing?</pbl:nkc1c1Title>
-							<pbl:nkc1c1Value/>
-							<pbl:nkc1c1Comment/>
+							<pbl:nkTitle>Is het aanemelijk dat het dataobject ook gebruikt kan worden voor andere toepassingen dan de huidige toepassing?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkc1c1>
-					</pbl:nkc1Checks>
-				</pbl:nkc1>
-				<pbl:nkc2 type="yesno">
-					<pbl:nkc2Title>Is de motivatie achter het gebruik van het gekozen dataobject beschreven?</pbl:nkc2Title>
-					<pbl:nkc2Value/>
-					<pbl:nkc2Comment/>
-					<pbl:nkc2Checks>
-						<pbl:nkc2c1 type="checkbox">
-							<pbl:nkc2c1Title>Als financiële redenen de keuze bepaalde, is het dan duidelijk waarom het dataobject voldoet aan de eisen? En wat eventuele tekortkomingen zijn? Zijn betere, maar niet toegankelijke (bijvoorbeeld te dure) alternatieven bekend?</pbl:nkc2c1Title>
-							<pbl:nkc2c1Value/>
-							<pbl:nkc2c1Comment/>
-						</pbl:nkc2c1>
-						<pbl:nkc2c2 type="checkbox">
-							<pbl:nkc2c2Title>Als het gekozen dataobject goed/het beste (inhoudelijk en/of technisch) aansluit bij de doelen van het onderzoek, is dan duidelijk waarom het beter voldoet dan alternatieven?</pbl:nkc2c2Title>
-							<pbl:nkc2c2Value/>
-							<pbl:nkc2c2Comment/>
-						</pbl:nkc2c2>
-						<pbl:nkc2c3 type="checkbox">
-							<pbl:nkc2c3Title>Is er bij de keuze van het dataobject gekeken naar continuïteit in onderzoek? Bijvoorbeeld naar dataobjecten gebruikt in eerdere of parallele onderzoeken (binnen PBL, maar ook binnen de overheid/wetenschap)?</pbl:nkc2c3Title>
-							<pbl:nkc2c3Value/>
-							<pbl:nkc2c3Comment/>
-						</pbl:nkc2c3>
-						<pbl:nkc2c4 type="checkbox">
-							<pbl:nkc2c4Title>Is duidelijk omschreven wat de (eventuele) tekortkomingen van het dataobject voor het gebruiksdoel zijn?</pbl:nkc2c4Title>
-							<pbl:nkc2c4Value/>
-							<pbl:nkc2c4Comment/>
-						</pbl:nkc2c4>
-						<pbl:nkc2c5 type="checkbox">
-							<pbl:nkc2c5Title>Is de keuze voor een dataobject gemotiveerd met een evalautie van beschikbare opties?</pbl:nkc2c5Title>
-							<pbl:nkc2c5Value/>
-							<pbl:nkc2c5Comment/>
-						</pbl:nkc2c5>
-					</pbl:nkc2Checks>
-				</pbl:nkc2>
-				<pbl:nkc3 type="yesnona">
-					<pbl:nkc3Title>Is nagegaan of er gebruiksbeperkingen zijn?</pbl:nkc3Title>
-					<pbl:nkc3Value/>
-					<pbl:nkc3Comment/>
-					<pbl:nkc3Checks>
 						<pbl:nkc3c1 type="checkbox">
-							<pbl:nkc3c1Title>Wordt in de onderzoeksopzet rekening gehouden met de gebruiksbeperkingen van het dataobject?</pbl:nkc3c1Title>
-							<pbl:nkc3c1Value/>
-							<pbl:nkc3c1Comment/>
+							<pbl:nkTitle>Wordt in de onderzoeksopzet rekening gehouden met de gebruiksbeperkingen van het dataobject?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkc3c1>
 						<pbl:nkc3c2 type="checkbox">
-							<pbl:nkc3cTitle>Is duidelijk of het dataobject voor een specifiek project of ook voor algemeen gebruik beschikbaar is?</pbl:nkc3cTitle>
-							<pbl:nkc3cValue/>
-							<pbl:nkc3cComment/>
+							<pbl:nkTitle>Is duidelijk of het dataobject voor een specifiek project of ook voor algemeen gebruik beschikbaar is?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkc3c2>
 						<pbl:nkc3c3 type="checkbox">
-							<pbl:nkc3c3Title>Is gezien de inwinningsmethode duidelijk of het dataobject alleen voor bepaalde toepassingen geschikt is (bijv. alleen op een bepaald schaalniveau)?</pbl:nkc3c3Title>
-							<pbl:nkc3c3Value/>
-							<pbl:nkc3c3Comment/>
+							<pbl:nkTitle>Is gezien de inwinningsmethode duidelijk of het dataobject alleen voor bepaalde toepassingen geschikt is (bijv. alleen op een bepaald schaalniveau)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkc3c3>
 						<pbl:nkc3c4 type="checkbox">
-							<pbl:nkc3c4Title>Is duidelijk met welk doel het dataobject door de dataleverancier is verzameld en wat de eventuele discrepantie is met het toepassingdoel in het PBL-onderzoek (mag/kan het dataobject wel voor dit doel worden ingezet)?</pbl:nkc3c4Title>
-							<pbl:nkc3c4Value/>
-							<pbl:nkc3c4Comment/>
+							<pbl:nkTitle>Is duidelijk met welk doel het dataobject door de dataleverancier is verzameld en wat de eventuele discrepantie is met het toepassingdoel in het PBL-onderzoek (mag/kan het dataobject wel voor dit doel worden ingezet)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkc3c4>
 						<pbl:nkc3c5 type="checkbox">
-							<pbl:nkc3c5Title>Is bekend op welk (aggregatie)niveau onderzoeksresultaten gepubliceerd en (digitaal) verspreid mogen worden?</pbl:nkc3c5Title>
-							<pbl:nkc3c5Value/>
-							<pbl:nkc3c5Comment/>
+							<pbl:nkTitle>Is bekend op welk (aggregatie)niveau onderzoeksresultaten gepubliceerd en (digitaal) verspreid mogen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkc3c5>
 						<pbl:nkc3c6 type="checkbox">
-							<pbl:nkc3c6Title>Is duidelijk wanneer er sprake is van afgeleide bestanden, en of deze afgeleide bestanden breder beschikbaar gesteld kunnen worden?</pbl:nkc3c6Title>
-							<pbl:nkc3c6Value/>
-							<pbl:nkc3c6Comment/>
+							<pbl:nkTitle>Is duidelijk wanneer er sprake is van afgeleide bestanden, en of deze afgeleide bestanden breder beschikbaar gesteld kunnen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkc3c6>
 						<pbl:nkc3c7 type="checkbox">
-							<pbl:nkc3c7Title>Is duidelijk of er beperkingen gesteld worden aan het (tijdelijk) beschikbaar stellen van de dataset aan derden/opdrachtnemers? Is de duur van het gebruiksrecht duidelijk (oneiding of een bepaalde duur), is er nagedacht over een exit strategie bij doorlopende contracten?</pbl:nkc3c7Title>
-							<pbl:nkc3c7Value/>
-							<pbl:nkc3c7Comment/>
+							<pbl:nkTitle>Is duidelijk of er beperkingen gesteld worden aan het (tijdelijk) beschikbaar stellen van de dataset aan derden/opdrachtnemers? Is de duur van het gebruiksrecht duidelijk (oneiding of een bepaalde duur), is er nagedacht over een exit strategie bij doorlopende contracten?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkc3c7>
 						<pbl:nkc3c8 type="checkbox">
-							<pbl:nkc3c8Title>Worden bij het gebruik van de dataset de rechten en plichten rond de dataset bewaakt/gerespecteerd (bijv. geheimhouding; privacy, verspreiding kopieën, delen met derden/samenwerkingspartijen, etc.)? Worden eventuele geheimhoudingsverklaringen goed beheerd?</pbl:nkc3c8Title>
-							<pbl:nkc3c8Value/>
-							<pbl:nkc3c8Comment/>
+							<pbl:nkTitle>Worden bij het gebruik van de dataset de rechten en plichten rond de dataset bewaakt/gerespecteerd (bijv. geheimhouding; privacy, verspreiding kopieën, delen met derden/samenwerkingspartijen, etc.)? Worden eventuele geheimhoudingsverklaringen goed beheerd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
 						</pbl:nkc3c8>
-					</pbl:nkc3Checks>
+					</pbl:nkChecks>
+				</pbl:nkc1>
+				<pbl:nkc2 type="yesno">
+					<pbl:nkTitle>Is de motivatie achter het gebruik van het gekozen dataobject beschreven?</pbl:nkTitle>
+					<pbl:nkValue/>
+					<pbl:nkComment/>
+					<pbl:nkChecks>
+						<pbl:nkc2c1 type="checkbox">
+							<pbl:nkTitle>Als financiële redenen de keuze bepaalde, is het dan duidelijk waarom het dataobject voldoet aan de eisen? En wat eventuele tekortkomingen zijn? Zijn betere, maar niet toegankelijke (bijvoorbeeld te dure) alternatieven bekend?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc2c1>
+						<pbl:nkc2c2 type="checkbox">
+							<pbl:nkTitle>Als het gekozen dataobject goed/het beste (inhoudelijk en/of technisch) aansluit bij de doelen van het onderzoek, is dan duidelijk waarom het beter voldoet dan alternatieven?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc2c2>
+						<pbl:nkc2c3 type="checkbox">
+							<pbl:nkTitle>Is er bij de keuze van het dataobject gekeken naar continuïteit in onderzoek? Bijvoorbeeld naar dataobjecten gebruikt in eerdere of parallele onderzoeken (binnen PBL, maar ook binnen de overheid/wetenschap)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc2c3>
+						<pbl:nkc2c4 type="checkbox">
+							<pbl:nkTitle>Is duidelijk omschreven wat de (eventuele) tekortkomingen van het dataobject voor het gebruiksdoel zijn?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc2c4>
+						<pbl:nkc2c5 type="checkbox">
+							<pbl:nkTitle>Is de keuze voor een dataobject gemotiveerd met een evalautie van beschikbare opties?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc2c5>
+						<pbl:nkc3c1 type="checkbox">
+							<pbl:nkTitle>Wordt in de onderzoeksopzet rekening gehouden met de gebruiksbeperkingen van het dataobject?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c1>
+						<pbl:nkc3c2 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of het dataobject voor een specifiek project of ook voor algemeen gebruik beschikbaar is?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c2>
+						<pbl:nkc3c3 type="checkbox">
+							<pbl:nkTitle>Is gezien de inwinningsmethode duidelijk of het dataobject alleen voor bepaalde toepassingen geschikt is (bijv. alleen op een bepaald schaalniveau)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c3>
+						<pbl:nkc3c4 type="checkbox">
+							<pbl:nkTitle>Is duidelijk met welk doel het dataobject door de dataleverancier is verzameld en wat de eventuele discrepantie is met het toepassingdoel in het PBL-onderzoek (mag/kan het dataobject wel voor dit doel worden ingezet)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c4>
+						<pbl:nkc3c5 type="checkbox">
+							<pbl:nkTitle>Is bekend op welk (aggregatie)niveau onderzoeksresultaten gepubliceerd en (digitaal) verspreid mogen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c5>
+						<pbl:nkc3c6 type="checkbox">
+							<pbl:nkTitle>Is duidelijk wanneer er sprake is van afgeleide bestanden, en of deze afgeleide bestanden breder beschikbaar gesteld kunnen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c6>
+						<pbl:nkc3c7 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of er beperkingen gesteld worden aan het (tijdelijk) beschikbaar stellen van de dataset aan derden/opdrachtnemers? Is de duur van het gebruiksrecht duidelijk (oneiding of een bepaalde duur), is er nagedacht over een exit strategie bij doorlopende contracten?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c7>
+						<pbl:nkc3c8 type="checkbox">
+							<pbl:nkTitle>Worden bij het gebruik van de dataset de rechten en plichten rond de dataset bewaakt/gerespecteerd (bijv. geheimhouding; privacy, verspreiding kopieën, delen met derden/samenwerkingspartijen, etc.)? Worden eventuele geheimhoudingsverklaringen goed beheerd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c8>
+					</pbl:nkChecks>
+				</pbl:nkc2>
+				<pbl:nkc3 type="yesnona">
+					<pbl:nkTitle>Is nagegaan of er gebruiksbeperkingen zijn?</pbl:nkTitle>
+					<pbl:nkValue/>
+					<pbl:nkComment/>
+					<pbl:nkChecks>
+						<pbl:nkc3c1 type="checkbox">
+							<pbl:nkTitle>Wordt in de onderzoeksopzet rekening gehouden met de gebruiksbeperkingen van het dataobject?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c1>
+						<pbl:nkc3c2 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of het dataobject voor een specifiek project of ook voor algemeen gebruik beschikbaar is?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c2>
+						<pbl:nkc3c3 type="checkbox">
+							<pbl:nkTitle>Is gezien de inwinningsmethode duidelijk of het dataobject alleen voor bepaalde toepassingen geschikt is (bijv. alleen op een bepaald schaalniveau)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c3>
+						<pbl:nkc3c4 type="checkbox">
+							<pbl:nkTitle>Is duidelijk met welk doel het dataobject door de dataleverancier is verzameld en wat de eventuele discrepantie is met het toepassingdoel in het PBL-onderzoek (mag/kan het dataobject wel voor dit doel worden ingezet)?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c4>
+						<pbl:nkc3c5 type="checkbox">
+							<pbl:nkTitle>Is bekend op welk (aggregatie)niveau onderzoeksresultaten gepubliceerd en (digitaal) verspreid mogen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c5>
+						<pbl:nkc3c6 type="checkbox">
+							<pbl:nkTitle>Is duidelijk wanneer er sprake is van afgeleide bestanden, en of deze afgeleide bestanden breder beschikbaar gesteld kunnen worden?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c6>
+						<pbl:nkc3c7 type="checkbox">
+							<pbl:nkTitle>Is duidelijk of er beperkingen gesteld worden aan het (tijdelijk) beschikbaar stellen van de dataset aan derden/opdrachtnemers? Is de duur van het gebruiksrecht duidelijk (oneiding of een bepaalde duur), is er nagedacht over een exit strategie bij doorlopende contracten?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c7>
+						<pbl:nkc3c8 type="checkbox">
+							<pbl:nkTitle>Worden bij het gebruik van de dataset de rechten en plichten rond de dataset bewaakt/gerespecteerd (bijv. geheimhouding; privacy, verspreiding kopieën, delen met derden/samenwerkingspartijen, etc.)? Worden eventuele geheimhoudingsverklaringen goed beheerd?</pbl:nkTitle>
+							<pbl:nkValue/>
+							<pbl:nkComment/>
+						</pbl:nkc3c8>
+					</pbl:nkChecks>
 				</pbl:nkc3>
 			</pbl:nkGebruikItems>
 			<pbl:nkInvulhulpItems>
 				<pbl:nkinv1 type="text">
-					<pbl:nkinv1Title>De checklist bij het normenkader bestaat uit 11 vragen, onderverdeeld in drie delen. De vragen moeten met ja of nee beantwoord worden; slechts in een enkel geval kan een vraag met ‘niet van toepassing’ beantwoord worden. Onder elke vraag is ruimte voor de verplichte toelichting (bewijsvoering). Indien aanwezig, refereer naar documentatie. Om het beantwoorden van de vragen te vereenvoudigen hebben we aandachtspunten toegevoegd. De aandachtspunten zijn optioneel, zet een kruis als voldaan wordt aan het betreffende aandachtspunt. Ook onder elk aandachtspunt is ruimte voor een optionele toelichting. Indien aanwezig, refereer naar documentatie. Om een vraag met ‘ja’ te kunnen beantwoorden hoeft niet aan de aandachtspunten te worden voldaan, maar een toelichting is verplicht.</pbl:nkinv1Title>
+					<pbl:nkTitle>De checklist bij het normenkader bestaat uit 11 vragen, onderverdeeld in drie delen. De vragen moeten met ja of nee beantwoord worden; slechts in een enkel geval kan een vraag met ‘niet van toepassing’ beantwoord worden. Onder elke vraag is ruimte voor de verplichte toelichting (bewijsvoering). Indien aanwezig, refereer naar documentatie. Om het beantwoorden van de vragen te vereenvoudigen hebben we aandachtspunten toegevoegd. De aandachtspunten zijn optioneel, zet een kruis als voldaan wordt aan het betreffende aandachtspunt. Ook onder elk aandachtspunt is ruimte voor een optionele toelichting. Indien aanwezig, refereer naar documentatie. Om een vraag met ‘ja’ te kunnen beantwoorden hoeft niet aan de aandachtspunten te worden voldaan, maar een toelichting is verplicht.</pbl:nkTitle>
 				</pbl:nkinv1>
 				<pbl:nkinv2 type="text">
-					<pbl:nkinv2Title>Om aan het normenkader te voldoen hoeft niet elke vraag met ‘ja’ of ‘nvt’ te worden beantwoord. Een vraag kan ook gemotiveerd met ‘nee’ beantwoord worden, terwijl er toch aan het normenkader wordt voldaan.</pbl:nkinv2Title>
+					<pbl:nkTitle>Om aan het normenkader te voldoen hoeft niet elke vraag met ‘ja’ of ‘nvt’ te worden beantwoord. Een vraag kan ook gemotiveerd met ‘nee’ beantwoord worden, terwijl er toch aan het normenkader wordt voldaan.</pbl:nkTitle>
 				</pbl:nkinv2>
 			</pbl:nkInvulhulpItems>
 			<pbl:nkReferentiesItems>
 				<pbl:nkh type="text">
-					<pbl:nkhTitle>Referentie</pbl:nkhTitle>
-					<pbl:nkhValue/>
+					<pbl:nkTitle>Referentie</pbl:nkTitle>
+					<pbl:nkValue/>
 				</pbl:nkh>
 			</pbl:nkReferentiesItems>
 		</pbl:normenkaderPBL>

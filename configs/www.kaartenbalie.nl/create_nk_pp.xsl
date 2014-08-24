@@ -3,7 +3,7 @@
 	<xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes"/>
 	<xsl:template match="/">
 		<xsl:element name="xs:stylesheet">
-			<xsl:attribute name="version">2.0</xsl:attribute>
+			<xsl:attribute name="version">1.0</xsl:attribute>
 			<xsl:attribute name="exclude-result-prefixes">xs pbl b3p gml xlink xsi</xsl:attribute>
 			<xsl:namespace name="xs" select="'http://www.w3.org/1999/XSL/Transform'"/>
 			<xsl:namespace name="pbl" select="'http://www.pbl.nl/xsd/metadata'"/>
@@ -17,11 +17,28 @@
 			</xsl:element>
 			<xsl:element name="xs:param">
 				<xsl:attribute name="name">dcPblMode_init</xsl:attribute>
-				<xsl:attribute name="select">true</xsl:attribute>
+				<xsl:text>true</xsl:text>
 			</xsl:element>
 			<xsl:element name="xs:param">
 				<xsl:attribute name="name">dcPblMode</xsl:attribute>
 				<xsl:attribute name="select">$dcPblMode_init = 'true'</xsl:attribute>
+			</xsl:element>
+			<xsl:element name="xs:template">
+				<xsl:attribute name="match">@*|node()</xsl:attribute>
+				<xsl:element name="xs:copy">
+					<xsl:element name="xs:apply-templates">
+						<xsl:attribute name="select">@*|node()</xsl:attribute>
+					</xsl:element>
+				</xsl:element>
+			</xsl:element>
+			<xsl:element name="xs:template">
+				<xsl:attribute name="match">metadata</xsl:attribute>
+				<xsl:element name="xs:element">
+					<xsl:attribute name="name">metadata</xsl:attribute>
+					<xsl:element name="xs:apply-templates">
+						<xsl:attribute name="select">@*|node()</xsl:attribute>
+					</xsl:element>
+				</xsl:element>
 			</xsl:element>
 			<xsl:element name="xs:template">
 				<xsl:attribute name="match">b3p:B3Partners</xsl:attribute>
@@ -36,7 +53,7 @@
 								<xsl:element name="xs:when">
 									<xsl:attribute name="test">not(pbl:normenkaderPBL)</xsl:attribute>
 									<xsl:element name="xs:call-template">
-										<xsl:attribute name="name">add-pbl-normenkaderPBL</xsl:attribute>
+										<xsl:attribute name="name">add-pbl-normenkaderPBL-</xsl:attribute>
 									</xsl:element>
 								</xsl:element>
 								<xsl:element name="xs:otherwise">
@@ -74,27 +91,10 @@
 				</xs:copy>
 			</xs:template -->
 			</xsl:element>
+			<xsl:for-each select="*">
+				<xsl:call-template name="copyTemplate"/>
+			</xsl:for-each>
 		</xsl:element>
-		<xsl:element name="xs:template">
-			<xsl:attribute name="match">@*|node()</xsl:attribute>
-			<xsl:element name="xs:copy">
-				<xsl:element name="xs:apply-templates">
-					<xsl:attribute name="select">@*|node()</xsl:attribute>
-				</xsl:element>
-			</xsl:element>
-		</xsl:element>
-		<xsl:element name="xs:template">
-			<xsl:attribute name="match">metadata</xsl:attribute>
-			<xsl:element name="xsl:element">
-				<xsl:attribute name="name">metadata</xsl:attribute>
-				<xsl:element name="xs:apply-templates">
-					<xsl:attribute name="select">@*|node()</xsl:attribute>
-				</xsl:element>
-			</xsl:element>
-		</xsl:element>
-		<xsl:for-each select="*">
-			<xsl:call-template name="copyTemplate"/>
-		</xsl:for-each>
 	</xsl:template>
 	<xsl:template name="copyTemplate">
 		<xsl:comment>create <xsl:value-of select="name()"/> template</xsl:comment>
@@ -131,6 +131,8 @@
 							<xsl:variable name="name-add-sub">
 								<xsl:text>add-</xsl:text>
 								<xsl:value-of select="translate(name(),':','-')"/>
+								<xsl:text>-</xsl:text>
+								<xsl:value-of select="translate(../name(),':','-')"/>
 							</xsl:variable>
 							<xsl:element name="xs:call-template">
 								<xsl:attribute name="name"><xsl:value-of select="$name-add-sub"/></xsl:attribute>
@@ -154,6 +156,8 @@
 		<xsl:variable name="name-add">
 			<xsl:text>add-</xsl:text>
 			<xsl:value-of select="translate(name(),':','-')"/>
+			<xsl:text>-</xsl:text>
+			<xsl:value-of select="translate(../name(),':','-')"/>
 		</xsl:variable>
 		<xsl:comment>create <xsl:value-of select="$name-add"/> template</xsl:comment>
 		<xsl:element name="xs:template">
@@ -177,6 +181,8 @@
 							<xsl:variable name="name-add-sub">
 								<xsl:text>add-</xsl:text>
 								<xsl:value-of select="translate(name(),':','-')"/>
+								<xsl:text>-</xsl:text>
+								<xsl:value-of select="translate(../name(),':','-')"/>
 							</xsl:variable>
 							<xsl:comment>call <xsl:value-of select="$name-add-sub"/> template</xsl:comment>
 							<xsl:element name="xs:call-template">
