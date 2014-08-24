@@ -140,7 +140,6 @@
             <username>admin</username>
             <password>***REMOVED***</password>
         </cswServer>
-        <!-- een tweede csw server 
         <cswServer>
             <name>csw2</name>
             <url>http://x13.b3p.nl:8080/geonetwork/srv/en/csw</url>
@@ -148,7 +147,6 @@
             <username>admin</username>
             <password>***REMOVED***</password>
         </cswServer>
-        -->
     </cswServers>
     
     <!-- de transformatie naar de mde heeft vele configuratie mogelijkheden -->

@@ -18,6 +18,8 @@ package nl.b3p.catalog.stripes;
 
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import net.sourceforge.stripes.action.ActionBean;
@@ -28,6 +30,7 @@ import net.sourceforge.stripes.action.StrictBinding;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.config.CSWServerConfig;
 import nl.b3p.catalog.config.CatalogAppConfig;
+import nl.b3p.catalog.resolution.HtmlResolution;
 import static nl.b3p.catalog.stripes.MetadataAction.SESSION_KEY_METADATA_XML;
 import nl.b3p.catalog.xml.DocumentHelper;
 import nl.b3p.catalog.xml.mdeXml2Html;
@@ -54,9 +57,16 @@ public class PublishActionBean implements ActionBean {
 
     private final static Log log = LogFactory.getLog(PublishActionBean.class);
     private ActionBeanContext context;
+    
+    private static final String EXPORT_TYPE_ALL = "all";
+    private static final String EXPORT_TYPE_DATASETS = "datasets";
+    private static final String EXPORT_TYPE_SERVICES = "services";
 
+    @Validate(required = true, on = "publish")
+    private String exportType = EXPORT_TYPE_DATASETS;
+    
     @Validate
-    private String type = "dataset";
+    private String cswServerName;
    
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     public ActionBeanContext getContext() {
@@ -66,11 +76,47 @@ public class PublishActionBean implements ActionBean {
     public void setContext(ActionBeanContext context) {
         this.context = context;
     }
+    /**
+     * @return the type
+     */
+    public String getExportType() {
+        return exportType;
+    }
+    /**
+     * @param exportType the exportType to set
+     */
+    public void setExportType(String exportType) {
+        this.exportType = exportType;
+    }
+    /**
+     * @return the cswServerName
+     */
+    public String getCswServerName() {
+        return cswServerName;
+    }
 
+    /**
+     * @param cswServerName the cswServerName to set
+     */
+    public void setCswServerName(String cswServerName) {
+        this.cswServerName = cswServerName;
+    }
     //</editor-fold>
 
     private CswClient getCswClient() {
-        CSWServerConfig cfg = CatalogAppConfig.getConfig().getDefaultCswServer();
+        CSWServerConfig cfg = null;
+        if (cswServerName != null && !cswServerName.isEmpty()) {
+            List<CSWServerConfig> lcfgs = CatalogAppConfig.getConfig().getCswServers();
+            for (CSWServerConfig lcfg : lcfgs) {
+                if (cswServerName.equals(lcfg.getCswName())) {
+                    cfg = lcfg;
+                    break;
+                }
+            }
+        }
+        if (cfg==null) {
+            cfg = CatalogAppConfig.getConfig().getDefaultCswServer();
+        }
         return new CswClient(new GeoNetworkCswServer(
                 cfg.getLoginUrl(),
                 cfg.getUrl(),
@@ -79,9 +125,23 @@ public class PublishActionBean implements ActionBean {
         ));
     }
 
+    public Resolution optionsList() throws Exception {
+        List<CSWServerConfig> lcfgs = CatalogAppConfig.getConfig().getCswServers();
+        StringBuilder sb = new StringBuilder();
+        for (CSWServerConfig lcfg : lcfgs) {
+            sb.append("<option value=\"");
+            sb.append(lcfg.getCswName());
+            sb.append("\">");
+            sb.append(lcfg.getCswName());
+            sb.append("</option>");
+        }
+        //TODO cvl vullen select in GUI
+        return new HtmlResolution(sb.toString());
+    }
+
     public Resolution publish() throws Exception {
 
-        Document md = getISO19139Document();
+        Document md = getMDDocument(exportType);
 
         String fileIdentifier = new OutputById(null).getUUID(md.getRootElement());
 
@@ -110,7 +170,7 @@ public class PublishActionBean implements ActionBean {
         return new StreamingResolution("application/json", new StringReader(jo.toString()));
     }
 
-    private Document getISO19139Document() throws Exception {
+    private Document getMDDocument(String exportType) throws Exception {
 
         /* The MD_Metadata.detach() causes that when doing multiple 'publishing' actions 
          for the same file that the FileIdentifier can't be after the first publish.
@@ -122,43 +182,32 @@ public class PublishActionBean implements ActionBean {
         if (md == null) {
             throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
         }
-
         Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
         Boolean datasetMode = mdeXml2Html.getXSLParam("datasetMode_init");
-        
-        //Als zowel dataset als service aanstaan, dan bepaalt type welke versie
-        //gepubliceerd gaat worden, beide mag niet.
-        //TODO bij gebruiker opvragen welke type gepubliceerd moet worden, indien
-        //beide beschikbaar zijn.
-        if (serviceMode!=null && serviceMode.booleanValue() 
-                && datasetMode!=null && datasetMode.booleanValue()) {
-            if (type.equalsIgnoreCase("dataset")) {
-                serviceMode = Boolean.FALSE;
-            } else {
-                datasetMode = Boolean.FALSE;
-            }
+
+        if (EXPORT_TYPE_DATASETS.equals(exportType)) {
+                    serviceMode = Boolean.FALSE;
+                    datasetMode = Boolean.TRUE;
+        } else if (EXPORT_TYPE_SERVICES.equals(exportType)) {
+                    serviceMode = Boolean.TRUE;
+                    datasetMode = Boolean.FALSE;
+        } else if (EXPORT_TYPE_ALL.equals(exportType)) {
+                    serviceMode = Boolean.TRUE;
+                    datasetMode = Boolean.TRUE;
         }
-
-        mdeXml2Html.cleanUpMetadata(md, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
-        mdeXml2Html.removeEmptyNodes(md);
-
+ 
+        // create copy because instance in session variable should not be cleaned
         Document mdCopy = new Document((Element) md.getRootElement().clone());
-        Element MD_Metadata = DocumentHelper.getMD_Metadata(mdCopy);
-        MD_Metadata.detach();
-        return new Document(MD_Metadata);
+        mdeXml2Html.cleanUpMetadata(mdCopy, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
+        mdeXml2Html.removeEmptyNodes(mdCopy);
+
+        // strip off non iso parts
+        if (EXPORT_TYPE_DATASETS.equals(exportType) || EXPORT_TYPE_SERVICES.equals(exportType)) {
+            Element MD_Metadata = DocumentHelper.getMD_Metadata(mdCopy);
+            MD_Metadata.detach();
+            mdCopy = new Document(MD_Metadata);
+        }
+        return mdCopy;
     }
 
-    /**
-     * @return the type
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * @param type the type to set
-     */
-    public void setType(String type) {
-        this.type = type;
-    }
 }

@@ -50,9 +50,10 @@ public class FileListHelper {
         
         File f = new File(root.getPath(), osPath);
         
-        if(!FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(f) && !f.exists()) {
-            throw new FileNotFoundException("Path does not exist");
-        }
+        //TODO CvL: file does not need to exists? use empty md then
+//        if(!FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(f) && !f.exists()) {
+//            throw new FileNotFoundException("Path does not exist");
+//        }
         return f;
     }
     
@@ -115,6 +116,13 @@ public class FileListHelper {
                 dc.getFiles().add(newFile);
             }
         }
+                
+        // add stub for directory metadata
+        DirEntry newFile = new DirEntry();
+        newFile.setName(".metadata");
+        newFile.setPath(currentPath + directory.getName() + ".metadata");
+        newFile.setIsGeo(false);
+        dc.getFiles().add(newFile);
 
         filterOutFilesToHide(dc);
 

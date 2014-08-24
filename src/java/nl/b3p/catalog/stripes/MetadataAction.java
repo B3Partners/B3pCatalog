@@ -72,6 +72,10 @@ public class MetadataAction extends DefaultAction {
     private static final String SDE_MODE = "sde";
     private static final String LOCAL_MODE = "local";
     private static final String KB_MODE = "kaartenbalie";
+    
+    private static final String EXPORT_TYPE_ALL = "all";
+    private static final String EXPORT_TYPE_DATASETS = "datasets";
+    private static final String EXPORT_TYPE_SERVICES = "services";
 
     // Fields in DS1, Ds2, Ds3 to check for. 
     public final static String ADDRESS = "address";
@@ -105,7 +109,7 @@ public class MetadataAction extends DefaultAction {
     private String comment;
 
     @Validate(required = true, on = "export")
-    private boolean strictISO19115 = false;
+    private String exportType = EXPORT_TYPE_ALL;
 
     @Validate
     private FileBean importXml;
@@ -123,9 +127,6 @@ public class MetadataAction extends DefaultAction {
     /* JSON with info about requested section addition or deletion. */
     @Validate(on = "updateXml")
     private String sectionChange;
-    
-    @Validate
-    private String type = "dataset";
     
     @Validate
     private Boolean viewMode = null;
@@ -311,7 +312,7 @@ public class MetadataAction extends DefaultAction {
 
             md = syncBetweenElements(md);
 
-            Document mdCopy = cleanupXmlCopy(md, strictISO19115);
+            Document mdCopy = cleanupXmlCopy(md, exportType);
             // Geen XML parsing door browser, geef door als String
             return new StreamingResolution("text/plain", new StringReader(DocumentHelper.getDocumentString(mdCopy)));
             
@@ -352,7 +353,7 @@ public class MetadataAction extends DefaultAction {
             md = syncBetweenElements(md);
 
             // create copy because instance in session variable should not be cleaned
-            mdCopy = cleanupXmlCopy(md, false);
+            mdCopy = cleanupXmlCopy(md, EXPORT_TYPE_ALL);
 
         } catch (Exception e) {
             String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
@@ -627,7 +628,7 @@ public class MetadataAction extends DefaultAction {
             // do save xml with comment when posting, otherwise users with only
             // comment role will not be able to save
             if (rootAccess.getSecurityLevel() == AclAccess.COMMENT.getSecurityLevel()) {
-                Document mdCopy = cleanupXmlCopy(md, false);
+                Document mdCopy = cleanupXmlCopy(md, EXPORT_TYPE_ALL);
                 String mdString = DocumentHelper.getDocumentString(mdCopy);
                 saveXmlToSource(mdString);
             }
@@ -919,29 +920,28 @@ public class MetadataAction extends DefaultAction {
      * @return
      * @throws B3PCatalogException 
      */
-    private Document cleanupXmlCopy(Document md, boolean strict) throws B3PCatalogException {
+    private Document cleanupXmlCopy(Document md, String exportType) throws B3PCatalogException {
         Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
         Boolean datasetMode = mdeXml2Html.getXSLParam("datasetMode_init");
-            //TODO ask user what he wants dataset or service
-        //for now assume dataset
-        //only applicable when strict xml is required
-        if (strict) {
-            if (serviceMode != null && serviceMode.booleanValue()
-                    && datasetMode != null && datasetMode.booleanValue()) {
-                if (type.equalsIgnoreCase("dataset")) {
-                    serviceMode = Boolean.FALSE;
-                } else {
-                    datasetMode = Boolean.FALSE;
-                }
-            }
-        }
 
+        if (EXPORT_TYPE_DATASETS.equals(exportType)) {
+                    serviceMode = Boolean.FALSE;
+                    datasetMode = Boolean.TRUE;
+        } else if (EXPORT_TYPE_SERVICES.equals(exportType)) {
+                    serviceMode = Boolean.TRUE;
+                    datasetMode = Boolean.FALSE;
+        } else if (EXPORT_TYPE_ALL.equals(exportType)) {
+                    serviceMode = Boolean.TRUE;
+                    datasetMode = Boolean.TRUE;
+        }
+ 
         // create copy because instance in session variable should not be cleaned
         Document mdCopy = new Document((Element) md.getRootElement().clone());
         mdeXml2Html.cleanUpMetadata(mdCopy, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
         mdeXml2Html.removeEmptyNodes(mdCopy);
 
-        if (strict) {
+        // strip off non iso parts
+        if (EXPORT_TYPE_DATASETS.equals(exportType) || EXPORT_TYPE_SERVICES.equals(exportType)) {
             Element MD_Metadata = DocumentHelper.getMD_Metadata(mdCopy);
             MD_Metadata.detach();
             mdCopy = new Document(MD_Metadata);
@@ -1097,12 +1097,12 @@ public class MetadataAction extends DefaultAction {
         this.comment = comment;
     }
 
-    public boolean isStrictISO19115() {
-        return strictISO19115;
+    public String getExportType() {
+        return exportType;
     }
 
-    public void setStrictISO19115(boolean strictISO19115) {
-        this.strictISO19115 = strictISO19115;
+    public void setExportType(String exportType) {
+        this.exportType = exportType;
     }
 
     public FileBean getImportXml() {
@@ -1127,20 +1127,6 @@ public class MetadataAction extends DefaultAction {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    /**
-     * @return the type
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * @param type the type to set
-     */
-    public void setType(String type) {
-        this.type = type;
     }
 
     /**

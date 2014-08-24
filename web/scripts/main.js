@@ -1039,35 +1039,72 @@ B3pCatalog.exportMetadata = function() {
     }
 };
 
-B3pCatalog._exportMetadata = function() {
-
-    $.yesNoCancel({
-        html: "Wilt u alle metadata exporteren? Indien u nee antwoordt worden alleen de ISO19115 metadata " +
-                " gegevens op de tab \"Geografisch\" geexporteerd.<p>" +
-                "<b>Ja</b>: XML root element <tt>&lt;metadata&gt;</tt> met verschillende soorten metadata, o.a. attributen en commentaar" +
-                "<p><b>Nee</b>: XML root element <tt>&lt;MD_Metadata&gt;</tt> volgens het ISO 19139 XML schema",
-        yes: function() {
-            B3pCatalog._doExportMetadata(false);
-        },
-        no: function() {
-            B3pCatalog._doExportMetadata(true);
-        },
-        cancel: function() {
-        }
-    });
-}
-
-B3pCatalog._doExportMetadata = function(strict) {
+B3pCatalog._doExportMetadata = function(exportType) {
     $("#mde").mde("option", "pageLeaveWarning", false);
 
     window.location = B3pCatalog.metadataUrl + "?" + $.param({
         "export": "t",
         path: B3pCatalog.currentFilename,
         mode: B3pCatalog.currentMode,
-        strictISO19115: strict
+        exportType: exportType
     });
         
     $("#mde").mde("option", "pageLeaveWarning", true);
+};
+
+B3pCatalog._exportMetadata = function() {
+    var $form = $("<form />");
+
+    var $chooseTypeDiv = $("<div />", {
+        html: "U heeft de volgende keuzes:<ul><li>alles: alle metadata binnen één bestand;</li>"+ 
+                "<li>datasets: metadata voor datasets conform Nederlands profiel;</li>"+
+                "<li>services: metadata voor services conform Nederlands profiel.</li></ul>"+
+                "<p>Kies het type metadata dat u wil exporteren:</p>"
+    });
+            
+    var $typeInput = $("<select />", {
+        name: "exportType"
+    });
+    var option1 = $("<option></option>").attr("value", "all");
+    option1.text("alles");
+    option1.attr("selected", "selected");
+    $typeInput.append(option1);
+    var option2 = $("<option></option>").attr("value", "datasets");
+    option2.text("datasets");
+    $typeInput.append(option2);
+    var option3 = $("<option></option>").attr("value", "services");
+    option3.text("services");
+    $typeInput.append(option3);
+
+    var $submitEventInput = $("<input type='submit' name='export' value='Exporteren' class='dialog-submit'/>");
+
+    $form.append($chooseTypeDiv);
+    $form.append($typeInput);
+    $form.append($submitEventInput);
+
+    $form.submit(function() {
+        log("export via form submit");
+        B3pCatalog._doExportMetadata($typeInput.val());
+        $dialogDiv.dialog("close");
+        return false;
+    });
+
+    var $dialogDiv = $("<div/>", {
+        "class": "ui-mde-textarea-wrapper",
+        css: {
+            overflow: "hidden"
+        }
+    });
+    
+    $dialogDiv.append($form);
+    $dialogDiv.appendTo(document.body).dialog({
+        title: "Metadata exporteren",
+        modal: true,
+        width: $("body").calculateDialogWidth(33),
+        close: function(event) {
+            $(this).dialog("destroy").remove();
+        }
+    });
 };
 
 B3pCatalog._exportMetadataByUUID = function() {
@@ -1269,29 +1306,108 @@ B3pCatalog.synchronizeNetCDF = function(fn) {
                 B3pCatalog.fadeMessage("NCML ingelezen, exporteer volledige metadata voor <netcdf> XML");
             }
         });
-    }
+    };
 
     this.local.callApplet("getNCML",
             fn,
             gotNCML,
             B3pCatalog.openSimpleErrorDialog);
-}
+};
 
 B3pCatalog.publishMetadata = function() {
-
     $.ajax({
         url: B3pCatalog.publishUrl,
         type: "POST",
+        async: false,
         data: {
-            publish: "t",
-            metadata: null, // niet meer nodig, staat serverside
+            optionsList: "t"
         },
         success: function(data, textStatus, xhr) {
-
-            B3pCatalog.fadeMessage("Metadata succesvol gepubliceerd " + (data.exists ? "(update)" : "(nieuw)"));
+            B3pCatalog._publishMetadata(data);
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            B3pCatalog._publishMetadata("<option value=\"\">default</option>");
         }
     });
-}
+};
+
+B3pCatalog._publishMetadata = function(cswOptions) {
+    var $form = $("<form />");
+
+    var $chooseTypeDiv = $("<div />", {
+        html: "U heeft de volgende keuzes:<ul>"+ 
+                "<li>datasets: metadata voor datasets conform Nederlands profiel;</li>"+
+                "<li>services: metadata voor services conform Nederlands profiel.</li></ul>"+
+                "<p>Kies het type metadata dat u wil publiceren:</p>"
+    });
+            
+    var $typeInput = $("<select />", {
+        name: "exportType"
+    });
+
+    var option2 = $("<option></option>").attr("value", "datasets");
+    option2.text("datasets");
+    option2.attr("selected", "selected");
+    $typeInput.append(option2);
+    var option3 = $("<option></option>").attr("value", "services");
+    option3.text("services");
+    $typeInput.append(option3);
+
+    var $chooseCswDiv = $("<div />", {
+        html: "<p>Kies de CSW server waar naartoe u wil publiceren:</p>"
+    });
+       
+    //TODO cvl via ajax call namen ophalen
+    var $cswInput = $("<select />", {
+        name: "cswName"
+    });
+    
+    $cswInput.html(cswOptions);
+
+    var $submitEventInput = $("<input type='submit' name='publish' value='Publiceren' class='dialog-submit'/>");
+
+    $form.append($chooseTypeDiv);
+    $form.append($typeInput);
+    $form.append($chooseCswDiv);
+    $form.append($cswInput);
+    $form.append($submitEventInput);
+
+    $form.submit(function() {
+        log("publish via form submit");
+        $.ajax({
+            url: B3pCatalog.publishUrl,
+            type: "POST",
+            data: {
+                publish: "t",
+                exportType: $typeInput.val(),
+            },
+            success: function(data, textStatus, xhr) {
+
+                B3pCatalog.fadeMessage("Metadata succesvol gepubliceerd " + (data.exists ? "(update)" : "(nieuw)"));
+            }
+        });
+
+        $dialogDiv.dialog("close");
+        return false;
+    });
+
+    var $dialogDiv = $("<div/>", {
+        "class": "ui-mde-textarea-wrapper",
+        css: {
+            overflow: "hidden"
+        }
+    });
+    
+    $dialogDiv.append($form);
+    $dialogDiv.appendTo(document.body).dialog({
+        title: "Metadata publiceren",
+        modal: true,
+        width: $("body").calculateDialogWidth(33),
+        close: function(event) {
+            $(this).dialog("destroy").remove();
+        }
+    });
+};
 
 B3pCatalog.createAdminOrganisationsToolbar = function() {
     var toolbar = $("#toolbar");
