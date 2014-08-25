@@ -56,12 +56,12 @@
            * Synchroniseren kost meer tijd
            * Geldige Java installatie vereist
     -->
-    <arcobjects enabled="true" productCodes="ArcServer Engine" arcEngineHome="C:\software\ArcGIS\Server10.0\"/>
+    <arcobjects enabled="false"/>
     
     <!-- <arcobjects enabled="false" forkSynchroniser="true"/> -->
     
     <!-- Definitie van de boomstructuur in de tab "Bestanden verkennen" 
-         Minimaal één root moet zijn gedefinieerd.
+         Minimaal Ã©Ã©n root moet zijn gedefinieerd.
     --> 
     <roots>
         <!-- Browse bestanden vanaf het pad "C:\catalog_test".
@@ -73,11 +73,31 @@
              synchroniseren van Esri file geodatabases is een ArcView licentie 
              nodig.
         -->
-        <fileRoot name="Test" path="D:\PBLBaseTest">
+        <fileRoot name="Demo" path="D:/Chris/metadata-2014-05-01">
         
 			<!-- Autorisatie voor deze root
 
-                "access" kan één van onderstaande waardes hebben:
+                "access" kan Ã©Ã©n van onderstaande waardes hebben:
+                  "write"  : gebruiker met deze rol kan metadata wijzigen
+                  "comment": gebruiker met deze rol kan metadata lezen en commentaar toevoegen
+                  "read"   : gebruiker kan alleen metadata lezen
+                  "none"   : root wordt niet getoond in de boomstructuur voor gebruiker, kan geen metadata lezen
+
+				Met geneste <role>naam_van_rol</role> elementen kan een lijst met geldige rollen uit web.xml (<security-role>) 
+                of "*" voor elke gebruiker worden opgegeven voor bovengenoemde access
+                0f "none" voor geen access level ofwel niet ingelogd.
+
+                Indien geen <acl> elementen aanwezig zijn is het default <acl access="write"><role>*</role></acl>
+            -->
+			<acl access="write">
+				<role>none</role>
+			</acl>
+        </fileRoot>
+        <fileRoot name="GIS data" path="D:/Chris/metadata-2014-05-01">
+        
+			<!-- Autorisatie voor deze root
+
+                "access" kan Ã©Ã©n van onderstaande waardes hebben:
                   "write"  : gebruiker met deze rol kan metadata wijzigen
                   "comment": gebruiker met deze rol kan metadata lezen en commentaar toevoegen
                   "read"   : gebruiker kan alleen metadata lezen
@@ -89,86 +109,103 @@
                 Indien geen <acl> elementen aanwezig zijn is het default <acl access="write"><role>*</role></acl>
             -->
 			<acl access="write">
-				<role>*</role>
+				<role>editor</role>
+				<role>admin</role>
+			</acl>
+			<acl access="comment">
+				<role>viewer</role>
 			</acl>
         </fileRoot>
         
-        <!-- Browse bestanden in SDE via alleen ArcObjects.
+        <kbRoot name="Kaartenbalie">
+            <acl access="write">
+                    <role>admin</role>
+            </acl>
+            <jndiDataSource>java:comp/env/jdbc/kaartenbalie</jndiDataSource>
+         </kbRoot>
         
-             Voor weergave inhoud, lezen metadata en synchroniseren is 
-             ArcView licentie nodig. Om metadata XML op te slaan is 
-             ArcEditor licentie nodig.
-             
-             N.B. bij vele hoeveelheden datasets kan het weergeven van inhoud
-             enorm traag zijn. Gebruik daarvoor directe JDBC connectie (zie
-             onder).
-	-->
-        <sdeRoot name="SDE ArcObjects">
-            <arcobjectsConnection>INSTANCE=sde:sqlserver:localhost\sqlexpress;DATABASE=geodb;AUTHENTICATION_MODE=OSA;VERSION=dbo.DEFAULT</arcobjectsConnection>
-        </sdeRoot>
-        
-        <!-- Browse bestanden in SDE via alleen JDBC (geen synchronisatie mogelijk) 
- 
-             Geef prefix voor tabellen op met tablePrefix attribuut (bijvoorbeeld indien
-             de tabellen in een ander dan het default schema staan).
-
-	         Geef de ESRI versie van het SDE schema op met schemaVersion attribuut. Mogelijke
-             waardes "9.x" (GDB_USERMETADATA, etc.) of "10" (GDB_ITEMS). Default is
-             "9.x".
-
-             Specificatie 9.x: http://webhelp.esri.com/arcgisserver/9.3/java/index.htm#geodatabases/system_1203016261.htm
-             Specificatie 10:  http://help.arcgis.com/en/arcgisdesktop/10.0/help/index.html#//002n0000008m000000
-        -->
-        <sdeRoot name="SDE JDBC" tablePrefix="" schemaVersion="9.x">
-            <!-- De JNDI datasource moet in Tomcat zijn gedefinieerd in de webapp 
-                 context. In de WAR zit deze in META-INF/context.xml.
-                 Na deployen wordt het bestand in tomcat/conf/Catalina/localhost/b3pcatalog.xml
-                 gebruikt. Voor meer informatie:
-                 http://tomcat.apache.org/tomcat-6.0-doc/jndi-resources-howto.html#JDBC_Data_Sources
-            -->
-            
-            <jndiDataSource>java:comp/env/jdbc/arcsde</jndiDataSource>
-        </sdeRoot>
-        
-        <!-- Browse bestanden in SDE via hybride JDBC / ArcObjects
-        
-             Voor alles behalve synchroniseren wordt JDBC gebruikt. Voor
-             synchronisatie is ArcView licentie nodig (optioneel). 
-             Werkt met de forkSynchroniser optie.             
-        -->
-        <sdeRoot name="SDE JDBC+ArcObjects">
-            <jndiDataSource>java:comp/env/jdbc/arcsde</jndiDataSource>
-            <arcobjectsConnection>INSTANCE=sde:sqlserver:localhost\sqlexpress;DATABASE=geodb;AUTHENTICATION_MODE=OSA;VERSION=dbo.DEFAULT</arcobjectsConnection>           
-        </sdeRoot>
     </roots>
     
     <!-- Spatiegescheiden lijst van bestandsextensies waarbij de geografische 
          tabs in de metadataeditor automatisch worden getoond.
     -->
-    <geoFileExtensions>gml shp dxf dgn sdf sdl lyr ecw sid tif tiff asc mdb</geoFileExtensions>
+    <geoFileExtensions></geoFileExtensions>
 
-    <!-- CSW server configuratie voor de "Catalog doorzoeken" tab -->
-    <cswServer>
-        <url>http://www.nationaalgeoregister.nl/geonetwork/srv/en/csw</url>
-        
-        <!-- Volgende elementen zijn optioneel: 
-        <loginUrl></loginUrl>
-        <username></username>
-        <password></password>
+    <cswServers>
+        <cswServer>
+            <name>csw1</name>
+            <url>http://x13.b3p.nl:8080/geonetwork/srv/en/csw</url>
+            <!--Volgende elementen zijn optioneel: -->
+            <loginUrl>http://x13.b3p.nl:8080/geonetwork/srv/en/xml.user.login</loginUrl>
+            <username>admin</username>
+            <password>***REMOVED***</password>
+        </cswServer>
+        <cswServer>
+            <name>csw2</name>
+            <url>http://x13.b3p.nl:8080/geonetwork/srv/en/csw</url>
+            <loginUrl>http://x13.b3p.nl:8080/geonetwork/srv/en/xml.user.login</loginUrl>
+            <username>admin</username>
+            <password>***REMOVED***</password>
+        </cswServer>
+    </cswServers>
+    
+    <!-- de transformatie naar de mde heeft vele configuratie mogelijkheden -->
+    <mdeConfig>
+         <!-- maak attributen tab (feature catalog)-->
+        <entry><key>fcMode_init</key><value>true</value></entry>
+        <!-- maak dublin core tab-->
+        <entry><key>dcMode_init</key><value>true</value></entry>
+         <!-- voeg speciale PBL extra's toe aan dublin core tab-->
+        <entry><key>dcPblMode_init</key><value>true</value></entry>
+        <!-- zet alle metadata voor datasets op een enkele tab-->
+        <entry><key>iso19115oneTab_init</key><value>false</value></entry>
+        <!-- maak tab met commentaar mogelijkhed -->
+        <entry><key>commentMode_init</key><value>true</value></entry>
+        <!-- maak editor read-only, viewMode in js-->
+        <entry><key>globalReadonly_init</key><value>false</value></entry>
+        <!-- maak metadata voor services-->
+        <entry><key>serviceMode_init</key><value>true</value></entry>
+        <!-- maak metadata voor datasets -->
+        <entry><key>datasetMode_init</key><value>true</value></entry>
+        <!-- TODO synchroniseDC werkt niet goed icm service mode omdat de sync 
+        templates hier niet op aangepast zijn. -->
+        <!-- gebruik dc om md tags mee te vullen-->
+        <entry><key>synchroniseDC_init</key><value>true</value></entry>
+        <!-- gebruik defaults vooringevuld-->
+        <entry><key>fillDefaults_init</key><value>true</value></entry>
+        <!-- gebruik esri tags om md mee te vullen -->
+        <entry><key>synchroniseEsri_init</key><value>true</value></entry>
+        <!-- Bestanden met transformers
+         Een relatief pad is ten opzichte van de directory waar dit 
+         configuratie XML bestand staat.
         -->
-    </cswServer>
+        <entry><key>mdemain</key><value>mdemain.xsl</value></entry>
+        <entry><key>mdeXmlPreprocessor</key><value>mdeXmlPreprocessor.xsl</value></entry>
+        <entry><key>ISO19115toDC</key><value>ISO19115toDC.xsl</value></entry>
+        <entry><key>DCtoISO19115</key><value>DCtoISO19115.xsl</value></entry>
+        <entry><key>sync_ncml</key><value>sync_ncml.xsl</value></entry>
+        <!-- klantspecifieke transformaties -->
+        <entry><key>extrapreprocessor1</key><value>nk_pp.xsl</value></entry>
+        <!--
+        <entry><key>extrapreprocessor2</key><value>preprocessor2.xsl</value></entry>
+        <entry><key>extrasync1</key><value>sync1.xsl</value></entry>
+        <entry><key>extrasync2</key><value>sync2.xsl</value></entry>
+        <entry><key>extrapostprocessor1</key><value>postprocessor1.xsl</value></entry>
+        -->
+    </mdeConfig>
+    
     
     <!-- Bestand met voorgedefinieerde informatie over organisaties en 
          contactpersonen die in de metadataeditor snel kan worden ingevuld.
          
          Een relatief pad is ten opzichte van de directory waar dit 
-         configuratie XML bestand staat. Optioneel, standaardwaarde is "organizations.json"
+         configuratie XML bestand staat. Optioneel, standaardwaarde is "organisations.json"
          
          LET OP! Dit bestand moet geldige JavaScript code zijn. Er is enige
          syntax controle indien een beheerder de gegevens wijzigt via de webapplicatie.
          LET OP! Dit bestand moet schrijfbaar zijn door Tomcat 
          LET OP! Voor speciale tekens: charset moet UTF-8 zijn
     -->
-    <!--organizationsJsonFile>organizations.json</organizationsJsonFile-->
+    <organizationsJsonFile>organisations.json</organizationsJsonFile>
     
 </b3p:catalogAppConfig>
