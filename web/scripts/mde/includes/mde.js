@@ -1095,8 +1095,8 @@ $.widget("ui.mde", {
         });
 
         $(".ui-mde-wiki-help-link").click(function(event) {
-            var w = window.open(self.options.wiki2htmlHelpUrl, null, "width=800, height=600, toolbar=no, scrollbars=yes, status=no, location=no");
-            w.focus();
+            var w = window.open(self.options.wiki2htmlHelpUrl, "wikihelp", "width=800, height=600, toolbar=no, scrollbars=yes, status=no, location=no");
+            //w.focus(); //IE11: Kan de eigenschap focus van een niet-gedefinieerde verwijzing of een verwijzing naar een lege waarde niet ophalen
             return false;
         });
         

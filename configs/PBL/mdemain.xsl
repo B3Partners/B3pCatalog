@@ -51,9 +51,9 @@
             </xsl:for-each-->
 			<div id="ui-mde-tabs-container">
 				<ul id="ui-mde-tabs" class="ui-helper-reset">
-					<xsl:if test="$dcMode">
+					<xsl:if test="$dcPblMode">
 						<li class="ui-corner-top">
-							<a href="#algemeen" title="Dublin Core voor administratieve metadata">Dublin Core</a>
+							<a href="#samenvatting" title="Belangrijkste metadata gegevens">Algemeen</a>
 						</li>
 					</xsl:if>
 					<xsl:choose>
@@ -117,6 +117,11 @@
 							<a href="#attributen" title="Attribuutinformatie van de dataset">Attributen</a>
 						</li>
 					</xsl:if>
+					<xsl:if test="$dcMode">
+						<li class="ui-corner-top">
+							<a href="#dublincore" title="Dublin Core voor administratieve metadata">Dublin Core</a>
+						</li>
+					</xsl:if>
 					<xsl:if test="$commentMode">
 						<li class="ui-corner-top">
 							<a href="#commentaar" title="Commentaar op deze metadata">Commentaar</a>
@@ -136,9 +141,9 @@
 		</div>
 	</xsl:template>
 	<xsl:template name="elements">
-		<xsl:if test="$dcMode">
-			<div id="algemeen" class="ui-mde-tab-definition">
-				<xsl:call-template name="dcItems"/>
+		<xsl:if test="$dcPblMode">
+			<div id="samenvatting" class="ui-mde-tab-definition">
+				<xsl:call-template name="summaryItems"/>
 			</div>
 		</xsl:if>
 		<xsl:choose>
@@ -240,13 +245,17 @@
 				<xsl:call-template name="attributeItems"/>
 			</div>
 		</xsl:if>
+		<xsl:if test="$dcMode">
+			<div id="dublincore" class="ui-mde-tab-definition">
+				<xsl:call-template name="dcItems"/>
+			</div>
+		</xsl:if>
 		<xsl:if test="$commentMode">
 			<div id="commentaar" class="ui-mde-tab-definition">
 				<xsl:call-template name="commentItems"/>
 			</div>
 		</xsl:if>
 		<xsl:if test="$dcPblMode">
-
 			<div id="normenkader" class="ui-mde-tab-definition">
 				<div class="ui-mde-section">
 					<xsl:call-template name="section-title">
@@ -305,7 +314,6 @@
 					</div>
 				</div>
 			</div>
-
 		</xsl:if>
 	</xsl:template>
 	<!-- PBL Normenkader -->
@@ -2711,27 +2719,37 @@
 	<!-- Dublin Core -->
 	<xsl:template name="dcItems">
 		<xsl:for-each select="/b3p:B3Partners | /*/b3p:B3Partners">
-			<xsl:apply-templates select="*/dc:title"/>
-			<xsl:apply-templates select="*/dc:description"/>
+			<xsl:if test="not($dcPblMode)">
+				<xsl:apply-templates select="*/dc:title"/>
+				<xsl:apply-templates select="*/dc:description"/>
+				<xsl:apply-templates select="*/dc:contributor"/>
+				<xsl:apply-templates select="*/dc:rights"/>
+				<xsl:apply-templates select="*/dc:date"/>
+				<xsl:apply-templates select="*/dc:source"/>
+			</xsl:if>
 			<xsl:apply-templates select="*/dc:subject"/>
-			<xsl:apply-templates select="*/dc:date"/>
 			<xsl:apply-templates select="*/dc:language"/>
 			<xsl:apply-templates select="*/dc:relation"/>
 			<xsl:apply-templates select="*/dc:creator"/>
 			<xsl:apply-templates select="*/dc:publisher"/>
-			<xsl:apply-templates select="*/dc:contributor"/>
 			<xsl:apply-templates select="*/dc:type"/>
 			<xsl:apply-templates select="*/dc:format"/>
 			<xsl:apply-templates select="*/dc:identifier"/>
-			<xsl:if test="not($dcPblMode)">
-				<xsl:apply-templates select="*/dc:source"/>
-			</xsl:if>
 			<xsl:apply-templates select="*/dc:coverage"/>
-			<xsl:apply-templates select="*/dc:rights"/>
 			<xsl:if test="$dcPblMode">
 				<xsl:apply-templates select="pbl:metadataPBL/pbl:frequency"/>
 				<xsl:apply-templates select="pbl:metadataPBL/pbl:testsPerformed"/>
 			</xsl:if>
+		</xsl:for-each>
+	</xsl:template>
+	<!-- Summary -->
+	<xsl:template name="summaryItems">
+		<xsl:for-each select="/b3p:B3Partners | /*/b3p:B3Partners">
+			<xsl:apply-templates select="*/dc:title"/>
+			<xsl:apply-templates select="*/dc:description"/>
+			<xsl:apply-templates select="*/dc:contributor"/>
+			<xsl:apply-templates select="*/dc:rights"/>
+			<xsl:apply-templates select="*/dc:date"/>
 		</xsl:for-each>
 	</xsl:template>
 	<!-- gemeenschappelijk iso 19115 en iso 19110-->
@@ -3524,6 +3542,7 @@
 			<xsl:with-param name="title">Doel van de vervaardiging</xsl:with-param>
 			<xsl:with-param name="optionality" select="'optional'"/>
 			<xsl:with-param name="help-text" select="'ISO 26 Doel van de vervaardiging'"/>
+			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 28 Status MD_Metadata.identificationInfo>MD_DataIdentification.status Codelijst MD_ProgressCode (B.5.23)-->
@@ -3718,6 +3737,7 @@
 			<xsl:with-param name="help-text" select="'ISO 72 Overige beperkingen Het is verplicht op zijn minst één van de drie elementen (juridische) toegangsrestricties, overige beperkingen of veiligheidsrestricties op te nemen.'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.34_Overige_beperkingen</xsl:with-param>
 			<xsl:with-param name="no-bold-title" select="$no-bold-title"/>
+			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 74 resourceConstraints>MD_LegalConstraints.classification Codelijst MD_ClassificationCode (B.5.11)-->
@@ -3778,6 +3798,7 @@
 			<xsl:with-param name="repeatable" select="true()"/>
 			<xsl:with-param name="repeatable-path" select="../../.."/>
 			<xsl:with-param name="help-text">Beschrijving uitgevoerde bewerkingen</xsl:with-param>
+			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:source">
@@ -3797,6 +3818,7 @@
 		<xsl:call-template name="element">
 			<xsl:with-param name="title">Beschrijving brondata</xsl:with-param>
 			<xsl:with-param name="help-text">Dit veld kan gebruikt worden om een algemene beschrijving of opmerking te geven betreft de kwaliteit van de (verschillende) brongegevens.</xsl:with-param>
+			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:source/gmd:LI_Source/gmd:sourceStep">
@@ -3817,6 +3839,7 @@
 		<xsl:call-template name="element">
 			<xsl:with-param name="title">Inwinningsmethode</xsl:with-param>
 			<xsl:with-param name="help-text">Methode die gebruikt is om de brongegevens in te winnen</xsl:with-param>
+			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:source/gmd:LI_Source/gmd:sourceStep/gmd:LI_ProcessStep/gmd:dateTime/gco:DateTime">
@@ -3867,6 +3890,7 @@
 			<xsl:with-param name="optionality" select="'conditional'"/>
 			<xsl:with-param name="help-text" select="'ISO 131 Verklaring Verplicht als de dataset een INSPIRE bron is of als de informatie is gemodelleerd volgens een specifiek informatie model.'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.29_Verklaring</xsl:with-param>
+			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 132 Conformiteitsindicatie met de specificatie 
@@ -4167,6 +4191,7 @@
 			<xsl:with-param name="title">Specificatie</xsl:with-param>
 			<xsl:with-param name="optionality">conditional</xsl:with-param>
 			<xsl:with-param name="help-text">Versie van het distributie formaat. Verplicht als de naam van het distributie formaat ingevuld is.</xsl:with-param>
+			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- Backwards compatibility: "online" vs. "onLine": online is verkeerd, maar zat in een oude versie van de mde  -->
@@ -4809,6 +4834,7 @@
 		<xsl:call-template name="element">
 			<xsl:with-param name="title">Definitie</xsl:with-param>
 			<xsl:with-param name="help-text" select="'B2.2/B4.2 definition in a natural language.'"/>
+			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="gfc:cardinality/gco:Integer">
@@ -5442,7 +5468,7 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
 	</xsl:template>
 	<xsl:template name="wikiHelpPopupLink">
 		<xsl:if test="not($globalReadonly)">
-			<a href="#" class="ui-mde-wiki-help-link">(?)</a>
+			<a href="#" class="ui-mde-wiki-help-link">Info</a>
 		</xsl:if>
 	</xsl:template>
 	<!-- EvdP: Doet speciale extra acties voor types van ISO 19139. -->
