@@ -1,6 +1,5 @@
 package nl.b3p.catalog.stripes;
 
-import com.thoughtworks.xstream.XStream; // TODO remove when going live and also change Netbeans properties
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -11,10 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.transform.TransformerException;
 import net.sourceforge.stripes.action.FileBean;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -45,8 +41,7 @@ import nl.b3p.catalog.xml.Names;
 import nl.b3p.catalog.xml.Namespaces;
 import nl.b3p.catalog.xml.ShapefileSynchronizer;
 import nl.b3p.catalog.xml.XPathHelper;
-import nl.b3p.catalog.xml.mdeXml2Html; // wolverine. Make this cleaner.
-import static nl.b3p.catalog.xml.mdeXml2Html.getXSLParam;
+import nl.b3p.catalog.xml.mdeXml2Html;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -58,14 +53,11 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 
 public class MetadataAction extends DefaultAction {
     
-   XStream xstream = new XStream();
-
     private final static Log log = LogFactory.getLog(MetadataAction.class);
 
     private static final String FILE_MODE = "file";
@@ -479,29 +471,7 @@ public class MetadataAction extends DefaultAction {
             title = localFilename.substring(1);
         }
 
-        // Set title if needed in DC or DS
-        // Check if synchroniseDC_init in config.xml is true
-        if (getXSLParam("synchroniseDC_init")) {
-
-            Element dcTitle = XPathHelper.selectSingleElement(xmlDoc, XPathHelper.DOM_DC_TITLE);
-
-                // If title is NOT already filled then synchronize it.
-            // Note: Changes made in the MDE are only picked up after a save of the document.
-            if (dcTitle.getText().isEmpty()) {
-                XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DOM_DC_TITLE, title);
-            }
-        } else {
-            // set title in DS1.
-
-            Element dsTitle = XPathHelper.selectSingleElement(xmlDoc, XPathHelper.TITLE);
-
-            // If title is NOT already filled then synchronize it.
-            // Note: Changes made in the MDE are only picked up after a save of the document.
-            if (dsTitle.getText().isEmpty()) {
-                XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, title);
-            }
-        }
-
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, title);
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.FC_TITLE, title);
 
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_NAME, fileFormat);
@@ -1024,30 +994,6 @@ public class MetadataAction extends DefaultAction {
 
     }
     
-    private void saveOrganisations(Document md) throws JDOMException {
-
-        Element ds1OrganisationName = XPathHelper.selectSingleElement(md, XPathHelper.DOM_DS1_ORGANISATION_NAME);
-        Element ds2OrganisationName = XPathHelper.selectSingleElement(md, XPathHelper.DOM_DS2_ORGANISATION_NAME);
-        Element ds3OrganisationName = XPathHelper.selectSingleElement(md, XPathHelper.DOM_DS3_ORGANISATION_NAME);
-        log.debug("Saving organisation info into organisation.json file");
-        log.debug("ds1OrganisationName:" + ds1OrganisationName + "value: " + ds1OrganisationName.getText());
-        log.debug("ds2OrganisationName:" + ds2OrganisationName + "value:" +  ds2OrganisationName.getText());
-        log.debug("ds3OrganisationName:" + ds3OrganisationName + "value:" +  ds3OrganisationName.getText());
-        
-        // Some tests.
-        String jsonString = OrganisationsAction.getOrganisations();
-        String jsonStringV2 = OrganisationsAction.getOrganisationsV2();
-        log.debug("wolverine. Read in json file contents. getOrganisations " + jsonString);
-        log.debug("wolverine. Read in json file contents. getOrganisationsV2 " + jsonStringV2);
-        
-        saveNewOrChangedOrganisation(md);
-        showOrganisations(); 
-        
-
-    }
-
-    
-
     // <editor-fold defaultstate="collapsed" desc="getters en setters">
     public String getMode() {
         return mode;
@@ -1144,6 +1090,29 @@ public class MetadataAction extends DefaultAction {
     }
     // </editor-fold>
 
+    /* TODO JB: JSONObject.getNames compiled niet
+        private void saveOrganisations(Document md) throws JDOMException {
+
+        Element ds1OrganisationName = XPathHelper.selectSingleElement(md, XPathHelper.DOM_DS1_ORGANISATION_NAME);
+        Element ds2OrganisationName = XPathHelper.selectSingleElement(md, XPathHelper.DOM_DS2_ORGANISATION_NAME);
+        Element ds3OrganisationName = XPathHelper.selectSingleElement(md, XPathHelper.DOM_DS3_ORGANISATION_NAME);
+        log.debug("Saving organisation info into organisation.json file");
+        log.debug("ds1OrganisationName:" + ds1OrganisationName + "value: " + ds1OrganisationName.getText());
+        log.debug("ds2OrganisationName:" + ds2OrganisationName + "value:" +  ds2OrganisationName.getText());
+        log.debug("ds3OrganisationName:" + ds3OrganisationName + "value:" +  ds3OrganisationName.getText());
+        
+        // Some tests.
+        String jsonString = OrganisationsAction.getOrganisations();
+        String jsonStringV2 = OrganisationsAction.getOrganisationsV2();
+        log.debug("wolverine. Read in json file contents. getOrganisations " + jsonString);
+        log.debug("wolverine. Read in json file contents. getOrganisationsV2 " + jsonStringV2);
+        
+        saveNewOrChangedOrganisation(md);
+        showOrganisations(); 
+        
+
+    }
+
     private void showOrganisations() {
         
         
@@ -1168,7 +1137,7 @@ public class MetadataAction extends DefaultAction {
            
            // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
        } catch (JSONException ex) {
-           Logger.getLogger(MetadataAction.class.getName()).log(Level.SEVERE, null, ex);
+           log.error(ex);
        }
     }
 
@@ -1210,7 +1179,7 @@ public class MetadataAction extends DefaultAction {
            
            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
        } catch (JSONException ex) {
-           Logger.getLogger(MetadataAction.class.getName()).log(Level.SEVERE, null, ex);
+           log.error(ex);
        }
        
     }
@@ -1248,7 +1217,7 @@ public class MetadataAction extends DefaultAction {
                 }
                 log.debug("contact:" + keyContact + "email:" + emailAddress);
             } catch (JSONException ex) {
-                Logger.getLogger(MetadataAction.class.getName()).log(Level.SEVERE, null, ex);
+                log.error(ex);
             }
         }
     }
@@ -1311,7 +1280,7 @@ public class MetadataAction extends DefaultAction {
 
           // save merged json object to the file.
         } catch (JSONException ex) {
-            Logger.getLogger(MetadataAction.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(ex);
         }
     }
 
@@ -1382,7 +1351,7 @@ public class MetadataAction extends DefaultAction {
            jsonOrganisation.put(organisation, jsonOrgContent); 
            
        } catch (JSONException ex) {
-           Logger.getLogger(MetadataAction.class.getName()).log(Level.SEVERE, null, ex);
+           log.error(ex);
        }
        return jsonOrganisation;
         
@@ -1405,7 +1374,7 @@ public class MetadataAction extends DefaultAction {
 
            return elementValue;
        } catch (JDOMException ex) {
-           Logger.getLogger(MetadataAction.class.getName()).log(Level.SEVERE, null, ex);
+           log.error(ex);
        }
        return elementValue; 
     }
@@ -1440,8 +1409,7 @@ public class MetadataAction extends DefaultAction {
                     break;
                 }
             } catch (JSONException ex) {
-                
-               Logger.getLogger(MetadataAction.class.getName()).log(Level.SEVERE, null, ex);
+                log.error(ex);
 //                exists = false;
 //                break;
             }
@@ -1456,7 +1424,7 @@ public class MetadataAction extends DefaultAction {
             try {
                 merged.put(key, jsonNewOrChanged.get(key));
             } catch (JSONException ex) {
-                Logger.getLogger(MetadataAction.class.getName()).log(Level.SEVERE, null, ex);
+                log.error(ex);
             }
         }
         return merged;
@@ -1479,10 +1447,10 @@ public class MetadataAction extends DefaultAction {
             jsonObject.put(jsonKey, jsonValue);
 
         } catch (JSONException ex) {
-            Logger.getLogger(MetadataAction.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(ex);
         }
         return jsonObject;
     }
-
+*/
 }
   
