@@ -7,9 +7,12 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import javax.xml.transform.TransformerException;
 import net.sourceforge.stripes.action.FileBean;
@@ -53,6 +56,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -335,8 +339,8 @@ public class MetadataAction extends DefaultAction {
                 throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
             }
 
-            // Saving organisations. In the MDE atm the old getOrganisations etc is used.
-            //saveOrganisations(md);
+            // Saving organisations to config
+            OrganisationsAction.saveOrganisations(md);
             
             // Bij opslaan kunnen geen section changes zijn gedaan, ook geen
             // preprocessing nodig
@@ -626,7 +630,6 @@ public class MetadataAction extends DefaultAction {
         md = mdeXml2Html.preprocess(md, viewMode);
         md = mdeXml2Html.extraPreprocessor1(md, viewMode);
         md = mdeXml2Html.extraPreprocessor2(md, viewMode);
-        log.debug("serverside xml after preprocessing: " + DocumentHelper.getDocumentString(md));
         return md;
     }
     
@@ -643,7 +646,6 @@ public class MetadataAction extends DefaultAction {
         Document htmlDoc = mdeXml2Html.transform(md, viewMode);
         htmlDoc = mdeXml2Html.extraPostprocessor1(htmlDoc, viewMode);
         String html = DocumentHelper.getDocumentString(htmlDoc);
-        log.debug("serverside rendered html: " + html);
         return html;
     }
 
@@ -990,8 +992,6 @@ public class MetadataAction extends DefaultAction {
                 new Element(Names.B3P_CONTENT, Namespaces.B3P).setText(comment)
         ));
         comments.addContent(newComment);
-        log.debug("serverside xml after adding new comment: " + DocumentHelper.getDocumentString(doc));
-
     }
     
     // <editor-fold defaultstate="collapsed" desc="getters en setters">
@@ -1090,367 +1090,5 @@ public class MetadataAction extends DefaultAction {
     }
     // </editor-fold>
 
-    /* TODO JB: JSONObject.getNames compiled niet
-        private void saveOrganisations(Document md) throws JDOMException {
-
-        Element ds1OrganisationName = XPathHelper.selectSingleElement(md, XPathHelper.DOM_DS1_ORGANISATION_NAME);
-        Element ds2OrganisationName = XPathHelper.selectSingleElement(md, XPathHelper.DOM_DS2_ORGANISATION_NAME);
-        Element ds3OrganisationName = XPathHelper.selectSingleElement(md, XPathHelper.DOM_DS3_ORGANISATION_NAME);
-        log.debug("Saving organisation info into organisation.json file");
-        log.debug("ds1OrganisationName:" + ds1OrganisationName + "value: " + ds1OrganisationName.getText());
-        log.debug("ds2OrganisationName:" + ds2OrganisationName + "value:" +  ds2OrganisationName.getText());
-        log.debug("ds3OrganisationName:" + ds3OrganisationName + "value:" +  ds3OrganisationName.getText());
-        
-        // Some tests.
-        String jsonString = OrganisationsAction.getOrganisations();
-        String jsonStringV2 = OrganisationsAction.getOrganisationsV2();
-        log.debug("wolverine. Read in json file contents. getOrganisations " + jsonString);
-        log.debug("wolverine. Read in json file contents. getOrganisationsV2 " + jsonStringV2);
-        
-        saveNewOrChangedOrganisation(md);
-        showOrganisations(); 
-        
-
-    }
-
-    private void showOrganisations() {
-        
-        
-       try {
-           String jsonStringV2 = OrganisationsAction.getOrganisationsV2();
-           // if we get here the json is already validated.
-           
-           JSONObject jsonObj= new JSONObject(jsonStringV2);
-           
-           createJsonTestObject();
-           
-           // Lets loop over all the organisations in the json file.
-           
-           Iterator <?> keys = jsonObj.keys();
-           while ( keys.hasNext() ) {
-               String key = (String)keys.next();
-            if( jsonObj.get(key) instanceof JSONObject ){
-                  displayOrganisation (key, (JSONObject) jsonObj.get(key)); 
-            }
-           } 
-           
-           
-           // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-       } catch (JSONException ex) {
-           log.error(ex);
-       }
-    }
-
-    private void createJsonTestObject() {
-        
-       try {
-           JSONObject jsonOrgContent = new JSONObject();
-           JSONObject jsonContacts = new JSONObject();
-           JSONObject jsonOrganisation = new JSONObject();
-           
-                     
-           // This is the body of an organisation.
-           jsonOrgContent.put("address", "wolv-org address");
-           jsonOrgContent.put( "city", "wolv-org city");
-           jsonOrgContent.put( "state", "wolv-org state");
-           jsonOrgContent.put( "PostalCode", "wolv-org postalCode");
-           jsonOrgContent.put(  "country", "wolv-org country");
-           
-           jsonOrgContent.put( "url", "<stad>");
-           jsonOrgContent.put( "email", "wolv-org email");
-           jsonOrgContent.put( "PostalCode", "<postcode>");
-           jsonOrgContent.put(  "voice", "wolv-org voice");
-           
-           
-           // Contacts object.
-           jsonContacts.put("wolv-org contact 1", new JSONObject().put("email","wolv-org contacts 1 email wolverine2710@gmail.com"));
-           jsonContacts.put("wolv-org contact 2", new JSONObject().put("email","wolv-org contacts 2 email wolverine2710@gmail.com"));                
-           jsonOrgContent.put("contacts",jsonContacts );
-           
-           // Now create 
-           jsonOrganisation.put("Wolv-org organisatie house of snikt", jsonOrgContent); 
-           
-           log.debug("Wolverine: manually contstructed json object" + jsonOrganisation.toString());
-           //System.out.println("Wolverine: manually contstructed json object" + jsonOrganisation.to);
-           
-           
-           
-           
-           
-           //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-       } catch (JSONException ex) {
-           log.error(ex);
-       }
-       
-    }
-
-    private void displayOrganisation(String key, JSONObject valueObj) {
-
-        log.debug("wolv displayOrganisation. key:" + key);
-        log.debug("wolv displayOrganisation. value:" + valueObj.toString());
-
-        log.debug("address:" + valueObj.opt("address"));
-        log.debug("city:" + valueObj.opt("city"));
-        log.debug("state:" + valueObj.opt("state"));
-        log.debug("postalCode:" + valueObj.opt("postalCode"));
-        log.debug("url:" + valueObj.opt("url"));
-        log.debug("email:" + valueObj.opt("email"));
-        log.debug("voice:" + valueObj.opt("voice"));
-
-        JSONObject contacts = (JSONObject) valueObj.opt("contacts");
-        JSONObject contactsObj = new JSONObject();
-        
-        
-        Iterator<?> contactKeys = contacts.keys();
-        while (contactKeys.hasNext()) {
-            String keyContact = (String) contactKeys.next();
-            String emailAddress = "";
-
-            try {
-                contactsObj = (JSONObject) contacts.get(keyContact);
-                if (contactsObj instanceof JSONObject) {
-                    // displayOrganisation(key, (JSONObject) jsonObj.get(key));
-                    emailAddress =  (String) contactsObj.opt("email"); 
-                }
-                else {
-                    emailAddress ="dummy"; 
-                }
-                log.debug("contact:" + keyContact + "email:" + emailAddress);
-            } catch (JSONException ex) {
-                log.error(ex);
-            }
-        }
-    }
-
- 
-    private void saveNewOrChangedOrganisation(Document md) {
-        try {
-           //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-
-            // retrieve currently stored Organisations.
-            String jsonStringV2 = OrganisationsAction.getOrganisationsV2();
-
-           // if we get here the json is already validated.
-            JSONObject jsonObj = new JSONObject(jsonStringV2);
-            JSONObject jsonMde = new JSONObject();
-            JSONObject jsonNewOrChanged = new JSONObject();
-            JSONObject jsonMerged = new JSONObject();
-            JSONObject currentValue = new JSONObject();
-            JSONObject curentOrganisationJson = new JSONObject();
-
-            // Create a list/array of all the of keys of the json objects.
-            String[] fieldNames = JSONObject.getNames(jsonObj);
-            log.debug("String array fieldnames:" + fieldNames);
-            log.debug("List of fieldnames:" + Arrays.asList(fieldNames));
-
-            // Lets loop over all the organisations in the json file.
-            Iterator<?> keys = jsonObj.keys();
-            while (keys.hasNext()) {
-                String currKey = (String) keys.next();
-                currentValue = (JSONObject) jsonObj.get(currKey);
-                if (currentValue instanceof JSONObject) {
-                    displayOrganisation(currKey, currentValue);
-                    curentOrganisationJson = createJsonObject(currKey, currentValue);
-                    jsonMde = getMdeOrganisation(md, 1);
-
-                    // Check if the json Object retrieve from the MDE is already in the organisation.json file.
-                    if (!Arrays.asList(fieldNames).contains(getOrganisationsName(jsonMde))) {
-                        // Add organisation to existing json file.
-                        //String orgName = JSONObject.getNames(jsonMde)[0];
-                        String orgName = getOrganisationsName(jsonMde);
-                        JSONObject orgValue = jsonMde.getJSONObject(orgName);
-                        jsonNewOrChanged.put(orgName, orgValue);
-
-                    } else if (isNewOrChangedOrganisation(curentOrganisationJson, jsonMde)) {
-
-                        // Add organisation to existing json file.
-                        String orgName = JSONObject.getNames(jsonMde)[0];
-                        JSONObject orgValue = jsonMde.getJSONObject(orgName);
-                        jsonNewOrChanged.put(orgName, orgValue);
-
-                    } else {
-                        String dummy = "UNchanged";
-                    }
-
-                }
-            }
-            // merge contents of the json file with the new/changed MDE object.
-            jsonMerged = mergeJson(jsonObj, jsonNewOrChanged);
-            OrganisationsAction.setOrganisationsV2(jsonMerged);
-
-          // save merged json object to the file.
-        } catch (JSONException ex) {
-            log.error(ex);
-        }
-    }
-
-    private JSONObject getMdeOrganisation(Document md, int number) {
-
-        JSONObject jsonOrgContent = new JSONObject();
-        JSONObject jsonContacts = new JSONObject();
-        JSONObject jsonOrganisation = new JSONObject();
-
-        String organisation = ""; 
-        String address = ""; 
-        String city = "";
-        String state = "";
-        String postalCode = ""; 
-        String country = "";
-        String url = ""; 
-        String email = "";
-        String voice = ""; 
-        String contact1Name = ""; 
-        String contact2Name = ""; 
-        String contact1Email = ""; 
-        String contact2Email = ""; 
-        
-        
-        
-       try {
-           // ON three places in the MDE organisations info is stored
-           // One can specify which one you want to retrieve and its returned
-           
-           switch (number) {
-               case 1:
-                   organisation = getValueElement(md, XPathHelper.DOM_DS1_ORGANISATION_NAME);
-                   address = getValueElement(md, XPathHelper.DOM_DS1_ADDRESS);
-                   city = getValueElement(md, XPathHelper.DOM_DS1_CITY);
-                   postalCode = getValueElement(md, XPathHelper.DOM_DS1_POSTCALCODE);
-                   country = getValueElement(md, XPathHelper.DOM_DS1_COUNTRY);
-                   city = getValueElement(md, XPathHelper.DOM_DS1_CITY);
-                   email = getValueElement(md, XPathHelper.DOM_DS1_EMAIL);
-                   voice = getValueElement(md, XPathHelper.DOM_DS1_VOICE);
-                   url = getValueElement(md, XPathHelper.DOM_DS1_URL);
-                   
-                   
-                   break;
-               case 2:
-                   break;
-               case 3:
-                   break;
-           }
-           
-           
-                     
-           // This is the body of an organisation.
-           jsonOrgContent.put("address", email);
-           jsonOrgContent.put( "city", city);
-           jsonOrgContent.put( "state", state);
-           jsonOrgContent.put( "postalCode", postalCode);
-           jsonOrgContent.put( "country", country);
-           
-           jsonOrgContent.put( "url", url);
-           jsonOrgContent.put( "email", email);
-           jsonOrgContent.put(  "voice", voice);
-           
-           // Contacts object.
-           jsonContacts.put( contact1Name, new JSONObject().put("email",""));
-           jsonOrgContent.put("contacts",jsonContacts );
-           
-           // Now create
-           jsonOrganisation.put(organisation, jsonOrgContent); 
-           
-       } catch (JSONException ex) {
-           log.error(ex);
-       }
-       return jsonOrganisation;
-        
-    }
-
-    private String getValueElement(Document md, String domElement) {
-        
-       String elementValue = "";
-       try {
-           Element element = XPathHelper.selectSingleElement(md, domElement);
-           
-           // If title is NOT already filled then synchronize it.
-           // Note: Changes made in the MDE are only picked up after a save of the document.
-            if (element.getText().isEmpty()) {
-                elementValue = ""; 
-            }
-            else {
-                elementValue = element.getText(); 
-            }
-
-           return elementValue;
-       } catch (JDOMException ex) {
-           log.error(ex);
-       }
-       return elementValue; 
-    }
-
-    private boolean isNewOrChangedOrganisation(JSONObject base, JSONObject check) {
-
-        boolean exists = true; // defaults to true
-
-        // Fields which HAVE to be the same. 
-        String[] fields =  {ADDRESS, CITY, STATE,  POSTCALCODE, COUNTRY, URL, EMAIL};
-        String lastProcesedField = ""; 
-        String fieldBase = "";
-        String fieldCheck = "";
-        
-        
-        for (String field : fields) {
-            
-            try {
-                JSONObject baseContent = (JSONObject) base.get(getOrganisationsName(base));
-                JSONObject checkContent = (JSONObject) check.get(getOrganisationsName(check));
-                
-                fieldBase = (String) baseContent.opt(field);
-                fieldCheck = (String) checkContent.opt(field);
-                
-                if (fieldBase.equals(fieldCheck)) {
-                    exists = false;
-                }
-                else {
-                    lastProcesedField = field;
-                    exists = true;
-                    log.debug("Method isNewOrChangedOrganisation breaks on:" + lastProcesedField); 
-                    break;
-                }
-            } catch (JSONException ex) {
-                log.error(ex);
-//                exists = false;
-//                break;
-            }
-        }
-        return exists;
-    }
-
-    private JSONObject mergeJson(JSONObject jsonObj, JSONObject jsonNewOrChanged) {
-
-        JSONObject merged = new JSONObject(jsonObj, JSONObject.getNames(jsonObj));
-        for (String key : JSONObject.getNames(jsonNewOrChanged)) {
-            try {
-                merged.put(key, jsonNewOrChanged.get(key));
-            } catch (JSONException ex) {
-                log.error(ex);
-            }
-        }
-        return merged;
-
-    }
-
-    private String getOrganisationsName(JSONObject organisation) {
-        
-           String organisationName = JSONObject.getNames(organisation)[0];
-           return organisationName;
-        
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private JSONObject createJsonObject(String jsonKey, JSONObject jsonValue) {
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-
-            jsonObject.put(jsonKey, jsonValue);
-
-        } catch (JSONException ex) {
-            log.error(ex);
-        }
-        return jsonObject;
-    }
-*/
 }
   

@@ -44,8 +44,7 @@ $.widget("ui.mde", {
         changed: false, // modify externally whether the mde is in changed mode. Use with care. (add/removes star in title and calls change callback...)
         tabContainerSelector: "#ui-mde-tabs-container", // the default tab container is residing above the md document.
         organisations: {}, // autocomplete organisations and contacts; see organisations.js for examples
-        //TODO CvL
-//        getOrganisations: function() { console.log("default..."); return {}; },
+        getOrganisations: function() { console.log("default..."); return {}; },
         wiki2htmlHelpUrl: "http://nl.wikipedia.org/wiki/Wikipedia:Spiekbriefje", // hulpmiddel voor richtext elems
         thesauri: [
                 new Thesaurus("GEMET thesaurus","http://www.eionet.europa.eu/gemet/inspire_themes?langcode=nl", /* loadJsonTerms("picklists/gemet-nl.json") */ gemetInspireNlTerms)
@@ -631,8 +630,7 @@ $.widget("ui.mde", {
     _postprocessHtmlDoc: function() {
 
         this.log("Postprocessing...");
-        //TODO CvL
-        //this._getOrganisationsJson();
+        this._getOrganisationsJson();
         this._setPrettyPicklistStrings();
         this._setFormattedDates();
         this._createRichTextElements(); 
@@ -644,14 +642,10 @@ $.widget("ui.mde", {
         this.options.afterInit.apply(this.element, []);
     },
     
-    //TODO CvL
-    // TODO JB. This functions has to be called when new organizations info is added and
-    // 'opslaan' is selected. In effect this means that the 'organizations' picklist gets 
-    // extended. There is a ticket for this enhancement.  
-//    _getOrganisationsJson: function() {
-//	this.options.organisations = this.options.getOrganisations();
-//
-//    },
+    _getOrganisationsJson: function() {
+	this.options.getOrganisations();
+
+    },
     
     //////////////////////////////// Rich text /////////////////////////////////////    
 

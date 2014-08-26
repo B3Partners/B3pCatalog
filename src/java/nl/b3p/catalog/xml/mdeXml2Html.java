@@ -141,6 +141,7 @@ public class mdeXml2Html {
     }
 
     private static Document transformIntern(Document doc, String xslName, Boolean viewMode, boolean ignoreAllowed) throws JDOMException, IOException, TransformerConfigurationException, TransformerException {
+        log.debug("XML before transformation with '"+ xslName + "':\n" + DocumentHelper.getDocumentString(doc));
         Templates aTemplates = null;
 
         if (!transformerTemplates.containsKey(xslName)) {
@@ -179,6 +180,7 @@ public class mdeXml2Html {
 
         JDOMResult result = new JDOMResult();
         t.transform(new JDOMSource(doc), result);
+        log.debug("XML after transformation with '"+ xslName + "':\n" + DocumentHelper.getDocumentString(result.getDocument()));
         
         return result.getDocument();
     }

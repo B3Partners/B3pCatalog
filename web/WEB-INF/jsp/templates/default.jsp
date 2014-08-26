@@ -53,7 +53,7 @@
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/Math.uuid.js"></script>
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/wiki2html.js"></script>
 
-        <script type="text/javascript" charset="utf-8" src="${orgsUrl}"></script>
+        <!-- script type="text/javascript" charset="utf-8" src="${orgsUrl}"></script -->
         <script type="text/javascript" src="${contextPath}/scripts/mde/picklists/gemet-inspire-nl.js"></script>
         
         <!-- mde -->

@@ -956,11 +956,10 @@ B3pCatalog.createMdeHtml = function(htmlDoc, changedOnServer, isGeo, viewMode, e
             console.log("onChange");
             B3pCatalog.setChanged(changed);
         },
-        //TODO CvL
-//        getOrganisations: function() {
-//            console.log("onLoadOrganisations");
-//            return B3pCatalog.getOrganisations();
-//        }
+        getOrganisations: function() {
+            console.log("onLoadOrganisations");
+            B3pCatalog.getOrganisations();
+        },
     }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)
             , extraOptions));
 
@@ -978,17 +977,21 @@ B3pCatalog.createMdeHtml = function(htmlDoc, changedOnServer, isGeo, viewMode, e
 
 };
 
-//TODO CvL
-//B3pCatalog.getOrganisations = function() {
-//
-//    $.ajax({
-//        url: B3pCatalog.orgsUrl,
-//        type: "POST",
-//        success: function(data, textStatus, xhr) {
-//            return data; // hier zit dan organisations json in
-//        }
-//    });
-//}
+B3pCatalog.getOrganisations = function() {
+
+    //TODO CvL: klopt onderstaande aanroep?
+    $.ajax({
+        url: B3pCatalog.orgsUrl,
+        type: "POST",
+        data: {json: "t"},
+        async: false,
+        dataType: "html",
+        success: function(data, textStatus, xhr) {
+            var mde = $("#mde").data("mde");
+            mde.options.organisations = JSON.parse(data); // hier zit dan organisations json in
+        }
+    });
+};
     
 B3pCatalog.setChanged = function(changed) {
     var docTitle = "" + document.title;

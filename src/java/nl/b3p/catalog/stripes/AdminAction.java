@@ -28,6 +28,7 @@ public class AdminAction extends DefaultAction {
         try {
             if(!Roles.isAdmin(getContext().getServletContext(), getContext().getRequest()))
                 throw new B3PCatalogException("User is not an admin");
+
             organisations = OrganisationsAction.getOrganisations();
         } catch (Exception ex) {
             log.error("Cannot read organisations config file", ex);

@@ -7,9 +7,7 @@ B3pCatalog.basicMdeOptions = {
     logMode: true,
     richTextMode: true,
     iso19115PreviewImageInsideGeotab: true,
-    tabContainerSelector: "#page-tabs",
-    //TODO CvL: deze mag weg
-    organisations: organisations
+    tabContainerSelector: "#page-tabs"
 };
 
 // used for a non-csw editor/viewer
