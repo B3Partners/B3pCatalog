@@ -342,15 +342,15 @@ public class MetadataAction extends DefaultAction {
                 throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
             }
 
-            // Saving organisations to config
-            OrganisationsAction.saveOrganisations(md);
-            
             // Bij opslaan kunnen geen section changes zijn gedaan, ook geen
             // preprocessing nodig
             md = applyChangesXml(md, false);
 
             md = syncBetweenElements(md);
-
+            
+            // Saving organisations to config
+            OrganisationsAction.saveOrganisations(md);
+            
             // create copy because instance in session variable should not be cleaned
             mdCopy = cleanupXmlCopy(md, EXPORT_TYPE_ALL);
 

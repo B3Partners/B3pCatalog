@@ -217,39 +217,31 @@ public class OrganisationsAction extends DefaultAction {
     private static JSONObject mergeOrganisation(JSONObject configOrgs, String mdOrgName, JSONObject mdOrg) throws JSONException, IOException {
         //  check if mdOrg in configOrgs
         if (configOrgs.has(mdOrgName)) { //  if yes
-            //      get configOrg
+            // get configOrg
             JSONObject configOrg = (JSONObject) configOrgs.get(mdOrgName);
-            //      remove configOrg from configOrgs
-            configOrgs.remove(mdOrgName);
+            // get configContacts from configOrg
+            JSONObject configContacts = (JSONObject) configOrg.optJSONObject("contacts");
+            if (configContacts == null) {
+                //      or create if not present
+                configContacts = new JSONObject();
+            }
             //      get mdContacts from mdOrg
             JSONObject mdContacts = (JSONObject) mdOrg.optJSONObject("contacts");
             if (mdContacts != null) {
-                //      get configContacts from configOrg
-                JSONObject configContacts = (JSONObject) configOrg.optJSONObject("contacts");
-                //      remove "contacts"
-                configOrg.remove("contacts");
                 //      loop over mdContacts
                 Iterator<?> mdContactsKeys = mdContacts.keys();
                 while (mdContactsKeys.hasNext()) {
                     String mdContactName = (String) mdContactsKeys.next();
                     JSONObject mdContact = (JSONObject) mdContacts.get(mdContactName);
-                    //          check if mdContact in configContacts
-                    if (configContacts.has(mdContactName)) { //  if yes
-                        //              remove configContact from configContacts
-                        configContacts.remove(mdContactName);
-                    }
-                    //              add mdContacts to configContacts
+                    // add or replace mdContacts to configContacts
                     configContacts.put(mdContactName, mdContact);
                 }
-                //      add configContacts to configOrg
-                configOrg.put("contacts", configContacts);
-            }
-            //      add configOrg to configOrgs
-            configOrgs.put(mdOrgName, configOrg);
-        } else { //  if no
-            //      add mdOrg to configOrgs
-            configOrgs.put(mdOrgName, mdOrg);
+             }
+             //      add configContacts to mdOrg
+             mdOrg.put("contacts", configContacts);
         }
+        // add or replace mdOrg to configOrgs
+        configOrgs.put(mdOrgName, mdOrg);
         // return configOrgs
         return configOrgs;
    }
