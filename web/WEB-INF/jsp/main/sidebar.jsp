@@ -16,6 +16,6 @@
 
 <div id="connect-local" class="ui-layout-content">
     <a href="#" onclick="B3pCatalog.connectDirectory()">Lokale map verkennen...</a>
-    
+    <a href="#" onclick="B3pCatalog.addFile()">Nieuw bestand toevoegen</a>
     <div id="applet-container"></div>
 </div>

@@ -57,6 +57,31 @@ B3pCatalog.hashchange = function(event) {
     }
 };
 
+B3pCatalog.addFile = function() {
+    // Prompt for new file name
+    var bestandsnaam = htmlEncode(prompt('Bestandsnaam', 'new_file.txt'));
+    // Find currently selected item
+    var $selectedItem = $("#filetree-file").find('.selected');
+    // Only works if an item is selected
+    if($selectedItem.length === 0) {
+        return;
+    }
+    // Get rel
+    var rel = $selectedItem.attr('rel');
+    // Extract folder
+    var folder = rel.substring(0, rel.lastIndexOf('/') + 1);
+    // Create new list item
+    var $newListItem = $('<li class="file ext_txt"></li>');
+    // Create new link
+    var $newLinkItem = $('<a href="#" rel="' + folder + bestandsnaam + '" title="' + bestandsnaam + '" isgeo="true">' + bestandsnaam + '</a>').appendTo($newListItem);
+    // Append list item after selected item
+    $selectedItem.parent().after($newListItem);
+    // Trigger tree rebind (to add click event to items)
+    $("#filetree-file").trigger('rebindtree');
+    // Trigger click
+    $newLinkItem.trigger('click');
+};
+
 B3pCatalog.loadLocal = function(success) {
     var me = this;
     if (!this.local) {
