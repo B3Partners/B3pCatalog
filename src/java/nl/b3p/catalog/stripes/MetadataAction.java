@@ -7,12 +7,9 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import javax.xml.transform.TransformerException;
 import net.sourceforge.stripes.action.FileBean;
@@ -56,7 +53,6 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -679,6 +675,18 @@ public class MetadataAction extends DefaultAction {
         md = mdeXml2Html.extraSync2(md);
         return md;
     }
+
+    /**
+     * only add xml extension if not allready present.
+     * save metadata to file itself when it has xml extension.
+     */
+    private File determineXmlFile(File mdFile) throws IOException {
+        String path = mdFile.getCanonicalPath();
+        if (path.endsWith(Extensions.METADATA)) {
+            return mdFile;
+        }
+        return new File(mdFile.getCanonicalPath() + Extensions.METADATA);
+    }
     
     /**
      * load metadata from source specific location:
@@ -730,7 +738,7 @@ public class MetadataAction extends DefaultAction {
                     md = DocumentHelper.getMetadataDocument(metadata);
 
                 } else {
-                    mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
+                    mdFile = determineXmlFile(mdFile);
                     if (!mdFile.exists()) {
                         // create new metadata on client side or show this in exported file:
                         md = DocumentHelper.getMetadataDocument(DocumentHelper.EMPTY_METADATA);
@@ -772,7 +780,7 @@ public class MetadataAction extends DefaultAction {
                     FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
                 }
             } else {
-                mdFile = new File(mdFile.getCanonicalPath() + Extensions.METADATA);
+                mdFile = determineXmlFile(mdFile);
 
                 OutputStream outputStream = new BufferedOutputStream(FileUtils.openOutputStream(mdFile));
                 outputStream.write(mdString.getBytes("UTF-8"));

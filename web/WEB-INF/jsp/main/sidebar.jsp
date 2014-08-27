@@ -15,7 +15,10 @@
 </div>
 
 <div id="connect-local" class="ui-layout-content">
-    <a href="#" onclick="B3pCatalog.connectDirectory()">Lokale map verkennen...</a>
-    <a href="#" onclick="B3pCatalog.addFile()">Nieuw bestand toevoegen</a>
-    <div id="applet-container"></div>
+    <a href="#" onclick="B3pCatalog.connectDirectory()">Lokale map verkennen</a>
+    <div id="applet-container"></div>                
+    <stripes:useActionBean beanclass="nl.b3p.catalog.stripes.AdminCheckActionBean" event="init" var="b"/>
+    <c:if test="${b.admin}">
+        &nbsp;&nbsp;&nbsp;<a href="#" onclick="B3pCatalog.addFile()">Nieuw bestand toevoegen</a>
+    </c:if>   
 </div>

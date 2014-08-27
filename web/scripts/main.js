@@ -57,9 +57,65 @@ B3pCatalog.hashchange = function(event) {
     }
 };
 
+// add file to tree in client, when saved the file will be created in the root
+// only works for file roots
 B3pCatalog.addFile = function() {
-    // Prompt for new file name
-    var bestandsnaam = htmlEncode(prompt('Bestandsnaam', 'new_file.txt'));
+    var $form = $("<form />");
+
+    // Find currently selected item
+    var $selectedItem = $("#filetree-file").find('.selected');
+    // Only works if an item is selected
+    if ($selectedItem.length === 0) {
+        var $errorDiv = $("<div />", {
+            html: "Er kan geen bestand worden toegevoegd. " +
+                "Kies eerst een bestand in de map waar bestand moet worden toegevoegd."
+        });
+        $form.append($errorDiv);
+        var $submitEventInput = $("<input type='submit' name='addFile' value='OK' class='dialog-submit'/>");
+        $form.append($submitEventInput);
+    } else {
+        var $fileNameDiv = $("<div />", {
+            html: "Kies een naam voor het metadatabestand met extensie xml."
+        });
+        $form.append($fileNameDiv);
+        // Prompt for new file name
+        var $fileNameInput = $("<input type='text' value='metadata.xml' />")
+        $form.append($fileNameInput);
+        var $submitEventInput = $("<input type='submit' name='addFile' value='Bestand toevoegen' class='dialog-submit'/>");
+        $form.append($submitEventInput);
+    }
+
+    $form.submit(function() {
+        log("add file via form submit");
+        // Only works if an item is selected
+        if($selectedItem.length !== 0) {
+            B3pCatalog._addFile($fileNameInput.val());
+        }
+        $dialogDiv.dialog("close");
+        return false;
+    });
+
+    var $dialogDiv = $("<div/>", {
+        "class": "ui-mde-textarea-wrapper",
+        css: {
+            overflow: "hidden"
+        }
+    });
+    
+    $dialogDiv.append($form);
+    $dialogDiv.appendTo(document.body).dialog({
+        title: "Nieuw bestand toevoegen",
+        modal: true,
+        width: $("body").calculateDialogWidth(33),
+        close: function(event) {
+            $(this).dialog("destroy").remove();
+        }
+    });
+};
+
+// add file to tree in client, when saved the file will be created in the root
+// only works for file roots
+B3pCatalog._addFile = function(bestandsnaam) {
     // Find currently selected item
     var $selectedItem = $("#filetree-file").find('.selected');
     // Only works if an item is selected
@@ -80,6 +136,18 @@ B3pCatalog.addFile = function() {
     $("#filetree-file").trigger('rebindtree');
     // Trigger click
     $newLinkItem.trigger('click');
+
+    B3pCatalog.loadMetadata(
+            B3pCatalog.modes.FILE_MODE,
+            folder + bestandsnaam,
+            bestandsnaam,
+            true,
+            function() {
+                B3pCatalog.clickedFileAnchor.removeClass("selected");
+                B3pCatalog.getCurrentFileAnchor().addClass("selected").focus();
+            }
+    );
+
 };
 
 B3pCatalog.loadLocal = function(success) {
@@ -1181,12 +1249,7 @@ B3pCatalog.importMetadata = function() {
     var $newFileDiv = $("<div />", {
         html: "Indien u hier een naam invult, dan wordt een nieuw metadata bestand aangemaakt."
     });
-/*            
-    var $textInput = $("<input type='text' id='fileName' name='fileName'/>");
 
-    var $submitEventInput = $("<input type='submit' name='importMD' value='Importeren' class='dialog-submit'/>");
-
-*/
     var $dialogDiv = $("<div/>", {
         "class": "ui-mde-textarea-wrapper",
         css: {
