@@ -126,6 +126,9 @@ public class MetadataAction extends DefaultAction {
     
     @Validate
     private Boolean viewMode = null;
+    
+    @Validate
+    private String fileName = null;
 
     private Root root;
     private AclAccess rootAccess;

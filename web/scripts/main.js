@@ -937,59 +937,52 @@ B3pCatalog.createMdeHtml = function(htmlDoc, changedOnServer, isGeo, viewMode, e
         id: "mde"
     }));
 
-    log("creating mde...");
-    $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
-        xmlHtml: htmlDoc,
-        commentPosted: function(comment) {
-            console.log("onCommentPosted");
-            B3pCatalog.addComment(comment);
-        },
-        onServerTransformRequired: function() {
-            console.log("onServerTransformRequired");
-            B3pCatalog.refreshMde();
-        },
-        onResetRequired: function() {
-            console.log("onResetRequired");
-            B3pCatalog.resetMde();
-        },
-        change: function(changed) {
-            console.log("onChange");
-            B3pCatalog.setChanged(changed);
-        },
-        getOrganisations: function() {
-            console.log("onLoadOrganisations");
-            B3pCatalog.getOrganisations();
-        },
-    }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)
-            , extraOptions));
+    log("loading organisations");
+    B3pCatalog.getOrganisations().done(function(organisations) {
+        log("creating mde...");
+       $("#mde").mde($.extend({}, B3pCatalog.basicMdeOptions, {
+            xmlHtml: htmlDoc,
+            organisations: organisations,
+            commentPosted: function(comment) {
+                console.log("onCommentPosted");
+                B3pCatalog.addComment(comment);
+            },
+            onServerTransformRequired: function() {
+                console.log("onServerTransformRequired");
+                B3pCatalog.refreshMde();
+            },
+            onResetRequired: function() {
+                console.log("onResetRequired");
+                B3pCatalog.resetMde();
+            },
+            change: function(changed) {
+                console.log("onChange");
+                B3pCatalog.setChanged(changed);
+            },
+        }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)
+                , extraOptions));
 
-    var mde = $("#mde").data("mde");
-    $(window).bind("beforeunload.mde", function(event) {
-        if (mde.options.pageLeaveWarning && B3pCatalog.mdeChanged) {
-            return "Uw wijzigingen in het metadata document zullen verloren gaan als u deze pagina verlaat.";
-        }
-        return undefined;
+        var mde = $("#mde").data("mde");
+        $(window).bind("beforeunload.mde", function(event) {
+            if (mde.options.pageLeaveWarning && B3pCatalog.mdeChanged) {
+                return "Uw wijzigingen in het metadata document zullen verloren gaan als u deze pagina verlaat.";
+            }
+            return undefined;
+        });
+
+        B3pCatalog.createMdeToolbar(viewMode);
+        B3pCatalog.setChanged(changedOnServer);
+        B3pCatalog.fadeMessage("Editor gegevens zijn ververst"); 
     });
-
-    B3pCatalog.createMdeToolbar(viewMode);
-    B3pCatalog.setChanged(changedOnServer);
-    B3pCatalog.fadeMessage("Editor gegevens zijn ververst");
 
 };
 
 B3pCatalog.getOrganisations = function() {
-
-    //TODO CvL: klopt onderstaande aanroep?
-    $.ajax({
+    return $.ajax({
         url: B3pCatalog.orgsUrl,
         type: "POST",
         data: {json: "t"},
-        async: false,
-        dataType: "html",
-        success: function(data, textStatus, xhr) {
-            var mde = $("#mde").data("mde");
-            mde.options.organisations = JSON.parse(data); // hier zit dan organisations json in
-        }
+        dataType: "json",
     });
 };
     
@@ -1160,9 +1153,15 @@ B3pCatalog.importMetadata = function() {
 
     var $uuidLabel = $("<label for='new-uuid-checkbox'>Genereer nieuwe unieke identifiers (UUID's) voor de metadata en de bron.</label>");
 
+    var $newFileDiv = $("<div />", {
+        html: "Indien u hier een naam invult, dan wordt een nieuw metadata bestand aangemaakt."
+    });
+/*            
+    var $textInput = $("<input type='text' id='fileName' name='fileName'/>");
+
     var $submitEventInput = $("<input type='submit' name='importMD' value='Importeren' class='dialog-submit'/>");
 
-
+*/
     var $dialogDiv = $("<div/>", {
         "class": "ui-mde-textarea-wrapper",
         css: {
@@ -1177,7 +1176,9 @@ B3pCatalog.importMetadata = function() {
     $form.append($("<hr style='margin-top: 2em' />"));
     $form.append($uuidCheckbox);
     $form.append($uuidLabel);
-    $form.append($submitEventInput);
+    $form.append($newFileDiv);
+//    $form.append($textInput);
+//    $form.append($submitEventInput);
 
     function importMD(xml) {
         $("#mde").mde("option", {

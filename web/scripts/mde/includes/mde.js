@@ -44,7 +44,6 @@ $.widget("ui.mde", {
         changed: false, // modify externally whether the mde is in changed mode. Use with care. (add/removes star in title and calls change callback...)
         tabContainerSelector: "#ui-mde-tabs-container", // the default tab container is residing above the md document.
         organisations: {}, // autocomplete organisations and contacts; see organisations.js for examples
-        getOrganisations: function() { console.log("default..."); return {}; },
         wiki2htmlHelpUrl: "http://nl.wikipedia.org/wiki/Wikipedia:Spiekbriefje", // hulpmiddel voor richtext elems
         thesauri: [
                 new Thesaurus("GEMET thesaurus","http://www.eionet.europa.eu/gemet/inspire_themes?langcode=nl", /* loadJsonTerms("picklists/gemet-nl.json") */ gemetInspireNlTerms)
@@ -630,7 +629,6 @@ $.widget("ui.mde", {
     _postprocessHtmlDoc: function() {
 
         this.log("Postprocessing...");
-        this._getOrganisationsJson();
         this._setPrettyPicklistStrings();
         this._setFormattedDates();
         this._createRichTextElements(); 
@@ -640,11 +638,6 @@ $.widget("ui.mde", {
         
         // do not expose the entire mde:
         this.options.afterInit.apply(this.element, []);
-    },
-    
-    _getOrganisationsJson: function() {
-	this.options.getOrganisations();
-
     },
     
     //////////////////////////////// Rich text /////////////////////////////////////    
@@ -737,7 +730,7 @@ $.widget("ui.mde", {
                 var orgContent = orgValue in this.options.organisations ? this.options.organisations[orgValue] : null;
 
                 var contacts;
-                if (!!orgContent) {
+                if (!!orgContent && orgContent.contacts) {
                     // exists; use contacts of this org only.
                     contacts = [];
                     $.each(orgContent.contacts, function(contactName, value) {

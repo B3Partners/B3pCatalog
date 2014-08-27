@@ -77,10 +77,10 @@
             </div>
             <ul id="main-tabs" class="ui-helper-reset">
                 <li class="ui-corner-top">
-                    <a href="#filetree">Bestanden verkennen</a>
+                    <a href="#search">Metadata doorzoeken</a> 
                 </li>
                 <li class="ui-corner-top">
-                    <a href="#search">Catalog doorzoeken</a> 
+                    <a href="#filetree">Metadata bewerken</a>
                 </li>
                 <stripes:useActionBean beanclass="nl.b3p.catalog.stripes.AdminCheckActionBean" event="init" var="b"/>
                 <c:if test="${b.admin}">
