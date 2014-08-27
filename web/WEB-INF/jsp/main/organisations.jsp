@@ -10,7 +10,7 @@
 
 <div style="padding: 1em">
     <p>
-        Bewerk de toegestane organisaties en contactpersonen. Onthoud dat er altijd een correcte javascript datastructuur uit moet komen. Als dit niet het geval is, kan het zo zijn dat de hele site niet meer werkt.
+        Bewerk de toegestane organisaties en contactpersonen. Onthoud dat er altijd een correcte JSON datastructuur uit moet komen. Als dit niet het geval is, kan het zo zijn dat de hele site niet meer werkt.
     </p>
     <textarea id="organisationsJSON"><c:out value="${actionBean.organisations}"/></textarea>
 </div>

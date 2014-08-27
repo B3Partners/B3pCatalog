@@ -73,7 +73,8 @@
              synchroniseren van Esri file geodatabases is een ArcView licentie 
              nodig.
         -->
-        <fileRoot name="Demo" path="D:/Chris/metadata-2014-05-01">
+        <!--<fileRoot name="Demo" path="D:/Chris/metadata-2014-05-01">-->
+        <fileRoot name="Demo Wolverine" path="/home/janbessels/dev/metadata">
         
 			<!-- Autorisatie voor deze root
 
@@ -93,8 +94,8 @@
 				<role>none</role>
 			</acl>
         </fileRoot>
-        <fileRoot name="GIS data" path="D:/Chris/metadata-2014-05-01">
-        
+        <!--<fileRoot name="GIS data" path="D:/Chris/metadata-2014-05-01">-->
+        <fileRoot name="GIS data" path="/home/janbessels/dev/metadata">
 			<!-- Autorisatie voor deze root
 
                 "access" kan één van onderstaande waardes hebben:
@@ -156,6 +157,7 @@
         <!-- maak dublin core tab-->
         <entry><key>dcMode_init</key><value>true</value></entry>
          <!-- voeg speciale PBL extra's toe aan dublin core tab-->
+         <!-- Dit zijn de tabs Algemeen en Normenkader
         <entry><key>dcPblMode_init</key><value>true</value></entry>
         <!-- zet alle metadata voor datasets op een enkele tab-->
         <entry><key>iso19115oneTab_init</key><value>false</value></entry>
@@ -201,7 +203,7 @@
          Een relatief pad is ten opzichte van de directory waar dit 
          configuratie XML bestand staat. Optioneel, standaardwaarde is "organisations.json"
          
-         LET OP! Dit bestand moet geldige JavaScript code zijn. Er is enige
+         LET OP! Dit bestand moet een geldige JSON datastructuur bevatten. Er is enige
          syntax controle indien een beheerder de gegevens wijzigt via de webapplicatie.
          LET OP! Dit bestand moet schrijfbaar zijn door Tomcat 
          LET OP! Voor speciale tekens: charset moet UTF-8 zijn

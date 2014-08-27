@@ -183,7 +183,7 @@
          Een relatief pad is ten opzichte van de directory waar dit 
          configuratie XML bestand staat. Optioneel, standaardwaarde is "organisations.json"
          
-         LET OP! Dit bestand moet geldige JavaScript code zijn. Er is enige
+         LET OP! Dit bestand moet een geldige JSON datastructuur bevatten. Er is enige
          syntax controle indien een beheerder de gegevens wijzigt via de webapplicatie.
          LET OP! Dit bestand moet schrijfbaar zijn door Tomcat 
          LET OP! Voor speciale tekens: charset moet UTF-8 zijn
