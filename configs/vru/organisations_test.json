@@ -1,0 +1,49 @@
+{
+    "Rijksdienst voor Ondernemend Nederland (RvO)": {
+        "postalCode": "6041 CB",
+        "voice": "+31 88-6022277",
+        "address": "Slachthuisstraat 71",
+        "email": "Lydia.Dijkshoorn@rvo.nl",
+        "state": "Limburg",
+        "url": "www.rvo.nl",
+        "city": "Roermond",
+        "country": "Nederland",
+        "contacts": {"Lydia Dijkshoorn": {"email": "Lydia.Dijkshoorn@rvo.nl"}}
+    },
+    "Wolv-org organisatie house of snikt": {
+        "postalCode": "wolv-org postalCode",
+        "voice": "wolv-org voice",
+        "address": "wolv-org address",
+        "email": "wolv-org email",
+        "state": "wolv-org state",
+        "url": "wolv-org url",
+        "city": "wolv-org city",
+        "country": "wolv-org country",
+        "contacts": {
+            "wolv-org contacts 1": {"email": "wolv-org contacts 1 email wolverine2710@gmail.com"},
+            "wolv-org contacts 2": {"email": "wolv-org contacts 2 email wolverine2710@gmail.com"}
+        }
+    },
+    "Wolv-org organisatie house of snikt DS1": {
+        "postalCode": "wolv-org postalCode",
+        "voice": "wolv-org voice",
+        "email": "wolv-org email",
+        "address": "wolv-org email",
+        "state": "",
+        "url": "wolv-org url",
+        "contacts": {"": {"email": ""}},
+        "country": "wolv-org state",
+        "city": "wolv-org city"
+    },
+    "B3Partners BV": {
+        "postalCode": "3542 <EC>",
+        "voice": "030-214 20 81",
+        "address": "Zonnebaan 12&",
+        "email": "info@b3partners.nl",
+        "state": "Utrecht",
+        "url": "http://www.b3partners.nl",
+        "city": "Utrecht",
+        "country": "Nederland's",
+        "contacts": {"Chris van Lith": {"email": "chrisvanlith@b3partners.nl"}}
+    }
+}
