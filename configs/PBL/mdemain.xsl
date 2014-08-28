@@ -5468,7 +5468,8 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
 	</xsl:template>
 	<xsl:template name="wikiHelpPopupLink">
 		<xsl:if test="not($globalReadonly)">
-			<a href="#" class="ui-mde-wiki-help-link">Info</a>
+			<!--<a href="#" class="ui-mde-wiki-help-link">Info</a>-->
+            <a href="#" class="ui-mde-wiki-help-link"><img src="scripts/mde/images/info.png"></img></a>
 		</xsl:if>
 	</xsl:template>
 	<!-- EvdP: Doet speciale extra acties voor types van ISO 19139. -->
