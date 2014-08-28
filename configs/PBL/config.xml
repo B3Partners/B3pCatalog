@@ -157,7 +157,7 @@
         <!-- maak dublin core tab-->
         <entry><key>dcMode_init</key><value>true</value></entry>
          <!-- voeg speciale PBL extra's toe aan dublin core tab-->
-         <!-- Dit zijn de tabs Algemeen en Normenkader
+         <!-- Dit is de tab Normenkader. Tevens is de tab algemeen aangepast -->
         <entry><key>dcPblMode_init</key><value>true</value></entry>
         <!-- zet alle metadata voor datasets op een enkele tab-->
         <entry><key>iso19115oneTab_init</key><value>false</value></entry>
