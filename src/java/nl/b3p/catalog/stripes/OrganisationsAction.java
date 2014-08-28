@@ -29,46 +29,7 @@ public class OrganisationsAction extends DefaultAction {
     private static final String ENCODING = "UTF-8";
     
     private static final String DEFAULT_ORGANISATIONS_FILE = "organisations.json";
-    private static final String DEFAULT_ORGANISATIONS_FILE_PREAMBULE = 
-        "\n/*  \n" +
-        "Organisaties en contacten  \n" +
-        "  \n" +
-        "Onder elk contact kunnen dezelfde properties ingevuld worden als bij een organisatie.  \n" +
-        "  \n" +
-        "Template:  \n" +
-        "{  \n" +
-        "    \"<Naam organisatie 1>\": {  \n" +
-        "        \"address\": \"<adres>\",  \n" +
-        "        \"city\": \"<stad>\",  \n" +
-        "        \"state\": \"<provincie>\",  \n" +
-        "        \"postalCode\": \"<postcode>\",  \n" +
-        "        \"country\": \"<land>\",  \n" +
-        "        \"url\": \"<url>\",  \n" +
-        "        \"email\": \"<email adres>\",  \n" +
-        "        \"voice\": \"<telefoonnummer>\",  \n" +
-        "        \"contacts\": {  \n" +
-        "            \"<contact naam 1>\": {  \n" +
-        "                \"email\": \"chrisvanlith@b3partners.nl\"  \n" +
-        "            },  \n" +
-        "            \"<contact naam 2>\": {  \n" +
-        "                \"email\": \"erikvandepol@b3partners.nl\"  \n" +
-        "            }  \n" +
-        "        }  \n" +
-        "    },  \n" +
-        "    \"<Naam organisatie 2>\": {  \n" +
-        "        \"address\": \"<adres>\",  \n" +
-        "        \"city\": \"<stad>\",  \n" +
-        "        \"state\": \"<provincie>\",  \n" +
-        "        \"postalCode\": \"<postcode>\",  \n" +
-        "        \"country\": \"<land>\",  \n" +
-        "        \"url\": \"<url>\",  \n" +
-        "        \"email\": \"<email adres>\",  \n" +
-        "        \"voice\": \"<telefoonnummer>\",  \n" +
-        "    }  \n" +
-        "};  \n" +
-        "etc...  \n" +
-        "*/  \n"; 
-    
+        
     @DefaultHandler
     public Resolution main() {
         String organisations = "organisations = " + getOrganisations() + ";";

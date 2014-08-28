@@ -15,4 +15,8 @@
     <div id="filetree-sde"></div>
     <div id="filetree-kb"></div>
     <div id="filetree-local"></div>      
+    <stripes:useActionBean beanclass="nl.b3p.catalog.stripes.AdminCheckActionBean" event="init" var="b"/>
+    <c:if test="${b.admin}">
+        &nbsp;&nbsp;&nbsp;<a href="#" onclick="B3pCatalog.addFile()">Nieuw bestand toevoegen</a>
+    </c:if>   
 </div>
