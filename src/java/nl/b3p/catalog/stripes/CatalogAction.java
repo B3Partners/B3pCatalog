@@ -14,6 +14,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
+import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.validation.Validate;
@@ -151,7 +152,7 @@ public class CatalogAction extends DefaultAction {
    
     private CswClient getCswClient() throws B3PCatalogException {
         CSWServerConfig cfg = CatalogAppConfig.getConfig().getDefaultCswServer();
-        if (cfg==null) {
+        if (cfg==null || cfg.getCswName()==null || cfg.getCswName().isEmpty()) {
             throw new B3PCatalogException("Geen CSW server geconfigureerd!");
         }
         return new CswClient(new GeoNetworkCswServer(

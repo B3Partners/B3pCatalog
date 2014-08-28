@@ -4,8 +4,8 @@
     <!-- Locatie van XML configuratiebestand. Een relatief pad is ten opzichte
          van CATALINA_BASE. Standaardwaarde in web.xml: conf/b3pcatalog/config.xml
     -->
-    <Parameter name="config" value="/home/janbessels/dev/projects/B3pCatalog/configs/www.kaartenbalie.nl/config.xml" override="false"/>
-    
+    <Parameter name="config" value="D:/Chris/svn/B3pCatalog/configs/www.kaartenbalie.nl/config.xml" override="false"/>
+<!--   
     <Resource name="jdbc/arcsde"
         auth="Container"
         type="javax.sql.DataSource"
@@ -17,6 +17,32 @@
         validationQuery="select 1"
 
     />
+    <Resource
+        name="jdbc/kaartenbalie"
+        auth="Container" 
+        type="javax.sql.DataSource" 
+        factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+        testWhileIdle="true"
+        testOnBorrow="true"
+        testOnReturn="false"
+        validationQuery="SELECT 1"
+        validationInterval="30000"
+        timeBetweenEvictionRunsMillis="30000"
+        maxActive="50" 
+        minIdle="10" 
+        maxWait="10000"
+        initialSize="10"
+        removeAbandonedTimeout="60"
+        removeAbandoned="true"
+        logAbandoned="true"
+        minEvictableIdleTimeMillis="30000" 
+        jmxEnabled="true"
+        username="postgres" 
+        password="***REMOVED***" 
+        driverClassName="org.postgresql.Driver"
+        url="jdbc:postgresql://localhost:5433/solparc_kaartenbalie"
+    />
+    -->
     <!-- bug in Tomcat 6.0.26 
         timeBetweenEvictionRunsMillis="30000"
         minEvictableIdleTimeMillis="5000"

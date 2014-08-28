@@ -1474,8 +1474,10 @@ B3pCatalog._publishMetadata = function(cswOptions) {
                 exportType: $typeInput.val(),
             },
             success: function(data, textStatus, xhr) {
-
                 B3pCatalog.fadeMessage("Metadata succesvol gepubliceerd " + (data.exists ? "(update)" : "(nieuw)"));
+            },
+            error: function(data, textStatus, xhr) {
+                B3pCatalog.fadeMessage("Metadata niet gepubliceerd");
             }
         });
 
@@ -1645,7 +1647,7 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
         })
                 );
 
-    }
+    } 
 
     B3pCatalog.resizeTabsAndToolbar();
 };

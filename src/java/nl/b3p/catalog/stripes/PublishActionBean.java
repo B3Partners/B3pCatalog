@@ -24,6 +24,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
+import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.StrictBinding;
@@ -149,6 +150,9 @@ public class PublishActionBean implements ActionBean {
         jo.put("fileIdentifier", fileIdentifier);
 
         CswClient csw = getCswClient();
+        if (csw==null) {
+            return new ErrorResolution(404);
+        }
 
         OutputById out = csw.search(new InputById(fileIdentifier));
 

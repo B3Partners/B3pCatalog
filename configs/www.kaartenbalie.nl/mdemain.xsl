@@ -4,13 +4,13 @@
 	<xsl:param name="basePath"/>
 	<xsl:param name="dateFormatUserHint">dd-mm-jjjj</xsl:param>
 	<xsl:param name="globalReadonly_init">false</xsl:param>
-	<xsl:param name="commentMode_init">true</xsl:param>
-	<xsl:param name="dcMode_init">true</xsl:param>
-	<xsl:param name="serviceMode_init">true</xsl:param>
+	<xsl:param name="commentMode_init">false</xsl:param>
+	<xsl:param name="dcMode_init">false</xsl:param>
+	<xsl:param name="serviceMode_init">false</xsl:param>
 	<xsl:param name="datasetMode_init">true</xsl:param>
-	<xsl:param name="fcMode_init">true</xsl:param>
-	<xsl:param name="dcPblMode_init">true</xsl:param>
-	<xsl:param name="iso19115oneTab_init">true</xsl:param>
+	<xsl:param name="fcMode_init">false</xsl:param>
+	<xsl:param name="dcPblMode_init">false</xsl:param>
+	<xsl:param name="iso19115oneTab_init">false</xsl:param>
 	<xsl:param name="synchroniseDC_init">false</xsl:param>
 	<xsl:param name="globalReadonly" select="$globalReadonly_init = 'true'"/>
 	<xsl:param name="commentMode" select="$commentMode_init = 'true'"/>

@@ -77,11 +77,14 @@
             </div>
             <ul id="main-tabs" class="ui-helper-reset">
                 <li class="ui-corner-top">
-                    <a href="#search">Metadata doorzoeken</a> 
-                </li>
-                <li class="ui-corner-top">
                     <a href="#filetree">Metadata bewerken</a>
                 </li>
+                <stripes:useActionBean beanclass="nl.b3p.catalog.stripes.AppConfigCheckActionBean" event="init" var="c"/>
+                <c:if test="${!empty c.config.defaultCswServer && c.config.defaultCswServer.url != null}">
+                    <li class="ui-corner-top">
+                        <a href="#search">Metadata doorzoeken</a> 
+                    </li>
+                </c:if>
                 <stripes:useActionBean beanclass="nl.b3p.catalog.stripes.AdminCheckActionBean" event="init" var="b"/>
                 <c:if test="${b.admin}">
                     <li class="ui-corner-top">

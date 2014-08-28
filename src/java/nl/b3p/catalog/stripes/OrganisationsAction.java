@@ -62,7 +62,7 @@ public class OrganisationsAction extends DefaultAction {
          } catch (Exception ex) {
             log.error("Cannot read organisations config file: " + ex.getMessage());
             
-            return "organisations = {}";
+            return "{\"error\": \""+ ex.getMessage() + "\"}";
         }
     }
     

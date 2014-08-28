@@ -76,7 +76,7 @@ public class CatalogAppConfig implements ServletContextListener {
     
     @XmlElementWrapper
     @XmlElements({
-        @XmlElement(name="cswServer")
+        @XmlElement(name="cswServer", required=false)
     })
     private List<CSWServerConfig> cswServers = new ArrayList<CSWServerConfig>();
    
@@ -162,7 +162,11 @@ public class CatalogAppConfig implements ServletContextListener {
         if (csws==null || csws.isEmpty()) {
             return null;
         }
-        return csws.get(0);
+        CSWServerConfig csw = csws.get(0);
+        if (csw.getCswName()==null || csw.getCswName().isEmpty()) {
+            return null;
+        }
+        return csw;
     }
 
     public static CatalogAppConfig getConfig() {
