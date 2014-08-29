@@ -2,7 +2,7 @@ if (typeof B3pCatalog == "undefined")
     B3pCatalog = {};
 
 B3pCatalog.hashchange = function(event) {
-    console.log("hashchange", event);
+    //console.log("hashchange", event);
     // get possible cookie set by login page:
     var loginHash = $.cookie("mdeLoginHash");
     if (loginHash && $.trim(loginHash) !== "#") {
@@ -357,7 +357,7 @@ B3pCatalog.loadFiletreeFile = function(selectedFilePath) {
                 title: anchor.attr("title"),
                 isGeo: "true" == anchor.attr("isgeo")
             };
-            console.log("loadFiletreeFile", newState, $.bbq);
+            //console.log("loadFiletreeFile", newState, $.bbq);
             $.bbq.pushState(newState, 2);
         }
     });
@@ -723,7 +723,7 @@ B3pCatalog.loadMetadata4View = function(mode, path, title, isGeo, cancel) {
 B3pCatalog.resetMde = function() {
     var mde = $("#mde").data("mde");
 
-    console.log("resetMde");
+    //console.log("resetMde");
 
     var viewMode = mde.options.viewMode;
     var currentTab = mde.options.currentTab;
@@ -737,7 +737,7 @@ B3pCatalog.resetMde = function() {
             resetXml: "t",
         },
         success: function(data, textStatus, xhr) {
-            console.log("resetXml", data);
+            //console.log("resetXml", data);
 
             B3pCatalog.createMdeHtml(data, false, isGeo, viewMode, {currentTab: currentTab});
         }
@@ -750,7 +750,7 @@ B3pCatalog.refreshMde = function() {
     var changedElements = mde.getChangedElements();
     var sectionChange = mde.getSectionChange();
 
-    console.log("refreshMde", changedElements, sectionChange);
+    //console.log("refreshMde", changedElements, sectionChange);
 
     var viewMode = mde.options.viewMode;
     var currentTab = mde.options.currentTab;
@@ -766,7 +766,7 @@ B3pCatalog.refreshMde = function() {
             sectionChange: sectionChange === null ? null : JSON.stringify(sectionChange)
         },
         success: function(data, textStatus, xhr) {
-            console.log("updateXml", data);
+            //console.log("updateXml", data);
 
             B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, {currentTab: currentTab});
         }
@@ -818,7 +818,7 @@ B3pCatalog.addComment = function(comment) {
                 username: me.commentUsername
             },
             success: function(data, textStatus, xhr) {
-                console.log("updateXml after comment", data);
+                //console.log("updateXml after comment", data);
 
                 B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, {currentTab: currentTab});
             }
@@ -1037,19 +1037,19 @@ B3pCatalog.createMdeHtml = function(htmlDoc, changedOnServer, isGeo, viewMode, e
             xmlHtml: htmlDoc,
             organisations: organisations,
             commentPosted: function(comment) {
-                console.log("onCommentPosted");
+                //console.log("onCommentPosted");
                 B3pCatalog.addComment(comment);
             },
             onServerTransformRequired: function() {
-                console.log("onServerTransformRequired");
+                //console.log("onServerTransformRequired");
                 B3pCatalog.refreshMde();
             },
             onResetRequired: function() {
-                console.log("onResetRequired");
+                //console.log("onResetRequired");
                 B3pCatalog.resetMde();
             },
             change: function(changed) {
-                console.log("onChange");
+                //console.log("onChange");
                 B3pCatalog.setChanged(changed);
             },
         }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)
@@ -1315,7 +1315,7 @@ B3pCatalog.synchronizeWithData = function() {
     var me = this;
     var mde = $("#mde").data("mde");
 
-    console.log("synchronizeMde");
+    //console.log("synchronizeMde");
 
     var viewMode = mde.options.viewMode;
     var currentTab = mde.options.currentTab;
@@ -1336,7 +1336,7 @@ B3pCatalog.synchronizeWithData = function() {
             async: false,
             dataType: "html",
             success: function(data, textStatus, xhr) {
-                console.log("synchronizeXml", data);
+                //console.log("synchronizeXml", data);
                 B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, {currentTab: currentTab});
                 B3pCatalog.fadeMessage("Synchronisatie succesvol");
             }
@@ -1371,7 +1371,7 @@ B3pCatalog.synchronizeWithData = function() {
 B3pCatalog.synchronizeNetCDF = function(fn) {
     var mde = $("#mde").data("mde");
 
-    console.log("synchronizeNetCDFMde");
+    //console.log("synchronizeNetCDFMde");
 
     var viewMode = mde.options.viewMode;
     var currentTab = mde.options.currentTab;
@@ -1393,7 +1393,7 @@ B3pCatalog.synchronizeNetCDF = function(fn) {
             async: false,
             dataType: "html",
             success: function(data, textStatus, xhr) {
-                console.log("synchronizeNetCDFXml", data);
+                //console.log("synchronizeNetCDFXml", data);
                 B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, {currentTab: currentTab});
                 B3pCatalog.fadeMessage("NCML ingelezen, exporteer volledige metadata voor <netcdf> XML");
             }

@@ -32,8 +32,14 @@ var mdeGlobal = null;
 $.widget("ui.mde", {
     options: {
         xmlHtml: "", // input to html transformed xml string or XmlDocument.
-        onServerTransformRequired: function() { console.log("default..."); return false; },
-        onResetRequired: function() { console.log("default..."); return false; },
+        onServerTransformRequired: function() { 
+            //console.log("default..."); 
+            return false; 
+        },
+        onResetRequired: function() { 
+            //console.log("default..."); 
+            return false; 
+        },
         richTextMode: true, // if true, allows users to write wiki-like text in some fields and in comments.
         commentPosted: function(comment) {return false}, // function that will be called when a user post a comment. This function should make a server call (synchronously) and return the resulting xml document from the server. Errors during the servercall should be caught within this method. MDE will not do this.
         change: function(changed) {}, // function that will be called when the md document changes.
@@ -149,7 +155,7 @@ $.widget("ui.mde", {
 
     _addElementOrSection: function($elementOrSection, above) {
         
-        console.log("add section");
+        //console.log("add section");
         
         this._showSpinner();
         
@@ -165,7 +171,7 @@ $.widget("ui.mde", {
 
     _deleteElementOrSection: function($elementOrSection, notAllowedDeleteText, confirmDeleteText) {
 
-        console.log("delete section");
+        //console.log("delete section");
         
         //Voorlopig via server check, client side check is mooier
         // TODO: add deletable attribute in XSL
