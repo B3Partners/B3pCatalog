@@ -97,17 +97,25 @@ public class OrganisationsAction extends DefaultAction {
         Document mdCopy = new Document((Element) md.getRootElement().clone());
         List<Document> orgNodes = new ArrayList<Document>();
         Element e1 = XPathHelper.selectSingleElement(mdCopy, XPathHelper.DOM_DS1_ORGANISATION_NAME);
-        e1.detach();
-        orgNodes.add(new Document(e1));
+        if (e1 != null) {
+            e1.detach();
+            orgNodes.add(new Document(e1));
+        }
         Element e2 = XPathHelper.selectSingleElement(mdCopy, XPathHelper.DOM_DS2_ORGANISATION_NAME);
-        e2.detach();
-        orgNodes.add(new Document(e2));
+        if (e2 != null) {
+            e2.detach();
+            orgNodes.add(new Document(e2));
+        }
         Element e3 = XPathHelper.selectSingleElement(mdCopy, XPathHelper.DOM_DS3_ORGANISATION_NAME);
-        e3.detach();
-        orgNodes.add(new Document(e3));
+        if (e3 != null) {
+            e3.detach();
+            orgNodes.add(new Document(e3));
+        }
         Element e4 = XPathHelper.selectSingleElement(mdCopy, XPathHelper.DOM_DS4_ORGANISATION_NAME);
-        e4.detach();
-        orgNodes.add(new Document(e4));
+        if (e4 != null) {
+            e4.detach();
+            orgNodes.add(new Document(e4));
+        }
 
         JSONObject configOrgs = getOrganisationsJson();
         
