@@ -18,6 +18,7 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.B3PCatalogException;
+import nl.b3p.catalog.Roles;
 import nl.b3p.catalog.arcgis.ArcGISSynchronizer;
 import nl.b3p.catalog.arcgis.ArcObjectsSynchronizerForker;
 import nl.b3p.catalog.arcgis.ArcObjectsSynchronizerMain;
@@ -344,8 +345,10 @@ public class MetadataAction extends DefaultAction {
 
             md = syncBetweenElements(md);
             
-            // Saving organisations to config
-            OrganisationsAction.saveOrganisations(md);
+            // Saving organisations to config, if admin
+            if (Roles.isAdmin(getContext().getServletContext(), getContext().getRequest())) {
+                OrganisationsAction.saveOrganisations(md);
+            }
             
             // create copy because instance in session variable should not be cleaned
             mdCopy = cleanupXmlCopy(md, EXPORT_TYPE_ALL);

@@ -3,8 +3,10 @@ package nl.b3p.catalog.stripes;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
@@ -119,18 +121,68 @@ public class OrganisationsAction extends DefaultAction {
 
         JSONObject configOrgs = getOrganisationsJson();
         
+        // maak map met nieuwe/aangepaste orgaisaties
+        Map<String,JSONObject> checkedOrgs = new HashMap<String,JSONObject>();
+        // loop over alle organisaties in metadata
         for (Document d : orgNodes) {
             Element e = XPathHelper.selectSingleElement(d, XPathHelper.ORGANISATION_NAME);
             if (e != null && !e.getTextTrim().isEmpty()) {
+                // bepaal naam van organisatie
                 String name = e.getTextTrim();
                 JSONObject mdOrg = convertElement2Json(d);
-                configOrgs = mergeOrganisation(configOrgs, name, mdOrg);
+                // bepaal of info van organisatie is aangapast
+                List devis = findDeviations(mdOrg, getConfigOrganisation(configOrgs, name));
+                if (devis!=null && !devis.isEmpty()) {
+                    // als zelfde org 2x anders is aangepast, dan pech
+                    checkedOrgs.put(name, mdOrg);
+                }
             }
         }
-        
+
+        Iterator<String> it = checkedOrgs.keySet().iterator();
+        while (it.hasNext()) {
+            String name = it.next();
+            JSONObject checkedOrg = checkedOrgs.get(name);
+            configOrgs = mergeOrganisation(configOrgs, name, checkedOrg);
+        }
+
         setOrganisationsJson(configOrgs);
     }
-     
+
+
+    private static List findDeviations(JSONObject o1, JSONObject o2) throws JSONException {
+        if (o1==null || o2==null) {
+            return null;
+        }
+        ArrayList<String> deviList = new ArrayList<String>();
+        Iterator<?> o1it = o1.keys();
+        while (o1it.hasNext()) {
+            String label = (String) o1it.next();
+            if (label.equals("contacts")) {
+                JSONObject contacts1 = (JSONObject) o1.get(label);
+                JSONObject contacts2 = (JSONObject) o2.get(label);
+                Iterator<?> contacts1it = o1.keys();
+                while (contacts1it.hasNext()) {
+                    String sublabel = (String) contacts1it.next();
+                    String waarde1 = contacts1.getString(sublabel);
+                    String waarde2 = contacts2.getString(sublabel);
+                    if (!waarde1.equals(waarde2)) {
+                        deviList.add(label+"_"+sublabel);
+                    }
+                }
+
+            } else {
+                String waarde1 = o1.getString(label);
+                String waarde2 = o2.getString(label);
+                if (!waarde1.equals(waarde2)) {
+                    deviList.add(label);
+                }
+            }
+
+        }
+        return deviList;
+    }
+
     private static JSONObject convertElement2Json(Document d) throws JDOMException, JSONException {
         JSONObject orgJson = new JSONObject();
         // belong to organisation
@@ -183,6 +235,13 @@ public class OrganisationsAction extends DefaultAction {
         return orgJson;
     }
 
+    private static JSONObject getConfigOrganisation(JSONObject configOrgs, String mdOrgName) throws JSONException, IOException {
+        if (configOrgs.has(mdOrgName)) {
+            return (JSONObject) configOrgs.get(mdOrgName);
+        }
+        return null;
+    }
+    
     private static JSONObject mergeOrganisation(JSONObject configOrgs, String mdOrgName, JSONObject mdOrg) throws JSONException, IOException {
         //  check if mdOrg in configOrgs
         if (configOrgs.has(mdOrgName)) { //  if yes

@@ -980,18 +980,28 @@ B3pCatalog.saveMetadata = function(settings) {
     }
 };
 
+var messageIndex = 1;
 B3pCatalog.fadeMessage = function(message) {
     var $message = $("<div/>", {
         text: message,
         "class": "fade-message",
-        "z-index": 2000
+        "z-index": (2000 - messageIndex)
     });
-    $("#center").append($message);
+    if (messageIndex<1) {
+        messageIndex = 1;
+    } else if (messageIndex>5) {
+        messageIndex = 5;
+    }
     setTimeout(function() {
+        messageIndex++;
+        $("#center").append($message);
+    }, (2000 * (messageIndex-1)));
+    setTimeout(function() {
+        messageIndex--;
         $message.fadeOut(2000, function() {
             $(this).remove();
         });
-    }, 2000);
+    }, (2000 * messageIndex));
 };
 
 B3pCatalog.logout = function() {
@@ -1257,6 +1267,8 @@ B3pCatalog.importMetadata = function() {
 
     var $uuidLabel = $("<label for='new-uuid-checkbox'>Genereer nieuwe unieke identifiers (UUID's) voor de metadata en de bron.</label>");
 
+    var $submitEventInput = $("<input type='submit' name='importMD' value='Importeren' class='dialog-submit'/>");
+
     var $newFileDiv = $("<div />", {
         html: "Indien u hier een naam invult, dan wordt een nieuw metadata bestand aangemaakt."
     });
@@ -1275,9 +1287,9 @@ B3pCatalog.importMetadata = function() {
     $form.append($("<hr style='margin-top: 2em' />"));
     $form.append($uuidCheckbox);
     $form.append($uuidLabel);
-    $form.append($newFileDiv);
+//    $form.append($newFileDiv);
 //    $form.append($textInput);
-//    $form.append($submitEventInput);
+    $form.append($submitEventInput);
 
     function importMD(xml) {
         $("#mde").mde("option", {

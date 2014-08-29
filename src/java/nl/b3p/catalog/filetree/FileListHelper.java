@@ -121,7 +121,7 @@ public class FileListHelper {
         DirEntry newFile = new DirEntry();
         newFile.setName(".metadata");
         newFile.setPath(currentPath + directory.getName() + ".metadata");
-        newFile.setIsGeo(false);
+        newFile.setIsGeo(true);
         dc.getFiles().add(newFile);
 
         filterOutFilesToHide(dc);
