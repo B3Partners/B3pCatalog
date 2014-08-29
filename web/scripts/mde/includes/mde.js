@@ -33,11 +33,11 @@ $.widget("ui.mde", {
     options: {
         xmlHtml: "", // input to html transformed xml string or XmlDocument.
         onServerTransformRequired: function() { 
-            //console.log("default..."); 
+            log("default..."); 
             return false; 
         },
         onResetRequired: function() { 
-            //console.log("default..."); 
+            log("default..."); 
             return false; 
         },
         richTextMode: true, // if true, allows users to write wiki-like text in some fields and in comments.
