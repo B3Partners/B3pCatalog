@@ -3,6 +3,7 @@ if (typeof B3pCatalog == "undefined")
 
 B3pCatalog.hashchange = function(event) {
     //console.log("hashchange", event);
+    log("hashchange", event);
     // get possible cookie set by login page:
     var loginHash = $.cookie("mdeLoginHash");
     if (loginHash && $.trim(loginHash) !== "#") {
@@ -358,6 +359,7 @@ B3pCatalog.loadFiletreeFile = function(selectedFilePath) {
                 isGeo: "true" == anchor.attr("isgeo")
             };
             //console.log("loadFiletreeFile", newState, $.bbq);
+            log("loadFiletreeFile", newState, $.bbq);
             $.bbq.pushState(newState, 2);
         }
     });
@@ -724,6 +726,7 @@ B3pCatalog.resetMde = function() {
     var mde = $("#mde").data("mde");
 
     //console.log("resetMde");
+    log("resetMde");
 
     var viewMode = mde.options.viewMode;
     var currentTab = mde.options.currentTab;
@@ -738,6 +741,7 @@ B3pCatalog.resetMde = function() {
         },
         success: function(data, textStatus, xhr) {
             //console.log("resetXml", data);
+            log("resetXml", data);
 
             B3pCatalog.createMdeHtml(data, false, isGeo, viewMode, {currentTab: currentTab});
         }
@@ -751,6 +755,7 @@ B3pCatalog.refreshMde = function() {
     var sectionChange = mde.getSectionChange();
 
     //console.log("refreshMde", changedElements, sectionChange);
+    log("refreshMde", changedElements, sectionChange);
 
     var viewMode = mde.options.viewMode;
     var currentTab = mde.options.currentTab;
@@ -767,6 +772,7 @@ B3pCatalog.refreshMde = function() {
         },
         success: function(data, textStatus, xhr) {
             //console.log("updateXml", data);
+            log("updateXml", data);
 
             B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, {currentTab: currentTab});
         }
@@ -819,6 +825,7 @@ B3pCatalog.addComment = function(comment) {
             },
             success: function(data, textStatus, xhr) {
                 //console.log("updateXml after comment", data);
+                log("updateXml after comment", data);
 
                 B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, {currentTab: currentTab});
             }
@@ -1038,18 +1045,22 @@ B3pCatalog.createMdeHtml = function(htmlDoc, changedOnServer, isGeo, viewMode, e
             organisations: organisations,
             commentPosted: function(comment) {
                 //console.log("onCommentPosted");
+                log("onCommentPosted");
                 B3pCatalog.addComment(comment);
             },
             onServerTransformRequired: function() {
                 //console.log("onServerTransformRequired");
+                log("onServerTransformRequired");
                 B3pCatalog.refreshMde();
             },
             onResetRequired: function() {
                 //console.log("onResetRequired");
+                log("onResetRequired");
                 B3pCatalog.resetMde();
             },
             change: function(changed) {
                 //console.log("onChange");
+                log("onChange");
                 B3pCatalog.setChanged(changed);
             },
         }, B3pCatalog.getExtraMdeOptions(isGeo, viewMode)
@@ -1316,6 +1327,7 @@ B3pCatalog.synchronizeWithData = function() {
     var mde = $("#mde").data("mde");
 
     //console.log("synchronizeMde");
+    log("synchronizeMde");
 
     var viewMode = mde.options.viewMode;
     var currentTab = mde.options.currentTab;
@@ -1337,6 +1349,7 @@ B3pCatalog.synchronizeWithData = function() {
             dataType: "html",
             success: function(data, textStatus, xhr) {
                 //console.log("synchronizeXml", data);
+                log("synchronizeXml", data);
                 B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, {currentTab: currentTab});
                 B3pCatalog.fadeMessage("Synchronisatie succesvol");
             }
@@ -1372,6 +1385,7 @@ B3pCatalog.synchronizeNetCDF = function(fn) {
     var mde = $("#mde").data("mde");
 
     //console.log("synchronizeNetCDFMde");
+    log("synchronizeNetCDFMde");
 
     var viewMode = mde.options.viewMode;
     var currentTab = mde.options.currentTab;
@@ -1394,6 +1408,7 @@ B3pCatalog.synchronizeNetCDF = function(fn) {
             dataType: "html",
             success: function(data, textStatus, xhr) {
                 //console.log("synchronizeNetCDFXml", data);
+                log("synchronizeNetCDFXml", data);
                 B3pCatalog.createMdeHtml(data, true, isGeo, viewMode, {currentTab: currentTab});
                 B3pCatalog.fadeMessage("NCML ingelezen, exporteer volledige metadata voor <netcdf> XML");
             }

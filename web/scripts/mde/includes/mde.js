@@ -156,6 +156,7 @@ $.widget("ui.mde", {
     _addElementOrSection: function($elementOrSection, above) {
         
         //console.log("add section");
+        log("add section");
         
         this._showSpinner();
         
@@ -172,6 +173,7 @@ $.widget("ui.mde", {
     _deleteElementOrSection: function($elementOrSection, notAllowedDeleteText, confirmDeleteText) {
 
         //console.log("delete section");
+        log("delete section");
         
         //Voorlopig via server check, client side check is mooier
         // TODO: add deletable attribute in XSL
