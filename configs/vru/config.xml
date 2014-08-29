@@ -93,7 +93,7 @@
 				<role>none</role>
 			</acl>
         </fileRoot>-->
-        <fileRoot name="GIS data" path="D:/Chris/metadata-2014-05-01">
+        <fileRoot name="GIS data" path="//v-file05/progdata/SafetyMaps/B3PCatalogMetadata">
         
 			<!-- Autorisatie voor deze root
 

@@ -4,5 +4,5 @@
     <!-- Locatie van XML configuratiebestand. Een relatief pad is ten opzichte
          van CATALINA_BASE. Standaardwaarde in web.xml: conf/b3pcatalog/config.xml
     -->
-    <Parameter name="config" value="/opt/b3pcatalog/config.xml" override="false"/>
+    <Parameter name="config" value="//v-file04/prog/SafetyMaps/B3PCatalogConfig" override="false"/>
 </Context>
