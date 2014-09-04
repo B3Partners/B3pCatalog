@@ -370,7 +370,9 @@ public class MetadataAction extends DefaultAction {
 
             saveXmlToSource(mdString);
 
-            return new StreamingResolution("text/plain", "success");
+            String html = createHtmlFragment(md);
+            return new HtmlResolution(new StringReader(html), extraHeaders);
+//            return new StreamingResolution("text/plain", "success");
             
         } catch (Exception e) {
             String message = "Could not write " + mode + " metadata to location " + path;

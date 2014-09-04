@@ -908,8 +908,7 @@ B3pCatalog.saveMetadata = function(settings) {
         var me = this;
 
         // Get updated XML from server
-
-        var mde = $("#mde").data("mde"); // All the mde data.
+ 
         var changedElements = mde.getChangedElements();
         var sectionChange = mde.getSectionChange();
 
@@ -958,12 +957,15 @@ B3pCatalog.saveMetadata = function(settings) {
 
         var mde = $("#mde").data("mde");
         var changedElements = mde.getChangedElements();
+        var currentTab = mde.options.currentTab;
         var sectionChange = mde.getSectionChange();
+        var viewMode = mde.options.viewMode;
+        var isGeo = !mde.options.geoTabsMinimized;
 
         $.ajax({
             url: B3pCatalog.metadataUrl,
             type: "POST",
-            dataType: 'html',
+            dataType: "text",
             data: {
                 updateAndSaveXml: "t",
                 elementChanges: JSON.stringify(changedElements),
@@ -972,6 +974,8 @@ B3pCatalog.saveMetadata = function(settings) {
                 mode: B3pCatalog.currentMode
             },
             success: function(data, textStatus, xhr) {
+                //log(data);
+                B3pCatalog.createMdeHtml(data, false, isGeo, viewMode, {currentTab: currentTab});
                 B3pCatalog.fadeMessage("Metadata succesvol opgeslagen");
                 if (options.updateUI)
                     $("#saveMD").button("option", "disabled", true);
