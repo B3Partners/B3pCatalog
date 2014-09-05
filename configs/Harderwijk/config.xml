@@ -84,8 +84,7 @@
 	-->
 
 	<!-- Autorisatie voor root
-		"role" spatiegescheiden lijst met geldige rollen uit web.xml (<security-role>) of "*" voor 
-                elke gebruiker.
+		
 
                 "access" kan één van onderstaande waardes hebben:
                   "write"  : gebruiker met deze rol kan metadata wijzigen

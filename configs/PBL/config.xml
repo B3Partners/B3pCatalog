@@ -73,8 +73,8 @@
              synchroniseren van Esri file geodatabases is een ArcView licentie 
              nodig.
         -->
-        <fileRoot name="Demo" path="D:/Chris/metadata-2014-05-01">
-        
+        <!--<fileRoot name="Demo" path="D:/Chris/metadata-2014-05-01">-->
+          <fileRoot name="Demo" path=" /home/janbessels/dev/metadata">
 			<!-- Autorisatie voor deze root
 
                 "access" kan één van onderstaande waardes hebben:
@@ -83,9 +83,7 @@
                   "read"   : gebruiker kan alleen metadata lezen
                   "none"   : root wordt niet getoond in de boomstructuur voor gebruiker, kan geen metadata lezen
 
-				Met geneste <role>naam_van_rol</role> elementen kan een lijst met geldige rollen uit web.xml (<security-role>) of "*" voor 
-                elke gebruiker worden opgegeven voor bovengenoemde access.
-
+			
                 Indien geen <acl> elementen aanwezig zijn is het default <acl access="write"><role>*</role></acl>
             -->
 			<acl access="write">
@@ -143,7 +141,7 @@
         <!-- TODO synchroniseDC werkt niet goed icm service mode omdat de sync 
         templates hier niet op aangepast zijn. -->
         <!-- gebruik dc om md tags mee te vullen-->
-        <entry><key>synchroniseDC_init</key><value>false</value></entry>
+        <entry><key>synchroniseDC_init</key><value>true</value></entry>
         <!-- gebruik defaults vooringevuld-->
         <entry><key>fillDefaults_init</key><value>true</value></entry>
         <!-- gebruik esri tags om md mee te vullen -->
@@ -174,7 +172,7 @@
          Een relatief pad is ten opzichte van de directory waar dit 
          configuratie XML bestand staat. Optioneel, standaardwaarde is "organisations.json"
          
-         LET OP! Dit bestand moet geldige JavaScript code zijn. Er is enige
+         LET OP! Dit bestand moet een geldige JSON datastructuur zijn. Er is enige
          syntax controle indien een beheerder de gegevens wijzigt via de webapplicatie.
          LET OP! Dit bestand moet schrijfbaar zijn door Tomcat 
          LET OP! Voor speciale tekens: charset moet UTF-8 zijn

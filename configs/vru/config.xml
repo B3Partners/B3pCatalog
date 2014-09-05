@@ -83,9 +83,7 @@
                   "read"   : gebruiker kan alleen metadata lezen
                   "none"   : root wordt niet getoond in de boomstructuur voor gebruiker, kan geen metadata lezen
 
-				Met geneste <role>naam_van_rol</role> elementen kan een lijst met geldige rollen uit web.xml (<security-role>) 
-                of "*" voor elke gebruiker worden opgegeven voor bovengenoemde access
-                0f "none" voor geen access level ofwel niet ingelogd.
+				
 
                 Indien geen <acl> elementen aanwezig zijn is het default <acl access="write"><role>*</role></acl>
             
@@ -93,7 +91,8 @@
 				<role>none</role>
 			</acl>
         </fileRoot>-->
-        <fileRoot name="GIS data" path="//v-file05/progdata/SafetyMaps/B3PCatalogMetadata">
+        <!--<fileRoot name="GIS data" path="D:/Chris/metadata-2014-05-01">-->
+            <fileRoot name="GIS data Wolverine" path="/home/janbessels/dev/metadata/">
         
 			<!-- Autorisatie voor deze root
 
@@ -103,8 +102,6 @@
                   "read"   : gebruiker kan alleen metadata lezen
                   "none"   : root wordt niet getoond in de boomstructuur voor gebruiker, kan geen metadata lezen
 
-				Met geneste <role>naam_van_rol</role> elementen kan een lijst met geldige rollen uit web.xml (<security-role>) of "*" voor 
-                elke gebruiker worden opgegeven voor bovengenoemde access.
 
                 Indien geen <acl> elementen aanwezig zijn is het default <acl access="write"><role>*</role></acl>
             -->
@@ -156,7 +153,7 @@
         <!-- zet alle metadata voor datasets op een enkele tab-->
         <entry><key>iso19115oneTab_init</key><value>false</value></entry>
         <!-- maak tab met commentaar mogelijkhed -->
-        <entry><key>commentMode_init</key><value>false</value></entry>
+        <entry><key>commentMode_init</key><value>true</value></entry>
         <!-- maak editor read-only, viewMode in js-->
         <entry><key>globalReadonly_init</key><value>false</value></entry>
         <!-- maak metadata voor services-->
