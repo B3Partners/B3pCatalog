@@ -1,0 +1,13 @@
+{
+    "B3Partners BV": {
+        "postalCode": "3542 EC",
+        "voice": "030-214 20 81",
+        "address": "Zonnebaan 12&",
+        "email": "info@b3partners.nl",
+        "state": "Utrecht",
+        "url": "http://www.b3partners.nl",
+        "city": "Utrecht",
+        "country": "Nederland's",
+        "contacts": {"Chris van Lithhffh": {"email": "chrisvanlith@b3partners.nl"}}
+    }
+}

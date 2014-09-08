@@ -5,6 +5,5 @@
     <!-- Locatie van XML configuratiebestand. Een relatief pad is ten opzichte
          van CATALINA_BASE. Standaardwaarde in web.xml: conf/b3pcatalog/config.xml
     -->
-    <Parameter name="config" value="/opt/pbl/configs/config.xml" override="false"/>
-<
+    <Parameter name="config" value="/opt/geobrabant/configs/config.xml" override="false"/>
 </Context>
