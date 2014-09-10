@@ -27,7 +27,7 @@ public class FGDBHelperProxy {
         log.warn(message, ncdfex);
         throw new ArcObjectsNotFoundException(message, ncdfex);
     }
-    
+
     public static File getRootFGDBDir(File file) {
         while (file != null) {
             if (isFGDBDir(file)) {
@@ -79,7 +79,7 @@ public class FGDBHelperProxy {
             return false;
         return gdbFiles.length >= 1;
     }
-    
+
     public static Object getTargetDataset(File fileGDBPath, int dataType) throws IOException, B3PCatalogException {
         try {
             return FGDBHelper.getTargetDataset(fileGDBPath, dataType);
@@ -87,7 +87,7 @@ public class FGDBHelperProxy {
             rethrow(ncdfex); return null;
         }
     }
-        
+
     public static String getMetadata(File fileGDBPath, int datasetType) throws IOException, B3PCatalogException {
         try {
             return FGDBHelper.getMetadata(fileGDBPath, datasetType);
@@ -104,7 +104,7 @@ public class FGDBHelperProxy {
         }
     }
 
-    public static List<Dir> getAllDirDatasets(File fileGDBPath, String currentPath) throws IOException, B3PCatalogException {
+    public static List<Dir> getAllDirDatasets(File fileGDBPath, String currentPath) throws Exception {
         try {
             return FGDBHelper.getAllDirDatasets(fileGDBPath, currentPath);
         } catch(NoClassDefFoundError ncdfex) {
@@ -112,7 +112,7 @@ public class FGDBHelperProxy {
         }
     }
 
-    public static List<nl.b3p.catalog.filetree.DirEntry> getAllFileDatasets(File fileGDBPath, String currentPath) throws IOException, B3PCatalogException {
+    public static List<nl.b3p.catalog.filetree.DirEntry> getAllFileDatasets(File fileGDBPath, String currentPath) throws Exception {
         try {
             return FGDBHelper.getAllFileDatasets(fileGDBPath, currentPath);
         } catch(NoClassDefFoundError ncdfex) {
@@ -120,14 +120,6 @@ public class FGDBHelperProxy {
         }
     }
 
-    public static void logAllDatasets(File fileGDBPath) throws IOException, B3PCatalogException {
-        try {
-            FGDBHelper.logAllDatasets(fileGDBPath);
-        } catch(NoClassDefFoundError ncdfex) {
-            rethrow(ncdfex);
-        }
-    }
-    
     public static void cleanerTrackObjectsInCurrentThread() throws B3PCatalogException {
         try {
             FGDBHelper.cleanerTrackObjectsInCurrentThread();
@@ -135,7 +127,7 @@ public class FGDBHelperProxy {
             rethrow(ncdfex);
         }
     }
-    
+
     public static void cleanerReleaseAllInCurrentThread() throws B3PCatalogException {
         try {
             FGDBHelper.cleanerReleaseAllInCurrentThread();
@@ -143,6 +135,6 @@ public class FGDBHelperProxy {
             rethrow(ncdfex);
         }
     }
-    
+
 
 }

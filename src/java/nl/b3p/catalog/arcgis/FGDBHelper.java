@@ -9,9 +9,11 @@ import com.esri.arcgis.datasourcesGDB.FileGDBWorkspaceFactory;
 import com.esri.arcgis.geodatabase.IDataset;
 import com.esri.arcgis.geodatabase.IEnumDataset;
 import com.esri.arcgis.geodatabase.IMetadata;
+import com.esri.arcgis.geodatabase.IWorkspaceFactoryLockControlProxy;
 import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.geodatabase.XmlPropertySet;
 import com.esri.arcgis.geodatabase.esriDatasetType;
+import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.Cleaner;
 import java.io.File;
 import java.io.IOException;
@@ -48,16 +50,17 @@ public class FGDBHelper {
         IDataset ds = getTargetDataset(fileGDBPath, datasetType);
         return (IMetadata)DatasetHelper.getIDataset(ds).getFullName();
     }
-    
-    public static List<Dir> getAllDirDatasets(File fileGDBPath, String currentPath) throws IOException {
+
+    public static List<Dir> getAllDirDatasets(File fileGDBPath, String currentPath) throws Exception {
         List<Dir> files = new ArrayList<Dir>();
 
-        IDataset targetDataset = getTargetDataset(fileGDBPath, esriDatasetType.esriDTFeatureDataset);
+        log.debug("Opening FGDB dataset: " + fileGDBPath);
+        IDataset targetDataset = getTargetDataset(fileGDBPath, DatasetHelper.DATASET_TYPE_ANY);
 
         IEnumDataset enumDataset = targetDataset.getSubsets();
         IDataset ds;
-        while ((ds = enumDataset.next()) != null) {
-            if (ds.getType() == esriDatasetType.esriDTFeatureDataset) {
+        while((ds = enumDataset.next()) != null) {
+            if(ds.getType() == esriDatasetType.esriDTFeatureDataset) {
                 Dir dir = new Dir();
                 dir.setName(ds.getName());
                 dir.setPath(currentPath + ds.getName());
@@ -67,18 +70,20 @@ public class FGDBHelper {
         return files;
     }
 
-    public static List<nl.b3p.catalog.filetree.DirEntry> getAllFileDatasets(File fileGDBPath, String currentPath) throws IOException {
+    public static List<nl.b3p.catalog.filetree.DirEntry> getAllFileDatasets(File fileGDBPath, String currentPath) throws Exception {
         List<nl.b3p.catalog.filetree.DirEntry> files = new ArrayList<nl.b3p.catalog.filetree.DirEntry>();
 
-        IDataset targetDataset = getTargetDataset(fileGDBPath, esriDatasetType.esriDTFeatureDataset);
-        
+        log.debug("Opening FGDB dataset: " + fileGDBPath);
+        IDataset targetDataset = getTargetDataset(fileGDBPath, DatasetHelper.DATASET_TYPE_ANY);
+
         IEnumDataset enumDataset = targetDataset.getSubsets();
         IDataset ds;
-        while ((ds = enumDataset.next()) != null) {
-            if (ds.getType() != esriDatasetType.esriDTFeatureDataset) {
+        while((ds = enumDataset.next()) != null) {
+            if(ds.getType() != esriDatasetType.esriDTFeatureDataset) {
                 DirEntry file = new nl.b3p.catalog.filetree.DirEntry();
                 file.setName(ds.getName());
                 file.setPath(currentPath + ds.getName());
+                file.setType(DatasetHelper.getConstantFieldName(esriDatasetType.class, ds.getType()));
                 file.setIsGeo(true);
                 files.add(file);
             }
@@ -104,7 +109,8 @@ public class FGDBHelper {
             targetDataset = getWorkspace(fgdb.getCanonicalPath());
             for (String subDir : subDirList) {
                 if (!subDir.equals(subDirList.get(subDirList.size() - 1))) {
-                    targetDataset = DatasetHelper.getDataSubset(targetDataset, subDir, esriDatasetType.esriDTFeatureDataset);
+                    targetDataset = DatasetHelper.getDataSubset(targetDataset, subDir, DatasetHelper.DATASET_TYPE_ANY);
+
                 } else {
                     targetDataset = DatasetHelper.getDataSubset(targetDataset, subDir, dataType);
                 }
@@ -117,28 +123,14 @@ public class FGDBHelper {
 
     private static Workspace getWorkspace(String fileGDBPath) throws IOException {
         FileGDBWorkspaceFactory factory = new FileGDBWorkspaceFactory();
+        new IWorkspaceFactoryLockControlProxy(factory).disableSchemaLocking();
         return new Workspace(factory.openFromFile(fileGDBPath, 0));
     }
 
-    public static void logAllDatasets(File fileGDBPath) throws IOException {
-        IDataset targetDataset = getTargetDataset(fileGDBPath, esriDatasetType.esriDTFeatureDataset);
-        IEnumDataset enumDataset = targetDataset.getSubsets();
-        log.debug("esriDatasetType.esriDTAny: " + esriDatasetType.esriDTAny);
-        log.debug("esriDatasetType.esriDTContainer: " + esriDatasetType.esriDTContainer);
-        log.debug("esriDatasetType.esriDTFeatureDataset: " + esriDatasetType.esriDTFeatureDataset);
-        log.debug("esriDatasetType.esriDTFeatureClass: " + esriDatasetType.esriDTFeatureClass);
-        log.debug("esriDatasetType.esriDTGeometricNetwork: " + esriDatasetType.esriDTGeometricNetwork);
-        IDataset ds;
-        while ((ds = enumDataset.next()) != null) {
-            log.debug(ds.getName());
-            log.debug(ds.getType());
-        }
-    }
-    
     public static void cleanerTrackObjectsInCurrentThread() {
         Cleaner.trackObjectsInCurrentThread();
     }
-    
+
     public static void cleanerReleaseAllInCurrentThread() {
         Cleaner.releaseAllInCurrentThread();
     }

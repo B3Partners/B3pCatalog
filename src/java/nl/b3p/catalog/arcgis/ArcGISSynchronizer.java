@@ -44,27 +44,27 @@ import org.jdom.input.SAXBuilder;
  */
 public class ArcGISSynchronizer {
     private final static Log log = LogFactory.getLog(ArcGISSynchronizer.class);
-    
+
     public static final String FORMAT_NAME_FGDB = "ESRI file geodatabase (FGDB)";
     public static final String FORMAT_NAME_SDE =  "ESRI ArcSDE";
     public static final String FORMAT_NAME_SHAPE = "ESRI shapefile";
-    
+
     private static Document getMetadata(IDataset ds) throws Exception {
         IName name = DatasetHelper.getIDataset(ds).getFullName();
         IMetadata im = (IMetadata)name;
         XmlPropertySet xmlPropertySet = (XmlPropertySet)im.getMetadata();
-        String xml = xmlPropertySet.getXml("/");        
+        String xml = xmlPropertySet.getXml("/");
         return new SAXBuilder().build(new StringReader(xml));
     }
-        
+
     public static Document synchronize(IDataset dataset, String formatName) throws Exception {
         Document xml = getMetadata((IDataset)dataset);
         synchronize(xml, dataset, formatName);
         return xml;
     }
-    
+
     // XXX kan formatName niet bepaald worden adv IDataset?
-    public static void synchronize(Document doc, Object ds, String formatName) throws Exception {  
+    public static void synchronize(Document doc, Object ds, String formatName) throws Exception {
         // Use Object so caller class does not have to import com.esri
         IDataset dataset = (IDataset)ds;
         Workspace workspace = new Workspace(dataset.getWorkspace());
@@ -77,22 +77,19 @@ public class ArcGISSynchronizer {
             XPathHelper.applyXPathValuePair(doc, XPathHelper.DISTR_FORMAT_VERSION, workspace.getMajorVersion() + "." + workspace.getMinorVersion());
         } else {
             // Bug in ArcObjects. Hij zegt bij de volgende regel:
-            // AutomationException: No such interface supported 
+            // AutomationException: No such interface supported
             // Dit gaat dan om de IGeodatabaseRelease interface die toch echt supported hoort te zijn.
             //XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.DISTR_FORMAT_VERSION, workspace.getMajorVersion() + "." + workspace.getMinorVersion());
             // Als distribute formaat naam is ingevuld, moet ook de versie ingevuld staan, anders is de xml niet correct volgens het xsd.
         }
-        XPathHelper.applyXPathValuePair(doc, XPathHelper.DISTR_FORMAT_VERSION, version);            
+        XPathHelper.applyXPathValuePair(doc, XPathHelper.DISTR_FORMAT_VERSION, version);
 
         sync(doc, dataset);
     }
-    
+
     private static void sync(Document xmlDoc, IDataset dataset) throws IOException, B3PCatalogException, JDOMException {
         dataset = DatasetHelper.getIDataset(dataset); // tja, ArcGIS; dataset is in den beginne slechts een IDatasetProxy. Zie verder getIDataset
-        
-        IObjectClass objectClass = (IObjectClass)dataset;
-     
-        
+
         // Set title if needed in DC or DS
         // Check if synchroniseDC_init in config.xml is true
         if (getXSLParam("synchroniseDC_init")) {
@@ -115,35 +112,43 @@ public class ArcGISSynchronizer {
                 XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, dataset.getBrowseName());
             }
         }
-        
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.ALT_TITLE, objectClass.getAliasName());
+
+        if(dataset instanceof IObjectClass) {
+            XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.ALT_TITLE, ((IObjectClass)dataset).getAliasName());
+        }
         XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.SPATIAL_REPR, getSpatialRepresentation(dataset));
-        
-        IGeoDataset geoDataset = (IGeoDataset)dataset;
-        
-        IEnvelopeGEN envelope = (IEnvelopeGEN)geoDataset.getExtent();
 
-        IPoint ll = envelope.getLowerLeft();
-        IPoint ur = envelope.getUpperRight();
-        SpatialReferenceEnvironment refEnv = new SpatialReferenceEnvironment();
-        ISpatialReference wgs84 = refEnv.createGeographicCoordinateSystem(esriSRGeoCSType.esriSRGeoCS_WGS1984);
-        ll.project(wgs84);
-        ur.project(wgs84);
+        if(dataset instanceof IGeoDataset) {
+            IGeoDataset geoDataset = (IGeoDataset)dataset;
 
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_WEST, "" + ll.getX());
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_EAST, "" + ur.getX());
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_SOUTH, "" + ll.getY());
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_NORTH, "" + ur.getY());
+            IEnvelopeGEN envelope = (IEnvelopeGEN)geoDataset.getExtent();
 
-        ISpatialReferenceInfo spatialRef = (ISpatialReferenceInfo)geoDataset.getSpatialReference();
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.REF_CODESPACE, "EPSG");
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.REF_CODE, "" + spatialRef.getFactoryCode()); // is 0 voor edam/volendam voorbeeld?!?
-        
+            IPoint ll = envelope.getLowerLeft();
+            IPoint ur = envelope.getUpperRight();
+            SpatialReferenceEnvironment refEnv = new SpatialReferenceEnvironment();
+            ISpatialReference wgs84 = refEnv.createGeographicCoordinateSystem(esriSRGeoCSType.esriSRGeoCS_WGS1984);
+            ll.project(wgs84);
+            ur.project(wgs84);
+
+            try {
+                XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_WEST, "" + ll.getX(), true);
+                XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_EAST, "" + ur.getX(), true);
+                XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_SOUTH, "" + ll.getY(), true);
+                XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_NORTH, "" + ur.getY(), true);
+            } catch(Exception e) {
+                // Kan voorkomen als geen features in de dataset voorkomen ("AutomationException: 0x80040202 - The operation was attempted on an empty geometry. in '"esri.Point"'")
+            }
+
+            ISpatialReferenceInfo spatialRef = (ISpatialReferenceInfo)geoDataset.getSpatialReference();
+            XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.REF_CODESPACE, "EPSG");
+            XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.REF_CODE, "" + spatialRef.getFactoryCode()); // is 0 voor edam/volendam voorbeeld?!?
+        }
+
         syncFeatureCatalog(xmlDoc, dataset);
-        
+
         //log.debug(new XMLOutputter().outputString(xmlDoc));
     }
-    
+
     private static void syncFeatureCatalog(Document xmlDoc, IDataset dataset) throws JDOMException, IOException {
         Element gfc_FC_FeatureCatalogue = XPathHelper.selectSingleElement(xmlDoc, XPathHelper.FEATURE_CATALOG);
         if(gfc_FC_FeatureCatalogue == null) {
@@ -153,55 +158,59 @@ public class ArcGISSynchronizer {
         } else {
             gfc_FC_FeatureCatalogue.removeChildren(Names.GFC_FEATURE_TYPE, Namespaces.GFC);
         }
-        
-        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.FC_TITLE, dataset.getBrowseName());
-        
-        for (IFeatureClass iFeatureClass : new IFeatureClassList(dataset)) {
-            FeatureClass featureClass = new FeatureClass(iFeatureClass);
-            Element gfc_featureType = new Element(Names.GFC_FEATURE_TYPE, Namespaces.GFC);
-            Element gfc_FC_FeatureType = new Element(Names.GFC_FC_FEATURE_TYPE, Namespaces.GFC);
-            
-            // is niet correct: dit moet de user invullen
-            /*Element gfc_typeName = new Element(Names.GFC_TYPE_NAME, Namespaces.GFC);
-            Element gco_LocalName = new Element(Names.GCO_LOCAL_NAME, Namespaces.GCO);
-            gco_LocalName.setText(getFeatureClassShapeType(featureClass));
-            gfc_typeName.addContent(gco_LocalName);
-            
-            gfc_FC_FeatureType.addContent(gfc_typeName);*/
-            
-            IFields fields = featureClass.getFields();
-            for (int i = 0; i < fields.getFieldCount(); i++) {
-                IField field = fields.getField(i);
-                Element gfc_carrierOfCharacteristics = new Element(Names.GFC_CARRIER_OF_CHARACTERISTICS, Namespaces.GFC);
-                Element gfc_FC_FeatureAttribute = new Element(Names.GFC_FC_FEATURE_ATTRIBUTE, Namespaces.GFC);
 
-                Element gfc_memberName = new Element(Names.GFC_MEMBER_NAME, Namespaces.GFC);
-                Element field_gco_LocalName = new Element(Names.GCO_LOCAL_NAME, Namespaces.GCO);
-                field_gco_LocalName.setText(field.getAliasName());
-                gfc_memberName.addContent(field_gco_LocalName);
-                
-                gfc_FC_FeatureAttribute.addContent(gfc_memberName);
-                
-                Element gfc_valueType = new Element(Names.GFC_VALUE_TYPE, Namespaces.GFC);
-                Element gco_TypeName = new Element(Names.GCO_TYPE_NAME, Namespaces.GCO);
-                Element gco_aName = new Element(Names.GCO_A_NAME, Namespaces.GCO);
-                Element gco_CharacterString = new Element(Names.GCO_CHARACTER_STRING, Namespaces.GCO);
-                gco_CharacterString.setText(getValueType(field.getType(), featureClass));
-                gco_aName.addContent(gco_CharacterString);
-                gco_TypeName.addContent(gco_aName);
-                gfc_valueType.addContent(gco_TypeName);
-                
-                gfc_FC_FeatureAttribute.addContent(gfc_valueType);
-                
-                gfc_carrierOfCharacteristics.addContent(gfc_FC_FeatureAttribute);
-                gfc_FC_FeatureType.addContent(gfc_carrierOfCharacteristics);
+        XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.FC_TITLE, dataset.getBrowseName());
+
+        try {
+            for (IFeatureClass iFeatureClass : new IFeatureClassList(dataset)) {
+                FeatureClass featureClass = new FeatureClass(iFeatureClass);
+                Element gfc_featureType = new Element(Names.GFC_FEATURE_TYPE, Namespaces.GFC);
+                Element gfc_FC_FeatureType = new Element(Names.GFC_FC_FEATURE_TYPE, Namespaces.GFC);
+
+                // is niet correct: dit moet de user invullen
+                /*Element gfc_typeName = new Element(Names.GFC_TYPE_NAME, Namespaces.GFC);
+                Element gco_LocalName = new Element(Names.GCO_LOCAL_NAME, Namespaces.GCO);
+                gco_LocalName.setText(getFeatureClassShapeType(featureClass));
+                gfc_typeName.addContent(gco_LocalName);
+
+                gfc_FC_FeatureType.addContent(gfc_typeName);*/
+
+                IFields fields = featureClass.getFields();
+                for (int i = 0; i < fields.getFieldCount(); i++) {
+                    IField field = fields.getField(i);
+                    Element gfc_carrierOfCharacteristics = new Element(Names.GFC_CARRIER_OF_CHARACTERISTICS, Namespaces.GFC);
+                    Element gfc_FC_FeatureAttribute = new Element(Names.GFC_FC_FEATURE_ATTRIBUTE, Namespaces.GFC);
+
+                    Element gfc_memberName = new Element(Names.GFC_MEMBER_NAME, Namespaces.GFC);
+                    Element field_gco_LocalName = new Element(Names.GCO_LOCAL_NAME, Namespaces.GCO);
+                    field_gco_LocalName.setText(field.getAliasName());
+                    gfc_memberName.addContent(field_gco_LocalName);
+
+                    gfc_FC_FeatureAttribute.addContent(gfc_memberName);
+
+                    Element gfc_valueType = new Element(Names.GFC_VALUE_TYPE, Namespaces.GFC);
+                    Element gco_TypeName = new Element(Names.GCO_TYPE_NAME, Namespaces.GCO);
+                    Element gco_aName = new Element(Names.GCO_A_NAME, Namespaces.GCO);
+                    Element gco_CharacterString = new Element(Names.GCO_CHARACTER_STRING, Namespaces.GCO);
+                    gco_CharacterString.setText(getValueType(field.getType(), featureClass));
+                    gco_aName.addContent(gco_CharacterString);
+                    gco_TypeName.addContent(gco_aName);
+                    gfc_valueType.addContent(gco_TypeName);
+
+                    gfc_FC_FeatureAttribute.addContent(gfc_valueType);
+
+                    gfc_carrierOfCharacteristics.addContent(gfc_FC_FeatureAttribute);
+                    gfc_FC_FeatureType.addContent(gfc_carrierOfCharacteristics);
+                }
+
+                gfc_featureType.addContent(gfc_FC_FeatureType);
+                gfc_FC_FeatureCatalogue.addContent(gfc_featureType);
             }
-            
-            gfc_featureType.addContent(gfc_FC_FeatureType);
-            gfc_FC_FeatureCatalogue.addContent(gfc_featureType);
+        } catch(Exception e) {
+            // Thrown when dataset has no feature classes, ignore
         }
     }
-    
+
     private static String getSpatialRepresentation(IDataset dataset) throws IOException {
         switch(dataset.getType()) {
             // most used 2:
@@ -252,7 +261,7 @@ public class ArcGISSynchronizer {
                 return ""; // dunno
         }
     }
-    
+
     private static String getFeatureClassShapeType(IFeatureClass featureClass) throws IOException {
         switch(featureClass.getShapeType()) {
             case esriGeometryType.esriGeometryAny:
@@ -331,5 +340,5 @@ public class ArcGISSynchronizer {
             default:
                 return "";
         }
-    }    
+    }
 }

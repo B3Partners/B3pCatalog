@@ -17,11 +17,12 @@ public class DirEntry {
 
     private String path;
     private String name;
+    private String type;
 
     private boolean isGeo;
 
     public DirEntry() {
-        
+
     }
 
     public DirEntry(String name, String path) {
@@ -45,13 +46,25 @@ public class DirEntry {
         this.path = path;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public String getExtension() {
         return getExtension(name);
     }
 
     public static String getExtension(String filename) {
         String extName = filename;
-        String lastExt = extName.substring(extName.lastIndexOf(".") + 1).toLowerCase();
+        int i = extName.lastIndexOf('.');
+        if(i == -1) {
+            return "";
+        }
+        String lastExt = extName.substring(i + 1).toLowerCase();
         if (DOUBLE_EXTENSIONS.contains(lastExt))
             extName = extName.substring(0, extName.lastIndexOf("."));
         return extName.substring(extName.lastIndexOf(".") + 1).toLowerCase();

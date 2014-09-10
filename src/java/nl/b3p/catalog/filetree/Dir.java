@@ -12,6 +12,7 @@ package nl.b3p.catalog.filetree;
 public class Dir {
     private String name;
     private String path;
+    private String type;
     private boolean isFGDB;
 
     public Dir() {
@@ -46,4 +47,11 @@ public class Dir {
         this.isFGDB = isFGDB;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

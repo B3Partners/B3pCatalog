@@ -28,7 +28,7 @@ import nl.b3p.catalog.filetree.FileListHelper;
  * @author Matthijs Laan
  */
 
-public class FileRoot extends Root {    
+public class FileRoot extends Root {
     @XmlAttribute
     private String path;
 
@@ -42,7 +42,7 @@ public class FileRoot extends Root {
     }
 
     @Override
-    public DirContent getDirContent(String fullPath) throws IOException, B3PCatalogException {
+    public DirContent getDirContent(String fullPath) throws Exception {
         return FileListHelper.getDirContent(this, fullPath);
     }
 }

@@ -28,13 +28,16 @@ import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.config.CatalogAppConfig;
 import nl.b3p.catalog.config.FileRoot;
 import nl.b3p.catalog.config.Root;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
  * @author Matthijs Laan
  */
 public class FileListHelper {
-    
+    private static final Log log = LogFactory.getLog(FileListHelper.class);
+
     public static File getFileForPath(Root r, String path) throws FileNotFoundException {
         FileRoot root = (FileRoot)r;
         path = Root.getPathPart(path);
@@ -42,31 +45,36 @@ public class FileListHelper {
             throw new IllegalArgumentException("Illegal path");
         }
         String osPath = path.replace(Root.SEPARATOR.charAt(0), File.separatorChar);
-        
+
         File p = new File(osPath);
         if(p.isAbsolute()) {
             throw new IllegalArgumentException("Illegal path");
         }
-        
+
         File f = new File(root.getPath(), osPath);
-        
+
         //TODO CvL: file does not need to exists? use empty md then
 //        if(!FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(f) && !f.exists()) {
 //            throw new FileNotFoundException("Path does not exist");
 //        }
         return f;
     }
-    
-    public static DirContent getDirContent(FileRoot root, String fullPath) throws IOException, B3PCatalogException {
+
+    public static DirContent getDirContent(FileRoot root, String fullPath) throws Exception {
 
         File dir = getFileForPath(root, fullPath);
         String pathPart = Root.getPathPart(fullPath);
         return getDirContent(dir, fullPath + (pathPart.equals("") ? "" : Root.SEPARATOR));
     }
-    
-    private static DirContent getDirContent(File directory, String currentPath) throws IOException, B3PCatalogException {
+
+    private static DirContent getDirContent(File directory, String currentPath) throws Exception {
         if (FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(directory)) {
-            return getFGDBDirContent(directory, currentPath);
+            try {
+                FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+                return getFGDBDirContent(directory, currentPath);
+            } finally {
+                FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+            }
         } else {
             return getNormalDirContent(directory, currentPath);
         }
@@ -103,20 +111,20 @@ public class FileListHelper {
                 DirEntry newFile = new DirEntry();
                 newFile.setName(file.getName());
                 newFile.setPath(currentPath + file.getName());
-                
+
                 boolean isGeo = true;
-                Set<String> geoFileExtensions = 
+                Set<String> geoFileExtensions =
                         CatalogAppConfig.getConfig().getGeoFileExtensions();
-                if (!geoFileExtensions.isEmpty() 
+                if (!geoFileExtensions.isEmpty()
                         && !geoFileExtensions.contains(newFile.getExtension())) {
                     isGeo = false;
                 }
-                
+
                 newFile.setIsGeo(isGeo);
                 dc.getFiles().add(newFile);
             }
         }
-                
+
         // add stub for directory metadata
         DirEntry newFile = new DirEntry();
         newFile.setName(".metadata");
@@ -129,7 +137,8 @@ public class FileListHelper {
         return dc;
     }
 
-    private static DirContent getFGDBDirContent(File directory, String currentPath) throws IOException, B3PCatalogException {
+    private static DirContent getFGDBDirContent(File directory, String currentPath) throws Exception {
+        log.debug(String.format("Get FGDB content from %s (currentPath %s)", directory, currentPath));
         DirContent dc = new DirContent();
 
         List<Dir> dirsList =
@@ -142,7 +151,7 @@ public class FileListHelper {
 
         return dc;
     }
-  
+
 
     private static void filterOutFilesToHide(DirContent dc) {
         filterOutMetadataFiles(dc);
@@ -153,9 +162,9 @@ public class FileListHelper {
         List<DirEntry> toBeIgnoredFiles = new ArrayList<DirEntry>();
 
         dc.sort();
-        
+
         List<DirEntry> filesList = dc.getFiles();
-        
+
         String lastFilename = null;
         for(DirEntry file: filesList) {
             String filename = file.getName();

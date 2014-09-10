@@ -5,6 +5,8 @@
 package nl.b3p.catalog.arcgis;
 
 import com.esri.arcgis.datasourcesfile.ShapefileWorkspaceFactory;
+import com.esri.arcgis.datasourcesraster.IMosaicWorkspaceExtension;
+import com.esri.arcgis.datasourcesraster.MosaicWorkspaceExtensionHelper;
 import com.esri.arcgis.datasourcesraster.RasterBand;
 import com.esri.arcgis.datasourcesraster.RasterDataset;
 import com.esri.arcgis.geodatabase.FeatureClass;
@@ -27,6 +29,8 @@ import com.esri.arcgis.geodatabaseextensions.Terrain;
 import com.esri.arcgis.schematic.SchematicDataset;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.filetree.Extensions;
 import org.apache.commons.logging.Log;
@@ -40,12 +44,32 @@ public class DatasetHelper {
 
     private final static Log log = LogFactory.getLog(DatasetHelper.class);
 
+    public static final int DATASET_TYPE_ANY = -1;
+
+    public static String getConstantFieldName(Class c, Object value) {
+        for(Field f: c.getDeclaredFields()) {
+            int mod = f.getModifiers();
+            if(Modifier.isStatic(mod) && Modifier.isPublic(mod) && Modifier.isFinal(mod)) {
+                try {
+                    if(value.equals(f.get(null))) {
+                        return f.getName();
+                    }
+                } catch(IllegalAccessException e) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
     // if datasetType < 0: skip dataset type equals check.
     public static IDataset getDataSubset(IDataset dataset, String name, int datasetType) throws IOException {
+        log.debug(String.format("Get sub dataset \"%s\" from \"%s\" (dataset type filter %d)", name, dataset.getName(), datasetType));
         IEnumDataset enumDataset = dataset.getSubsets();
         IDataset ds;
         while ((ds = enumDataset.next()) != null) {
-            if ((datasetType < 0 || datasetType == ds.getType()) && ds.getName().equals(name)) {
+            if ((datasetType == DATASET_TYPE_ANY || datasetType == ds.getType()) && ds.getName().equals(name)) {
+                log.debug(String.format("Found dataset, type: %s", getConstantFieldName(esriDatasetType.class, ds.getType())));
                 return ds;
             }
         }
@@ -64,7 +88,7 @@ public class DatasetHelper {
         String shapeFilename = shapefileFullname.substring(0, shapefileFullname.lastIndexOf('.'));
         return DatasetHelper.getDataSubset(workspace, shapeFilename, -1);
     }
-    
+
     // wat een rampen-API
     public static IDataset getIDataset(IDataset dataset) throws IOException, B3PCatalogException {
         switch (dataset.getType()) {
@@ -116,7 +140,7 @@ public class DatasetHelper {
             case esriDatasetType.esriDTTopology:
                 return (IDataset) new Topology(dataset);
             default:
-                throw new B3PCatalogException("DatasetType " + dataset.getType() + " not supported.");
+                throw new B3PCatalogException("Dataset type " + getConstantFieldName(esriDatasetType.class, dataset.getType()) + " wordt niet ondersteund.");
         }
     }
 
