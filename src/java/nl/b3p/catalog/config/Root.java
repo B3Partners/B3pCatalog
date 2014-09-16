@@ -154,6 +154,9 @@ public abstract class Root {
     
     public static Root getRootForPath(String fullPath) throws B3PCatalogException {
         int i = fullPath.indexOf(SEPARATOR);
+        if (i<1) {
+            throw new B3PCatalogException("Path needs root number e.g. 0/file.txt");
+        }
         int index = Integer.parseInt(fullPath.substring(0,i));
         return CatalogAppConfig.getConfig().getRoots().get(index);    
     }
