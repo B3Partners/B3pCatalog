@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/b3pcatalog" antiJARLocking="true" disableURLRewriting="true" >
+    
+    <!-- Locatie van XML configuratiebestand. Een relatief pad is ten opzichte
+         van CATALINA_BASE. Standaardwaarde in web.xml: conf/b3pcatalog/config.xml
+    -->
+    <Parameter name="config" value="/opt/configs/vlaardingen.kaartenbalie.nl/b3pcatalog/configs/config.xml" override="false"/>
+    
+    <!--Resource name="jdbc/arcsde"
+        auth="Container"
+        type="javax.sql.DataSource"
+        username="sa"
+        password="geheim"
+        driverClassName="net.sourceforge.jtds.jdbc.Driver"
+        url="jdbc:jtds:sqlserver://192.168.1.31:1213;DatabaseName=geodb"
+        maxActive="25"
+        validationQuery="select 1"
+
+    / -->
+    <!-- bug in Tomcat 6.0.26 
+        timeBetweenEvictionRunsMillis="30000"
+        minEvictableIdleTimeMillis="5000"
+    -->
+</Context>
