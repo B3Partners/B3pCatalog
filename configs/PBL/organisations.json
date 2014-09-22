@@ -20,20 +20,6 @@
         "country": "Nederland",
         "contacts": {"Lydia Dijkshoorn": {"email": "Lydia.Dijkshoorn@rvo.nl"}}
     },
-    "Wolv-org organisatie house of snikt": {
-        "postalCode": "wolv-org postalCode",
-        "voice": "wolv-org voice",
-        "email": "wolv-org email",
-        "address": "wolv-org address",
-        "state": "wolv-org state",
-        "url": "wolv-org url",
-        "country": "wolv-org country",
-        "city": "wolv-org city",
-        "contacts": {
-            "wolv-org contacts": {"email": "wolv-org contacts email wolverine2710@gmail.com"},
-            "wolv-org contacts2": {"email": "wolv-org contacts email 2 wolverine2710@gmail.com"}
-        }
-    },
     "Rijksdienst voor Ondernemend Nederland (RvO)2": {
         "postalCode": "6041 CB",
         "voice": "+31 88-6022277",
