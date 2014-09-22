@@ -3063,6 +3063,7 @@
 	</xsl:template>
 	<xsl:template name="picklist_CI_DateTypeCode">
 		<select id="picklist_CI_DateTypeCode">
+			<option value="" title="Niet ingesteld"></option>
 			<option value="creation" title="Datum waarop de dataset of dataset serie is gecreëerd.">creatie</option>
 			<option value="publication" title="Datum waarop de dataset of dataset serie is gepubliceerd.">publicatie</option>
 			<option value="revision" title="Datum waarop de dataset of dataset serie is gecontroleerd, verbeterd of is gewijzigd.">revisie</option>
@@ -3699,6 +3700,7 @@
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 68 Gebruiksbeperkingen Verplicht om op zijn minst één van de vier elementen (juridische) toegangsrestricties, overige beperkingen, veiligheidsrestricties of gebruiksbeperkingen op te nemen.'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.36_Gebruiksbeperkingen</xsl:with-param>
+			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="gmd:resourceConstraints/gmd:MD_LegalConstraints">
@@ -3759,6 +3761,7 @@
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 83 Algemene beschrijving herkomst'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.23_Algemene_beschrijving_herkomst</xsl:with-param>
+			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="gmd:dataQualityInfo" mode="dataService">
@@ -4152,7 +4155,7 @@
 			</xsl:call-template>
 			<div class="ui-mde-section-content">
 				<xsl:apply-templates select="gmd:CI_Date">
-					<xsl:with-param name="readonly" select="$globalReadonly or ($synchroniseDC and (gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue = 'creation'))"/>
+					<xsl:with-param name="readonly" select="$globalReadonly"/>
 					<xsl:with-param name="optionality">mandatory</xsl:with-param>
 				</xsl:apply-templates>
 			</div>
@@ -4520,7 +4523,7 @@
 		<xsl:param name="readonly" select="false()"/>
 		<xsl:param name="optionality">conditional</xsl:param>
 		<xsl:apply-templates select="gmd:date/gco:Date | gmd:date/gco:DateTime">
-			<xsl:with-param name="readonly" select="$readonly"/>
+			<xsl:with-param name="readonly" select="$readonly or $synchroniseDC"/>
 		</xsl:apply-templates>
 		<xsl:apply-templates select="gmd:dateType/gmd:CI_DateTypeCode">
 			<xsl:with-param name="readonly" select="$readonly"/>

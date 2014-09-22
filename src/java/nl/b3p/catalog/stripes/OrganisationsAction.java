@@ -159,21 +159,39 @@ public class OrganisationsAction extends DefaultAction {
         while (o1it.hasNext()) {
             String label = (String) o1it.next();
             if (label.equals("contacts")) {
-                JSONObject contacts1 = (JSONObject) o1.get(label);
-                JSONObject contacts2 = (JSONObject) o2.get(label);
+                JSONObject contacts1 = (JSONObject) o1.opt(label);
+                JSONObject contacts2 = (JSONObject) o2.opt(label);
                 Iterator<?> contacts1it = o1.keys();
                 while (contacts1it.hasNext()) {
                     String sublabel = (String) contacts1it.next();
-                    String waarde1 = contacts1.getString(sublabel);
-                    String waarde2 = contacts2.getString(sublabel);
+                    String waarde1 = null;
+                    if (contacts1!=null) {
+                        waarde1 = contacts1.optString(sublabel);
+                    }
+                    String waarde2 = null;
+                    if (contacts2!=null) {
+                        waarde2 = contacts2.optString(sublabel);
+                    }
+                    if (waarde1==null && waarde2==null) {
+                        continue;
+                    }
+                    if (waarde1==null || waarde2==null) {
+                        deviList.add(label+"_"+sublabel);
+                    }
                     if (!waarde1.equals(waarde2)) {
                         deviList.add(label+"_"+sublabel);
                     }
                 }
 
             } else {
-                String waarde1 = o1.getString(label);
-                String waarde2 = o2.getString(label);
+                String waarde1 = o1.optString(label);
+                String waarde2 = o2.optString(label);
+                if (waarde1 == null && waarde2 == null) {
+                    continue;
+                }
+                if (waarde1 == null || waarde2 == null) {
+                    deviList.add(label);
+                }
                 if (!waarde1.equals(waarde2)) {
                     deviList.add(label);
                 }

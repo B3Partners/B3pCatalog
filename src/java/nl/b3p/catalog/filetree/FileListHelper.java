@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.config.CatalogAppConfig;
 import nl.b3p.catalog.config.FileRoot;
@@ -128,7 +127,7 @@ public class FileListHelper {
         // add stub for directory metadata
         DirEntry newFile = new DirEntry();
         newFile.setName(".metadata");
-        newFile.setPath(currentPath + directory.getName() + ".metadata");
+        newFile.setPath(currentPath + "metadata");
         newFile.setIsGeo(true);
         dc.getFiles().add(newFile);
 
@@ -169,7 +168,10 @@ public class FileListHelper {
         for(DirEntry file: filesList) {
             String filename = file.getName();
 
-            if (lastFilename == null || !filename.startsWith(lastFilename)) {
+            if (filename.equalsIgnoreCase("metadata.xml")) {
+                //metadata belonging to folder, editted via .metadata stub
+                toBeIgnoredFiles.add(file);
+            } else if (lastFilename == null || !filename.startsWith(lastFilename)) {
                 lastFilename = filename;
             } else if (filename.length() == (lastFilename.length() + 4) && filename.endsWith(".xml")) {
                 toBeIgnoredFiles.add(file);
