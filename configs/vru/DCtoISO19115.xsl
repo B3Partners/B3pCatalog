@@ -14,7 +14,7 @@
 	</xsl:template>
 	<xsl:template match="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString">
 		<xsl:copy>
-            <!-- wolverine. debugging. -->
+            <!-- jbd. debugging. -->
 			<xsl:value-of select="/*/b3p:B3Partners/*/dc:title"/>
 <!--            <xsl:value-of select="Title_set_in_xsl_sheet"/>-->
 <!--            <xsl:text>Title_set_in_xsl_sheet</xsl:text>-->

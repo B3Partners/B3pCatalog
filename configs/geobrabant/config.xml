@@ -161,7 +161,7 @@
         <entry><key>globalReadonly_init</key><value>false</value></entry>
         <!-- maak metadata voor services-->
         
-        <!-- wolverine. disabled servicemode -->
+        <!-- Toont tab voor services NIET  -->
         <entry><key>serviceMode_init</key><value>false</value></entry>
         
         <!-- maak metadata voor datasets -->
@@ -170,10 +170,8 @@
         templates hier niet op aangepast zijn. -->
         <!-- gebruik dc om md tags mee te vullen-->
         
-        <!-- wolverine. debugging, remove later. -->
+        <!-- Synchroniseer/kopieer NIET de velden uit Dublin Core tab met de datasets tab -->
         <entry><key>synchroniseDC_init</key><value>false</value></entry>
-        <!--<entry><key>synchroniseDC_init</key><value>false</value></entry>-->
-
 
         <!-- gebruik defaults vooringevuld-->
         <entry><key>fillDefaults_init</key><value>true</value></entry>
