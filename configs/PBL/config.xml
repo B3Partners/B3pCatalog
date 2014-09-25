@@ -74,7 +74,7 @@
              nodig.
         -->
         <!--<fileRoot name="Demo" path="D:/Chris/metadata-2014-05-01">-->
-          <fileRoot name="Demo" path=" /home/janbessels/dev/metadata">
+          <fileRoot name="Demo" path="D:/Chris/metadata-2014-05-01">
 			<!-- Autorisatie voor deze root
 
                 "access" kan één van onderstaande waardes hebben:
