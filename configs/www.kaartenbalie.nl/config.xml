@@ -143,21 +143,21 @@
     <!-- de transformatie naar de mde heeft vele configuratie mogelijkheden -->
     <mdeConfig>
          <!-- maak attributen tab (feature catalog)-->
-        <entry><key>fcMode_init</key><value>false</value></entry>
+        <entry><key>fcMode_init</key><value>true</value></entry>
         <!-- maak dublin core tab-->
-        <entry><key>dcMode_init</key><value>false</value></entry>
+        <entry><key>dcMode_init</key><value>true</value></entry>
          <!-- voeg speciale PBL extra's toe aan dublin core tab-->
-        <entry><key>dcPblMode_init</key><value>false</value></entry>
+        <entry><key>dcPblMode_init</key><value>true</value></entry>
         <!-- zet alle metadata voor datasets op een enkele tab-->
         <entry><key>iso19115oneTab_init</key><value>false</value></entry>
         <!-- maak tab met commentaar mogelijkhed -->
-        <entry><key>commentMode_init</key><value>false</value></entry>
+        <entry><key>commentMode_init</key><value>true</value></entry>
         <!-- maak editor read-only, viewMode in js-->
         <entry><key>globalReadonly_init</key><value>false</value></entry>
         <!-- maak metadata voor services-->
         
         <!--Toont tab voor services NIET -->
-        <entry><key>serviceMode_init</key><value>false</value></entry>
+        <entry><key>serviceMode_init</key><value>true</value></entry>
         
         <!-- maak metadata voor datasets -->
         <entry><key>datasetMode_init</key><value>true</value></entry>
@@ -166,7 +166,7 @@
         <!-- gebruik dc om md tags mee te vullen-->
         
         <!-- Synchroniseer/kopieer NIET de velden uit Dublin Core tab met de datasets tabs -->
-        <entry><key>synchroniseDC_init</key><value>false</value></entry>
+        <entry><key>synchroniseDC_init</key><value>true</value></entry>
 
         <!-- gebruik defaults vooringevuld-->
         <entry><key>fillDefaults_init</key><value>true</value></entry>

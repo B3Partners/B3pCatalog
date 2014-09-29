@@ -25,7 +25,7 @@
     <xsl:param name="fcMode_init">true</xsl:param>
     <xsl:param name="commentMode_init">true</xsl:param>
     <xsl:param name="dcPblMode_init">true</xsl:param>
-    <xsl:param name="serviceMode_init">false</xsl:param>
+    <xsl:param name="serviceMode_init">true</xsl:param>
     <xsl:param name="datasetMode_init">true</xsl:param>
 
     <!-- do we want default values filled in. -->

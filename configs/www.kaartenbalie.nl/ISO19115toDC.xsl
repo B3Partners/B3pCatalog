@@ -31,189 +31,133 @@
 		</xsl:copy>
 	</xsl:template>
 	
-	<xsl:template match="*/b3p:B3Partners/b3p:metadataDC">
+	<xsl:template match="/*/b3p:B3Partners/*/dc:description">
 		<xsl:copy>
-			<xsl:call-template name="add-DC-elems"/>
-			<xsl:apply-templates select="@*"/>
+			<xsl:value-of select="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString"/>
 		</xsl:copy>
 	</xsl:template>
 	
-	<xsl:template match="*/b3p:B3Partners/pbl:metadataPBL">
+	<xsl:template match="/*/b3p:B3Partners/*/dc:title">
 		<xsl:copy>
-			<xsl:call-template name="add-DC-elems"/>
-			<xsl:call-template name="add-PBL-frequency"/>
-			<xsl:call-template name="add-PBL-testsPerformed"/>
-			<xsl:apply-templates select="@*"/>
-		</xsl:copy>
-	</xsl:template>
-
-	<xsl:template name="add-DC-elems">
-		<xsl:call-template name="add-DC-title"/>
-		<xsl:call-template name="add-DC-creator"/>
-		<xsl:call-template name="add-DC-subject"/>
-		<xsl:call-template name="add-DC-description"/>
-		<xsl:call-template name="add-DC-publisher"/>
-		<xsl:call-template name="add-DC-contributor"/>
-		<xsl:call-template name="add-DC-date"/>
-		<xsl:call-template name="add-DC-type"/>
-		<xsl:call-template name="add-DC-format"/>
-		<xsl:call-template name="add-DC-identifier"/>
-		<xsl:call-template name="add-DC-language"/>
-		<xsl:call-template name="add-DC-source"/>
-		<xsl:call-template name="add-DC-relation"/>
-		<xsl:call-template name="add-DC-coverage"/>
-		<xsl:call-template name="add-DC-rights"/>
-	</xsl:template>
-
-	<xsl:template name="add-DC-title">
-		<xsl:element name="dc:title">
 			<xsl:value-of select="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
-		</xsl:element>
+		</xsl:copy>
 	</xsl:template>
 	
 	<!-- Subjects are always saved in 19115 with the first thesaurus -->
-	<xsl:template name="add-DC-subject">
-		<xsl:choose>
-			<xsl:when test="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[1]/gmd:MD_Keywords/gmd:keyword/gco:CharacterString">
+	<xsl:template match="/*/b3p:B3Partners/*/dc:subject">
+		<xsl:if test="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[1]/gmd:MD_Keywords/gmd:keyword/gco:CharacterString">
+			<xsl:copy>
 				<xsl:for-each select="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords[1]/gmd:MD_Keywords/gmd:keyword/gco:CharacterString">
-					<xsl:element name="dc:subject">
-						<xsl:value-of select="."/>
-					</xsl:element>
+					<xsl:value-of select="."/>
 				</xsl:for-each>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:element name="dc:subject"/>
-			</xsl:otherwise>
-		</xsl:choose>
+			</xsl:copy>
+		</xsl:if>
 	</xsl:template>
 	
-	<xsl:template name="add-DC-description">
-		<xsl:element name="dc:description">
+	<xsl:template match="/*/b3p:B3Partners/*/dc:description">
+		<xsl:copy>
 			<xsl:value-of select="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString"/>
-		</xsl:element>
+		</xsl:copy>
 	</xsl:template>
 	
-	<xsl:template name="add-DC-creator">
-		<xsl:choose>
-			<xsl:when test="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact">
+	<xsl:template match="/*/b3p:B3Partners/*/dc:creator">
+		<xsl:if test="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact">
+			<xsl:copy>
 				<xsl:for-each select="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact">
-					<xsl:element name="dc:creator">
-						<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/>
-					</xsl:element>
+					<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/>
 				</xsl:for-each>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:element name="dc:creator"/>
-			</xsl:otherwise>
-		</xsl:choose>
+			</xsl:copy>
+		</xsl:if>
 	</xsl:template>
 	
 	<!-- We do not implement the synchronized 19115 value in our editor (yet) -->
-	<xsl:template name="add-DC-publisher">
-		<xsl:choose>
-			<xsl:when test="/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorContact">
+	<xsl:template match="/*/b3p:B3Partners/*/dc:publisher">
+		<xsl:if test="/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorContact">
+			<xsl:copy>
 				<xsl:for-each select="/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorContact">
-					<xsl:element name="dc:publisher">
-						<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/>
-					</xsl:element>
+					<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/>
 				</xsl:for-each>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:element name="dc:publisher"/>
-			</xsl:otherwise>
-		</xsl:choose>
+			</xsl:copy>
+		</xsl:if>
 	</xsl:template>
 	
-	<xsl:template name="add-DC-contributor">
-		<xsl:choose>
-			<xsl:when test="/*/gmd:MD_Metadata/gmd:contact">
+	<xsl:template match="/*/b3p:B3Partners/*/dc:contributor">
+		<xsl:if test="/*/gmd:MD_Metadata/gmd:contact">
+			<xsl:copy>
 				<xsl:for-each select="/*/gmd:MD_Metadata/gmd:contact">
-					<xsl:element name="dc:contributor">
-						<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/>
-					</xsl:element>
+					<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString"/>
 				</xsl:for-each>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:element name="dc:contributor"/>
-			</xsl:otherwise>
-		</xsl:choose>
+			</xsl:copy>
+		</xsl:if>
 	</xsl:template>
 	
-	<xsl:template name="add-DC-date">
-		<xsl:element name="dc:date">
+	<xsl:template match="/*/b3p:B3Partners/*/dc:date">
+		<xsl:copy>
 			<xsl:value-of select="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[gmd:dateType/gmd:CI_DateTypeCode/@codeListValue = 'creation']/gmd:date/gco:Date |
-												/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[gmd:dateType/gmd:CI_DateTypeCode/@codeListValue = 'creation']/gmd:date/gco:DateTime"/>
-		</xsl:element>
+										   /*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[gmd:dateType/gmd:CI_DateTypeCode/@codeListValue = 'creation']/gmd:date/gco:DateTime"/>
+		</xsl:copy>
 	</xsl:template>
 	
-	<xsl:template name="add-DC-type">
-		<xsl:element name="dc:type">
+	<xsl:template match="/*/b3p:B3Partners/*/dc:type">
+		<xsl:copy>
 			<xsl:value-of select="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode/@codeListValue"/>
-		</xsl:element>
+		</xsl:copy>
 	</xsl:template>
 	
-	<xsl:template name="add-DC-format">
-		<xsl:element name="dc:format">
+	<xsl:template match="/*/b3p:B3Partners/*/dc:format">
+		<xsl:copy>
 			<xsl:value-of select="/*/gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat[1]/gmd:MD_Format/gmd:name/gco:CharacterString"/>
-		</xsl:element>
+		</xsl:copy>
 	</xsl:template>
 	
-	<xsl:template name="add-DC-identifier">
-		<xsl:apply-templates select="dc:identifier"/>
+	<xsl:template match="/*/b3p:B3Partners/*/dc:identifier">
+		<xsl:copy>
+			<xsl:value-of select="/*/gmd:MD_Metadata/gmd:identifier"/>
+		</xsl:copy>
 	</xsl:template>
 	
-	<xsl:template name="add-DC-source">
-		<xsl:apply-templates select="dc:source"/>
+	<xsl:template match="/*/b3p:B3Partners/*/dc:source">
+		<!-- do nothing -->
 	</xsl:template>
 	
-	<xsl:template name="add-DC-language">
-		<xsl:element name="dc:language">
+	<xsl:template match="/*/b3p:B3Partners/*/dc:language">
+		<xsl:copy>
 			<xsl:value-of select="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:language/gco:CharacterString"/>
-		</xsl:element>
+		</xsl:copy>
 	</xsl:template>
 	
-	<xsl:template name="add-DC-relation">
-		<xsl:choose>
-			<xsl:when test="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:aggregationInfo">
+	<xsl:template match="/*/b3p:B3Partners/*/dc:relation">
+		<xsl:if test="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:aggregationInfo">
+			<xsl:copy>
 				<xsl:for-each select="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:aggregationInfo">
-					<xsl:element name="dc:relation">
-						<xsl:value-of select="gmd:MD_AggregateInformation/gmd:aggregateDataSetName/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
-					</xsl:element>
+					<xsl:value-of select="gmd:MD_AggregateInformation/gmd:aggregateDataSetName/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
 				</xsl:for-each>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:element name="dc:relation"/>
-			</xsl:otherwise>
-		</xsl:choose>
+			</xsl:copy>
+		</xsl:if>
 	</xsl:template>
 	
-	<xsl:template name="add-DC-coverage">
-		<xsl:apply-templates select="dc:coverage"/>
+	<xsl:template match="/*/b3p:B3Partners/*/dc:coverage">
+		<!-- do nothing -->
 	</xsl:template>
 	
-	<xsl:template name="add-DC-rights">
-		<xsl:choose>
-			<xsl:when test="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/@codeListValue">
+	<xsl:template match="/*/b3p:B3Partners/*/dc:rights">
+		<xsl:if test="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/@codeListValue">
+			<xsl:copy>
 				<xsl:for-each select="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode">
-					<xsl:element name="dc:rights">
-						<xsl:value-of select="@codeListValue"/>
-					</xsl:element>
+					<xsl:value-of select="@codeListValue"/>
 				</xsl:for-each>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:element name="dc:rights"/>
-			</xsl:otherwise>
-		</xsl:choose>
+			</xsl:copy>
+		</xsl:if>
 	</xsl:template>
 
-	<xsl:template name="add-PBL-frequency">
-		<xsl:element name="pbl:frequency">
+	<xsl:template match="/*/b3p:B3Partners/*/pbl:frequency">
+		<xsl:copy>
 			<xsl:value-of select="/*/gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceAndUpdateFrequency/gmd:MD_MaintenanceFrequencyCode/@codeListValue"/>
-		</xsl:element>
+		</xsl:copy>
 	</xsl:template>
 	
-	<xsl:template name="add-PBL-testsPerformed">
-		<xsl:apply-templates select="pbl:testsPerformed"/>
+	<xsl:template match="/*/b3p:B3Partners/*/pbl:testsPerformed">
+		<!-- do nothing -->
 	</xsl:template>
 	
 </xsl:stylesheet>

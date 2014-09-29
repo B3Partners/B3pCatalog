@@ -673,9 +673,9 @@ public class MetadataAction extends DefaultAction {
     private Document syncBetweenElements(Document md) throws B3PCatalogException, JDOMException, IOException, TransformerException {
         Boolean synchroniseDC = mdeXml2Html.getXSLParam("synchroniseDC_init");
         if (synchroniseDC != null && synchroniseDC) {
-            md = mdeXml2Html.dCtoISO19115Synchronizer(md);
+            // md = mdeXml2Html.dCtoISO19115Synchronizer(md);
             // TODO zijn de volgende syncs nodig?
-//                md = mdeXml2Html.iSO19115toDCSynchronizer(md);
+            md = mdeXml2Html.iSO19115toDCSynchronizer(md);
         }
         md = mdeXml2Html.extraSync1(md);
         md = mdeXml2Html.extraSync2(md);
