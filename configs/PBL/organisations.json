@@ -19,56 +19,5 @@
         "city": "Roermond",
         "country": "Nederland",
         "contacts": {"Lydia Dijkshoorn": {"email": "Lydia.Dijkshoorn@rvo.nl"}}
-    },
-    "Rijksdienst voor Ondernemend Nederland (RvO)2": {
-        "postalCode": "6041 CB",
-        "voice": "+31 88-6022277",
-        "address": "Slachthuisstraat 71",
-        "email": "Lydia.Dijkshoorn@rvo.nl",
-        "state": "limburg",
-        "url": "www.rvo.nl",
-        "city": "Roermond",
-        "country": "Nederland"
-    },
-    "B3Partners BV3": {
-        "postalCode": "3542 <EC>",
-        "voice": "030-214 20 81",
-        "email": "info@b3partners.nl",
-        "address": "Zonnebaan 12&",
-        "state": "Utrecht",
-        "url": "http://www.b3partners.nl",
-        "country": "Nederland's",
-        "city": "Utrecht"
-    },
-    "B3Partners BV2": {
-        "postalCode": "3542 <EC>",
-        "voice": "030-214 20 81",
-        "address": "Zonnebaan 12&",
-        "email": "info@b3partners.nl",
-        "state": "Utrecht",
-        "url": "http://www.b3partners.nl",
-        "city": "Utrecht",
-        "country": "Nederland's"
-    },
-    "B3Partners BV4": {
-        "postalCode": "3542 <EC>",
-        "voice": "030-214 20 81",
-        "address": "Zonnebaan 12&",
-        "email": "info@b3partners.nl",
-        "state": "Utrecht",
-        "url": "http://www.b3partners.nl",
-        "city": "Utrecht",
-        "country": "Nederland's"
-    },
-    "B3Partners BV": {
-        "postalCode": "3542 <EC>",
-        "voice": "030-214 20 81",
-        "email": "info@b3partners.nl",
-        "address": "Zonnebaan 12&",
-        "state": "Utrecht",
-        "url": "http://www.b3partners.nl",
-        "contacts": {"Chris van Lithhffh": {"email": "chrisvanlith@b3partners.nl"}},
-        "country": "Nederland's",
-        "city": "Utrecht"
     }
 }

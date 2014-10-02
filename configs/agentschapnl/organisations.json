@@ -1,57 +1,11 @@
-/*
-Organisaties en contacten
-
-Onder elk contact kunnen dezelfde properties ingevuld worden als bij een organisatie.
-
-Template:
-organisations = {
-    "<Naam organisatie 1>": {
-        "address": "<adres>",
-        "city": "<stad>",
-        "state": "<provincie>",
-        "postalCode": "<postcode>",
-        "country": "<land>",
-        "url": "<url>",
-        "email": "<email adres>",
-        "voice": "<telefoonnummer>",
-        "contacts": {
-            "<contact naam 1>": {
-                "email": "chrisvanlith@b3partners.nl"
-            },
-            "<contact naam 2>": {
-                "email": "erikvandepol@b3partners.nl"
-            }
-        }
-    },
-    "<Naam organisatie 2>": {
-        "address": "<adres>",
-        "city": "<stad>",
-        "state": "<provincie>",
-        "postalCode": "<postcode>",
-        "country": "<land>",
-        "url": "<url>",
-        "email": "<email adres>",
-        "voice": "<telefoonnummer>",
-    }
-};
-etc...
-*/
-
-/* DEZE REGEL NIET WIJZIGEN */ organisations = {
-    "Rijksdienst voor Ondernemend Nederland (RvO)": {
-        "address": "Slachthuisstraat 71",
-        "city": "Roermond",
-        "state": "Limburg",
-        "postalCode": "6041 CB",
-        "country": "Nederland",
-        "url": "www.rvo.nl",
-        "email": "Lydia.Dijkshoorn@rvo.nl",
-        "voice": "+31 88-6022277",
-        "contacts": {
-            "Lydia Dijkshoorn": {
-                "email": "Lydia.Dijkshoorn@rvo.nl"
-            }
-        }
-    }
-
-};
+{"Rijksdienst voor Ondernemend Nederland (RvO)": {
+    "postalCode": "6041 CB",
+    "voice": "+31 88-6022277",
+    "address": "Slachthuisstraat 71",
+    "email": "Lydia.Dijkshoorn@rvo.nl",
+    "state": "Limburg",
+    "url": "www.rvo.nl",
+    "city": "Roermond",
+    "country": "Nederland",
+    "contacts": {"Lydia Dijkshoorn": {"email": "Lydia.Dijkshoorn@rvo.nl"}}
+}}
