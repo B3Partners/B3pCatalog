@@ -51,67 +51,19 @@
             </xsl:for-each-->
 			<div id="ui-mde-tabs-container">
 				<ul id="ui-mde-tabs" class="ui-helper-reset">
-					<xsl:if test="$dcPblMode">
+					<li class="ui-corner-top">
+						<a href="#algemeen" title="Algemeen">Algemeen</a>
+					</li>
+					<xsl:if test="$datasetMode">
 						<li class="ui-corner-top">
-							<a href="#samenvatting" title="Belangrijkste metadata gegevens">Algemeen</a>
+							<a href="#dataset" title="Metadata voor datasets">Datasets</a>
 						</li>
 					</xsl:if>
-					<xsl:choose>
-						<!-- zowel dataset mode als service mode -->
-						<xsl:when test="$serviceMode and $datasetMode">
-							<xsl:choose>
-								<xsl:when test="$iso19115oneTab">
-									<li class="ui-corner-top">
-										<a href="#iso19115" title="Metadata voor datasets">Datasets</a>
-									</li>
-								</xsl:when>
-								<xsl:otherwise>
-									<li class="ui-corner-top">
-										<a href="#overzicht" title="Metadata voor datasets - overzicht">Datasets (1)</a>
-									</li>
-									<li class="ui-corner-top">
-										<a href="#specificaties" title="Metadata voor datasets - specificaties">Datasets (2)</a>
-									</li>
-								</xsl:otherwise>
-							</xsl:choose>
-							<li class="ui-corner-top">
-								<a href="#service" title="Metadata voor services.">Services</a>
-							</li>
-							<li class="ui-corner-top">
-								<a href="#mdcommon" title="Gemeenschappelijke info voor dataset en service metadata">Gemeenschappelijk</a>
-							</li>
-						</xsl:when>
-						<!-- alleen service mode zonder dataset mode -->
-						<xsl:when test="$serviceMode">
-							<li class="ui-corner-top">
-								<a href="#service" title="Metadata voor services.">Services (1)</a>
-							</li>
-							<li class="ui-corner-top">
-								<a href="#mdcommon" title="Gemeenschappelijke info voor dataset en service metadata">Services (2)</a>
-							</li>
-						</xsl:when>
-						<!-- alleen dataset mode zonder service mode -->
-						<xsl:when test="$datasetMode">
-							<xsl:choose>
-								<xsl:when test="$iso19115oneTab">
-									<li class="ui-corner-top">
-										<a href="#iso19115" title="Metadata voor datasets">Datasets</a>
-									</li>
-								</xsl:when>
-								<xsl:otherwise>
-									<li class="ui-corner-top">
-										<a href="#overzicht" title="Metadata voor datasets - overzicht">Datasets (1)</a>
-									</li>
-									<li class="ui-corner-top">
-										<a href="#specificaties" title="Metadata voor datasets - specificaties">Datasets (2)</a>
-									</li>
-									<li class="ui-corner-top">
-										<a href="#mdcommon" title="Gemeenschappelijke info voor dataset en service metadata">Datasets (3)</a>
-									</li>
-								</xsl:otherwise>
-							</xsl:choose>
-						</xsl:when>
-					</xsl:choose>
+					<xsl:if test="$serviceMode">
+						<li class="ui-corner-top">
+							<a href="#service" title="Metadata voor services.">Services</a>
+						</li>
+					</xsl:if>
 					<xsl:if test="$fcMode">
 						<li class="ui-corner-top">
 							<a href="#attributen" title="Attribuutinformatie van de dataset">Attributen</a>
@@ -120,11 +72,6 @@
 					<xsl:if test="$dcMode">
 						<li class="ui-corner-top">
 							<a href="#dublincore" title="Dublin Core voor administratieve metadata">Dublin Core</a>
-						</li>
-					</xsl:if>
-					<xsl:if test="$commentMode">
-						<li class="ui-corner-top">
-							<a href="#commentaar" title="Commentaar op deze metadata">Commentaar</a>
 						</li>
 					</xsl:if>
 					<xsl:if test="$dcPblMode">
@@ -141,105 +88,59 @@
 		</div>
 	</xsl:template>
 	<xsl:template name="elements">
-		<xsl:if test="$dcPblMode">
-			<div id="samenvatting" class="ui-mde-tab-definition">
-				<xsl:call-template name="summaryItems"/>
+		<div id="algemeen" class="ui-mde-tab-definition">
+			<div class="ui-mde-section">
+				<xsl:call-template name="section-title">
+					<xsl:with-param name="title">Samenvatting</xsl:with-param>
+				</xsl:call-template>
+				<div class="ui-mde-section-content">
+					<xsl:call-template name="summaryItems"/>
+				</div>
+			</div>
+			<div class="ui-mde-section">
+				<xsl:call-template name="section-title">
+					<xsl:with-param name="title">Gemeenschappelijk Datasets en Services</xsl:with-param>
+				</xsl:call-template>
+				<div class="ui-mde-section-content">
+					<xsl:call-template name="dataServiceItems"/>
+				</div>
+			</div>
+			<xsl:if test="$commentMode">
+				<div class="ui-mde-section">
+					<xsl:call-template name="section-title">
+						<xsl:with-param name="title">Commentaar</xsl:with-param>
+					</xsl:call-template>
+					<div class="ui-mde-section-content">
+						<xsl:call-template name="commentItems"/>
+					</div>
+				</div>
+			</xsl:if>
+		</div>
+		<xsl:if test="$serviceMode">
+			<div id="service" class="ui-mde-tab-definition">
+				<xsl:call-template name="serviceIdentificationItems"/>
 			</div>
 		</xsl:if>
-		<xsl:choose>
-			<!-- zowel dataset mode als service mode -->
-			<xsl:when test="$serviceMode and $datasetMode">
-				<xsl:choose>
-					<xsl:when test="$iso19115oneTab">
-						<div id="iso19115" class="ui-mde-tab-definition">
-							<div class="ui-mde-section">
-								<xsl:call-template name="section-title">
-									<xsl:with-param name="title">Overzicht</xsl:with-param>
-								</xsl:call-template>
-								<div class="ui-mde-section-content">
-									<xsl:call-template name="overviewItems"/>
-								</div>
-							</div>
-							<div class="ui-mde-section">
-								<xsl:call-template name="section-title">
-									<xsl:with-param name="title">Specificaties</xsl:with-param>
-								</xsl:call-template>
-								<div class="ui-mde-section-content">
-									<xsl:call-template name="specificationItems"/>
-								</div>
-							</div>
-						</div>
-					</xsl:when>
-					<xsl:otherwise>
-						<div id="overzicht" class="ui-mde-tab-definition">
-							<xsl:call-template name="overviewItems"/>
-						</div>
-						<div id="specificaties" class="ui-mde-tab-definition">
-							<xsl:call-template name="specificationItems"/>
-						</div>
-					</xsl:otherwise>
-				</xsl:choose>
-				<div id="service" class="ui-mde-tab-definition">
-					<xsl:call-template name="serviceItems"/>
+		<xsl:if test="$datasetMode">
+			<div id="dataset" class="ui-mde-tab-definition">
+				<div class="ui-mde-section">
+					<xsl:call-template name="section-title">
+						<xsl:with-param name="title">Identificatie</xsl:with-param>
+					</xsl:call-template>
+					<div class="ui-mde-section-content">
+						<xsl:call-template name="dataIdentificationItems"/>
+					</div>
 				</div>
-				<div id="mdcommon" class="ui-mde-tab-definition">
-					<xsl:call-template name="dataServiceItems"/>
+				<div class="ui-mde-section">
+					<xsl:call-template name="section-title">
+						<xsl:with-param name="title">Kwaliteit/Referentie</xsl:with-param>
+					</xsl:call-template>
+					<div class="ui-mde-section-content">
+						<xsl:call-template name="dataQRItems"/>
+					</div>
 				</div>
-			</xsl:when>
-			<!-- alleen service mode zonder dataset mode -->
-			<xsl:when test="$serviceMode">
-				<div id="service" class="ui-mde-tab-definition">
-					<xsl:call-template name="serviceItems"/>
-				</div>
-				<div id="mdcommon" class="ui-mde-tab-definition">
-					<xsl:call-template name="dataServiceItems"/>
-				</div>
-			</xsl:when>
-			<!-- alleen dataset mode zonder service mode -->
-			<xsl:when test="$datasetMode">
-				<xsl:choose>
-					<xsl:when test="$iso19115oneTab">
-						<div id="iso19115" class="ui-mde-tab-definition">
-							<div class="ui-mde-section">
-								<xsl:call-template name="section-title">
-									<xsl:with-param name="title">Overzicht</xsl:with-param>
-								</xsl:call-template>
-								<div class="ui-mde-section-content">
-									<xsl:call-template name="overviewItems"/>
-								</div>
-							</div>
-							<div class="ui-mde-section">
-								<xsl:call-template name="section-title">
-									<xsl:with-param name="title">Specificaties</xsl:with-param>
-								</xsl:call-template>
-								<div class="ui-mde-section-content">
-									<xsl:call-template name="specificationItems"/>
-								</div>
-							</div>
-							<div class="ui-mde-section">
-								<xsl:call-template name="section-title">
-									<xsl:with-param name="title">Algemene metadata</xsl:with-param>
-								</xsl:call-template>
-								<div class="ui-mde-section-content">
-									<xsl:call-template name="dataServiceItems"/>
-								</div>
-							</div>
-						</div>
-					</xsl:when>
-					<xsl:otherwise>
-						<div id="overzicht" class="ui-mde-tab-definition">
-							<xsl:call-template name="overviewItems"/>
-						</div>
-						<div id="specificaties" class="ui-mde-tab-definition">
-							<xsl:call-template name="specificationItems"/>
-						</div>
-						<div id="mdcommon" class="ui-mde-tab-definition">
-							<xsl:call-template name="dataServiceItems"/>
-						</div>
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:when>
-		</xsl:choose>
+			</div>
+		</xsl:if>
 		<xsl:if test="$fcMode">
 			<div id="attributen" class="ui-mde-tab-definition">
 				<xsl:call-template name="attributeItems"/>
@@ -248,11 +149,6 @@
 		<xsl:if test="$dcMode">
 			<div id="dublincore" class="ui-mde-tab-definition">
 				<xsl:call-template name="dcItems"/>
-			</div>
-		</xsl:if>
-		<xsl:if test="$commentMode">
-			<div id="commentaar" class="ui-mde-tab-definition">
-				<xsl:call-template name="commentItems"/>
 			</div>
 		</xsl:if>
 		<xsl:if test="$dcPblMode">
@@ -2719,37 +2615,72 @@
 	<!-- Dublin Core -->
 	<xsl:template name="dcItems">
 		<xsl:for-each select="/b3p:B3Partners | /*/b3p:B3Partners">
-			<xsl:if test="not($dcPblMode)">
-				<xsl:apply-templates select="*/dc:title"/>
-				<xsl:apply-templates select="*/dc:description"/>
-				<xsl:apply-templates select="*/dc:contributor"/>
-				<xsl:apply-templates select="*/dc:rights"/>
-				<xsl:apply-templates select="*/dc:date"/>
-				<xsl:apply-templates select="*/dc:source"/>
-			</xsl:if>
+			<xsl:apply-templates select="*/dc:title"/>
+			<xsl:apply-templates select="*/dc:description"/>
 			<xsl:apply-templates select="*/dc:subject"/>
+			<xsl:apply-templates select="*/dc:date"/>
 			<xsl:apply-templates select="*/dc:language"/>
 			<xsl:apply-templates select="*/dc:relation"/>
 			<xsl:apply-templates select="*/dc:creator"/>
 			<xsl:apply-templates select="*/dc:publisher"/>
+			<xsl:apply-templates select="*/dc:contributor"/>
 			<xsl:apply-templates select="*/dc:type"/>
 			<xsl:apply-templates select="*/dc:format"/>
 			<xsl:apply-templates select="*/dc:identifier"/>
+			<xsl:if test="not($dcPblMode)">
+				<xsl:apply-templates select="*/dc:source"/>
+			</xsl:if>
 			<xsl:apply-templates select="*/dc:coverage"/>
+			<xsl:apply-templates select="*/dc:rights"/>
 			<xsl:if test="$dcPblMode">
 				<xsl:apply-templates select="pbl:metadataPBL/pbl:frequency"/>
 				<xsl:apply-templates select="pbl:metadataPBL/pbl:testsPerformed"/>
 			</xsl:if>
 		</xsl:for-each>
 	</xsl:template>
-	<!-- Summary -->
+	<!-- identification info services -->
 	<xsl:template name="summaryItems">
-		<xsl:for-each select="/b3p:B3Partners | /*/b3p:B3Partners">
-			<xsl:apply-templates select="*/dc:title"/>
-			<xsl:apply-templates select="*/dc:description"/>
-			<xsl:apply-templates select="*/dc:contributor"/>
-			<xsl:apply-templates select="*/dc:rights"/>
-			<xsl:apply-templates select="*/dc:date"/>
+		<xsl:for-each select="/gmd:MD_Metadata | /*/gmd:MD_Metadata">
+			<!-- Titel van de bron ISO 360 (groter lettertype, gecentreerd)  -->
+			<!-- ISO 360 Dataset titel MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.title-->
+			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title"/>
+			<!-- Samenvatting ISO 25  -->
+			<!-- ISO 25 Samenvatting MD_Metadata.identificationInfo>MD_DataIdentification.abstract -->
+			<!-- Samenvatting srv -->
+			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract"/>
+			<!-- Trefwoorden ISO 53 (mogen kommagescheiden weergegeven worden)  -->
+			<!-- ISO 53 Trefwoorden MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.keyword-->
+			<!-- ISO 55 MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.thesaurusName>CI_Citation.title -->
+			<!-- ISO 394  + 395 MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.thesaurusName>CI_Citation.date>CI_Date.date -->
+			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords"/>
+			<!-- ISO 39 Dataset taal MD_Metadata.identificationInfo>MD_DataIdentification.language ISO 639-2 -->
+			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:language"/>
+			<!-- Verantwoordelijke organisatie bron ISO 29, daaronder ingesprongen: -->        
+            <!-- Overige info uit blok Verantwoordelijke organisatie bron (inklapbaar)  -->
+			<!-- ISO 376 Naam organisatie MD_Metadata.identificationInfo>MD_DataIdentification.pointOfContact>CI_ResponsibleParty.organisationName-->
+			<!-- ISO 397 URL organisatie MD_Metadata.identificationInfo>MD_DataIdentification.pointOfContact>CI_ResponsibleParty.contactInfo>CI_Contract.onlineResource>CI_OnlineResource.linkage-->
+			<!-- ISO 379 Rol organisatie MD_Metadata.identificationInfo>MD_DataIdentification.pointOfContact>CI_ResponsibleParty.role Codelijst: CI_RoleCode (B.5.5)-->
+			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact"/>
+			<!-- Gebruiksbeperkingen ISO 68  -->
+			<!-- Juridische toegangsrestricties ISO 70 -->
+			<!-- Veiligheidsrestricties ISO 74  -->
+			<!-- Overige beperkingen ISO 72  -->
+			<xsl:call-template name="resourceConstraints">
+				<xsl:with-param select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints" name="resourceConstraints"/>
+			</xsl:call-template>
+			<!-- ISO 143 Herzieningsfrequentie -->
+			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceAndUpdateFrequency/gmd:MD_MaintenanceFrequencyCode"/>
+			<!-- ISO 37 Ruimtelijk schema MD_Metadata.identificationInfo>MD_DataIdentification.spatialRepresentationType Codelijst: MD_SpatialRepresentation TypeCode (B.5.26) -->
+			<xsl:apply-templates select="gmd:identificationInfo//gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode"/>
+			<!-- ISO 360/394/395(/66.4) Gerelateerde dataset -->
+			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:aggregationInfo"/>
+			<!-- -->
+			<xsl:apply-templates select="gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat"/>
+			<!-- Overig aanwezige contacts wanneer aanwezig zoals distributeur ISO 272 + overige info uit bijbehorend blok contactinfo (inklapbaar)   -->
+			<!-- ISO 376 Naam distribuerende organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.organisationName -->
+			<!-- ISO 397 URL organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.contactInfo>CI_Contact.onlineResource>CI_OnlineResource.linkage -->
+			<!-- ISO 379 Rol organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.role Codelijst: CI_RoleCode (B.5.5) - - >
+            <xsl:apply-templates select="gmd:distributionInfo//gmd:distributor"/> -->
 		</xsl:for-each>
 	</xsl:template>
 	<!-- gemeenschappelijk iso 19115 en iso 19110-->
@@ -2759,7 +2690,7 @@
 			<xsl:apply-templates select="gmd:fileIdentifier"/>
 			<!-- ISO 9 Metadata datum MD_Metadata.dateStamp -->
 			<xsl:apply-templates select="gmd:dateStamp"/>
-			<!-- ISO 3 Metadata taal MD_Metadata.language -->
+			<!-- ISO 3 Metadata taal MD_Metadata.language-->
 			<xsl:apply-templates select="gmd:language"/>
 			<!-- ISO 4 Metadata karakterset MD_Metadata.characterSet Codelijst: MD_CharacterSetCode (B.5.10) - - >
             <xsl:apply-templates select="gmd:characterSet"/> -->
@@ -2785,25 +2716,16 @@
 		</xsl:for-each>
 	</xsl:template>
 	<!-- ISO 19115 1/2 -->
-	<xsl:template name="overviewItems">
+	<!-- identification info datasets -->
+	<xsl:template name="dataIdentificationItems">
 		<xsl:for-each select="/gmd:MD_Metadata | /*/gmd:MD_Metadata">
-			<!-- Titel van de bron ISO 360 (groter lettertype, gecentreerd)  -->
-			<!-- ISO 360 Dataset titel MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.title-->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title"/>
 			<!-- Alternatieve titel ISO 361 (normaal lettertype, gecentreerd) -->
 			<!-- ISO 361 Dataset titel MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.alternateTitle-->
 			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle"/>
 			<!-- Thumbnail  -->
-			<!-- Samenvatting ISO 25  -->
-			<!-- ISO 25 Samenvatting MD_Metadata.identificationInfo>MD_DataIdentification.abstract -->
-			<!-- Samenvatting srv -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract"/>
 			<!-- Doel van vervaardiging ISO 26  -->
 			<!-- ISO 26 Doel van de vervaardiging MD_Metadata.identificationInfo>MD_DataIdentification.purpose -->
 			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:purpose"/>
-			<!-- Algemene beschrijving herkomst  ISO 83  -->
-			<!-- ISO 83 Algemene beschrijving herkomst MD_Metadata.dataQualityInfo>DQ_DataQuality.lineage>LI_Lineage.statement -->
-			<xsl:apply-templates select="gmd:dataQualityInfo//gmd:lineage//gmd:statement"/>
 			<!-- ISO 363 Versie -->
 			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:edition/gco:CharacterString"/>
 			<!-- xsd:choice tussen ISO 57 en ISO 61. Nu altijd ISO 57. -->
@@ -2815,40 +2737,10 @@
 			<!-- Status ISO 28  -->
 			<!-- ISO 28 Status MD_Metadata.identificationInfo>MD_DataIdentification.status Codelijst MD_ProgressCode (B.5.23)-->
 			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:status"/>
-			<!-- ISO 143 Herzieningsfrequentie -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceAndUpdateFrequency/gmd:MD_MaintenanceFrequencyCode"/>
 			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileName"/>
-			<!-- Trefwoorden ISO 53 (mogen kommagescheiden weergegeven worden)  -->
-			<!-- ISO 53 Trefwoorden MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.keyword-->
-			<!-- ISO 55 MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.thesaurusName>CI_Citation.title -->
-			<!-- ISO 394  + 395 MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.thesaurusName>CI_Citation.date>CI_Date.date -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords"/>
 			<!-- Onderwerp ISO 41  -->
 			<!-- ISO 41 Thema's MD_Metadata.identificationInfo>MD_DataIdentification.topicCategory Enumeratie: MD_TopicCategoryCode (B.5.27) -->
 			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory"/>
-			<!-- -->
-			<xsl:apply-templates select="gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat"/>
-			<!-- Verantwoordelijke organisatie bron ISO 29, daaronder ingesprongen: -->        
-            <!-- Overige info uit blok Verantwoordelijke organisatie bron (inklapbaar)  -->
-			<!-- ISO 376 Naam organisatie MD_Metadata.identificationInfo>MD_DataIdentification.pointOfContact>CI_ResponsibleParty.organisationName-->
-			<!-- ISO 397 URL organisatie MD_Metadata.identificationInfo>MD_DataIdentification.pointOfContact>CI_ResponsibleParty.contactInfo>CI_Contract.onlineResource>CI_OnlineResource.linkage-->
-			<!-- ISO 379 Rol organisatie MD_Metadata.identificationInfo>MD_DataIdentification.pointOfContact>CI_ResponsibleParty.role Codelijst: CI_RoleCode (B.5.5)-->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact"/>
-			<!-- Gebruiksbeperkingen ISO 68  -->
-			<!-- Juridische toegangsrestricties ISO 70 -->
-			<!-- Veiligheidsrestricties ISO 74  -->
-			<!-- Overige beperkingen ISO 72  -->
-			<xsl:call-template name="resourceConstraints">
-				<xsl:with-param select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints" name="resourceConstraints"/>
-			</xsl:call-template>
-		</xsl:for-each>
-	</xsl:template>
-	<!-- ISO 19115 2/2 -->
-	<xsl:template name="specificationItems">
-		<xsl:for-each select="/gmd:MD_Metadata | /*/gmd:MD_Metadata">
-			<!-- Projectie ISO 207   -->
-			<!-- ISO 208.1 Verantwoordelijke organisatie voor namespace referentiesysteem MD_Metadata.referenceSystemInfo>MD_ReferenceSystem.referenceSystemIdentifier>RS_Identifier.codeSpace-->
-			<xsl:apply-templates select="gmd:referenceSystemInfo"/>
 			<!-- Extent ISO 344-347  -->
 			<!-- ISO 344 Minimum x-coördinaat MD_Metadata.identificationInfo>MD_DataIdentification.extent>EX_Extent.geographicElement>EX_GeographicBoundingBox.westBoundLongitude -->
 			<!-- ISO 345 Maximum x-coördinaat MD_Metadata.identificationInfo>MD_DataIdentification.extent>EX_Extent.geographicElement>EX_GeographicBoundingBox.eastBoundLongitude -->
@@ -2862,35 +2754,36 @@
 			<!-- ISO 351 Temporele dekking - BeginDatum/einddatum MD_Metadata.identificationInfo>MD_DataIdentification.extent>EX_Extent.temporalElement>EX_TemporalExtent.extent TM_Primitive(B.4.5) -->
 			<!--xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent[*/gmd:temporalElement]"/-->
 			<xsl:apply-templates select="gmd:identificationInfo//gmd:extent//gmd:temporalElement"/>
-			<!-- Overig aanwezige contacts wanneer aanwezig zoals distributeur ISO 272 + overige info uit bijbehorend blok contactinfo (inklapbaar)   -->
-			<!-- ISO 376 Naam distribuerende organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.organisationName -->
-			<!-- ISO 397 URL organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.contactInfo>CI_Contact.onlineResource>CI_OnlineResource.linkage -->
-			<!-- ISO 379 Rol organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.role Codelijst: CI_RoleCode (B.5.5) - - >
-            <xsl:apply-templates select="gmd:distributionInfo//gmd:distributor"/> -->
 			<!-- Daaronder de overige verplichte velden in de volgorde die voor jullie makkelijk is.  -->
 			<!-- ISO 7 Beschrijving hiërarchisch niveau MD_Metadata.hierarchyLevelName
             <xsl:apply-templates select="gmd:hierarchyLevelName"/> -->
 			<!-- ISO 365 MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.identifier>MD_Identifier.code -->
 			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation//gmd:identifier/gmd:MD_Identifier/gmd:code"/>
-			<!-- ISO 39 Dataset taal MD_Metadata.identificationInfo>MD_DataIdentification.language ISO 639-2 -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:language"/>
 			<!-- ISO 40 Dataset karakterset MD_Metadata.identificationInfo>MD_DataIdentification.characterSet Codelijst: MD_CharacterSetCode (B.5.10) - - >
             <xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:characterSet"/> -->
 			<!-- ISO 394 Dataset referentie datum MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.date>CI_Date.date-->
 			<!-- ISO 395 Creatie-, publicatie-, of wijzigingsdatum MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.date>CI_Date.dateType Codelijst: CI_DateTypeCode (B.5.2)-->
 			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date"/>
-			<!-- ISO 37 Ruimtelijk schema MD_Metadata.identificationInfo>MD_DataIdentification.spatialRepresentationType Codelijst: MD_SpatialRepresentation TypeCode (B.5.26) -->
-			<xsl:apply-templates select="gmd:identificationInfo//gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode"/>
-			<!-- -->
-			<xsl:apply-templates select="gmd:dataQualityInfo" mode="data"/>
-			<!-- ISO 360/394/395(/66.4) Gerelateerde dataset -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:aggregationInfo"/>
-			<!-- ISO 5 Parent ID MD_Metadata.parentIdentifier -->
-			<xsl:apply-templates select="gmd:parentIdentifier"/>
 		</xsl:for-each>
 	</xsl:template>
-	<!-- metadata voor service -->
-	<xsl:template name="serviceItems">
+	<!-- ISO 19115 2/2 -->
+	<xsl:template name="dataQRItems">
+		<xsl:for-each select="/gmd:MD_Metadata | /*/gmd:MD_Metadata">
+			<!-- Algemene beschrijving herkomst  ISO 83  -->
+			<!-- ISO 83 Algemene beschrijving herkomst MD_Metadata.dataQualityInfo>DQ_DataQuality.lineage>LI_Lineage.statement -->
+			<xsl:apply-templates select="gmd:dataQualityInfo//gmd:lineage//gmd:statement"/>
+			<!-- ISO 5 Parent ID MD_Metadata.parentIdentifier -->
+			<xsl:apply-templates select="gmd:parentIdentifier"/>
+			<!-- Projectie ISO 207   -->
+			<!-- ISO 208.1 Verantwoordelijke organisatie voor namespace referentiesysteem MD_Metadata.referenceSystemInfo>MD_ReferenceSystem.referenceSystemIdentifier>RS_Identifier.codeSpace-->
+			<xsl:apply-templates select="gmd:referenceSystemInfo"/>
+			<!-- -->
+			<xsl:apply-templates select="gmd:dataQualityInfo" mode="data"/>
+		</xsl:for-each>
+	</xsl:template>
+	<!-- ISO 19119 -->
+	<!-- identification info for service -->
+	<xsl:template name="serviceIdentificationItems">
 		<xsl:for-each select="/gmd:MD_Metadata | /*/gmd:MD_Metadata">
 			<!-- Titel van de bron ISO 360 (groter lettertype, gecentreerd)  -->
 			<!-- ISO 360 Dataset titel 2.2.1-->
@@ -3045,8 +2938,8 @@
         <xsl:call-template name="picklist_MD_PixelOrientationCode"/>
         <xsl:call-template name="picklist_MD_TopologyLevelCode"/>
         -->
-        <xsl:call-template name="picklist_yesno"/>
-        <xsl:call-template name="picklist_yesnona"/>
+		<xsl:call-template name="picklist_yesno"/>
+		<xsl:call-template name="picklist_yesnona"/>
 	</xsl:template>
 	<xsl:template name="picklist_yesno">
 		<select id="picklist_yesno">
@@ -3063,7 +2956,7 @@
 	</xsl:template>
 	<xsl:template name="picklist_CI_DateTypeCode">
 		<select id="picklist_CI_DateTypeCode">
-			<option value="" title="Niet ingesteld"></option>
+			<option value="" title="Niet ingesteld"/>
 			<option value="creation" title="Datum waarop de dataset of dataset serie is gecreëerd.">creatie</option>
 			<option value="publication" title="Datum waarop de dataset of dataset serie is gepubliceerd.">publicatie</option>
 			<option value="revision" title="Datum waarop de dataset of dataset serie is gecontroleerd, verbeterd of is gewijzigd.">revisie</option>
@@ -3467,7 +3360,7 @@
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 39 (639.2) taal [keuzelijst]'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.9_Taal_van_de_bron</xsl:with-param>
-			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 5 Metadata ID MD_Metadata.parentIdentifier -->
@@ -3534,7 +3427,7 @@
 			<xsl:with-param name="help-text" select="'ISO 25 Samenvatting'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.2_Samenvatting</xsl:with-param>
 			<xsl:with-param name="type" select="'rich-text'"/>
-			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 26 Doel van de vervaardiging Samenvatting MD_Metadata.identificationInfo>MD_DataIdentification.purpose -->
@@ -3543,7 +3436,6 @@
 			<xsl:with-param name="title">Doel van de vervaardiging</xsl:with-param>
 			<xsl:with-param name="optionality" select="'optional'"/>
 			<xsl:with-param name="help-text" select="'ISO 26 Doel van de vervaardiging'"/>
-			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 28 Status MD_Metadata.identificationInfo>MD_DataIdentification.status Codelijst MD_ProgressCode (B.5.23)-->
@@ -3564,7 +3456,7 @@
 			<xsl:with-param name="picklist">picklist_MD_SpatialRepresentationTypeCode</xsl:with-param>
 			<xsl:with-param name="optionality" select="'optional'"/>
 			<xsl:with-param name="help-text" select="'ISO 37 Ruimtelijk schema [keuzelijst]'"/>
-			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 40 karakterset characterSet Codelijst: MD_CharacterSetCode (B.5.10)-->
@@ -3613,7 +3505,7 @@
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 53 Trefwoorden, kies ook minimaal een trefwoord dat het soort service beschrijft zoals infoMapAccessService of infoFeatureAccessService'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.11_Trefwoord</xsl:with-param>
-			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- Only first thesaurus/keyword section is synced with dc and should be read only if synced -->
@@ -3725,7 +3617,7 @@
 			<xsl:with-param name="optionality" select="'conditional'"/>
 			<xsl:with-param name="help-text" select="'ISO 70 (juridische) toegangsrestricties [keuzelijst] Het is verplicht op zijn minst één van de drie elementen (juridische) toegangsrestricties, overige beperkingen of veiligheidsrestricties op te nemen.'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.33_Juridische_toegangsrestricties</xsl:with-param>
-			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 72 resourceConstraints>MD_LegalConstraints.otherConstraints -->
@@ -3739,7 +3631,6 @@
 			<xsl:with-param name="help-text" select="'ISO 72 Overige beperkingen Het is verplicht op zijn minst één van de drie elementen (juridische) toegangsrestricties, overige beperkingen of veiligheidsrestricties op te nemen.'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.34_Overige_beperkingen</xsl:with-param>
 			<xsl:with-param name="no-bold-title" select="$no-bold-title"/>
-			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 74 resourceConstraints>MD_LegalConstraints.classification Codelijst MD_ClassificationCode (B.5.11)-->
@@ -3801,7 +3692,6 @@
 			<xsl:with-param name="repeatable" select="true()"/>
 			<xsl:with-param name="repeatable-path" select="../../.."/>
 			<xsl:with-param name="help-text">Beschrijving uitgevoerde bewerkingen</xsl:with-param>
-			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:source">
@@ -3821,7 +3711,6 @@
 		<xsl:call-template name="element">
 			<xsl:with-param name="title">Beschrijving brondata</xsl:with-param>
 			<xsl:with-param name="help-text">Dit veld kan gebruikt worden om een algemene beschrijving of opmerking te geven betreft de kwaliteit van de (verschillende) brongegevens.</xsl:with-param>
-			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:source/gmd:LI_Source/gmd:sourceStep">
@@ -3842,7 +3731,6 @@
 		<xsl:call-template name="element">
 			<xsl:with-param name="title">Inwinningsmethode</xsl:with-param>
 			<xsl:with-param name="help-text">Methode die gebruikt is om de brongegevens in te winnen</xsl:with-param>
-			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:source/gmd:LI_Source/gmd:sourceStep/gmd:LI_ProcessStep/gmd:dateTime/gco:DateTime">
@@ -3893,7 +3781,6 @@
 			<xsl:with-param name="optionality" select="'conditional'"/>
 			<xsl:with-param name="help-text" select="'ISO 131 Verklaring Verplicht als de dataset een INSPIRE bron is of als de informatie is gemodelleerd volgens een specifiek informatie model.'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.29_Verklaring</xsl:with-param>
-			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 132 Conformiteitsindicatie met de specificatie 
@@ -4071,7 +3958,7 @@
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 360 titel'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.1_Titel_van_de_bron</xsl:with-param>
-			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 361 Alternatieve titel citation>alternateTitle -->
@@ -4108,7 +3995,7 @@
 			</xsl:call-template>
 			<div class="ui-mde-section-content">
 				<xsl:apply-templates select="gmd:CI_ResponsibleParty">
-					<xsl:with-param name="individualNameReadonly" select="$globalReadonly or $synchroniseDC"/>
+					<xsl:with-param name="individualNameReadonly" select="$globalReadonly"/>
 				</xsl:apply-templates>
 			</div>
 		</div>
@@ -4123,8 +4010,8 @@
 			</xsl:call-template>
 			<div class="ui-mde-section-content">
 				<xsl:apply-templates select="gmd:CI_ResponsibleParty">
-					<xsl:with-param name="individualNameReadonly" select="$globalReadonly or $synchroniseDC"/>
-					<!--xsl:with-param name="organisationNameReadonly" select="$globalReadonly or $synchroniseDC"/-->
+					<xsl:with-param name="individualNameReadonly" select="$globalReadonly"/>
+					<!--xsl:with-param name="organisationNameReadonly" select="$globalReadonly"/-->
 				</xsl:apply-templates>
 			</div>
 		</div>
@@ -4139,8 +4026,8 @@
 			</xsl:call-template>
 			<div class="ui-mde-section-content">
 				<xsl:apply-templates select="gmd:MD_Distributor/gmd:distributorContact/gmd:CI_ResponsibleParty">
-					<xsl:with-param name="individualNameReadonly" select="$globalReadonly or $synchroniseDC"/>
-					<!--xsl:with-param name="organisationNameReadonly" select="$globalReadonly or $synchroniseDC"/-->
+					<xsl:with-param name="individualNameReadonly" select="$globalReadonly"/>
+					<!--xsl:with-param name="organisationNameReadonly" select="$globalReadonly"/-->
 				</xsl:apply-templates>
 			</div>
 		</div>
@@ -4194,7 +4081,6 @@
 			<xsl:with-param name="title">Specificatie</xsl:with-param>
 			<xsl:with-param name="optionality">conditional</xsl:with-param>
 			<xsl:with-param name="help-text">Versie van het distributie formaat. Verplicht als de naam van het distributie formaat ingevuld is.</xsl:with-param>
-			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- Backwards compatibility: "online" vs. "onLine": online is verkeerd, maar zat in een oude versie van de mde  -->
@@ -4523,7 +4409,7 @@
 		<xsl:param name="readonly" select="false()"/>
 		<xsl:param name="optionality">conditional</xsl:param>
 		<xsl:apply-templates select="gmd:date/gco:Date | gmd:date/gco:DateTime">
-			<xsl:with-param name="readonly" select="$readonly or $synchroniseDC"/>
+			<xsl:with-param name="readonly" select="$readonly"/>
 		</xsl:apply-templates>
 		<xsl:apply-templates select="gmd:dateType/gmd:CI_DateTypeCode">
 			<xsl:with-param name="readonly" select="$readonly"/>
@@ -4702,8 +4588,8 @@
 			<xsl:with-param name="title">Naam van de gerelateerde dataset</xsl:with-param>
 			<xsl:with-param name="help-text" select="'ISO 360 titel. Als dit veld is ingevuld is bijbehorende datum ook verplicht om in te vullen.'"/>
 			<!-- only readonly if globalReadonly or if we are synchronising with DC and dealing with the first gerelateerde dataset (cannot use position for that) -->
-			<!--xsl:with-param name="readonly" select="$globalReadonly or ($synchroniseDC and (count(../../../../../preceding-sibling::gmd:aggregationInfo) + 1) = 1)"/-->
-			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+			<!--xsl:with-param name="readonly" select="$globalReadonly or ((count(../../../../../preceding-sibling::gmd:aggregationInfo) + 1) = 1)"/-->
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="gmd:aggregateDataSetName/gmd:CI_Citation/gmd:date">
@@ -4716,7 +4602,7 @@
 			<div class="ui-mde-section-content">
 				<xsl:apply-templates select="gmd:CI_Date">
 					<!-- only readonly if globalReadonly or if we are synchronising with DC and dealing with the first gerelateerde dataset (cannot use position for that) -->
-					<!--xsl:with-param name="readonly" select="$globalReadonly or ($synchroniseDC and (count(../../../../preceding-sibling::gmd:aggregationInfo) + 1) = 1)"/-->
+					<!--xsl:with-param name="readonly" select="$globalReadonly or ((count(../../../../preceding-sibling::gmd:aggregationInfo) + 1) = 1)"/-->
 				</xsl:apply-templates>
 			</div>
 		</div>
@@ -4726,7 +4612,7 @@
 			<xsl:with-param name="title">Type relatie</xsl:with-param>
 			<xsl:with-param name="help-text" select="'ISO 360 titel. Als dit veld is ingevuld is bijbehorende datum ook verplicht om in te vullen.'"/>
 			<xsl:with-param name="picklist" select="'picklist_DS_AssociationTypeCode'"/>
-			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 143 Herzieningsfrequentie -->
@@ -4735,7 +4621,7 @@
 			<xsl:with-param name="title">Herzieningsfrequentie</xsl:with-param>
 			<xsl:with-param name="help-text" select="'ISO 143 Herzieningsfrequentie. Frequentie waarmee de data herzien wordt.'"/>
 			<xsl:with-param name="picklist" select="'picklist_MD_MaintenanceFrequencyCode'"/>
-			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 19110 elementen -->
@@ -4837,7 +4723,6 @@
 		<xsl:call-template name="element">
 			<xsl:with-param name="title">Definitie</xsl:with-param>
 			<xsl:with-param name="help-text" select="'B2.2/B4.2 definition in a natural language.'"/>
-			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="gfc:cardinality/gco:Integer">
@@ -4853,217 +4738,106 @@
 	</xsl:template>
 	<!-- Dublin Core metadata -->
 	<xsl:template match="b3p:B3Partners/*/dc:title">
-		<xsl:choose>
-			<xsl:when test="$synchroniseDC">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Titel</xsl:with-param>
-					<xsl:with-param name="optionality" select="'mandatory'"/>
-					<xsl:with-param name="help-text" select="'ISO 360 titel'"/>
-					<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.1_Titel_van_de_bron</xsl:with-param>
-				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Titel</xsl:with-param>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Titel</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:creator">
-		<xsl:choose>
-			<xsl:when test="$synchroniseDC">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Maker/Producent</xsl:with-param>
-					<xsl:with-param name="repeatable" select="true()"/>
-					<xsl:with-param name="optionality" select="'optional'"/>
-					<xsl:with-param name="help-text" select="'ISO 375 naam contactpersoon'"/>
-					<xsl:with-param name="picklist" select="'picklist_contacts'"/>
-				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Maker/Producent</xsl:with-param>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Maker/Producent</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:subject">
-		<xsl:choose>
-			<xsl:when test="$synchroniseDC">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Trefwoord</xsl:with-param>
-					<xsl:with-param name="repeatable" select="true()"/>
-					<xsl:with-param name="optionality" select="'mandatory'"/>
-					<xsl:with-param name="help-text" select="'ISO 53 Trefwoorden'"/>
-					<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.11_Trefwoord</xsl:with-param>
-				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Trefwoord</xsl:with-param>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Trefwoord</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:description">
-		<xsl:choose>
-			<xsl:when test="$synchroniseDC">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Samenvatting</xsl:with-param>
-					<xsl:with-param name="optionality" select="'mandatory'"/>
-					<xsl:with-param name="help-text" select="'ISO 25 Samenvatting'"/>
-					<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.2_Samenvatting</xsl:with-param>
-					<xsl:with-param name="type" select="'rich-text'"/>
-				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Samenvatting</xsl:with-param>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Samenvatting</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:publisher">
-		<xsl:choose>
-			<xsl:when test="$synchroniseDC">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Uitgever/Leverancier</xsl:with-param>
-					<xsl:with-param name="repeatable" select="true()"/>
-					<xsl:with-param name="optionality" select="'optional'"/>
-					<xsl:with-param name="help-text" select="'ISO 375 naam contactpersoon'"/>
-					<xsl:with-param name="picklist" select="'picklist_contacts'"/>
-				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Uitgever/Leverancier</xsl:with-param>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Uitgever/Leverancier</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:contributor">
-		<xsl:choose>
-			<xsl:when test="$synchroniseDC">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Kennismakelaar/Contactpersoon</xsl:with-param>
-					<xsl:with-param name="repeatable" select="true()"/>
-					<xsl:with-param name="optionality" select="'optional'"/>
-					<xsl:with-param name="help-text" select="'ISO 375 naam contactpersoon'"/>
-					<xsl:with-param name="picklist" select="'picklist_contacts'"/>
-				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Kennismakelaar/Contactpersoon</xsl:with-param>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Kennismakelaar/Contactpersoon</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:date">
-		<xsl:choose>
-			<xsl:when test="$synchroniseDC">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Datum van de bron</xsl:with-param>
-					<xsl:with-param name="optionality" select="'mandatory'"/>
-					<xsl:with-param name="help-text" select="'ISO 394 Datum Verplicht indien element waarvoor datum geldt verplicht is.'"/>
-					<xsl:with-param name="default-value">Klik om te bewerken [<xsl:value-of select="$dateFormatUserHint"/>]</xsl:with-param>
-				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Datum van de bron</xsl:with-param>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Datum van de bron</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:type">
-		<xsl:choose>
-			<xsl:when test="$synchroniseDC">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Type</xsl:with-param>
-					<xsl:with-param name="picklist">picklist_MD_SpatialRepresentationTypeCode</xsl:with-param>
-					<xsl:with-param name="optionality" select="'optional'"/>
-					<xsl:with-param name="help-text" select="'ISO 37 Ruimtelijk schema [keuzelijst]'"/>
-				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Type</xsl:with-param>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Type</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:format">
 		<xsl:call-template name="element">
 			<xsl:with-param name="title">(Data)Formaat/Grootte/Resolutie</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:identifier">
 		<xsl:call-template name="element">
 			<xsl:with-param name="title">Identiteitkenmerk</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:source">
 		<xsl:call-template name="element">
 			<xsl:with-param name="title">Bron</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:language">
-		<xsl:choose>
-			<xsl:when test="$synchroniseDC">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Taal van de bron</xsl:with-param>
-					<xsl:with-param name="picklist">picklist_LanguageCode</xsl:with-param>
-					<xsl:with-param name="optionality" select="'mandatory'"/>
-					<xsl:with-param name="help-text" select="'ISO 39 (639.2) taal [keuzelijst]'"/>
-					<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.9_Taal_van_de_bron</xsl:with-param>
-				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Taal van de bron</xsl:with-param>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Taal van de bron</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:relation">
 		<xsl:call-template name="element">
 			<xsl:with-param name="title">Relatie</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 			<xsl:with-param name="repeatable" select="true()"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:coverage">
 		<xsl:call-template name="element">
 			<xsl:with-param name="title">Dekking</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:rights">
-		<xsl:choose>
-			<xsl:when test="$synchroniseDC">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Rechten/Voorwaarden</xsl:with-param>
-					<xsl:with-param name="picklist">picklist_MD_RestrictionCode</xsl:with-param>
-					<xsl:with-param name="repeatable" select="true()"/>
-					<xsl:with-param name="optionality" select="'conditional'"/>
-				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Rechten/Voorwaarden</xsl:with-param>
-				</xsl:call-template>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Rechten/Voorwaarden</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/pbl:metadataPBL/pbl:frequency">
 		<xsl:call-template name="element">
 			<xsl:with-param name="title">Herzieningsfrequentie</xsl:with-param>
-			<xsl:with-param name="help-text" select="'ISO 143 Herzieningsfrequentie. Frequentie waarmee de data herzien wordt.'"/>
-			<xsl:with-param name="picklist" select="'picklist_MD_MaintenanceFrequencyCode'"/>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/pbl:metadataPBL/pbl:testsPerformed">
 		<xsl:call-template name="element">
 			<xsl:with-param name="title">Uitgevoerde Testen</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- default text for elements with no default value specified -->
@@ -5471,7 +5245,9 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
 	</xsl:template>
 	<xsl:template name="wikiHelpPopupLink">
 		<xsl:if test="not($globalReadonly)">
-       <a href="#" class="ui-mde-wiki-help-link"><img src="scripts/mde/images/info.png"></img></a>
+			<a href="#" class="ui-mde-wiki-help-link">
+				<img src="scripts/mde/images/info.png"/>
+			</a>
 		</xsl:if>
 	</xsl:template>
 	<!-- EvdP: Doet speciale extra acties voor types van ISO 19139. -->
