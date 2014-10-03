@@ -18,13 +18,12 @@ import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  *
- * @author Erik van de Pol
+ * @author Chris van Lith
  */
 public class OrganisationsAction extends DefaultAction {
     private final static Log log = LogFactory.getLog(OrganisationsAction.class);
@@ -137,8 +136,13 @@ public class OrganisationsAction extends DefaultAction {
                 // bepaal of info van organisatie is aangapast
                 List devis = findDeviations(mdOrg, getConfigOrganisation(configOrgs, name));
                 if (devis!=null && !devis.isEmpty()) {
-                    // als zelfde org 2x anders is aangepast, dan pech
-                    checkedOrgs.put(name, mdOrg);
+                    int loopnum = 1;
+                    String loopname = name;
+                    while (checkedOrgs.containsKey(loopname)) {
+                        loopname = name.concat(Integer.toString(loopnum));
+                        loopnum++;
+                    }
+                    checkedOrgs.put(loopname, mdOrg);
                 }
             }
         }
@@ -153,146 +157,76 @@ public class OrganisationsAction extends DefaultAction {
         setOrganisationsJson(configOrgs);
     }
 
-
-    private static List __org__findDeviations(JSONObject o1, JSONObject o2) throws JSONException {
-        if (o1 == null || o2 == null) {
-            return null;
-        }
-        ArrayList<String> deviList = new ArrayList<String>();
-        Iterator<?> o1it = o1.keys();
-        while (o1it.hasNext()) {
-            String label = (String) o1it.next();
-            if (label.equals("contacts")) {
-                JSONObject contacts1 = (JSONObject) o1.opt(label);
-                JSONObject contacts2 = (JSONObject) o2.opt(label);
-                Iterator<?> contacts1it = o1.keys();
-                while (contacts1it.hasNext()) {
-                    String sublabel = (String) contacts1it.next();
-                    String waarde1 = null;
-                    if (contacts1 != null) {
-                        waarde1 = contacts1.optString(sublabel);
-                    }
-                    String waarde2 = null;
-                    if (contacts2 != null) {
-                        waarde2 = contacts2.optString(sublabel);
-                    }
-                    if (waarde1 == null && waarde2 == null) {
-                        continue;
-                    }
-                    if (waarde1 == null || waarde2 == null) {
-                        deviList.add(label + "_" + sublabel);
-                    }
-                    if (!waarde1.equals(waarde2)) {
-                        deviList.add(label + "_" + sublabel);
-                    }
-                }
-
-            } else {
-                String waarde1 = o1.optString(label);
-                String waarde2 = o2.optString(label);
-                if (waarde1 == null && waarde2 == null) {
-                    continue;
-                }
-                if (waarde1 == null || waarde2 == null) {
-                    deviList.add(label);
-                }
-                if (!waarde1.equals(waarde2)) {
-                    deviList.add(label);
-                }
-            }
-
-        }
-        return deviList;
-    }
-
     private static List findDeviations(JSONObject o1, JSONObject o2) throws JSONException {
         ArrayList<String> deviList = new ArrayList<String>();
         if (o1 == null) {
             return null;
-        } else if (o1 != null & o2 == null) {
+        } else if (o2 == null) {
             // Organisation contains values in the mde AND that organisation is NOT in the current organisations.json file.
 
             Iterator<?> o1it = o1.keys();
             while (o1it.hasNext()) {
                 String label = (String) o1it.next();
-                
                 // contact
                 if (label.equals("contacts")) {
-                    JSONObject contacts1 = (JSONObject) o1.opt(label);
-                    
-                    Iterator<?> contacts1it = contacts1.keys();
-                    while (contacts1it.hasNext()) {
-                        String sublabel = (String) contacts1it.next();
-                        String value1 = null;
-                        if (contacts1 != null) {
-                            value1 = contacts1.optString(sublabel); 
-                        }
-                        if (!value1.isEmpty() )  {
-                            deviList.add(label + "_" + sublabel);
+                    JSONObject contacts1 = o1.optJSONObject(label);
+                    if (contacts1 == null) {
+                        // nothing to do
+                    } else {                    
+                        Iterator<?> contacts1it = contacts1.keys();
+                        while (contacts1it.hasNext()) {
+                            String sublabel = (String) contacts1it.next();
+                            String value1 = contacts1.optString(sublabel); 
+                            if (!value1.isEmpty() )  {
+                                deviList.add(label + "_" + sublabel);
+                            }
                         }
                     }
 
                 } else {
                     // geen contact.
-                    
                     String value1 = o1.optString(label);
                     if (!value1.isEmpty()) {
                         deviList.add(label);
                     }
-
                 }
-
             }
-
         } else {
             // o1 and o2 are both NOT null.  
-
             Iterator<?> o1it = o1.keys();
             while (o1it.hasNext()) {
                 String label = (String) o1it.next();
                 if (label.equals("contacts")) {
-                    JSONObject contacts1 = (JSONObject) o1.opt(label);
-                    JSONObject contacts2 = (JSONObject) o2.opt(label);
-                    
-                    Iterator<?> contacts1it = contacts1.keys(); // 
-                    while (contacts1it.hasNext()) {
-                        String sublabel = (String) contacts1it.next();
-                        
-                        String value1 = null;
-                        if (contacts1 != null) {
-                            value1 = contacts1.optString(sublabel);
-                        }
-                        String value2 = null;
-                        if (contacts2 != null) {
-                            value2 = contacts2.optString(sublabel);
-                        }
-                        if (value1 == null && value2 == null) {
-                            continue;
-                        }
-                        if (value1 == null || value2 == null) {
-                            deviList.add(label + "_" + sublabel);
-                        }
-                        if (!value1.equals(value2)) {
-                            deviList.add(label + "_" + sublabel);
-                        }
-                       
-                        
-                    }
+                    JSONObject contacts1 = o1.optJSONObject(label);
+                    JSONObject contacts2 = o2.optJSONObject(label);
+                    if (contacts1 == null) {
+                        // nothing to do
+                    } else if (contacts2 == null) {
+                        // all new
+                        deviList.add(label);
+                    } else {
+                        // check differences
+                        Iterator<?> contacts1it = contacts1.keys(); 
+                        while (contacts1it.hasNext()) {
+                            String sublabel = (String) contacts1it.next();
 
+                            String value1 = contacts1.optString(sublabel);
+                            String value2 = contacts2.optString(sublabel);
+                            if (!value1.equals(value2)) {
+                                deviList.add(label + "_" + sublabel);
+                            }
+                        }
+                    }
                 // not a contact.
                 } else {
-                    String value1 = o1.optString(label); // returns empty string if in the JSON object the key does not contain a value.
+                    // optString() returns empty string if in the JSON object the key does not contain a value
+                    String value1 = o1.optString(label);
                     String value2 = o2.optString(label);
-                    if (value1.isEmpty() && value2.isEmpty()) {
-                        continue;
-                    }
-
-                    if ( ! value1.isEmpty() && (!value1.equals(value2)) ) {
+                    if (!value1.equals(value2) ) {
                         deviList.add(label);
                     }
 
                 }
-
             }
         }
         return deviList;
@@ -362,21 +296,21 @@ public class OrganisationsAction extends DefaultAction {
         //  check if mdOrg in configOrgs
         if (configOrgs.has(mdOrgName)) { //  if yes
             // get configOrg
-            JSONObject configOrg = (JSONObject) configOrgs.get(mdOrgName);
+            JSONObject configOrg = configOrgs.optJSONObject(mdOrgName);
             // get configContacts from configOrg
-            JSONObject configContacts = (JSONObject) configOrg.optJSONObject("contacts");
+            JSONObject configContacts = configOrg.optJSONObject("contacts");
             if (configContacts == null) {
                 //      or create if not present
                 configContacts = new JSONObject();
             }
             //      get mdContacts from mdOrg
-            JSONObject mdContacts = (JSONObject) mdOrg.optJSONObject("contacts");
+            JSONObject mdContacts = mdOrg.optJSONObject("contacts");
             if (mdContacts != null) {
                 //      loop over mdContacts
                 Iterator<?> mdContactsKeys = mdContacts.keys();
                 while (mdContactsKeys.hasNext()) {
                     String mdContactName = (String) mdContactsKeys.next();
-                    JSONObject mdContact = (JSONObject) mdContacts.get(mdContactName);
+                    JSONObject mdContact = mdContacts.optJSONObject(mdContactName);
                     // add or replace mdContacts to configContacts
                     configContacts.put(mdContactName, mdContact);
                 }

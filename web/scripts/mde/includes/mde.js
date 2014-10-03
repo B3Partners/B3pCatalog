@@ -783,17 +783,17 @@ $.widget("ui.mde", {
             switch(picklistId) {
                 case this.PICKLIST_ORGANISATIONS: {
                     this._deleteOrganisationContactValue($section, self.ORG_XPATH.INDIVIDUAL_NAME);
-                    this._fillOrganisationContactValues($section, newValue, this.options.organisations);
+                    this._fillOrganisationContactValues($section, newValue, this.options.organisations, true);
                     break;
                 }
                 case this.PICKLIST_CONTACTS: {
                     $.each(this.options.organisations, function(organisationName, organisationContents) {
                         if (organisationContents.contacts && organisationContents.contacts[newValue]) {
                             // first fill with organisation values
-                            self._fillOrganisationContactValue($section, self.ORG_XPATH.ORGANISATION_NAME, organisationName);
-                            self._fillOrganisationContactValues($section, organisationName, self.options.organisations);
-                            // then overwrite with contact values
-                            self._fillOrganisationContactValues($section, newValue, organisationContents.contacts);
+                            self._fillOrganisationContactValue($section, self.ORG_XPATH.ORGANISATION_NAME, organisationName, true);
+                            self._fillOrganisationContactValues($section, organisationName, self.options.organisations, true);
+                            // then overwrite with contact values if not empty
+                            self._fillOrganisationContactValues($section, newValue, organisationContents.contacts, false);
                             return false;
                         }
                         return true;
@@ -1282,31 +1282,36 @@ $.widget("ui.mde", {
         return $.inArray(id, this.DYNAMIC_PICKLISTS) >= 0;
     },
 
-    _fillOrganisationContactValues: function($section, newValue, contentsObject) {
+    _fillOrganisationContactValues: function($section, newValue, contentsObject, overwrite) {
         if (typeof contentsObject != "undefined") {
             var newOrgContact = contentsObject[newValue];
             if (!!newOrgContact) {
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.ADDRESS, newOrgContact.address);
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.CITY, newOrgContact.city);
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.STATE, newOrgContact.state);
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.POSTAL_CODE, newOrgContact.postalCode);
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.COUNTRY, newOrgContact.country);
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.VOICE, newOrgContact.voice);
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.EMAIL, newOrgContact.email);
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.URL, newOrgContact.url);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.ADDRESS, newOrgContact.address, overwrite);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.CITY, newOrgContact.city, overwrite);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.STATE, newOrgContact.state, overwrite);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.POSTAL_CODE, newOrgContact.postalCode, overwrite);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.COUNTRY, newOrgContact.country, overwrite);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.VOICE, newOrgContact.voice, overwrite);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.EMAIL, newOrgContact.email, overwrite);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.URL, newOrgContact.url, overwrite);
             }
         }
     },
 
 
-    _fillOrganisationContactValue: function($section, xpathEnd, newValue) {
+    _fillOrganisationContactValue: function($section, xpathEnd, newValue, overwrite) {
         var $node = this._findOrganisationContactNode($section, xpathEnd);
-        if (newValue && $node.length) {
-            this._saveValueOnClientSide($node, newValue);
-            
-            // Line beneath has a effect that when an organization is selected in 
-            // a certain tab that all relevant fields in the mde for this tab. 
-            $node.text(newValue); 
+        if ($node.length) {
+            if (typeof newValue == "undefined" || newValue === null) {
+                newValue = "";
+            }
+            if (newValue.length > 0 || (newValue == "" && overwrite)) {
+                this._saveValueOnClientSide($node, newValue);
+
+                // Line beneath has a effect that when an organization is selected in 
+                // a certain tab that all relevant fields in the mde for this tab. 
+                $node.text(newValue); 
+            }
         }
     },
 
