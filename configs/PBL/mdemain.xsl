@@ -99,9 +99,10 @@
 			</div>
 			<div class="ui-mde-section">
 				<xsl:call-template name="section-title">
+					<xsl:with-param name="expanded" select="false()"/>
 					<xsl:with-param name="title">Gemeenschappelijk Datasets en Services</xsl:with-param>
 				</xsl:call-template>
-				<div class="ui-mde-section-content">
+				<div class="ui-mde-section-content" style="display:none;">
 					<xsl:call-template name="dataServiceItems"/>
 				</div>
 			</div>
@@ -2648,11 +2649,6 @@
 			<!-- ISO 25 Samenvatting MD_Metadata.identificationInfo>MD_DataIdentification.abstract -->
 			<!-- Samenvatting srv -->
 			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract"/>
-			<!-- Trefwoorden ISO 53 (mogen kommagescheiden weergegeven worden)  -->
-			<!-- ISO 53 Trefwoorden MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.keyword-->
-			<!-- ISO 55 MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.thesaurusName>CI_Citation.title -->
-			<!-- ISO 394  + 395 MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.thesaurusName>CI_Citation.date>CI_Date.date -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords"/>
 			<!-- ISO 39 Dataset taal MD_Metadata.identificationInfo>MD_DataIdentification.language ISO 639-2 -->
 			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:language"/>
 			<!-- Verantwoordelijke organisatie bron ISO 29, daaronder ingesprongen: -->        
@@ -2672,15 +2668,6 @@
 			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceAndUpdateFrequency/gmd:MD_MaintenanceFrequencyCode"/>
 			<!-- ISO 37 Ruimtelijk schema MD_Metadata.identificationInfo>MD_DataIdentification.spatialRepresentationType Codelijst: MD_SpatialRepresentation TypeCode (B.5.26) -->
 			<xsl:apply-templates select="gmd:identificationInfo//gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode"/>
-			<!-- ISO 360/394/395(/66.4) Gerelateerde dataset -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:aggregationInfo"/>
-			<!-- -->
-			<xsl:apply-templates select="gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat"/>
-			<!-- Overig aanwezige contacts wanneer aanwezig zoals distributeur ISO 272 + overige info uit bijbehorend blok contactinfo (inklapbaar)   -->
-			<!-- ISO 376 Naam distribuerende organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.organisationName -->
-			<!-- ISO 397 URL organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.contactInfo>CI_Contact.onlineResource>CI_OnlineResource.linkage -->
-			<!-- ISO 379 Rol organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.role Codelijst: CI_RoleCode (B.5.5) - - >
-            <xsl:apply-templates select="gmd:distributionInfo//gmd:distributor"/> -->
 		</xsl:for-each>
 	</xsl:template>
 	<!-- gemeenschappelijk iso 19115 en iso 19110-->
@@ -2722,6 +2709,20 @@
 			<!-- Alternatieve titel ISO 361 (normaal lettertype, gecentreerd) -->
 			<!-- ISO 361 Dataset titel MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.alternateTitle-->
 			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle"/>
+			<!-- Trefwoorden ISO 53 (mogen kommagescheiden weergegeven worden)  -->
+			<!-- ISO 53 Trefwoorden MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.keyword-->
+			<!-- ISO 55 MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.thesaurusName>CI_Citation.title -->
+			<!-- ISO 394  + 395 MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.thesaurusName>CI_Citation.date>CI_Date.date -->
+			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords"/>
+			<!-- ISO 360/394/395(/66.4) Gerelateerde dataset -->
+			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:aggregationInfo"/>
+			<!-- -->
+			<xsl:apply-templates select="gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat"/>
+			<!-- Overig aanwezige contacts wanneer aanwezig zoals distributeur ISO 272 + overige info uit bijbehorend blok contactinfo (inklapbaar)   -->
+			<!-- ISO 376 Naam distribuerende organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.organisationName -->
+			<!-- ISO 397 URL organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.contactInfo>CI_Contact.onlineResource>CI_OnlineResource.linkage -->
+			<!-- ISO 379 Rol organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.role Codelijst: CI_RoleCode (B.5.5) - - >
+            <xsl:apply-templates select="gmd:distributionInfo//gmd:distributor"/> -->
 			<!-- Thumbnail  -->
 			<!-- Doel van vervaardiging ISO 26  -->
 			<!-- ISO 26 Doel van de vervaardiging MD_Metadata.identificationInfo>MD_DataIdentification.purpose -->
