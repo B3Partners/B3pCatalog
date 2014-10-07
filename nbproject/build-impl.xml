@@ -1068,6 +1068,7 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${libs.JTS.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${reference.b3p-commons-gis.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${reference.b3p-commons-core.jar}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${libs.HttpClient-4.3.5.classpath}" iftldtodir="${build.web.dir}/WEB-INF" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${reference.local-access-applet.jar}" todir="${build.web.dir}//applet"/>
         <copyfiles files="${file.reference.ncCore-4.2.jar}" todir="${build.web.dir}//applet"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
@@ -1088,6 +1089,7 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${libs.JTS.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${reference.b3p-commons-gis.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${reference.b3p-commons-core.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
+        <copyfiles files="${libs.HttpClient-4.3.5.classpath}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copyfiles files="${reference.local-access-applet.jar}" todir="${build.web.dir}//applet"/>
         <copyfiles files="${file.reference.ncCore-4.2.jar}" todir="${build.web.dir}//applet"/>
     </target>

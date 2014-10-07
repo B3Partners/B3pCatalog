@@ -7,7 +7,6 @@ package nl.b3p.catalog.resolution;
 
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.stripes.action.StreamingResolution;
-import org.apache.commons.httpclient.HttpStatus;
 
 /**
  *
@@ -24,7 +23,7 @@ public class DefaultErrorResolution extends StreamingResolution {
 
     @Override
     protected void stream(HttpServletResponse response) throws Exception {
-        response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        response.setStatus(500);
         super.stream(response);
     }
 }

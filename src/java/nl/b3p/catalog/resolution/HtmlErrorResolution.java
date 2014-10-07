@@ -9,7 +9,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.stripes.action.StreamingResolution;
-import org.apache.commons.httpclient.HttpStatus;
 
 /**
  *
@@ -77,7 +76,7 @@ public class HtmlErrorResolution extends StreamingResolution {
 
     @Override
     protected void stream(HttpServletResponse response) throws Exception {
-        response.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        response.setStatus(500);
         super.stream(response);
     }
 }
