@@ -83,9 +83,6 @@
                   "read"   : gebruiker kan alleen metadata lezen
                   "none"   : root wordt niet getoond in de boomstructuur voor gebruiker, kan geen metadata lezen
 
-				Met geneste <role>naam_van_rol</role> elementen kan een lijst met geldige rollen uit web.xml (<security-role>) 
-                of "*" voor elke gebruiker worden opgegeven voor bovengenoemde access
-                0f "none" voor geen access level ofwel niet ingelogd.
 
                 Indien geen <acl> elementen aanwezig zijn is het default <acl access="write"><role>*</role></acl>
             
@@ -93,7 +90,7 @@
 				<role>none</role>
 			</acl>
         </fileRoot>-->
-        <fileRoot name="GIS data" path="/opt/geobrabant/metadata">
+        <fileRoot name="GIS data" path="/opt/configs/test.kaartenbalie.nl/b3pcatalog/metadata">
         
 			<!-- Autorisatie voor deze root
 
@@ -103,8 +100,6 @@
                   "read"   : gebruiker kan alleen metadata lezen
                   "none"   : root wordt niet getoond in de boomstructuur voor gebruiker, kan geen metadata lezen
 
-				Met geneste <role>naam_van_rol</role> elementen kan een lijst met geldige rollen uit web.xml (<security-role>) of "*" voor 
-                elke gebruiker worden opgegeven voor bovengenoemde access.
 
                 Indien geen <acl> elementen aanwezig zijn is het default <acl access="write"><role>*</role></acl>
             -->
@@ -129,12 +124,12 @@
 
     <cswServers>
         <cswServer>
-            <name>csw1</name>
-            <url>http://x13.b3p.nl:8080/geonetwork/srv/en/csw</url>
+            <name></name>
+            <url></url>
             <!--Volgende elementen zijn optioneel: -->
-            <loginUrl>http://x13.b3p.nl:8080/geonetwork/srv/en/xml.user.login</loginUrl>
-            <username>admin</username>
-            <password>***REMOVED***</password>
+            <loginUrl></loginUrl>
+            <username></username>
+            <password></password>
         </cswServer>
         <!--cswServer>
             <name>csw2</name>
@@ -161,7 +156,7 @@
         <entry><key>globalReadonly_init</key><value>false</value></entry>
         <!-- maak metadata voor services-->
         
-        <!-- Toont tab voor services NIET  -->
+        <!--Toont tab voor services NIET -->
         <entry><key>serviceMode_init</key><value>true</value></entry>
         
         <!-- maak metadata voor datasets -->
@@ -170,7 +165,7 @@
         templates hier niet op aangepast zijn. -->
         <!-- gebruik dc om md tags mee te vullen-->
         
-        <!-- Synchroniseer/kopieer NIET de velden uit Dublin Core tab met de datasets tab -->
+        <!-- Synchroniseer/kopieer NIET de velden uit Dublin Core tab met de datasets tabs -->
         <entry><key>synchroniseDC_init</key><value>false</value></entry>
 
         <!-- gebruik defaults vooringevuld-->
