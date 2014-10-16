@@ -17,6 +17,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
+import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.validation.Validate;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.config.CSWServerConfig;
@@ -31,6 +32,7 @@ import nl.b3p.csw.client.CswRequestCreator;
 import nl.b3p.csw.client.CswSmartRequestCreator;
 import nl.b3p.csw.client.InputById;
 import nl.b3p.csw.client.InputBySearch;
+import nl.b3p.csw.client.Output;
 import nl.b3p.csw.client.OutputById;
 import nl.b3p.csw.client.OutputBySearch;
 import nl.b3p.csw.client.OwsException;
@@ -41,6 +43,8 @@ import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -56,6 +60,9 @@ public class CatalogAction extends DefaultAction {
 
     @Validate(required=true, on="search")
     private String searchType;
+    
+    @Validate(required=false)
+    private String resultType;
 
     private List<MetadataBean> metadataList;
 
@@ -81,6 +88,14 @@ public class CatalogAction extends DefaultAction {
             //log.debug(new XMLOutputter().outputString(output.getXml()));
 
             metadataList = createMetadataList(output);
+            
+            if(this.resultType != null && this.resultType.equals("json")) {
+                JSONArray resultList = new JSONArray(metadataList);
+                JSONObject searchResult = new JSONObject();
+                searchResult.put("success", true);
+                searchResult.put("result", resultList);
+                return new StreamingResolution("application/json; charset=UTF-8", searchResult.toString());
+            }
 
             return new ForwardResolution(SEARCH_RESULTS_JSP);
         } catch (Exception e) {
@@ -130,6 +145,13 @@ public class CatalogAction extends DefaultAction {
                 throw new IllegalArgumentException(String.format("Metadata document met UUID \"%s\" kon niet worden gevonden bij CSW-service", uuid));
             }
 
+            if(this.resultType != null && this.resultType.equals("json")) {
+                JSONObject loadResult = new JSONObject();
+                loadResult.put("success", true);
+                loadResult.put("result", createMetadataList(output));
+                return new StreamingResolution("application/json; charset=UTF-8", loadResult.toString());
+            }
+            
             return new XmlResolution(output.getSearchResultString());
         } catch (Exception e) {
             String message = "Fout bij het laden van de metadata.";
@@ -163,7 +185,7 @@ public class CatalogAction extends DefaultAction {
          ));
     }
 
-    protected List<MetadataBean> createMetadataList(OutputBySearch output) throws TransformerConfigurationException, TransformerFactoryConfigurationError, TransformerException, JDOMException, JAXBException, OwsException {
+    protected List<MetadataBean> createMetadataList(Output output) throws TransformerConfigurationException, TransformerFactoryConfigurationError, TransformerException, JDOMException, JAXBException, OwsException {
         List<Element> metadataDocs = output.getSearchResults();
         List<MetadataBean> list = new ArrayList<MetadataBean>(metadataDocs.size());
 
@@ -247,6 +269,14 @@ public class CatalogAction extends DefaultAction {
 
     public void setSearchType(String searchType) {
         this.searchType = searchType;
+    }
+    
+    public String getResultType() {
+        return resultType;
+    }
+
+    public void setResultType(String resultType) {
+        this.resultType = resultType;
     }
 
     public List<MetadataBean> getMetadataList() {
