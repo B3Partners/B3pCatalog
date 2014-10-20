@@ -1,0 +1,301 @@
+/* Welcome to Compass.
+ * In this file you should write your main styles. (or centralize your imports)
+ * Import this file using the following HTML or equivalent:
+ * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+
+@import "compass";
+@import "compass/reset";
+@import "ideal-image-slider";
+@import "icons";
+
+$brabant-color: #ED1B24;
+
+html {
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+html {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+    font-weight: 300;
+    font-size: 13px;
+    line-height: 18px;
+    background-color: #CCCCCC;
+}
+
+header, section, footer {
+    max-width: 980px;
+    margin: 0 auto;
+    background-color: #FFFFFF;
+    @include clearfix();
+}
+
+header {
+    padding: 10px 10px 0 10px;
+    img {
+        width: 250px;
+        float: left;
+    }
+}
+
+nav {
+    float: right;
+    ul {
+        list-style: none;
+        float: right;
+        li {
+            float: left;
+            a {
+                display: inline-block;
+                padding: 5px 30px;
+                background-color: White;
+                text-decoration: none;
+                background-color: $brabant-color;
+                color: #FFFFFF;
+                border: 1px solid $brabant-color;
+                &:hover, &.active {
+                    color: $brabant-color;
+                    background-color: #FFFFFF;
+                    border: 1px solid $brabant-color;
+                }
+            }
+        }
+    }
+    .form {
+        display: block;
+        padding: 10px 0;
+        @include clearfix();
+    }
+    form {
+        float: right;
+        input {
+            font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+            float: right;
+            width: 200px;
+            border: 1px solid $brabant-color;
+            padding: 8px;
+            height: 30px;
+            &[type="submit"] {
+                width: auto;
+                margin-left: 5px;
+                cursor: pointer;
+            }
+        }
+    }
+    .social-icons {
+        float: right;
+        margin-right: 5px;
+        padding-top: 2px;
+        a {
+            font-size: 24px;
+            text-decoration: none;
+            color: $brabant-color;
+            span {
+                display: inline-block;
+                @include hide-text();
+            }
+        }
+    }
+}
+
+section {
+    padding: 10px;
+    min-height: 500px;
+    iframe {
+        border: 0 none;
+    }
+}
+
+footer {
+    color: #FFFFFF;
+    border-top: 5px solid $brabant-color;
+    padding: 10px 25px;
+    text-align: center;
+    img {
+        max-height: 80px;
+    }
+    a {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .row:first-of-type {
+        padding-bottom: 20px;
+        border-bottom: 1px solid $brabant-color;
+        margin-bottom: 20px;
+    }
+}
+
+img {
+    max-width: 100%;
+}
+
+h2 {
+    font-weight: bold;
+    font-size: 1.3em;
+    padding: 1em 0;
+    color: $brabant-color;
+}
+
+.col {
+    width: 30%;
+    float: left;
+    margin-right: 5%;
+    &:last-of-type {
+        margin-right: 0;
+    }
+    .home & img {
+        margin-bottom: 10px;
+    }
+    .home &.feed iframe {
+        height: 350px;
+    }
+}
+
+.col-2 {
+    width: 65%;
+}
+
+$buttonHeight: 75px;
+$buttonWidth: 90px;
+.buttons {
+    float: left;
+    width: $buttonWidth;
+    padding-right: 10px;
+    div {
+        padding: 0px;
+        border: 1px solid $brabant-color;
+        border-radius: 2px;
+        cursor: pointer;
+        background-color: #FFFFFF;
+        color: $brabant-color;
+        &:hover, &.active {
+            background-color: $brabant-color;
+            color: #FFFFFF;
+        }
+        height: $buttonHeight;
+        margin-bottom: 10px;
+        span {
+            display: table-cell;
+            vertical-align: middle;
+            height: $buttonHeight - 2px; // minus border
+            width: $buttonWidth - 2px; // minus border
+            overflow: hidden;
+            text-align: center;
+        }
+    }
+}
+
+.button {
+    border: 1px solid $brabant-color;
+    border-radius: 2px;
+    cursor: pointer;
+    padding: 5px 10px;
+    background-color: $brabant-color;
+    color: #FFFFFF;
+    display: inline-block;
+    text-decoration: none;
+    b {
+        margin-right: 8px;
+    }
+    &.spacing {
+        margin-bottom: 5px;
+    }
+}
+
+.content {
+    overflow: hidden;
+    min-height: 100%;
+}
+
+.zoekresultaat {
+    border: 1px solid #CCCCCC;
+    padding: 10px;
+    margin-bottom: 10px;
+    @include clearfix();
+    h2 {
+        font-weight: bold;
+        font-size: 14px;
+        @include clearfix();
+        margin-bottom: 1em;
+        padding: 0;
+        color: #000000;
+        span {
+            display: block;
+            overflow: hidden;
+        }
+        a {
+            font-size: 13px;
+            display: inline-block;
+            background-color: $brabant-color;
+            padding: 4px;
+            color: #FFFFFF;
+            text-decoration: none;
+            float: right;
+        }
+    }
+    img {
+        float: right;
+        margin-left: 10px;
+    }
+    &.uuid {
+        border: 0px none;
+        padding: 0;
+        margin: 0;
+        h2 {
+            font-weight: bold;
+            font-size: 1.3em;
+            padding: 1em 0;
+            color: $brabant-color;
+            margin: 0;
+        }
+    }
+}
+
+a {
+    color: $brabant-color;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+}
+
+p {
+    padding-bottom: 1em;
+}
+
+@media (max-width: 750px) {
+    .col {
+        width: 46%;
+        margin-right: 6%;
+        &:nth-of-type(2n + 1) {
+            margin-right: 0;
+        }
+    }
+    .col-2 {
+        width: 100%;
+        margin-right: 0;
+        & + .col {
+            width: 100%;
+            margin-right: 0;
+        }
+    }
+}
+
+@media (max-width: 500px) {
+    .col {
+        width: 100%;
+        padding: 10px;
+        margin-right: 0;
+        img {
+            text-align: center;
+        }
+    }
+}
