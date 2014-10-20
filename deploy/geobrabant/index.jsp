@@ -4,5 +4,4 @@
     Author     : Erik van de Pol
 --%>
 
-<%-- <%@include file="/WEB-INF/jsp/geobrabant/home.jsp" %> --%>
-<%@include file="/WEB-INF/jsp/main/main.jsp" %>
+<%@include file="/WEB-INF/jsp/geobrabant/home.jsp" %>
