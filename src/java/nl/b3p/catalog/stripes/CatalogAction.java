@@ -201,6 +201,7 @@ public class CatalogAction extends DefaultAction {
             metadataBean.setMetadataForService(output.isMetadataForService(mdElem));
             metadataBean.setOperatesOn(output.getOperatesOnAsStringList(mdElem));
             metadataBean.setKeyWords(output.getKeyWordsAsStringList(mdElem));
+            metadataBean.setUrlDatasets(output.getUrlDatasetsAsStringList(mdElem));
             metadataBean.setBrowseGraphicFileName(output.getBrowseGraphicFileName(mdElem));
             metadataBean.setDateStamp(output.getDateStamp(mdElem));
             metadataBean.setIdentificationDate(output.getIdentificationDate(mdElem));
@@ -220,13 +221,14 @@ public class CatalogAction extends DefaultAction {
         private String abstractString;
         private String uuid;
         private List<String> keyWords;
-        private List<String> operatesOn;
+        private List<Map<String,String>> operatesOn;
         private boolean metadataForService;
         private String browseGraphicFileName;
         private String dateStamp;
         private String identificationDate;
         private String metadataStandardName;
         private String responsibleOrganisationName;
+        private List<Map<String,String>> urlDatasets;
 
         public MetadataBean() {
 
@@ -276,20 +278,6 @@ public class CatalogAction extends DefaultAction {
          */
         public void setKeyWords(List<String> keyWords) {
             this.keyWords = keyWords;
-        }
-
-        /**
-         * @return the operatesOn
-         */
-        public List<String> getOperatesOn() {
-            return operatesOn;
-        }
-
-        /**
-         * @param operatesOn the operatesOn to set
-         */
-        public void setOperatesOn(List<String> operatesOn) {
-            this.operatesOn = operatesOn;
         }
 
         /**
@@ -374,6 +362,34 @@ public class CatalogAction extends DefaultAction {
          */
         public void setResponsibleOrganisationName(String responsibleOrganisationName) {
             this.responsibleOrganisationName = responsibleOrganisationName;
+        }
+
+        /**
+         * @return the urlDatasets
+         */
+        public List<Map<String,String>> getUrlDatasets() {
+            return urlDatasets;
+        }
+
+        /**
+         * @param urlDatasets the urlDatasets to set
+         */
+        public void setUrlDatasets(List<Map<String,String>> urlDatasets) {
+            this.urlDatasets = urlDatasets;
+        }
+
+        /**
+         * @return the operatesOn
+         */
+        public List<Map<String,String>> getOperatesOn() {
+            return operatesOn;
+        }
+
+        /**
+         * @param operatesOn the operatesOn to set
+         */
+        public void setOperatesOn(List<Map<String,String>> operatesOn) {
+            this.operatesOn = operatesOn;
         }
     }
 
