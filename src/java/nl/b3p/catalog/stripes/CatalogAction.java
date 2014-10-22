@@ -38,11 +38,13 @@ import nl.b3p.csw.client.OutputBySearch;
 import nl.b3p.csw.client.OwsException;
 import nl.b3p.csw.jaxb.csw.GetRecords;
 import nl.b3p.csw.server.GeoNetworkCswServer;
+import nl.b3p.csw.util.OperatesOn;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.Text;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -77,8 +79,8 @@ public class CatalogAction extends DefaultAction {
             CswClient client = getCswClient();
 
             GetRecords getRecords = null;
-            if (searchType.equalsIgnoreCase("title")) { // dit faciliteert full title search icm de SimpleAnalyzer in Lucene in Geonetwork
-                //getRecords = CswRequestCreator.createCswRequestPropertyIsEqual(searchString, searchType, "", "", "", false);
+            if (searchType.equalsIgnoreCase("title")) { 
+                // dit faciliteert full title search icm de SimpleAnalyzer in Lucene in Geonetwork
                 getRecords = CswSmartRequestCreator.createSmartCswRequest(searchString, searchType);
             } else {
                 getRecords = CswRequestCreator.createCswRequest(searchString, searchType, "", "", "", true);
@@ -196,6 +198,14 @@ public class CatalogAction extends DefaultAction {
             metadataBean.setAltTitle("");
             metadataBean.setAbstractString(output.getAbstractText(mdElem));
             metadataBean.setUuid(output.getUUID(mdElem, true));
+            metadataBean.setMetadataForService(output.isMetadataForService(mdElem));
+            metadataBean.setOperatesOn(output.getOperatesOnAsStringList(mdElem));
+            metadataBean.setKeyWords(output.getKeyWordsAsStringList(mdElem));
+            metadataBean.setBrowseGraphicFileName(output.getBrowseGraphicFileName(mdElem));
+            metadataBean.setDateStamp(output.getDateStamp(mdElem));
+            metadataBean.setIdentificationDate(output.getIdentificationDate(mdElem));
+            metadataBean.setMetadataStandardName(output.getMetadataStandardName(mdElem));
+            metadataBean.setResponsibleOrganisationName(output.getResponsibleOrganisationName(mdElem));
 
             list.add(metadataBean);
         }
@@ -209,6 +219,14 @@ public class CatalogAction extends DefaultAction {
         private String altTitle;
         private String abstractString;
         private String uuid;
+        private List<String> keyWords;
+        private List<String> operatesOn;
+        private boolean metadataForService;
+        private String browseGraphicFileName;
+        private String dateStamp;
+        private String identificationDate;
+        private String metadataStandardName;
+        private String responsibleOrganisationName;
 
         public MetadataBean() {
 
@@ -244,6 +262,118 @@ public class CatalogAction extends DefaultAction {
 
         public void setUuid(String uuid) {
             this.uuid = uuid;
+        }
+
+        /**
+         * @return the keyWords
+         */
+        public List<String> getKeyWords() {
+            return keyWords;
+        }
+
+        /**
+         * @param keyWords the keyWords to set
+         */
+        public void setKeyWords(List<String> keyWords) {
+            this.keyWords = keyWords;
+        }
+
+        /**
+         * @return the operatesOn
+         */
+        public List<String> getOperatesOn() {
+            return operatesOn;
+        }
+
+        /**
+         * @param operatesOn the operatesOn to set
+         */
+        public void setOperatesOn(List<String> operatesOn) {
+            this.operatesOn = operatesOn;
+        }
+
+        /**
+         * @return the metadataForService
+         */
+        public boolean isoMetadataForService() {
+            return metadataForService;
+        }
+
+        /**
+         * @param metadataForService the metadataForService to set
+         */
+        public void setMetadataForService(boolean metadataForService) {
+            this.metadataForService = metadataForService;
+        }
+
+        /**
+         * @return the browseGraphicFileName
+         */
+        public String getBrowseGraphicFileName() {
+            return browseGraphicFileName;
+        }
+
+        /**
+         * @param browseGraphicFileName the browseGraphicFileName to set
+         */
+        public void setBrowseGraphicFileName(String browseGraphicFileName) {
+            this.browseGraphicFileName = browseGraphicFileName;
+        }
+
+        /**
+         * @return the dateStamp
+         */
+        public String getDateStamp() {
+            return dateStamp;
+        }
+
+        /**
+         * @param dateStamp the dateStamp to set
+         */
+        public void setDateStamp(String dateStamp) {
+            this.dateStamp = dateStamp;
+        }
+
+        /**
+         * @return the identificationDate
+         */
+        public String getIdentificationDate() {
+            return identificationDate;
+        }
+
+        /**
+         * @param identificationDate the identificationDate to set
+         */
+        public void setIdentificationDate(String identificationDate) {
+            this.identificationDate = identificationDate;
+        }
+
+        /**
+         * @return the metadataStandardName
+         */
+        public String getMetadataStandardName() {
+            return metadataStandardName;
+        }
+
+        /**
+         * @param metadataStandardName the metadataStandardName to set
+         */
+        public void setMetadataStandardName(String metadataStandardName) {
+            this.metadataStandardName = metadataStandardName;
+        }
+
+        /**
+         * @return the responsibleOrganisationName
+         */
+        public String getResponsibleOrganisationName() {
+            return responsibleOrganisationName;
+        }
+
+        /**
+         * @param responsibleOrganisationName the responsibleOrganisationName to set
+         */
+        public void setResponsibleOrganisationName(String responsibleOrganisationName) {
+            this.responsibleOrganisationName = responsibleOrganisationName;
         }
     }
 
