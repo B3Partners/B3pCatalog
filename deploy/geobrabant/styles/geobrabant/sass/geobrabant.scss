@@ -101,6 +101,10 @@ nav {
                 display: inline-block;
                 @include hide-text();
             }
+            &.text {
+                text-decoration: underline;
+                font-size: 1em;
+            }
         }
     }
 }
@@ -115,9 +119,10 @@ section {
 
 footer {
     color: #FFFFFF;
-    border-top: 5px solid $brabant-color;
+    background-color: $brabant-color;
     padding: 10px 25px;
     text-align: center;
+    font-size: 1.3em;
     img {
         max-height: 80px;
     }
@@ -154,7 +159,7 @@ h2 {
         margin-bottom: 10px;
     }
     .home &.feed iframe {
-        height: 350px;
+        height: 250px;
     }
 }
 
@@ -221,7 +226,7 @@ $buttonWidth: 90px;
     @include clearfix();
     h2 {
         font-weight: bold;
-        font-size: 14px;
+        font-size: 1.2em;
         @include clearfix();
         margin-bottom: 1em;
         padding: 0;
@@ -231,7 +236,7 @@ $buttonWidth: 90px;
             overflow: hidden;
         }
         a {
-            font-size: 13px;
+            font-size: 1em;
             display: inline-block;
             background-color: $brabant-color;
             padding: 4px;
@@ -242,7 +247,9 @@ $buttonWidth: 90px;
     }
     img {
         float: right;
-        margin-left: 10px;
+        margin: 0 0 10px 10px;
+        max-width: 200px;
+        border: 1px solid $brabant-color;
     }
     &.uuid {
         border: 0px none;
@@ -254,6 +261,47 @@ $buttonWidth: 90px;
             padding: 1em 0;
             color: $brabant-color;
             margin: 0;
+        }
+    }
+    .tagcloud {
+        span {
+            display: inline-block;
+            background-color: #cccccc;
+            padding: 2px 4px;
+            margin: 0 2px 5px 0;
+            border-radius: 2px;
+        }
+    }
+    strong {
+        font-weight: bold;
+    }
+}
+
+.zoekresultaten_buttons {
+    .button {
+        float: left;
+        clear: left;
+    }
+    .mapbutton {
+        display: none;
+    }
+    .downloadbutton {
+        display: none;
+    }
+}
+
+.contactitem {
+    max-width: 500px;
+    margin-bottom: 20px;
+    .title {
+        color: #000000;
+        display: block;
+        overflow: hidden;
+        img {
+            float: right;
+            vertical-align: middle;
+            max-width: 150px;
+            max-height: 100px;
         }
     }
 }
@@ -269,6 +317,23 @@ iframe {
 
 p {
     padding-bottom: 1em;
+}
+
+ol {
+    list-style: decimal;
+    padding-left: 15px;
+    li {
+        padding-left: 10px;
+    }
+    &.spaced li {
+        padding: 0 0 10px 10px;
+        img {
+            max-width: 150px;
+            max-height: 100px;
+            margin: 10px;
+            vertical-align: middle;
+        }
+    }
 }
 
 @media (max-width: 750px) {

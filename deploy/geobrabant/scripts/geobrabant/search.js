@@ -13,7 +13,9 @@
                 resultUrl: '',
                 contextPath: '',
                 searchKey: 'searchString',
-                resultClass: 'zoekresultaat'
+                resultClass: 'zoekresultaat',
+                summaryLength: 0,
+                resultCallback: null
             }, conf);
             this.resultContainer = $(this.config.container);
             if(this.config.searchString !== '') {
@@ -41,6 +43,9 @@
                         for(var i = 0; i < result.result.length; i++) {
                             me.createSearchResult(result.result[i]);
                         }
+                        if(me.config.resultCallback !== null && me.config.resultCallback instanceof Function) {
+                            me.config.resultCallback(result);
+                        }
                     } else {
                         me.resultContainer.text('Geen resultaten gevonden');
                     }
@@ -61,11 +66,15 @@
                 }));
             }
             header.append($('<span></span>').text(searchResult.title));
+            var abstract = searchResult.abstractString;
+            if(this.config.summaryLength !== 0) {
+                abstract.length > this.config.summaryLength && (abstract = abstract.substring(0, this.config.summaryLength) + '...');
+            }
             this.resultContainer.append(
                 $('<div></div>')
                 .addClass(this.config.resultClass)
                 .append(header)
-                .append($('<p></p>').text(searchResult.abstractString))
+                .append($('<p></p>').text(abstract))
             );
         },
         prepareSearchString: function(searchString) {

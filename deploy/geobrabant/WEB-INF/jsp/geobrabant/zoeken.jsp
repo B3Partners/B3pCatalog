@@ -9,43 +9,67 @@
 
 <stripes:layout-render name="/WEB-INF/jsp/templates/geobrabant.jsp" pageTitle="Welkom bij GeoBrabant - Zoekresultaat" activePage="zoeken">
     <stripes:layout-component name="content">
-        <div class="col col-2 zoekresultaten">
-            <h2>Titel van de informatiebron</h2>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </p>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </p>
-        </div>
-        <div class="col">
+        <div class="col col-2 zoekresultaten"></div>
+        <div class="col zoekresultaten_buttons">
             <h2>U wilt verder</h2>
-            <a href="" class="button spacing">Bekijk de informatie op de kaart</a>
-            <a href="" class="button spacing">Download de data / Link naar de service</a>
-            <a href="" class="button spacing">Bekijk metadata in detail</a>
+            <a href="" class="button spacing mapbutton" target="_new">Bekijk de informatie op de kaart</a>
+            <a href="" class="button spacing downloadbutton" target="_new">Download de data</a>
+            <a href="" class="button spacing metadatabutton" target="_new">Bekijk metadata in detail</a>
         </div>
     </stripes:layout-component>
     <stripes:layout-component name="footerscripts">
         <script src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.min.js" type="text/javascript"></script>
         <script src="${contextPath}/scripts/geobrabant/search.js" type="text/javascript"></script>
         <script>
-            GeoBrabant.SearchComponent.init({
-                contextPath: '${contextPath}',
-                searchString: '${actionBean.uuid}',
-                searchKey: 'uuid',
-                resultClass: 'zoekresultaat uuid',
-                searchUrl: '<stripes:url beanclass="nl.b3p.catalog.stripes.CatalogAction" event="load" />'
-            });
+            (function($) {
+                function getValueOrDefault(value, defaultValue) {
+                    if(value) {
+                        return value;
+                    }
+                    return defaultValue;
+                }
+                GeoBrabant.SearchComponent.init({
+                    contextPath: '${contextPath}',
+                    searchString: '${actionBean.uuid}',
+                    searchKey: 'uuid',
+                    resultClass: 'zoekresultaat uuid',
+                    searchUrl: '<stripes:url beanclass="nl.b3p.catalog.stripes.CatalogAction" event="load" />',
+                    resultCallback: function(result) {
+                        var resultObject = result.result[0];
+                        var image = getValueOrDefault(resultObject.browseGraphicFileName, '${contextPath}/images/geobrabant/no-image.png');
+                        var tags = getValueOrDefault(resultObject.keyWords, []);
+                        var container = $('.zoekresultaat.uuid');
+                        container.find('h2').after('<img src="' + image + '" />');
+                        var tagCloud = $('<div class="tagcloud"></div>');
+                        for(var i = 0; i < tags.length; i++) {
+                            tagCloud.append('<span>' + tags[i] + '</span> ');
+                        }
+                        container.append(tagCloud);
+                        container.append('<hr />');
+                        container.append('<strong>Organisatie: </strong><span>' + resultObject.responsibleOrganisationName + '</span><br />');
+                        container.append('<strong>Datum: </strong><span>' + resultObject.dateStamp + ' / ');
+                        container.append('<strong>Standaard: </strong>' + resultObject.metadataStandardName + ' / ');
+                        container.append('<strong>UUID: </strong>' + resultObject.uuid);
+                        // Set button URL's
+                        var catalogUrl = '${contextPath}/#uuid=' + resultObject.uuid;
+                        $('.metadatabutton').attr('href', catalogUrl);
+                        if(resultObject.urlDatasets) {
+                            for(var j in resultObject.urlDatasets) {
+                                if(!resultObject.urlDatasets.hasOwnProperty(j)) {
+                                    continue;
+                                }
+                                var protocol = resultObject.urlDatasets[j].protocol;
+                                if(protocol === 'website') {
+                                    $('.mapbutton').attr('href', resultObject.urlDatasets[j].href).show();
+                                }
+                                else if(protocol === 'download') {
+                                    $('.downloadbutton').attr('href', resultObject.urlDatasets[j].href).show();
+                                }
+                            }
+                        }
+                    }
+                });
+            }(jQuery));
         </script>
     </stripes:layout-component>
 </stripes:layout-render>

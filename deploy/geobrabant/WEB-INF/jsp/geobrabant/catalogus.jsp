@@ -38,7 +38,8 @@
                 searchString: '${actionBean.searchString}',
                 searchType: '${actionBean.searchType}',
                 searchUrl: '<stripes:url beanclass="nl.b3p.catalog.stripes.CatalogAction" event="search" />',
-                resultUrl: '<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" event="zoeken"/>&uuid='
+                resultUrl: '<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" event="zoeken"/>&uuid=',
+                summaryLength: 300
             });
             $('.searchform').bind('submit', function(e) {
                 e.preventDefault();
