@@ -31,6 +31,17 @@ B3pCatalog.hashchange = function(event) {
         showTab($("#main-tabs a[href='#search']"));
         return;
     }
+    
+    if (event.getState("uuid")) {
+        showTab($("#main-tabs a[href='#search']"));
+        $('#searchStringBox').val(event.getState("uuid"));
+        $('select[name=searchType]').val('Identifier');
+        $('#searchForm').append('<input type="hidden" name="search" value="search" />');
+        setTimeout(function() {
+            $('#searchForm').trigger('submit');
+        }, 0);
+        return;
+    }
 
     if (event.getState("page") == "metadata") {
         $(".selected", "#filetree").removeClass("selected");
