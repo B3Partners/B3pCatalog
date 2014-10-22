@@ -29,7 +29,7 @@
                         <input type="hidden" name="searchType" value="AnyText" />
                     </stripes:form>
                     <div class="social-icons">
-                        <a href="http://www.linkedin.com" class="icon-linkedin"><span>Linkedin</span></a>
+                        <a href="http://www.linkedin.com" class="text">LinkedIn Log In</a>
                         <a href="https://twitter.com/geobrabant" class="icon-twitter"><span>Twitter</span></a>
                         <a href="http://www.facebook.com" class="icon-facebook"><span>Facebook</span></a>
                     </div>
@@ -46,16 +46,7 @@
             <stripes:layout-component name="content"/>
         </section>
         <footer class="${activePage}_footer">
-            <div class="row">
-                <a href="#"><img src="${contextPath}/images/geobrabant/brabant.png" alt="Provincie Noord-Brabant" /></a>
-                <a href="#"><img src="${contextPath}/images/geobrabant/denbosch.png" alt="'s Hertogenbosch" /></a>
-                <a href="#"><img src="${contextPath}/images/geobrabant/waterschap.png" alt="Waterschap Aa en Maas" /></a>
-            </div>
-            <div class="row">
-                <a href="#"><img src="${contextPath}/images/geobrabant/has.png" alt="HAS Hogeschool" /></a>
-                <a href="#"><img src="${contextPath}/images/geobrabant/agrifood.png" alt="AgriFood Capital" /></a>
-                <a href="#"><img src="${contextPath}/images/geobrabant/veiligheidsregio.png" alt="Veiligheidsregio Brabant-Noord" /></a>
-            </div>
+            Innovatieve dienstverlening door samenwerking van overheid, bedrijfsleven en onderwijs
         </footer>
         <stripes:layout-component name="footerscripts" />
     </body>

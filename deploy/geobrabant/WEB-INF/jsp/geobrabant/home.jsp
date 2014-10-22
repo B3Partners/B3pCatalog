@@ -10,11 +10,9 @@
 <stripes:layout-render name="/WEB-INF/jsp/templates/geobrabant.jsp" pageTitle="Welkom bij GeoBrabant" activePage="home">
     <stripes:layout-component name="content">
         <div id="slider">
-            <img src="${contextPath}/images/geobrabant/slider1.jpg" title="Landschappen in Brabant" alt="Mooie foto met landschappen in Brabant" />
-            <img src="${contextPath}/images/geobrabant/slider2.jpg" title="Landschappen in Brabant" alt="Mooie foto met landschappen in Brabant" />
-            <img src="${contextPath}/images/geobrabant/slider3.jpg" title="Landschappen in Brabant" alt="Mooie foto met landschappen in Brabant" />
-            <img src="${contextPath}/images/geobrabant/slider4.jpg" title="Landschappen in Brabant" alt="Mooie foto met landschappen in Brabant" />
-            <img src="${contextPath}/images/geobrabant/slider5.jpg" title="Landschappen in Brabant" alt="Mooie foto met landschappen in Brabant" />
+            <img src="${contextPath}/images/geobrabant/slider/vergadering.jpg" title="" alt="" />
+            <img src="${contextPath}/images/geobrabant/slider/drongelens_kanaal.jpg" title="" alt="" />
+            <img src="${contextPath}/images/geobrabant/slider/caners_achterzijde.jpg" title="" alt="" />
         </div>
         <div class="col">
             <h2>Direct naar de kaarten</h2>
@@ -38,7 +36,8 @@
         </div>
         <div class="col feed">
             <h2>Populair op GEOBrabant</h2>
-            <a class="twitter-timeline" href="https://twitter.com/B3Partners/b3partners" data-widget-id="349847499529400320" width="300" height="350" data-link-color="#ed1b24">Tweets from @B3Partners</a>
+            <img src="${contextPath}/images/geobrabant/facebook.png" />
+            <a class="twitter-timeline" href="https://twitter.com/B3Partners/b3partners" data-widget-id="349847499529400320" width="300" height="250" data-link-color="#ed1b24">Tweets from @B3Partners</a>
             <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
         </div>
     </stripes:layout-component>
@@ -47,7 +46,7 @@
         <script>
         var slider = new IdealImageSlider.Slider({
             selector: '#slider',
-            height: 200,
+            height: 350,
             interval: 4000
         });
         slider.addCaptions();
