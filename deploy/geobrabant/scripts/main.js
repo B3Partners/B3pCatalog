@@ -2,8 +2,7 @@ if (typeof B3pCatalog == "undefined")
     B3pCatalog = {};
 
 B3pCatalog.hashchange = function(event) {
-    console.log(event);
-    //console.log("hashchange", event);
+   //console.log("hashchange", event);
     log("hashchange", event);
     // get possible cookie set by login page:
     var loginHash = $.cookie("mdeLoginHash");
@@ -1278,7 +1277,7 @@ B3pCatalog.importMetadata = function() {
         css: {"margin-top": "1em", "margin-bottom": "1em"}
     })
 
-    var $uuidCheckbox = $("<input type='checkbox' id='new-uuid-checkbox' name='new-uuid' />");
+    var $uuidCheckbox = $("<input type='checkbox' id='new-uuid-checkbox' name='newUuid' />");
     $uuidCheckbox.prop("checked", true);
 
     var $uuidLabel = $("<label for='new-uuid-checkbox'>Genereer nieuwe unieke identifiers (UUID's) voor de metadata en de bron.</label>");
@@ -1306,15 +1305,6 @@ B3pCatalog.importMetadata = function() {
 //    $form.append($newFileDiv);
 //    $form.append($textInput);
     $form.append($submitEventInput);
-
-    function importMD(xml) {
-        $("#mde").mde("option", {
-            overwriteUUIDs: $uuidCheckbox.prop("checked"), // moet eerst
-            xml: xml // start de mde opnieuw met deze xml
-        });
-        $dialogDiv.dialog("close");
-        B3pCatalog.fadeMessage("Importeren succesvol");
-    }
 
     $form.submit(function() {
         if ($fileInput.val() || ($textarea.val() && $textarea.val() !== placeholderText)) {
