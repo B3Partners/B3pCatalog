@@ -38,6 +38,7 @@ import nl.b3p.catalog.kaartenbalie.KbJDBCHelperProxy;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import nl.b3p.catalog.resolution.HtmlResolution;
 import nl.b3p.catalog.xml.DocumentHelper;
+import static nl.b3p.catalog.xml.DocumentHelper.getRoot;
 import nl.b3p.catalog.xml.NCMLSynchronizer;
 import nl.b3p.catalog.xml.Names;
 import nl.b3p.catalog.xml.Namespaces;
@@ -127,6 +128,9 @@ public class MetadataAction extends DefaultAction {
 
     @Validate
     private String fileName = null;
+    
+    @Validate
+    private Boolean newUuid;
 
     private Root root;
     private AclAccess rootAccess;
@@ -193,7 +197,7 @@ public class MetadataAction extends DefaultAction {
             md = preprocessXml(md);
 
             //datestamp and uuid added when empty
-            md = addDateUUID(md);
+            md = addDateUUID(md, false);
 
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
 
@@ -230,7 +234,7 @@ public class MetadataAction extends DefaultAction {
             md = preprocessXml(md);
 
             //datestamp and uuid added when empty
-            md = addDateUUID(md);
+            md = addDateUUID(md, false);
 
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
 
@@ -514,6 +518,8 @@ public class MetadataAction extends DefaultAction {
 
             if (importXml != null) {
                 md = new SAXBuilder().build(importXml.getInputStream());
+                // check and add wrapper
+                getRoot(md);
             } else if (metadata != null) {
                 md = DocumentHelper.getMetadataDocument(metadata);
             } else {
@@ -523,8 +529,8 @@ public class MetadataAction extends DefaultAction {
             md = preprocessXml(md);
 
             //datestamp and uuid added when empty
-            md = addDateUUID(md);
-
+            md = addDateUUID(md, newUuid);
+            
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
 
             String html = createHtmlFragment(md);
@@ -654,10 +660,10 @@ public class MetadataAction extends DefaultAction {
         return html;
     }
 
-    private Document addDateUUID(Document md) throws JDOMException {
+    private Document addDateUUID(Document md, boolean overwrite) throws JDOMException {
         //datestamp and uuid added when empty
-        mdeXml2Html.addDateStamp(md, false);
-        mdeXml2Html.addUUID(md, false);
+        mdeXml2Html.addDateStamp(md, overwrite);
+        mdeXml2Html.addUUID(md, overwrite);
         return md;
     }
 
@@ -1104,6 +1110,20 @@ public class MetadataAction extends DefaultAction {
      */
     public void setViewMode(Boolean viewMode) {
         this.viewMode = viewMode;
+    }
+
+    /**
+     * @return the newUuid
+     */
+    public Boolean getNewUuid() {
+        return newUuid;
+    }
+
+    /**
+     * @param newUuid the newUuid to set
+     */
+    public void setNewUuid(Boolean newUuid) {
+        this.newUuid = newUuid;
     }
     // </editor-fold>
 
