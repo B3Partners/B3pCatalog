@@ -47,6 +47,7 @@ header {
 
 nav {
     float: right;
+    padding-top: 28px;
     ul {
         list-style: none;
         float: right;
@@ -90,13 +91,18 @@ nav {
         }
     }
     .social-icons {
-        float: right;
-        margin-right: 5px;
-        padding-top: 2px;
+        &.fb {
+            margin-right: 5px;
+        }
         a {
             font-size: 24px;
             text-decoration: none;
-            color: $brabant-color;
+            background-color: #FFFFFF;
+            border: 0 none;
+            padding: 2px 5px;
+            &:hover {
+                border: 0 none;
+            }
             span {
                 display: inline-block;
                 @include hide-text();
@@ -104,6 +110,15 @@ nav {
             &.text {
                 text-decoration: underline;
                 font-size: 1em;
+            }
+            &.icon-facebook {
+                color: #4C66A4;
+            }
+            &.icon-twitter {
+                color: #2B7BB9;
+            }
+            &.icon-linkedin {
+                color: #069;
             }
         }
     }
@@ -173,12 +188,12 @@ $buttonWidth: 90px;
     float: left;
     width: $buttonWidth;
     padding-right: 10px;
-    div {
+    a {
         padding: 0px;
         border: 1px solid $brabant-color;
         border-radius: 2px;
         cursor: pointer;
-        background-color: #FFFFFF;
+        background-color: rgb(251, 235, 235);
         color: $brabant-color;
         &:hover, &.active {
             background-color: $brabant-color;
@@ -217,6 +232,41 @@ $buttonWidth: 90px;
 .content {
     overflow: hidden;
     min-height: 100%;
+}
+
+.catalogus {
+    fieldset {
+        width: 100%;
+        .inputfield {
+            overflow: hidden;
+        }
+        .submit {
+            float: right;
+            padding-left: 15px;
+        }
+        input {
+            width: 100%;
+            font-size: 1.1em;
+            padding: 15px;
+            border: 1px solid $brabant-color;
+            border-radius: 2px;
+        }
+        input[type=submit] {
+            padding: 15px 25px;
+        }
+        input::-moz-focus-inner {
+            border: 0;
+            padding: 0;
+        }
+    }
+    .zoeken-uitleg {
+        width: 250px;
+        float: left;
+    }
+    .zoeken-afbeelding {
+        padding-left: 10px;
+        overflow: hidden;
+    }
 }
 
 .zoekresultaat {
@@ -337,6 +387,12 @@ ol {
 }
 
 @media (max-width: 750px) {
+    nav {
+        padding-top: 10px;
+        ul li a {
+            margin: 0 5px 5px 0;
+        }
+    }
     .col {
         width: 46%;
         margin-right: 6%;
@@ -355,6 +411,17 @@ ol {
 }
 
 @media (max-width: 500px) {
+    .catalogus {
+        .zoeken-uitleg {
+            padding-bottom: 10px;
+        }
+        .zoeken-afbeelding {
+            float: left;
+            width: 100%;
+            padding-bottom: 10px;
+            padding-left: 0;
+        }
+    }
     .col {
         width: 100%;
         padding: 10px;

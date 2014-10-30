@@ -11,7 +11,7 @@
     <stripes:layout-component name="content">
         <div class="buttons">
             <c:forEach items="${actionBean.mapsList}" var="map">
-                <div class="button" data-url="${map.url}"><span>${map.title}</span></div>
+                <a class="button" data-url="${map.url}" title="${map.description}"><span>${map.title}</span></a>
             </c:forEach>
         </div>
         <div class="content">

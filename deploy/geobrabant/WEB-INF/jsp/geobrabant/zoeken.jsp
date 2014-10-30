@@ -51,7 +51,7 @@
                         container.append('<strong>Standaard: </strong>' + resultObject.metadataStandardName + ' / ');
                         container.append('<strong>UUID: </strong>' + resultObject.uuid);
                         // Set button URL's
-                        var catalogUrl = '${contextPath}/#uuid=' + resultObject.uuid;
+                        var catalogUrl = '${contextPath}/editor.jsp#uuid=' + resultObject.uuid;
                         $('.metadatabutton').attr('href', catalogUrl);
                         if(resultObject.urlDatasets) {
                             for(var j in resultObject.urlDatasets) {

@@ -3,6 +3,7 @@
     GeoBrabant.SearchComponent = {
         config: {},
         resultContainer: null,
+        defaultContent: '',
         init: function(conf) {
             var me = this;
             this.config = $.extend({}, {
@@ -18,6 +19,7 @@
                 resultCallback: null
             }, conf);
             this.resultContainer = $(this.config.container);
+            this.defaultContent = this.resultContainer.html();
             if(this.config.searchString !== '') {
                 this.search(this.config.searchString, this.config.searchType);
             }
@@ -26,6 +28,11 @@
         search: function(searchString, searchType) {
             var me = this;
             this.config.searchString = this.prepareSearchString(searchString);
+            console.log(this.config.searchString);
+            if(this.config.searchString === '') {
+                this.resultContainer.html(this.defaultContent);
+                return;
+            }
             this.config.searchType = searchType;
             this.showLoadingSpinner();
             var searchData = {
@@ -78,9 +85,6 @@
             );
         },
         prepareSearchString: function(searchString) {
-            if(!searchString || searchString.trim() === '') {
-                searchString = '*';
-            }
             return searchString.trim();
         },
         showLoadingSpinner: function() {

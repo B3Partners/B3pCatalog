@@ -56,13 +56,15 @@ public class GeoBrabantAction extends DefaultAction {
     public Resolution kaarten() {
         // This JSON should be fetched from a server somewhere
         String mapsJson = "[" +
-            "{\"title\":\"Infra\",\"url\":\"http://geobrabant.b3p.nl/viewer/app/basis/v1\"}," +
-            "{\"title\":\"Vergunningen\",\"url\":\"http://geobrabant.b3p.nl/viewer/app/basis/v1\"}," +
-            "{\"title\":\"Milieu\",\"url\":\"http://geobrabant.b3p.nl/viewer/app/Milieu/v1\"}," +
-            "{\"title\":\"AgriFood Capital\",\"url\":\"http://geobrabant.b3p.nl/viewer/app/Economie_en_bedrijvigheid/v1\"}," +
-            "{\"title\":\"Flora en Fauna\",\"url\":\"http://geobrabant.b3p.nl/viewer/app/basis/v1\"}" +
+            "{ \"title\": \"Plannen\", \"description\":\"Wet, Regelgeving &amp; Planvorming\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/wet_regelgeving_planvorming/v1\" }," + 
+            "{ \"title\": \"Recreatie\", \"description\":\"Recreatie &amp; Vrijetijd\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/recreatie_vrijetijd/v1\" }," + 
+            "{ \"title\": \"Zorg\", \"description\":\"Zorg &amp; Gezondheid\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/zorg_en_gezondheid/v1\" }," + 
+            "{ \"title\": \"Voor- zieningen\", \"description\":\"Voorzieningen\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/voorzieningen/v1\" }," + 
+            "{ \"title\": \"Veiligheid\", \"description\":\"Veiligheid\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/veiligheid/v1\" }," + 
+            "{ \"title\": \"Economie\", \"description\":\"Economie &amp; bedrijvigheid\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/economie_bedrijvigheid/v1\" }," + 
+            "{ \"title\": \"Verkeer\", \"description\":\"Verkeer, Vervoer &amp; Infrastructuur\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/verkeer_vervoer_infrastructuur/v1\" }," + 
+            "{ \"title\": \"Cultuur &amp; Natuur\", \"description\":\"Cultuur &amp; Natuur\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/cultuur_natuur/v1\" }" + 
         "]";
-        
         this.mapsList = new ArrayList<MapsBean>();
         try {
             JSONArray maps = new JSONArray(mapsJson);
@@ -70,6 +72,7 @@ public class GeoBrabantAction extends DefaultAction {
                 JSONObject rec = maps.getJSONObject(i);
                 MapsBean map = new MapsBean();
                 map.setTitle(rec.getString("title"));
+                map.setDescription(rec.getString("description"));
                 map.setUrl(rec.getString("url"));
                 this.mapsList.add(map);
             }
@@ -124,6 +127,8 @@ public class GeoBrabantAction extends DefaultAction {
         
         private String title;
         
+        private String description;
+        
         private String url;
         
         public MapsBean() {
@@ -138,6 +143,14 @@ public class GeoBrabantAction extends DefaultAction {
             this.title = title;
         }
 
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+        
         public String getUrl() {
             return url;
         }

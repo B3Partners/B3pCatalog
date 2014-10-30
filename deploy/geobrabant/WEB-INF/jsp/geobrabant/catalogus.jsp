@@ -9,22 +9,31 @@
 
 <stripes:layout-render name="/WEB-INF/jsp/templates/geobrabant.jsp" pageTitle="Welkom bij GeoBrabant - Catalogus" activePage="catalogus">
     <stripes:layout-component name="content">
+        <h2>Zoeken in de Catalogus</h2>
         <div class="col col-2">
-            <h2>Zoekresultaten</h2>
-            <div class="zoekresultaten">Zoek aan de rechterkant</div>
+            <div class="zoekresultaten">
+                <div class="zoeken-uitleg">
+                    U bevindt zich nu in onze catalogus.
+                    Hiermee krijgt u direct toegang tot het register met beschrijvingen van de datasets.
+                    Via zoektermen is het mogelijk om de juiste informatie te vinden, te bekijken en te downloaden.
+                    Vul rechts bij 'Zoeken' een zoekterm in klik op zoeken.
+                    Hier verschijnen dan de zoekresultaten.
+                </div>
+                <div class="zoeken-afbeelding">
+                    <img src="${contextPath}/images/geobrabant/woordweb.png" alt="Zoeksuggesties bijv. ruimte economie zorg veiligheid milieu" />
+                </div>
+            </div>
         </div>
         <div class="col">
-            <h2>Zoeken in de Catalogus</h2>
             <fieldset>
                 <stripes:form beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" class="searchform">
-                    <input type="search" placeholder="Zoeken" name="searchString" value="${actionBean.searchString}" />
-                    <stripes:select name="searchType" value="${actionBean.searchType}">
-                        <stripes:option value="AnyText">Overal</stripes:option>
-                        <stripes:option value="Title">Titel</stripes:option>
-                        <stripes:option value="Abstract">Samenvatting</stripes:option>
-                        <stripes:option value="Identifier">Metadata UUID</stripes:option>
-                    </stripes:select>
-                    <input type="submit" name="catalogus" value="Zoek"/>
+                    <div class="submit">    
+                        <input type="submit" name="catalogus" value="Zoeken"/>
+                    </div>
+                    <div class="inputfield">
+                        <input type="search" placeholder="Zoeken" name="searchString" value="${actionBean.searchString}" />
+                        <input type="hidden" name="searchType" value="AnyText" />
+                    </div>
                 </stripes:form>
             </fieldset>
         </div>
@@ -43,8 +52,9 @@
             });
             $('.searchform').bind('submit', function(e) {
                 e.preventDefault();
-                searchComponent.search($(this).find('input[name=searchString]').val(), $(this).find('select[name=searchType]').val());
+                searchComponent.search($(this).find('input[name=searchString]').val(), $(this).find('input[name=searchType]').val());
             });
+            $('input[name=searchString]').focus();
         </script>
     </stripes:layout-component>
 </stripes:layout-render>
