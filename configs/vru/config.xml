@@ -113,13 +113,10 @@
 				<role>editor</role>
 				<role>admin</role>
 			</acl>
-			<acl access="read">
-				<role>*</role>
-			</acl>
 			<acl access="comment">
 				<role>viewer</role>
 			</acl>
-      <acl access="none">
+      <acl access="read">
 				<role>none</role>
 			</acl>
         </fileRoot>
