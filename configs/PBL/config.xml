@@ -56,7 +56,7 @@
            * Synchroniseren kost meer tijd
            * Geldige Java installatie vereist
     -->
-    <arcobjects enabled="false"/>
+    <arcobjects enabled="true" productCodes="ArcServer Engine" arcEngineHome="C:\software\ArcGIS\Server\framework\lib\"/>
     
     <!-- <arcobjects enabled="false" forkSynchroniser="true"/> -->
     
@@ -64,36 +64,173 @@
          Minimaal één root moet zijn gedefinieerd.
     --> 
     <roots>
-        <!-- Browse bestanden vanaf het pad "C:\catalog_test".
+        <fileRoot name="Y:\dataportaal" path="\\pbl.local\public\dataportaal">
         
-             Voor synchroniseren van shapefiles is ArcView licentie nodig. 
-             Werkt met de forkSynchroniser optie.
-             
-             Voor weergave inhoud, lezen en schrijven van metadata en 
-             synchroniseren van Esri file geodatabases is een ArcView licentie 
-             nodig.
-        -->
-        <!--<fileRoot name="Demo" path="D:/Chris/metadata-2014-05-01">-->
-          <fileRoot name="Demo" path="D:/Chris/metadata-2014-05-01">
-			<!-- Autorisatie voor deze root
+        		<!-- Autorisatie voor deze root
 
-                "access" kan één van onderstaande waardes hebben:
+                "access" kan ��n van onderstaande waardes hebben:
                   "write"  : gebruiker met deze rol kan metadata wijzigen
                   "comment": gebruiker met deze rol kan metadata lezen en commentaar toevoegen
                   "read"   : gebruiker kan alleen metadata lezen
                   "none"   : root wordt niet getoond in de boomstructuur voor gebruiker, kan geen metadata lezen
 
-			
+				Met geneste <role>naam_van_rol</role> elementen kan een lijst met geldige rollen uit web.xml (<security-role>) of "*" voor 
+                elke gebruiker worden opgegeven voor bovengenoemde access.
+
                 Indien geen <acl> elementen aanwezig zijn is het default <acl access="write"><role>*</role></acl>
             -->
-			<acl access="write">
-				<role>editor</role>
-				<role>admin</role>
-			</acl>
-			<acl access="comment">
-				<role>viewer</role>
-			</acl>
+        	<acl access="write">
+			<role>G-PBL-OO-B3PCatalog</role>
+		</acl>
+		<acl access="comment">
+			<role>allePBLinSectoren</role>
+		</acl>
+		<acl access="read">
+			<role>allePBLinSectoren</role>
+		</acl>
+		<acl access="none">
+			<role>G-PBL-OO-DROtest</role>
+		</acl>
         </fileRoot>
+        
+        <fileRoot name="Y:\data" path="\\pbl.local\public\data">
+        	<acl access="write">
+			<role>G-PBL-OO-B3PCatalog</role>
+		</acl>
+		<acl access="write">
+			<role>G-PBL-OO-B3PCatalog-editor</role>
+		</acl>
+		<acl access="comment">
+			<role>allePBLinSectoren</role>
+		</acl>
+		<acl access="read">
+			<role>allePBLinSectoren</role>
+		</acl>
+		<acl access="none">
+			<role>G-PBL-OO-DROtest</role>
+		</acl>
+        </fileRoot>
+        
+        <fileRoot name="Y:\ontwdata" path="\\pbl.local\public\ontwdata">
+        	<acl access="write">
+			<role>G-PBL-OO-B3PCatalog</role>
+		</acl>
+		<acl access="write">
+			<role>G-PBL-OO-B3PCatalog-editor</role>
+		</acl>
+		<acl access="comment">
+			<role>allePBLinSectoren</role>
+		</acl>
+		<acl access="read">
+			<role>allePBLinSectoren</role>
+		</acl>
+		<acl access="none">
+			<role>G-PBL-OO-DROtest</role>
+		</acl>
+        </fileRoot>
+        
+        <fileRoot name="Y:\ontwweb" path="\\pbl.local\public\ontwweb">
+        	<acl access="write">
+			<role>G-PBL-OO-B3PCatalog</role>
+		</acl>
+		<acl access="write">
+			<role>G-PBL-OO-B3PCatalog-editor</role>
+		</acl>
+		<acl access="comment">
+			<role>allePBLinSectoren</role>
+		</acl>
+		<acl access="read">
+			<role>allePBLinSectoren</role>
+		</acl>
+		<acl access="none">
+			<role>G-PBL-OO-DROtest</role>
+		</acl>
+        </fileRoot>
+        
+        <fileRoot name="Y:\Project" path="\\pbl.local\public\project">
+        	<acl access="write">
+			<role>G-PBL-OO-B3PCatalog</role>
+		</acl>
+		<acl access="write">
+			<role>G-PBL-OO-B3PCatalog-editor</role>
+		</acl>
+		<acl access="comment">
+			<role>allePBLinSectoren</role>
+		</acl>
+		<acl access="read">
+			<role>allePBLinSectoren</role>
+		</acl>
+		<acl access="none">
+			<role>G-PBL-OO-DROtest</role>
+		</acl>
+        </fileRoot>
+        
+        <!-- Onderstaande root was bedoeld voor de proof of concept om 
+        IenM medewerkers via de PBL infrastructuur GIS te laten gebruiken -->
+        <!--<fileRoot name="DROdata" path="\\Srv-Arctest03.pbl.local\DROdata$">
+        	<acl access="write">
+			<role>G-PBL-OO-DROtest</role>
+		</acl>
+		<acl access="write">
+			<role>G-PBL-OO-DROtest</role>
+		</acl>
+		<acl access="comment">
+			<role>G-PBL-OO-DROtest</role>
+		</acl>
+		<acl access="read">
+			<role>G-PBL-OO-DROtest</role>
+		</acl>
+        </fileRoot>-->
+                
+        <!-- Browse bestanden in SDE via alleen ArcObjects.
+        
+             Voor weergave inhoud, lezen metadata en synchroniseren is 
+             ArcView licentie nodig. Om metadata XML op te slaan is 
+             ArcEditor licentie nodig.
+             
+             N.B. bij vele hoeveelheden datasets kan het weergeven van inhoud
+             enorm traag zijn. Gebruik daarvoor directe JDBC connectie (zie
+             onder).
+	-->
+        <!--<sdeRoot name="SDE ArcObjects">
+            <arcobjectsConnection>INSTANCE=sde:sqlserver:localhost\sqlexpress;DATABASE=geodb;AUTHENTICATION_MODE=OSA;VERSION=dbo.DEFAULT</arcobjectsConnection>
+        </sdeRoot>-->
+        
+        <!-- Browse bestanden in SDE via alleen JDBC (geen synchronisatie mogelijk) 
+ 
+             Geef prefix voor tabellen op met tablePrefix attribuut (bijvoorbeeld indien
+             de tabellen in een ander dan het default schema staan).
+
+	         Geef de ESRI versie van het SDE schema op met schemaVersion attribuut. Mogelijke
+             waardes "9.x" (GDB_USERMETADATA, etc.) of "10" (GDB_ITEMS). Default is
+             "9.x".
+
+             Specificatie 9.x: http://webhelp.esri.com/arcgisserver/9.3/java/index.htm#geodatabases/system_1203016261.htm
+             Specificatie 10:  http://help.arcgis.com/en/arcgisdesktop/10.0/help/index.html#//002n0000008m000000
+        -->
+        
+        <!--<sdeRoot name="SDE JDBC" tablePrefix="" schemaVersion="9.x">-->
+            <!-- De JNDI datasource moet in Tomcat zijn gedefinieerd in de webapp 
+                 context. In de WAR zit deze in META-INF/context.xml.
+                 Na deployen wordt het bestand in tomcat/conf/Catalina/localhost/b3pcatalog.xml
+                 gebruikt. Voor meer informatie:
+                 http://tomcat.apache.org/tomcat-6.0-doc/jndi-resources-howto.html#JDBC_Data_Sources
+            -->
+            
+            <!--<jndiDataSource>java:comp/env/jdbc/arcsde</jndiDataSource>
+        </sdeRoot>-->
+        
+        <!-- Browse bestanden in SDE via hybride JDBC / ArcObjects
+        
+             Voor alles behalve synchroniseren wordt JDBC gebruikt. Voor
+             synchronisatie is ArcView licentie nodig (optioneel). 
+             Werkt met de forkSynchroniser optie.             
+        -->
+        <!--<sdeRoot name="SDE JDBC+ArcObjects">
+            <jndiDataSource>java:comp/env/jdbc/arcsde</jndiDataSource>
+            <arcobjectsConnection>INSTANCE=sde:sqlserver:localhost\sqlexpress;DATABASE=geodb;AUTHENTICATION_MODE=OSA;VERSION=dbo.DEFAULT</arcobjectsConnection>           
+        </sdeRoot>-->
+
     </roots>
     
     <!-- Spatiegescheiden lijst van bestandsextensies waarbij de geografische 
@@ -103,19 +240,12 @@
 
     <cswServers>
         <cswServer>
-            <name>csw1</name>
-            <url>http://x13.b3p.nl:8080/geonetwork/srv/en/csw</url>
-            <!--Volgende elementen zijn optioneel: -->
+            <name>ngr</name>
+            <url>http://www.nationaalgeoregister.nl/geonetwork/srv/en/csw</url>
+            <!--Volgende elementen zijn optioneel: - ->
             <loginUrl>http://x13.b3p.nl:8080/geonetwork/srv/en/xml.user.login</loginUrl>
-            <username>admin</username>
-            <password>***REMOVED***</password>
-        </cswServer>
-        <cswServer>
-            <name>csw2</name>
-            <url>http://x13.b3p.nl:8080/geonetwork/srv/en/csw</url>
-            <loginUrl>http://x13.b3p.nl:8080/geonetwork/srv/en/xml.user.login</loginUrl>
-            <username>admin</username>
-            <password>***REMOVED***</password>
+            <username></username>
+            <password></password-->
         </cswServer>
     </cswServers>
     

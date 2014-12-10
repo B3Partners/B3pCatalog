@@ -1,23 +1,17 @@
 {
-    "Provincie Limburg": {
-        "postalCode": "6202 MA",
-        "voice": "043-389 89 39",
-        "address": "Postbus 5700",
-        "state": "Limburg",
-        "url": "http://www.limburg.nl",
-        "contacts": {"Geoloket": {"email": "geoloket@prvlimburg.nl"}},
+    "Planbureau voor de Leefomgeving": {
+        "postalCode": "2500 GH",
+        "voice": "070 3288 700",
+        "address": "Postbus 30314",
+        "email": "info@pbl.nl",
+        "state": "Zuid-Holland",
+        "url": "http://www.pbl.nl",
+        "city": "Den Haag",
         "country": "Nederland",
-        "city": "Maastricht"
-    },
-    "Rijksdienst voor Ondernemend Nederland (RvO)": {
-        "postalCode": "6041 CB",
-        "voice": "+31 88-6022277",
-        "address": "Slachthuisstraat 71-g",
-        "email": "Lydia.Dijkshoorn@rvo.nl",
-        "state": "limburg",
-        "url": "www.rvo.nl",
-        "city": "Roermond",
-        "country": "Nederland",
-        "contacts": {"Lydia Dijkshoorn": {"email": "Lydia.Dijkshoorn@rvo.nl"}}
+        "contacts": {"GeoLoket": {
+            "voice": "070 3288 777",
+            "email": "geoloket@pbl.nl",
+            "url": "http://www.pbl.nl/dataportaal"
+        }}
     }
 }
