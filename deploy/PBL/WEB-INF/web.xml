@@ -18,7 +18,7 @@
     <context-param>
         <description>Naam van rol van beheerder</description>
         <param-name>adminRole</param-name>
-        <param-value>admin</param-value>
+        <param-value>G-PBL-OO-B3PCatalog</param-value>
     </context-param>
         
     <listener>
