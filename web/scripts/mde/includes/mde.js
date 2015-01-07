@@ -299,10 +299,9 @@ $.widget("ui.mde", {
     //////////////////////////// Internal functions ////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////    
 
-    _startEdit: function(event) {
+    _startEdit: function($element, altClick, autoFocus, autoClose) {
         var self = this;
         //this.log("startEdit");
-        var $element = $(event.target);
 
         // already editing? or for rich text: follow links:
         if ($element.is("a, input:text, textarea, select, option"))
@@ -324,14 +323,14 @@ $.widget("ui.mde", {
 
         var $inputElement;
         if (!!picklistId) {
-            var $picklistElement = this._createPicklist($element);
+            var $picklistElement = this._createPicklist($element, autoClose);
             //this.log("pickelem");
             //this.log($picklistElement);
             $element.html($picklistElement);
 
             if (this._isDynamicPicklist(picklistId)) {
                 this.log("this._isDynamicPicklist(picklistId)");
-                $inputElement = this._createTextInput(event, $element);
+                $inputElement = this._createTextInput(altClick, $element);
                 $element.prepend($inputElement);
 
                 // prevent clicking from picklist/inputElement to inputElement/picklist to destroy both:
@@ -344,18 +343,18 @@ $.widget("ui.mde", {
                     $inputElement.focus();
             }
 
-            $picklistElement.focus();
+            if(autoFocus) $picklistElement.focus();
         } else {
-            $inputElement = this._createTextInput(event, $element);
+            $inputElement = this._createTextInput(altClick, $element, autoClose);
 
             $element.html($inputElement);
-            $inputElement.focus(); // will also show the datepicker if this is a date field
+            if(autoFocus) $inputElement.focus(); // will also show the datepicker if this is a date field
         }
 
         return false;
     },
 
-    _createTextInput: function(event, $element) {
+    _createTextInput: function(altClick, $element, autoClose) {
         var self = this;
 
         // get size from current text
@@ -376,7 +375,7 @@ $.widget("ui.mde", {
         }
 
         // alt-clicked? if so, force use of textarea
-        if (event.altKey) {
+        if (altClick) {
             iRow = 4;
             iCol = this.MAX_TEXTINPUT_SIZE;
         }
@@ -441,18 +440,18 @@ $.widget("ui.mde", {
                 dateFormat: this.options.dateFormat,
                 showAnim: "", // geen show animatie voor de snelheid in IE6 (ja, de MDE wordt nog gebruikt door IE6 gebruikers)
                 onClose: function(dateText, inst) {
-                    $(this).blur(function(event) {return self._stopEdit(event);});
+                    $(this).blur(function(event) {return self._stopEdit(event, autoClose);});
                     $(this).blur();
                 }
             });
         } else {
-            $input.blur(function(event) {return self._stopEdit(event);});
+            $input.blur(function(event) {return self._stopEdit(event, autoClose);});
         }
 
         return $input;
     },
 
-    _stopEdit: function(event) {
+    _stopEdit: function(event, autoClose) {
         
         if($(event.target).hasClass("ui-autocomplete-input")) {
             if($(event.target).data("autocomplete").menu.element.is(":visible")) {
@@ -486,6 +485,10 @@ $.widget("ui.mde", {
             }
             
             this._saveValueOnClientSide($element, newStoredValue);
+        }
+
+        if(!autoClose) {
+            return false;
         }
 
         // is blank? user deleted value? to span default (default value)
@@ -685,14 +688,14 @@ $.widget("ui.mde", {
 
     /////////////////////////////// Picklists //////////////////////////////////////
 
-    _createPicklist: function($element) {
+    _createPicklist: function($element, autoClose) {
         var self = this;
         var picklist = this._getPicklist($element)
             .clone()
             .addClass("ui-mde-picklist")
             .keydown(function(event) {return self._checkKey(event);})
-            .change(function(event) {return self._selectPicklistValue(event);})
-            .blur(function(event) {return self._destroyPicklist(event);})
+            .change(function(event) {return self._selectPicklistValue(event, autoClose);})
+            .blur(function(event) {return autoClose ? self._destroyPicklist(event) : false; })
         ;
 
         var selectElement = picklist.find('option[value="' + this.preEditText + '"]');
@@ -765,7 +768,7 @@ $.widget("ui.mde", {
     },
 
     // Description: code called by picklists when selection changed (onchange)
-    _selectPicklistValue: function(event) {
+    _selectPicklistValue: function(event, autoClose) {
         var self = this;
 
         var $select = $(event.target);
@@ -807,10 +810,10 @@ $.widget("ui.mde", {
         if (newValue != undefined && // undefined == null
             newValue !== "" &&
             newValue !== this.DEFAULT_PICKLIST_TEXT) {
-            $element.text(newText);
+            if(autoClose) $element.text(newText);
             this._saveValueOnClientSide($element, newValue, newText);
         } else {
-            $element.text(this.DEFAULT_PICKLIST_TEXT);
+            if(autoClose) $element.text(this.DEFAULT_PICKLIST_TEXT);
         }
 
         this.preEditText = undefined;
@@ -1008,6 +1011,8 @@ $.widget("ui.mde", {
 
         var self = this;
         
+        var simpleMode = $('#edit-doc-root').hasClass('ui-mde-simple');
+        
         if (this.options.tabContainerSelector !== "#ui-mde-tabs-container") {
             var tabs = $("#ui-mde-tabs-container").html();
             $(this.options.tabContainerSelector).html(tabs);
@@ -1061,11 +1066,18 @@ $.widget("ui.mde", {
         $(".ui-mde-section-header a", this.element).click(function(event) {
             var sectionContent = $(event.target).closest(".ui-mde-section").find(".ui-mde-section-content").first();
             sectionContent.toggle();
+            
+            // Close other section on same level in simple mode
+            if(simpleMode) {
+                var currentSection = $(event.target).closest(".ui-mde-section");
+                currentSection.parent().children('.ui-mde-section').not(currentSection).find(".ui-mde-section-content").hide();
+            } else {
+                // toggle plus/minus image
+                var imgSrc = self.BASE_FULL_PATH + (sectionContent.is(":visible") ? self.MINUS_IMAGE : self.PLUS_IMAGE);
+                var newImg = $("<img />").addClass("plus-minus").attr("src", imgSrc);
+                $(event.target).closest(".ui-mde-section-header").find("img.plus-minus").replaceWith(newImg);
+            }
 
-            // toggle plus/minus image
-            var imgSrc = self.BASE_FULL_PATH + (sectionContent.is(":visible") ? self.MINUS_IMAGE : self.PLUS_IMAGE);
-            var newImg = $("<img />").addClass("plus-minus").attr("src", imgSrc);
-            $(event.target).closest(".ui-mde-section-header").find("img.plus-minus").replaceWith(newImg);
             return false;
         });
         $(".ui-mde-section-title", this.element).hover(function(event) {
@@ -1112,7 +1124,7 @@ $.widget("ui.mde", {
             //$(".ui-mde-value").click(function(event) {
             $(".ui-mde-clickable").click(function(event) {
                 self.log(".ui-mde-value click");
-                return self._startEdit(event);
+                return self._startEdit($(event.target), event.altKey, /*autoFocus=*/true, /*autoClose=*/true);
             });
 
         }
@@ -1152,7 +1164,37 @@ $.widget("ui.mde", {
                 return false;
             });
         }
+        
+        // Simple editing mode, init additional gui
+        if(simpleMode) {
+            self._initSimpleGui();
+        }
 
+    },
+    
+    _initSimpleGui: function() {
+
+        var self = this;
+
+        // By default all panels are closed, open up the first one
+        $('.ui-mde-tab-definition').children('.ui-mde-section').first().children('.ui-mde-section-content').first().show();
+
+        $('.ui-mde-section-content', self.element).each(function() {
+            // Make sure all 'simple' input fields are at the beginning of the section
+            var simpleInputContainer = $('<div></div>').addClass('ui-mde-simple-input-container');
+            $(this).children('.ui-mde-element').appendTo(simpleInputContainer);
+            $(this).prepend(simpleInputContainer);
+            // Remove empty text nodes
+            $(this).contents()
+            .filter(function() {
+              return this.nodeType === 3 && $.trim(this.textContent || this.innerText) === ''; // Node.TEXT_NODE
+            }).remove();
+        });
+        
+        // Set all inputs to editMode -> needs more work, discuss first
+        $('.ui-mde-element', self.element).not('.ui-mde-element-ro').each(function() {
+            self._startEdit($(this).find('.ui-mde-value.ui-mde-clickable'), /*altClick=*/false, /*autoFocus=*/false, /*autoClose=*/false);
+        });
     },
 
     _getGeoTabs: function() {

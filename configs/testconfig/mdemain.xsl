@@ -2,6 +2,8 @@
 <xsl:stylesheet version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gfc="http://www.isotc211.org/2005/gfc" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml" xmlns:b3p="http://www.b3partners.nl/xsd/metadata" xmlns:pbl="http://www.pbl.nl/xsd/metadata" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:srv="http://www.isotc211.org/2005/srv" exclude-result-prefixes="xlink gmd gfc gmx gco gml b3p pbl dc srv">
 	<!-- These parameters must be set by the transformer -->
 	<xsl:param name="basePath"/>
+        <xsl:param name="displayMode">simple</xsl:param>
+        <xsl:param name="colorScheme">light</xsl:param>
 	<xsl:param name="dateFormatUserHint">dd-mm-jjjj</xsl:param>
 	<xsl:param name="globalReadonly_init">false</xsl:param>
 	<xsl:param name="commentMode_init">true</xsl:param>
@@ -39,7 +41,12 @@
 		</div>
 	</xsl:template>
 	<xsl:template name="editDocRoot">
-		<div id="edit-doc-root">
+                <xsl:element name="div">
+                    <xsl:attribute name="id">edit-doc-root</xsl:attribute>
+                    <xsl:attribute name="class">
+                        color-scheme-<xsl:value-of select="$colorScheme"/>
+                        <xsl:if test="$displayMode = 'simple'"> ui-mde-simple</xsl:if>
+                    </xsl:attribute>
 			<!-- ESRI thumbnail -->
 			<!-- base64 images worden onbetrouwbaar weergegeven in webbrowsers; we gebruiken nu browseGraphic volgens het nl profiel 1.2 -->
 			<!--xsl:for-each select="//Binary/Thumbnail/Data[@EsriPropertyType='Picture']">
@@ -78,11 +85,11 @@
 			<div class="hidden">
 				<xsl:call-template name="picklists"/>
 			</div>
-		</div>
+		</xsl:element>
 	</xsl:template>
 	<xsl:template name="elements">
 		<div id="algemeen" class="ui-mde-tab-definition">
-			<div class="ui-mde-section">
+			<div class="ui-mde-section color-1">
 				<xsl:call-template name="section-title">
 					<xsl:with-param name="title">Samenvatting</xsl:with-param>
 				</xsl:call-template>
@@ -90,7 +97,7 @@
 					<xsl:call-template name="summaryItems"/>
 				</div>
 			</div>
-			<div class="ui-mde-section">
+			<div class="ui-mde-section color-2">
 				<xsl:call-template name="section-title">
 					<xsl:with-param name="title">Gemeenschappelijk Datasets en Services</xsl:with-param>
 				</xsl:call-template>
@@ -99,7 +106,7 @@
 				</div>
 			</div>
 			<xsl:if test="$commentMode">
-				<div class="ui-mde-section">
+				<div class="ui-mde-section color-3">
 					<xsl:call-template name="section-title">
 						<xsl:with-param name="title">Commentaar</xsl:with-param>
 					</xsl:call-template>
@@ -2596,10 +2603,17 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
 			<xsl:attribute name="ui-mde-fullpath"><xsl:call-template name="full-path"><xsl:with-param name="theParmNodes" select="."/></xsl:call-template></xsl:attribute>
 			<xsl:attribute name="ui-mde-repeatablepath"><xsl:call-template name="full-path"><xsl:with-param name="theParmNodes" select="$repeatable-path"/><!--xsl:with-param name="extraLeadingString">/</xsl:with-param--></xsl:call-template></xsl:attribute>
 		</xsl:if>
-		<div class="ui-mde-section-header">
+		<xsl:element name="div">
+                        <xsl:attribute name="class">ui-mde-section-header<xsl:if test="$expandable = true()"> expandable</xsl:if></xsl:attribute>
+                        <xsl:if test="$repeatable and not($readonly)">
+				<xsl:call-template name="repeatable-menu">
+					<xsl:with-param name="type" select="'section'"/>
+				</xsl:call-template>
+			</xsl:if>
 			<xsl:choose>
 				<xsl:when test="$expandable = true()">
 					<a href="#" class="expandable" title="{$EXPAND_TEXT}">
+                                            <xsl:if test="$displayMode != 'simple'">
 						<xsl:choose>
 							<xsl:when test="$expanded = true()">
 								<img class="plus-minus" src="{$MINUS_IMAGE}"/>
@@ -2608,9 +2622,10 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
 								<img class="plus-minus" src="{$PLUS_IMAGE}"/>
 							</xsl:otherwise>
 						</xsl:choose>
-						<span class="ui-mde-section-title">
-							<xsl:value-of select="$title"/>
-						</span>
+                                            </xsl:if>
+                                            <span class="ui-mde-section-title">
+                                                    <xsl:value-of select="$title"/>
+                                            </span>
 					</a>
 				</xsl:when>
 				<xsl:otherwise>
@@ -2619,60 +2634,82 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
 					</span>
 				</xsl:otherwise>
 			</xsl:choose>
-			<xsl:if test="$repeatable and not($readonly)">
-				<xsl:call-template name="repeatable-menu">
-					<xsl:with-param name="type" select="'section'"/>
-				</xsl:call-template>
-			</xsl:if>
-		</div>
+                </xsl:element>
 	</xsl:template>
 	<xsl:template name="repeatable-menu">
 		<xsl:param name="type" select="'element'"/>
 		<!-- allowed values: 'element' or 'section'-->
 		<span class="menu-wrapper">
-			<xsl:element name="img">
-				<xsl:attribute name="src"><xsl:value-of select="$MENU_IMAGE"/></xsl:attribute>
-				<xsl:attribute name="title"><xsl:value-of select="$MENU_TOOLTIP"/></xsl:attribute>
-				<xsl:attribute name="class">menu-img</xsl:attribute>
-			</xsl:element>
-			<ul class="menu" style="display: none;">
+                        <xsl:if test="$displayMode != 'simple'">
+                                <xsl:element name="img">
+                                        <xsl:attribute name="src"><xsl:value-of select="$MENU_IMAGE"/></xsl:attribute>
+                                        <xsl:attribute name="title"><xsl:value-of select="$MENU_TOOLTIP"/></xsl:attribute>
+                                        <xsl:attribute name="class">menu-img</xsl:attribute>
+                                </xsl:element>
+                        </xsl:if>
+                        <xsl:element name="ul">
+                                <xsl:attribute name="class">menu</xsl:attribute>
+                                <xsl:attribute name="style">
+                                    <xsl:if test="$displayMode != 'simple'">display: none;</xsl:if>
+                                </xsl:attribute>
 				<li class="menuaddabove">
 					<a href="#">
-						<xsl:choose>
-							<xsl:when test="$type = 'element'">
-								<xsl:value-of select="$ADD_ELEMENT_ABOVE_TEXT"/>
-							</xsl:when>
-							<xsl:when test="$type = 'section'">
-								<xsl:value-of select="$ADD_SECTION_ABOVE_TEXT"/>
-							</xsl:when>
-						</xsl:choose>
+                                                <xsl:choose>
+                                                        <xsl:when test="$displayMode = 'simple'">
+                                                                <i class="icon-insert-above"></i>
+                                                        </xsl:when>
+                                                        <xsl:otherwise>
+                                                                <xsl:choose>
+                                                                        <xsl:when test="$type = 'element'">
+                                                                                <xsl:value-of select="$ADD_ELEMENT_ABOVE_TEXT"/>
+                                                                        </xsl:when>
+                                                                        <xsl:when test="$type = 'section'">
+                                                                                <xsl:value-of select="$ADD_SECTION_ABOVE_TEXT"/>
+                                                                        </xsl:when>
+                                                                </xsl:choose>
+                                                        </xsl:otherwise>
+                                                </xsl:choose>
 					</a>
 				</li>
 				<li class="menuaddbelow">
 					<a href="#">
-						<xsl:choose>
-							<xsl:when test="$type = 'element'">
-								<xsl:value-of select="$ADD_ELEMENT_BELOW_TEXT"/>
-							</xsl:when>
-							<xsl:when test="$type = 'section'">
-								<xsl:value-of select="$ADD_SECTION_BELOW_TEXT"/>
-							</xsl:when>
-						</xsl:choose>
+                                                <xsl:choose>
+                                                        <xsl:when test="$displayMode = 'simple'">
+                                                                <i class="icon-insert-below"></i>
+                                                        </xsl:when>
+                                                        <xsl:otherwise>
+                                                                <xsl:choose>
+                                                                        <xsl:when test="$type = 'element'">
+                                                                                <xsl:value-of select="$ADD_ELEMENT_BELOW_TEXT"/>
+                                                                        </xsl:when>
+                                                                        <xsl:when test="$type = 'section'">
+                                                                                <xsl:value-of select="$ADD_SECTION_BELOW_TEXT"/>
+                                                                        </xsl:when>
+                                                                </xsl:choose>
+                                                        </xsl:otherwise>
+                                                </xsl:choose>
 					</a>
 				</li>
 				<li class="menudelete">
 					<a href="#">
-						<xsl:choose>
-							<xsl:when test="$type = 'element'">
-								<xsl:value-of select="$DELETE_ELEMENT_TEXT"/>
-							</xsl:when>
-							<xsl:when test="$type = 'section'">
-								<xsl:value-of select="$DELETE_SECTION_TEXT"/>
-							</xsl:when>
-						</xsl:choose>
+                                                <xsl:choose>
+                                                        <xsl:when test="$displayMode = 'simple'">
+                                                                <i class="icon-bin"></i>
+                                                        </xsl:when>
+                                                        <xsl:otherwise>
+                                                                <xsl:choose>
+                                                                        <xsl:when test="$type = 'element'">
+                                                                                <xsl:value-of select="$DELETE_ELEMENT_TEXT"/>
+                                                                        </xsl:when>
+                                                                        <xsl:when test="$type = 'section'">
+                                                                                <xsl:value-of select="$DELETE_SECTION_TEXT"/>
+                                                                        </xsl:when>
+                                                                </xsl:choose>
+                                                        </xsl:otherwise>
+                                                </xsl:choose>
 					</a>
 				</li>
-			</ul>
+			</xsl:element>
 		</span>
 	</xsl:template>
 	<!-- TEMPLATE: geeft een anchor weer -->

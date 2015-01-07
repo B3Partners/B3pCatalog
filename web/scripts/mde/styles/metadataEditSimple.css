@@ -1,0 +1,232 @@
+/*
+Copyright (C) 2015 geertplaisier
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Created on : Jan 7, 2015, 12:06:35 PM
+Author     : geertplaisier
+*/
+
+/* ICONS */
+
+@font-face {
+	font-family: 'icons';
+	src: url('fonts/icons.eot');
+}
+@font-face {
+	font-family: 'icons';
+	src: url(data:application/x-font-ttf;charset=utf-8;base64,AAEAAAALAIAAAwAwT1MvMg8SBtYAAAC8AAAAYGNtYXDp5+aEAAABHAAAAFRnYXNwAAAAEAAAAXAAAAAIZ2x5ZuKfNNAAAAF4AAABxGhlYWQEyDUtAAADPAAAADZoaGVhB8cDxAAAA3QAAAAkaG10eA4AACwAAAOYAAAAHGxvY2EAtgFMAAADtAAAABBtYXhwAA8AOwAAA8QAAAAgbmFtZa5QMv0AAAPkAAABM3Bvc3QAAwAAAAAFGAAAACAAAwQAAZAABQAAApkCzAAAAI8CmQLMAAAB6wAzAQkAAAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAAAAAAAABAAADprAPA/8AAQAPAAEAAAAABAAAAAAAAAAAAAAAgAAAAAAACAAAAAwAAABQAAwABAAAAFAAEAEAAAAAMAAgAAgAEAAEAIOYB6az//f//AAAAAAAg5gDprP/9//8AAf/jGgQWWgADAAEAAAAAAAAAAAAAAAAAAQAB//8ADwABAAAAAAAAAAAAAgAANzkBAAAAAAEAAAAAAAAAAAACAAA3OQEAAAAAAQAAAAAAAAAAAAIAADc5AQAAAAAFABUAhAQEAsEABgALABAAFQAiAAATIRUjESERBTUhFSEHIRUhNRUhFSE1ATM1MxUzFSMVIzUjNRUCeHf9/wI9/f4CAnf+dQGL/nUBiwEBY2JjY2JjApnZ/sQCFZ5jYztjY55jYwE8Y2NjYmJjAAAABQACAJYD9gLWAAwAEwAYAB0AIgAAJTUzNTMVMxUjFSM1IwURIREzFSElIRUhNSc1IRUhPQEhFSECzGNjZGRjY/02AgR3/YUCP/38AgR3/nMBjf5zAY36Y2NjY2RkPAIY/sLan2NjO2Rkn2NjAAAAAAcAFQCOAgUC8gAKAA8AFAAZAB4AMwA4AAATERQWMyEyNjURIRMjETMRMyMRMxEzIxEzETMjETMREyM1NCYrASIGHQEjIgYdASE1NCYjKwE1MxU7FhABWBAW/lxyJiZNJiZMJiZNJydVfBAMhgwRfAwQAfARDKJycgIz/oIQFxcQAX7+qAEL/vUBC/71AQv+9QEL/vUByjAMEREMMBEMLy8MESYmAAAAAAEAAAABAADztPYAXw889QALBAAAAAAA0NL4nwAAAADQ0vifAAAAAAQEAvIAAAAIAAIAAAAAAAAAAQAAA8D/wAAABAAAAP/8BAQAAQAAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAAACAAAABAAAFQQAAAIEAAAVAAAAAAAKABQAHgBWAI4A4gABAAAABwA5AAcAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAADgCuAAEAAAAAAAEACgAAAAEAAAAAAAIADgA5AAEAAAAAAAMACgAgAAEAAAAAAAQACgBHAAEAAAAAAAUAFgAKAAEAAAAAAAYABQAqAAEAAAAAAAoANABRAAMAAQQJAAEACgAAAAMAAQQJAAIADgA5AAMAAQQJAAMACgAgAAMAAQQJAAQACgBHAAMAAQQJAAUAFgAKAAMAAQQJAAYACgAvAAMAAQQJAAoANABRAGkAYwBvAG4AcwBWAGUAcgBzAGkAbwBuACAAMQAuADAAaQBjAG8AbgBzaWNvbnMAaQBjAG8AbgBzAFIAZQBnAHUAbABhAHIAaQBjAG8AbgBzAEYAbwBuAHQAIABnAGUAbgBlAHIAYQB0AGUAZAAgAGIAeQAgAEkAYwBvAE0AbwBvAG4ALgAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==) format('truetype'),
+		 url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAAAWEAAsAAAAABTgAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABPUy8yAAABCAAAAGAAAABgDxIG1mNtYXAAAAFoAAAAVAAAAFTp5+aEZ2FzcAAAAbwAAAAIAAAACAAAABBnbHlmAAABxAAAAcQAAAHE4p800GhlYWQAAAOIAAAANgAAADYEyDUtaGhlYQAAA8AAAAAkAAAAJAfHA8RobXR4AAAD5AAAABwAAAAcDgAALGxvY2EAAAQAAAAAEAAAABAAtgFMbWF4cAAABBAAAAAgAAAAIAAPADtuYW1lAAAEMAAAATMAAAEzrlAy/XBvc3QAAAVkAAAAIAAAACAAAwAAAAMEAAGQAAUAAAKZAswAAACPApkCzAAAAesAMwEJAAAAAAAAAAAAAAAAAAAAARAAAAAAAAAAAAAAAAAAAAAAQAAA6awDwP/AAEADwABAAAAAAQAAAAAAAAAAAAAAIAAAAAAAAgAAAAMAAAAUAAMAAQAAABQABABAAAAADAAIAAIABAABACDmAems//3//wAAAAAAIOYA6az//f//AAH/4xoEFloAAwABAAAAAAAAAAAAAAAAAAEAAf//AA8AAQAAAAAAAAAAAAIAADc5AQAAAAABAAAAAAAAAAAAAgAANzkBAAAAAAEAAAAAAAAAAAACAAA3OQEAAAAABQAVAIQEBALBAAYACwAQABUAIgAAEyEVIxEhEQU1IRUhByEVITUVIRUhNQEzNTMVMxUjFSM1IzUVAnh3/f8CPf3+AgJ3/nUBi/51AYsBAWNiY2NiYwKZ2f7EAhWeY2M7Y2OeY2MBPGNjY2JiYwAAAAUAAgCWA/YC1gAMABMAGAAdACIAACU1MzUzFTMVIxUjNSMFESERMxUhJSEVITUnNSEVIT0BIRUhAsxjY2RkY2P9NgIEd/2FAj/9/AIEd/5zAY3+cwGN+mNjY2NkZDwCGP7C2p9jYztkZJ9jYwAAAAAHABUAjgIFAvIACgAPABQAGQAeADMAOAAAExEUFjMhMjY1ESETIxEzETMjETMRMyMRMxEzIxEzERMjNTQmKwEiBh0BIyIGHQEhNTQmIysBNTMVOxYQAVgQFv5cciYmTSYmTCYmTScnVXwQDIYMEXwMEAHwEQyicnICM/6CEBcXEAF+/qgBC/71AQv+9QEL/vUBC/71AcowDBERDDARDC8vDBEmJgAAAAABAAAAAQAA87T2AF8PPPUACwQAAAAAANDS+J8AAAAA0NL4nwAAAAAEBALyAAAACAACAAAAAAAAAAEAAAPA/8AAAAQAAAD//AQEAAEAAAAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAAAgAAAAQAABUEAAACBAAAFQAAAAAACgAUAB4AVgCOAOIAAQAAAAcAOQAHAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAA4ArgABAAAAAAABAAoAAAABAAAAAAACAA4AOQABAAAAAAADAAoAIAABAAAAAAAEAAoARwABAAAAAAAFABYACgABAAAAAAAGAAUAKgABAAAAAAAKADQAUQADAAEECQABAAoAAAADAAEECQACAA4AOQADAAEECQADAAoAIAADAAEECQAEAAoARwADAAEECQAFABYACgADAAEECQAGAAoALwADAAEECQAKADQAUQBpAGMAbwBuAHMAVgBlAHIAcwBpAG8AbgAgADEALgAwAGkAYwBvAG4Ac2ljb25zAGkAYwBvAG4AcwBSAGUAZwB1AGwAYQByAGkAYwBvAG4AcwBGAG8AbgB0ACAAZwBlAG4AZQByAGEAdABlAGQAIABiAHkAIABJAGMAbwBNAG8AbwBuAC4AAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=) format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+	font-family: 'icons';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-insert-above:before {
+	content: "\e600";
+}
+
+.icon-insert-below:before {
+	content: "\e601";
+}
+
+.icon-bin:before {
+	content: "\e9ac";
+}
+
+/* COLOR SCHEMES */
+
+.ui-mde .ui-mde-simple.color-scheme-light .color-1.ui-mde-section .ui-mde-section-header {
+    background-color: #76828D;
+    background-color: rgba(118,130,141,1);
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-1.ui-mde-section .ui-mde-section-header.expandable:hover {
+	background-color: rgba(118,130,141,.9);	
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-1.ui-mde-section .ui-mde-section-content {
+	border: 1px solid #76828D;
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-2.ui-mde-section .ui-mde-section-header {
+	background-color: #B6C0C9;
+	background-color: rgba(182,192,201,1);
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-2.ui-mde-section .ui-mde-section-header.expandable:hover {
+	background-color: rgba(182,192,201,.9);	
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-2.ui-mde-section .ui-mde-section-content {
+	border: 1px solid #B6C0C9;
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-3.ui-mde-section .ui-mde-section-header {
+	background-color: #909BA5;
+	background-color: rgba(144,155,165,1);
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-3.ui-mde-section .ui-mde-section-header.expandable:hover {
+	background-color: rgba(144,155,165,.9);	
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-3.ui-mde-section .ui-mde-section-content {
+	border: 1px solid #909BA5;
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-4.ui-mde-section .ui-mde-section-header {
+	background-color: #495662;
+	background-color: rgba( 73, 86, 98,1);
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-4.ui-mde-section .ui-mde-section-header.expandable:hover {
+	background-color: rgba( 73, 86, 98,.9);	
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-4.ui-mde-section .ui-mde-section-content {
+	border: 1px solid #495662;
+}
+.ui-mde .ui-mde-simple.color-scheme-light .ui-mde-section .ui-mde-section-header a {
+	color: #EEEEEE;
+}
+.ui-mde .ui-mde-simple.color-scheme-light .ui-mde-section .ui-mde-section-header a:hover {
+	color: #FFFFFF;
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-2.ui-mde-section .ui-mde-section-header a {
+	color: #555555;
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-2.ui-mde-section .ui-mde-section-header a:hover {
+	color: #333333;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section {
+    margin: 0;
+    padding: 0;
+}
+
+ .ui-mde-simple .ui-mde-section + .ui-mde-section {
+    margin-top: 10px;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-section-header {
+    margin: 0;
+    padding: 10px 15px;
+    background-color: #76828D;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section-header a {
+    color: #EEEEEE;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-section-header.expandable {
+    padding: 0;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-section-header > a {
+    display: block;
+    padding: 10px 15px;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-section-content {
+    margin: 0;
+    padding: 10px;
+    /* hide per default */
+    display: none;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-element {
+    border: 1px solid #eeeeee;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-element > .ui-mde-key {
+    display: block;
+    height: 25px;
+    background-color: #eeeeee;
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-element > .ui-mde-key .menu-wrapper {
+    margin-top: -5px;
+    margin-right: -10px;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-element > .ui-mde-key .menu-wrapper .menu li a {
+    color: #000000;
+    font-size: 20px;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-element p {
+    padding: 0;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-value {
+    display: block;
+    padding: 8px 10px;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-element input.inputfield,
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-element textarea,
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-element select.ui-mde-picklist {
+    position: static;
+    margin: 0;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-section-title {
+    
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-section-title:hover {
+    color: inherit;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .menu-wrapper {
+    float: right;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .menu-wrapper .menu {
+    position: static;
+    overflow: hidden;
+    background-color: transparent;
+    border: 0 none;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .menu-wrapper .menu li {
+    float: left;
+    width: auto;
+    padding: 0;
+    margin: 0;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .menu-wrapper .menu li a {
+    margin: 0 5px;
+    font-size: 28px;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-section .menu-wrapper .menu li a:hover {
+    text-decoration: none;
+}
+
+.hide-text {
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.ui-mde a.ui-mde-wiki-help-link img {
+    vertical-align: bottom;
+}

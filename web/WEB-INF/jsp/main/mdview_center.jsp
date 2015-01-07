@@ -20,6 +20,7 @@
 
         <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/jquery-ui-latest.custom.css" />
         <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit.css" />
+        <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEditSimple.css" />
         <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/deploy.css" />
         <!--[if IE]> <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit-ie.css" /> <![endif]-->
         <!--[if lte IE 7]> <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit-ie7.css" /> <![endif]-->
