@@ -2,8 +2,8 @@
 <xsl:stylesheet version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gfc="http://www.isotc211.org/2005/gfc" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml" xmlns:b3p="http://www.b3partners.nl/xsd/metadata" xmlns:pbl="http://www.pbl.nl/xsd/metadata" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:srv="http://www.isotc211.org/2005/srv" exclude-result-prefixes="xlink gmd gfc gmx gco gml b3p pbl dc srv">
 	<!-- These parameters must be set by the transformer -->
 	<xsl:param name="basePath"/>
-        <xsl:param name="displayMode">simple</xsl:param>
-        <xsl:param name="colorScheme">light</xsl:param>
+	<xsl:param name="displayMode">simple</xsl:param>
+	<xsl:param name="colorScheme">light</xsl:param>
 	<xsl:param name="dateFormatUserHint">dd-mm-jjjj</xsl:param>
 	<xsl:param name="globalReadonly_init">false</xsl:param>
 	<xsl:param name="commentMode_init">true</xsl:param>
@@ -41,44 +41,15 @@
 		</div>
 	</xsl:template>
 	<xsl:template name="editDocRoot">
-                <xsl:element name="div">
-                    <xsl:attribute name="id">edit-doc-root</xsl:attribute>
-                    <xsl:attribute name="class">
-                        color-scheme-<xsl:value-of select="$colorScheme"/>
-                        <xsl:if test="$displayMode = 'simple'"> ui-mde-simple</xsl:if>
-                    </xsl:attribute>
-			<!-- ESRI thumbnail -->
-			<!-- base64 images worden onbetrouwbaar weergegeven in webbrowsers; we gebruiken nu browseGraphic volgens het nl profiel 1.2 -->
-			<!--xsl:for-each select="//Binary/Thumbnail/Data[@EsriPropertyType='Picture']">
-                                <xsl:call-template name="base64Img">
-                                        <xsl:with-param name="base64string" select="."/>
-                                </xsl:call-template>
-            </xsl:for-each-->
+		<xsl:element name="div">
+			<xsl:attribute name="id">edit-doc-root</xsl:attribute>
+			<xsl:attribute name="class">
+                        color-scheme-<xsl:value-of select="$colorScheme"/><xsl:if test="$displayMode = 'simple'"> ui-mde-simple</xsl:if></xsl:attribute>
 			<div id="ui-mde-tabs-container">
 				<ul id="ui-mde-tabs" class="ui-helper-reset">
 					<li class="ui-corner-top">
 						<a href="#algemeen" title="Algemeen">Algemeen</a>
 					</li>
-					<xsl:if test="$datasetMode">
-						<li class="ui-corner-top">
-							<a href="#dataset" title="Metadata voor datasets">Datasets</a>
-						</li>
-					</xsl:if>
-					<xsl:if test="$serviceMode">
-						<li class="ui-corner-top">
-							<a href="#service" title="Metadata voor services.">Services</a>
-						</li>
-					</xsl:if>
-					<xsl:if test="$fcMode">
-						<li class="ui-corner-top">
-							<a href="#attributen" title="Attribuutinformatie van de dataset">Attributen</a>
-						</li>
-					</xsl:if>
-					<xsl:if test="$dcMode">
-						<li class="ui-corner-top">
-							<a href="#dublincore" title="Dublin Core voor administratieve metadata">Dublin Core</a>
-						</li>
-					</xsl:if>
 				</ul>
 			</div>
 			<xsl:call-template name="elements"/>
@@ -89,340 +60,95 @@
 	</xsl:template>
 	<xsl:template name="elements">
 		<div id="algemeen" class="ui-mde-tab-definition">
+			<xsl:for-each select="/gmd:MD_Metadata | /*/gmd:MD_Metadata">
 			<div class="ui-mde-section color-1">
 				<xsl:call-template name="section-title">
-					<xsl:with-param name="title">Samenvatting</xsl:with-param>
+					<xsl:with-param name="title">Algemeen</xsl:with-param>
 				</xsl:call-template>
 				<div class="ui-mde-section-content">
-					<xsl:call-template name="summaryItems"/>
+					<!-- Titel van de bron ISO 360 (groter lettertype, gecentreerd)  -->
+					<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title"/>
+					<!-- Samenvatting ISO 25  -->
+					<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract"/>
+					<!-- Verantwoordelijke organisatie bron ISO 29, daaronder ingesprongen: -->        
+					<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact"/>
+					<!-- ISO 9 Metadata datum MD_Metadata.dateStamp -->
+					<xsl:apply-templates select="gmd:dateStamp"/>
+					<!-- ISO 2 Metadata ID MD_Metadata.fileIdentifier -->
+					<xsl:apply-templates select="gmd:fileIdentifier"/>
 				</div>
 			</div>
-			<div class="ui-mde-section color-2">
+			<div class="ui-mde-section color-1">
 				<xsl:call-template name="section-title">
-					<xsl:with-param name="title">Gemeenschappelijk Datasets en Services</xsl:with-param>
+					<xsl:with-param name="title">Kenmerken</xsl:with-param>
 				</xsl:call-template>
 				<div class="ui-mde-section-content">
-					<xsl:call-template name="dataServiceItems"/>
+					<!-- Doel van vervaardiging ISO 26  -->
+					<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:purpose"/>
+					<!-- Algemene beschrijving herkomst  ISO 83  -->
+					<xsl:apply-templates select="gmd:dataQualityInfo//gmd:lineage//gmd:statement"/>
+					<!-- Volledigheid/Nauwkeurigheid van de dataset ISO 137-->
+					<!-- Compleetheid -->
+					<xsl:apply-templates select="gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_CompletenessOmission/gmd:result/gmd:DQ_QuantitativeResult/gmd:value/gco:Record"/>
+					<!-- Geometrische nauwkeurigheid -->
+					<xsl:apply-templates select="gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_AbsoluteExternalPositionalAccuracy/gmd:result/gmd:DQ_QuantitativeResult/gmd:value/gco:Record"/>
+						<!-- Trefwoorden ISO 53 (mogen kommagescheiden weergegeven worden)  -->
+						<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword/gco:CharacterString"/>
 				</div>
 			</div>
-			<xsl:if test="$commentMode">
-				<div class="ui-mde-section color-3">
-					<xsl:call-template name="section-title">
-						<xsl:with-param name="title">Commentaar</xsl:with-param>
-					</xsl:call-template>
-					<div class="ui-mde-section-content">
-						<xsl:call-template name="commentItems"/>
-					</div>
-				</div>
-			</xsl:if>
-		</div>
-		<xsl:if test="$serviceMode">
-			<div id="service" class="ui-mde-tab-definition">
-				<xsl:call-template name="serviceIdentificationItems"/>
-			</div>
-		</xsl:if>
-		<xsl:if test="$datasetMode">
-			<div id="dataset" class="ui-mde-tab-definition">
-				<div class="ui-mde-section">
-					<xsl:call-template name="section-title">
-						<xsl:with-param name="title">Identificatie</xsl:with-param>
-					</xsl:call-template>
-					<div class="ui-mde-section-content">
-						<xsl:call-template name="dataIdentificationItems"/>
-					</div>
-				</div>
-				<div class="ui-mde-section">
-					<xsl:call-template name="section-title">
-						<xsl:with-param name="title">Kwaliteit/Referentie</xsl:with-param>
-					</xsl:call-template>
-					<div class="ui-mde-section-content">
-						<xsl:call-template name="dataQRItems"/>
-					</div>
-				</div>
-			</div>
-		</xsl:if>
-		<xsl:if test="$fcMode">
-			<div id="attributen" class="ui-mde-tab-definition">
-				<xsl:call-template name="attributeItems"/>
-			</div>
-		</xsl:if>
-		<xsl:if test="$dcMode">
-			<div id="dublincore" class="ui-mde-tab-definition">
-				<xsl:call-template name="dcItems"/>
-			</div>
-		</xsl:if>
-	</xsl:template>
-	<!-- Dublin Core -->
-	<xsl:template name="dcItems">
-		<xsl:for-each select="/b3p:B3Partners | /*/b3p:B3Partners">
-			<xsl:apply-templates select="*/dc:title"/>
-			<xsl:apply-templates select="*/dc:description"/>
-			<xsl:apply-templates select="*/dc:subject"/>
-			<xsl:apply-templates select="*/dc:date"/>
-			<xsl:apply-templates select="*/dc:language"/>
-			<xsl:apply-templates select="*/dc:relation"/>
-			<xsl:apply-templates select="*/dc:creator"/>
-			<xsl:apply-templates select="*/dc:publisher"/>
-			<xsl:apply-templates select="*/dc:contributor"/>
-			<xsl:apply-templates select="*/dc:type"/>
-			<xsl:apply-templates select="*/dc:format"/>
-			<xsl:apply-templates select="*/dc:identifier"/>
-			<xsl:if test="not($dcPblMode)">
-				<xsl:apply-templates select="*/dc:source"/>
-			</xsl:if>
-			<xsl:apply-templates select="*/dc:coverage"/>
-			<xsl:apply-templates select="*/dc:rights"/>
-			<xsl:if test="$dcPblMode">
-				<xsl:apply-templates select="pbl:metadataPBL/pbl:frequency"/>
-				<xsl:apply-templates select="pbl:metadataPBL/pbl:testsPerformed"/>
-			</xsl:if>
-		</xsl:for-each>
-	</xsl:template>
-	<!-- identification info services -->
-	<xsl:template name="summaryItems">
-		<xsl:for-each select="/gmd:MD_Metadata | /*/gmd:MD_Metadata">
-			<!-- Titel van de bron ISO 360 (groter lettertype, gecentreerd)  -->
-			<!-- ISO 360 Dataset titel MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.title-->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title"/>
-			<!-- Samenvatting ISO 25  -->
-			<!-- ISO 25 Samenvatting MD_Metadata.identificationInfo>MD_DataIdentification.abstract -->
-			<!-- Samenvatting srv -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract"/>
-			<!-- Trefwoorden ISO 53 (mogen kommagescheiden weergegeven worden)  -->
-			<!-- ISO 53 Trefwoorden MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.keyword-->
-			<!-- ISO 55 MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.thesaurusName>CI_Citation.title -->
-			<!-- ISO 394  + 395 MD_Metadata.identificationInfo>MD_DataIdentification.descriptiveKeywords>MD_Keywords.thesaurusName>CI_Citation.date>CI_Date.date -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords"/>
-			<!-- ISO 39 Dataset taal MD_Metadata.identificationInfo>MD_DataIdentification.language ISO 639-2 -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:language"/>
-			<!-- Verantwoordelijke organisatie bron ISO 29, daaronder ingesprongen: -->        
-            <!-- Overige info uit blok Verantwoordelijke organisatie bron (inklapbaar)  -->
-			<!-- ISO 376 Naam organisatie MD_Metadata.identificationInfo>MD_DataIdentification.pointOfContact>CI_ResponsibleParty.organisationName-->
-			<!-- ISO 397 URL organisatie MD_Metadata.identificationInfo>MD_DataIdentification.pointOfContact>CI_ResponsibleParty.contactInfo>CI_Contract.onlineResource>CI_OnlineResource.linkage-->
-			<!-- ISO 379 Rol organisatie MD_Metadata.identificationInfo>MD_DataIdentification.pointOfContact>CI_ResponsibleParty.role Codelijst: CI_RoleCode (B.5.5)-->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact"/>
-			<!-- Gebruiksbeperkingen ISO 68  -->
-			<!-- Juridische toegangsrestricties ISO 70 -->
-			<!-- Veiligheidsrestricties ISO 74  -->
-			<!-- Overige beperkingen ISO 72  -->
-			<xsl:call-template name="resourceConstraints">
-				<xsl:with-param select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints" name="resourceConstraints"/>
-			</xsl:call-template>
-			<!-- ISO 143 Herzieningsfrequentie -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceAndUpdateFrequency/gmd:MD_MaintenanceFrequencyCode"/>
-			<!-- ISO 37 Ruimtelijk schema MD_Metadata.identificationInfo>MD_DataIdentification.spatialRepresentationType Codelijst: MD_SpatialRepresentation TypeCode (B.5.26) -->
-			<xsl:apply-templates select="gmd:identificationInfo//gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode"/>
-			<!-- ISO 360/394/395(/66.4) Gerelateerde dataset -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:aggregationInfo"/>
-			<!-- -->
-			<xsl:apply-templates select="gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat"/>
-			<!-- Overig aanwezige contacts wanneer aanwezig zoals distributeur ISO 272 + overige info uit bijbehorend blok contactinfo (inklapbaar)   -->
-			<!-- ISO 376 Naam distribuerende organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.organisationName -->
-			<!-- ISO 397 URL organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.contactInfo>CI_Contact.onlineResource>CI_OnlineResource.linkage -->
-			<!-- ISO 379 Rol organisatie MD_Metadata.distributionInfo>MD_Distribution.distributor>MD_Distributor.distributorContact>CI_ResponsibleParty.role Codelijst: CI_RoleCode (B.5.5) - - >
-            <xsl:apply-templates select="gmd:distributionInfo//gmd:distributor"/> -->
-		</xsl:for-each>
-	</xsl:template>
-	<!-- gemeenschappelijk iso 19115 en iso 19110-->
-	<xsl:template name="dataServiceItems">
-		<xsl:for-each select="/gmd:MD_Metadata | /*/gmd:MD_Metadata">
-			<!-- ISO 2 Metadata ID MD_Metadata.fileIdentifier -->
-			<xsl:apply-templates select="gmd:fileIdentifier"/>
-			<!-- ISO 9 Metadata datum MD_Metadata.dateStamp -->
-			<xsl:apply-templates select="gmd:dateStamp"/>
-			<!-- ISO 3 Metadata taal MD_Metadata.language-->
-			<xsl:apply-templates select="gmd:language"/>
-			<!-- ISO 4 Metadata karakterset MD_Metadata.characterSet Codelijst: MD_CharacterSetCode (B.5.10) - - >
-            <xsl:apply-templates select="gmd:characterSet"/> -->
-			<!-- ISO 10 Metadatastandaard naam MD_Metadata.metadataStandardName -->
-			<xsl:apply-templates select="gmd:metadataStandardName"/>
-			<!-- ISO 11 Versie metadatastandaard naam  MD_Metadata.metadataStandardVersion -->
-			<xsl:apply-templates select="gmd:metadataStandardVersion"/>
-			<!-- ISO 6 Metadata hiërarchieniveau MD_Metadata.hierarchyLevel Codelijst: MD_ScopeCode (B.5.25) -->
-			<xsl:apply-templates select="gmd:hierarchyLevel"/>
-			<!-- Verantwoordelijke organisatie metadata ISO 8, daaronder ingesprongen: -->        
-            <!-- Overige info uit blok Verantwoordelijke organisatie metadata (inklapbaar)  -->
-			<!-- ISO 376 Naam organisatie metadata MD_Metadata.contact>CI_ResponsibleParty.organisationName -->
-			<!-- ISO 397 URL metadata organisatie MD_Metadata.contact>CI_ResponsibleParty.contactInfo>CI_Contact.onlineResource>CI_OnlineResource.linkage-->
-			<!-- ISO 379 Rol organisatie metadata MD_Metadata.contact>CI_ResponsibleParty.role Codelijst: CI_RoleCode (B.5.5) -->
-			<xsl:apply-templates select="gmd:contact"/>
-			<!-- Naam en URL Aanvullende documentatie ISO 274 (ISO 397, 398, 400 en 402) (klikbaar. Vooral gebruikt voor links naar websites en documenten op ons lokale netwerk)  -->
-			<!-- ISO 397 URL MD_Metadata.distributionInfo>MD_Distribution.transferOptions>MD_DigitalTransferOptions.online>CI_OnlineResource.linkage-->
-			<!-- ISO 398 Protocol MD_Metadata.distributionInfo>MD_Distribution.transferOptions>MD_DigitalTransferOptions.online>CI_OnlineResource.protocol:  codelijst SV_ServiceType -->
-			<!-- ISO 400 Naam  MD_Metadata.distributionInfo>MD_Distribution.transferOptions>MD_DigitalTransferOptions.online>CI_OnlineResource.name -->
-			<xsl:apply-templates select="gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine"/>
-			<!-- -->
-			<xsl:apply-templates select="gmd:dataQualityInfo" mode="dataService"/>
-		</xsl:for-each>
-	</xsl:template>
-	<!-- ISO 19115 1/2 -->
-	<!-- identification info datasets -->
-	<xsl:template name="dataIdentificationItems">
-		<xsl:for-each select="/gmd:MD_Metadata | /*/gmd:MD_Metadata">
-			<!-- Alternatieve titel ISO 361 (normaal lettertype, gecentreerd) -->
-			<!-- ISO 361 Dataset titel MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.alternateTitle-->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle"/>
-			<!-- Thumbnail  -->
-			<!-- Doel van vervaardiging ISO 26  -->
-			<!-- ISO 26 Doel van de vervaardiging MD_Metadata.identificationInfo>MD_DataIdentification.purpose -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:purpose"/>
-			<!-- ISO 363 Versie -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:edition/gco:CharacterString"/>
-			<!-- xsd:choice tussen ISO 57 en ISO 61. Nu altijd ISO 57. -->
-			<!-- Toepassingsschaal ISO 57  -->
-			<!-- ISO 57 Toepassingsschaal MD_Metadata.identificationInfo>MD_DataIdentification.spatialResolution>MD_Resolution.equivalentScale>MD_RepresentativeFraction.denominator -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialResolution/gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer"/>
-			<!-- ISO 61 Resolutie MD_Metadata.identificationInfo>MD_DataIdentification.spatialResolution>MD_Resolution.distance -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialResolution/gmd:MD_Resolution/gmd:distance/gco:Distance"/>
-			<!-- Status ISO 28  -->
-			<!-- ISO 28 Status MD_Metadata.identificationInfo>MD_DataIdentification.status Codelijst MD_ProgressCode (B.5.23)-->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:status"/>
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileName"/>
-			<!-- Onderwerp ISO 41  -->
-			<!-- ISO 41 Thema's MD_Metadata.identificationInfo>MD_DataIdentification.topicCategory Enumeratie: MD_TopicCategoryCode (B.5.27) -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory"/>
-			<!-- Extent ISO 344-347  -->
-			<!-- ISO 344 Minimum x-coördinaat MD_Metadata.identificationInfo>MD_DataIdentification.extent>EX_Extent.geographicElement>EX_GeographicBoundingBox.westBoundLongitude -->
-			<!-- ISO 345 Maximum x-coördinaat MD_Metadata.identificationInfo>MD_DataIdentification.extent>EX_Extent.geographicElement>EX_GeographicBoundingBox.eastBoundLongitude -->
-			<!-- ISO 346 Minimum y-coördinaat MD_Metadata.identificationInfo>MD_DataIdentification.extent>EX_Extent.geographicElement>EX_GeographicBoundingBox.southBoundLatitude -->
-			<!-- ISO 347 Maximum y-coördinaat MD_Metadata.identificationInfo>MD_DataIdentification.extent>EX_Extent.geographicElement>EX_GeographicBoundingBox.northBoundLatitude -->
-			<!-- Als het goed is, is er maar één sectie hiervan. Maar als er meerdere zijn printen we ze op een mooie manier -->
-			<xsl:for-each select="gmd:identificationInfo//gmd:extent//gmd:EX_GeographicBoundingBox">
-				<xsl:call-template name="omgrenzendeRechthoek"/>
-			</xsl:for-each>
-			<!-- Temporele dekking ISO 351   -->
-			<!-- ISO 351 Temporele dekking - BeginDatum/einddatum MD_Metadata.identificationInfo>MD_DataIdentification.extent>EX_Extent.temporalElement>EX_TemporalExtent.extent TM_Primitive(B.4.5) -->
-			<!--xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent[*/gmd:temporalElement]"/-->
-			<xsl:apply-templates select="gmd:identificationInfo//gmd:extent//gmd:temporalElement"/>
-			<!-- Daaronder de overige verplichte velden in de volgorde die voor jullie makkelijk is.  -->
-			<!-- ISO 7 Beschrijving hiërarchisch niveau MD_Metadata.hierarchyLevelName
-            <xsl:apply-templates select="gmd:hierarchyLevelName"/> -->
-			<!-- ISO 365 MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.identifier>MD_Identifier.code -->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation//gmd:identifier/gmd:MD_Identifier/gmd:code"/>
-			<!-- ISO 40 Dataset karakterset MD_Metadata.identificationInfo>MD_DataIdentification.characterSet Codelijst: MD_CharacterSetCode (B.5.10) - - >
-            <xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:characterSet"/> -->
-			<!-- ISO 394 Dataset referentie datum MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.date>CI_Date.date-->
-			<!-- ISO 395 Creatie-, publicatie-, of wijzigingsdatum MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.date>CI_Date.dateType Codelijst: CI_DateTypeCode (B.5.2)-->
-			<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date"/>
-		</xsl:for-each>
-	</xsl:template>
-	<!-- ISO 19115 2/2 -->
-	<xsl:template name="dataQRItems">
-		<xsl:for-each select="/gmd:MD_Metadata | /*/gmd:MD_Metadata">
-			<!-- Algemene beschrijving herkomst  ISO 83  -->
-			<!-- ISO 83 Algemene beschrijving herkomst MD_Metadata.dataQualityInfo>DQ_DataQuality.lineage>LI_Lineage.statement -->
-			<xsl:apply-templates select="gmd:dataQualityInfo//gmd:lineage//gmd:statement"/>
-		    <!-- ISO 5 Parent ID MD_Metadata.parentIdentifier -->
-			<xsl:apply-templates select="gmd:parentIdentifier"/>
-			<!-- Projectie ISO 207   -->
-			<!-- ISO 208.1 Verantwoordelijke organisatie voor namespace referentiesysteem MD_Metadata.referenceSystemInfo>MD_ReferenceSystem.referenceSystemIdentifier>RS_Identifier.codeSpace-->
-			<xsl:apply-templates select="gmd:referenceSystemInfo"/>
-			<!-- -->
-			<xsl:apply-templates select="gmd:dataQualityInfo" mode="data"/>
-		</xsl:for-each>
-	</xsl:template>
-	<!-- ISO 19119 -->
-	<!-- identification info for service -->
-	<xsl:template name="serviceIdentificationItems">
-		<xsl:for-each select="/gmd:MD_Metadata | /*/gmd:MD_Metadata">
-			<!-- Titel van de bron ISO 360 (groter lettertype, gecentreerd)  -->
-			<!-- ISO 360 Dataset titel 2.2.1-->
-			<xsl:apply-templates select="gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:title"/>
-			<!-- Samenvatting ISO 25  -->
-			<!-- ISO 25 Samenvatting 2.2.2-->
-			<xsl:apply-templates select="gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:abstract"/>
-			<!-- niet genoemd in spec -->
-			<xsl:apply-templates select="gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:graphicOverview/gmd:MD_BrowseGraphic/gmd:fileName"/>
-			<!-- Trefwoorden ISO 53 (mogen kommagescheiden weergegeven worden)  -->
-			<!-- ISO 53 Trefwoorden 2.4.1-->
-			<xsl:apply-templates select="gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:descriptiveKeywords"/>
-			<!-- ISO 19119 gekoppelde metadata records 2.2.6-->
-			<div class="ui-mde-section">
+			<div class="ui-mde-section color-1">
 				<xsl:call-template name="section-title">
-					<xsl:with-param name="title">Metadata voor datasets van deze service</xsl:with-param>
+					<xsl:with-param name="title">Actualiteit</xsl:with-param>
 				</xsl:call-template>
 				<div class="ui-mde-section-content">
-					<xsl:apply-templates select="gmd:identificationInfo/srv:SV_ServiceIdentification/srv:operatesOn"/>
+					<!-- ISO 394 Dataset referentie datum -->
+					<!-- ISO 395 Creatie-, publicatie-, of wijzigingsdatum -->
+					<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date"/>
+					<!-- ISO 143 Herzieningsfrequentie -->
+					<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceAndUpdateFrequency/gmd:MD_MaintenanceFrequencyCode"/>
 				</div>
 			</div>
-			<!-- stukje koppeling dataset -->
-			<div class="ui-mde-section">
+		<xsl:for-each select="gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine">
+			<div class="ui-mde-section color-1">
 				<xsl:call-template name="section-title">
-					<xsl:with-param name="title">Koppeling met dataset</xsl:with-param>
+					<xsl:with-param name="title">Naar de dataset  <xsl:call-template name="position"/>
+					</xsl:with-param>
 					<xsl:with-param name="repeatable" select="true()"/>
 				</xsl:call-template>
 				<div class="ui-mde-section-content">
-					<!-- iso 19119 couplingType 3.3.2-->
-					<xsl:apply-templates select="gmd:identificationInfo/srv:SV_ServiceIdentification/srv:couplingType"/>
-					<!-- iso 19119 serviceType Het element spatial data service type bevat het type van de service. -->
-					<xsl:apply-templates select="gmd:identificationInfo/srv:SV_ServiceIdentification/srv:serviceType"/>
-					<!-- iso 19119 serviceTypeVersion - niet genoemd in spec-->
-					<xsl:apply-templates select="gmd:identificationInfo/srv:SV_ServiceIdentification/srv:serviceTypeVersion"/>
-					<!-- ISO 19119 scoped name / gekoppelde datasets 2.2.6 conditioneel-->
-					<xsl:apply-templates select="gmd:identificationInfo/srv:SV_ServiceIdentification/srv:coupledResource"/>
-					<!-- ISO 19119 zelfde doel als hierboven. -->
-					<xsl:apply-templates select="gmd:identificationInfo/srv:SV_ServiceIdentification/srv:containsOperations/srv:SV_OperationMetadata"/>
+					<xsl:apply-templates select="gmd:CI_OnlineResource/gmd:linkage"/>
+					<xsl:apply-templates select="gmd:CI_OnlineResource/gmd:name/gco:CharacterString"/>
+					<xsl:apply-templates select="gmd:CI_OnlineResource/gmd:protocol/gco:CharacterString"/>			
+					</div>
+			</div>
+		</xsl:for-each>
+			<div class="ui-mde-section color-1">
+				<xsl:call-template name="section-title">
+					<xsl:with-param name="title">Openheid</xsl:with-param>
+				</xsl:call-template>
+				<div class="ui-mde-section-content">
+				<xsl:for-each select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints">
+					<xsl:apply-templates select="gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode"/>
+					<xsl:apply-templates select="gmd:MD_Constraints"/>
+				</xsl:for-each>
 				</div>
 			</div>
-			<!-- Extent ISO 344-347  -->
-			<!-- ISO 344 Minimum x-coördinaat MD_Metadata.identificationInfo>MD_DataIdentification.extent>EX_Extent.geographicElement>EX_GeographicBoundingBox.westBoundLongitude -->
-			<!-- ISO 345 Maximum x-coördinaat MD_Metadata.identificationInfo>MD_DataIdentification.extent>EX_Extent.geographicElement>EX_GeographicBoundingBox.eastBoundLongitude -->
-			<!-- ISO 346 Minimum y-coördinaat MD_Metadata.identificationInfo>MD_DataIdentification.extent>EX_Extent.geographicElement>EX_GeographicBoundingBox.southBoundLatitude -->
-			<!-- ISO 347 Maximum y-coördinaat MD_Metadata.identificationInfo>MD_DataIdentification.extent>EX_Extent.geographicElement>EX_GeographicBoundingBox.northBoundLatitude -->
-			<!-- Als het goed is, is er maar één sectie hiervan. Maar als er meerdere zijn printen we ze op een mooie manier -->
-			<xsl:for-each select="gmd:identificationInfo//srv:extent//gmd:EX_GeographicBoundingBox">
-				<xsl:call-template name="omgrenzendeRechthoek"/>
-			</xsl:for-each>
-			<!-- Temporele dekking ISO 351   -->
-			<!-- ISO 351 Temporele dekking - BeginDatum/einddatum MD_Metadata.identificationInfo>MD_DataIdentification.extent>EX_Extent.temporalElement>EX_TemporalExtent.extent TM_Primitive(B.4.5) -->
-			<!--xsl:apply-templates select="gmd:identificationInfo//srv:extent[*/gmd:temporalElement]"/-->
-			<xsl:apply-templates select="gmd:identificationInfo//srv:extent//gmd:temporalElement"/>
-			<!-- ISO 394 Dataset referentie datum MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.date>CI_Date.date-->
-			<!-- ISO 365 MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.identifier>MD_Identifier.code -->
-			<xsl:apply-templates select="gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation//gmd:identifier/gmd:MD_Identifier/gmd:code"/>
-			<!-- ISO 395 Creatie-, publicatie-, of wijzigingsdatum MD_Metadata.identificationInfo>MD_DataIdentification.citation>CI_Citation.date>CI_Date.dateType Codelijst: CI_DateTypeCode (B.5.2)-->
-			<xsl:apply-templates select="gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:date"/>
-			<!-- Verantwoordelijke organisatie bron ISO 29, daaronder ingesprongen: -->        
-            <!-- Overige info uit blok Verantwoordelijke organisatie bron (inklapbaar)  -->
-			<!-- ISO 376 Naam organisatie MD_Metadata.identificationInfo>MD_DataIdentification.pointOfContact>CI_ResponsibleParty.organisationName-->
-			<!-- ISO 397 URL organisatie MD_Metadata.identificationInfo>MD_DataIdentification.pointOfContact>CI_ResponsibleParty.contactInfo>CI_Contract.onlineResource>CI_OnlineResource.linkage-->
-			<!-- ISO 379 Rol organisatie MD_Metadata.identificationInfo>MD_DataIdentification.pointOfContact>CI_ResponsibleParty.role Codelijst: CI_RoleCode (B.5.5)-->
-			<xsl:apply-templates select="gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:pointOfContact"/>
-			<!-- Gebruiksbeperkingen ISO 68  -->
-			<!-- Juridische toegangsrestricties ISO 70 -->
-			<!-- Veiligheidsrestricties ISO 74  -->
-			<!-- Overige beperkingen ISO 72  -->
-			<xsl:call-template name="resourceConstraints">
-				<xsl:with-param select="gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:resourceConstraints" name="resourceConstraints"/>
-			</xsl:call-template>
+		<xsl:for-each select="gmd:contact">
+			<div class="ui-mde-section color-1">
+				<xsl:call-template name="section-title">
+					<xsl:with-param name="title">Contactgegevens dataset</xsl:with-param>
+				</xsl:call-template>
+				<div class="ui-mde-section-content">
+					<xsl:apply-templates select="gmd:CI_ResponsibleParty">
+						<xsl:with-param name="individualNameReadonly" select="$globalReadonly"/>
+					</xsl:apply-templates>
+				</div>
+			</div>
 		</xsl:for-each>
-	</xsl:template>
-	<!-- Feature Catalogue -->
-	<xsl:template name="attributeItems">
-		<xsl:for-each select="/gfc:FC_FeatureCatalogue | /*/gfc:FC_FeatureCatalogue">
-			<!-- Attribuutnaam en attribuutdefinitie op dezelfde wijze als in de huidige stylesheet. Opnemen in xml volgens hoofdstuk 8 van het Nederlands profiel. -->
-			<!-- ISO 19110 elementen -->
-			<!-- B1.1 name for this feature catalogue -->
-			<xsl:apply-templates select="gmx:name"/>
-			<!-- B1.2 subject domain(s) of feature types defined in this feature catalogue -->
-			<xsl:apply-templates select="gmx:scope"/>
-			<!-- B1.4 version number of this feature catalogue, which may include both a major version number or letter and
-            a sequence of minor release numbers or letters, such as “3.2.4a.” The format of this attribute may differ between cataloguing authorities.  -->
-			<xsl:apply-templates select="gmx:versionNumber"/>
-			<!-- B1.5 effective date of this feature catalogue. -->
-			<xsl:apply-templates select="gmx:versionDate"/>
-			<!-- B1.6 producer -->
-			<xsl:apply-templates select="gfc:producer"/>
-			<!-- B1.8 feature types -->
-			<xsl:apply-templates select="gfc:featureType"/>
 		</xsl:for-each>
+		</div>
 	</xsl:template>
-	<!-- B3Partners comments module -->
-	<xsl:template name="commentItems">
-		<xsl:for-each select="/b3p:B3Partners/b3p:comments | /*/b3p:B3Partners/b3p:comments">
-			<xsl:call-template name="add-comments-content"/>
-		</xsl:for-each>
-	</xsl:template>
+
 	<xsl:template name="picklists">
 		<!-- CI_DateTypeCode (B.5.2)-->
 		<xsl:call-template name="picklist_CI_DateTypeCode"/>
@@ -478,8 +204,8 @@
         <xsl:call-template name="picklist_MD_PixelOrientationCode"/>
         <xsl:call-template name="picklist_MD_TopologyLevelCode"/>
         -->
-        <xsl:call-template name="picklist_yesno"/>
-        <xsl:call-template name="picklist_yesnona"/>
+		<xsl:call-template name="picklist_yesno"/>
+		<xsl:call-template name="picklist_yesnona"/>
 	</xsl:template>
 	<xsl:template name="picklist_yesno">
 		<select id="picklist_yesno">
@@ -496,7 +222,7 @@
 	</xsl:template>
 	<xsl:template name="picklist_CI_DateTypeCode">
 		<select id="picklist_CI_DateTypeCode">
-			<option value="" title="Niet ingesteld"></option>
+			<option value="" title="Niet ingesteld"/>
 			<option value="creation" title="Datum waarop de dataset of dataset serie is gecreëerd.">creatie</option>
 			<option value="publication" title="Datum waarop de dataset of dataset serie is gepubliceerd.">publicatie</option>
 			<option value="revision" title="Datum waarop de dataset of dataset serie is gecontroleerd, verbeterd of is gewijzigd.">revisie</option>
@@ -1812,17 +1538,20 @@
 		<xsl:apply-templates select="gmd:individualName/gco:CharacterString">
 			<xsl:with-param name="readonly" select="$individualNameReadonly"/>
 		</xsl:apply-templates>
+				<xsl:apply-templates select="gmd:role"/>
+		<xsl:apply-templates select="gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress"/>
+	</xsl:template>
+		<!--
 		<xsl:apply-templates select="gmd:positionName/gco:CharacterString"/>
 		<xsl:apply-templates select="gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:deliveryPoint"/>
 		<xsl:apply-templates select="gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:city"/>
 		<xsl:apply-templates select="gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:administrativeArea"/>
 		<xsl:apply-templates select="gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:postalCode"/>
 		<xsl:apply-templates select="gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:country"/>
-		<xsl:apply-templates select="gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress"/>
 		<xsl:apply-templates select="gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:CI_Telephone/gmd:voice"/>
 		<xsl:apply-templates select="gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage"/>
-		<xsl:apply-templates select="gmd:role"/>
-	</xsl:template>
+		-->
+
 	<!-- ISO 376 naam organisatie -->
 	<xsl:template match="gmd:organisationName/gco:CharacterString">
 		<xsl:param name="readonly" select="$globalReadonly"/>
@@ -2278,52 +2007,52 @@
 	</xsl:template>
 	<!-- Dublin Core metadata -->
 	<xsl:template match="b3p:B3Partners/*/dc:title">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Titel</xsl:with-param>
-					<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
-				</xsl:call-template>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Titel</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:creator">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Maker/Producent</xsl:with-param>
-					<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
-				</xsl:call-template>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Maker/Producent</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:subject">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Trefwoord</xsl:with-param>
-					<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
-					</xsl:call-template>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Trefwoord</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:description">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Samenvatting</xsl:with-param>
-					<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
-				</xsl:call-template>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Samenvatting</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:publisher">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Uitgever/Leverancier</xsl:with-param>
-					<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
-				</xsl:call-template>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Uitgever/Leverancier</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:contributor">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Kennismakelaar/Contactpersoon</xsl:with-param>
-					<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
-				</xsl:call-template>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Kennismakelaar/Contactpersoon</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:date">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Datum van de bron</xsl:with-param>
-					<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
-				</xsl:call-template>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Datum van de bron</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:type">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Type</xsl:with-param>
-					<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
-				</xsl:call-template>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Type</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:format">
 		<xsl:call-template name="element">
@@ -2344,10 +2073,10 @@
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:language">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Taal van de bron</xsl:with-param>
-					<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
-				</xsl:call-template>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Taal van de bron</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:relation">
 		<xsl:call-template name="element">
@@ -2363,10 +2092,10 @@
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/*/dc:rights">
-				<xsl:call-template name="element">
-					<xsl:with-param name="title">Rechten/Voorwaarden</xsl:with-param>
-					<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
-				</xsl:call-template>
+		<xsl:call-template name="element">
+			<xsl:with-param name="title">Rechten/Voorwaarden</xsl:with-param>
+			<xsl:with-param name="readonly" select="$globalReadonly or $synchroniseDC"/>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="b3p:B3Partners/pbl:metadataPBL/pbl:frequency">
 		<xsl:call-template name="element">
@@ -2604,8 +2333,8 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
 			<xsl:attribute name="ui-mde-repeatablepath"><xsl:call-template name="full-path"><xsl:with-param name="theParmNodes" select="$repeatable-path"/><!--xsl:with-param name="extraLeadingString">/</xsl:with-param--></xsl:call-template></xsl:attribute>
 		</xsl:if>
 		<xsl:element name="div">
-                        <xsl:attribute name="class">ui-mde-section-header<xsl:if test="$expandable = true()"> expandable</xsl:if></xsl:attribute>
-                        <xsl:if test="$repeatable and not($readonly)">
+			<xsl:attribute name="class">ui-mde-section-header<xsl:if test="$expandable = true()"> expandable</xsl:if></xsl:attribute>
+			<xsl:if test="$repeatable and not($readonly)">
 				<xsl:call-template name="repeatable-menu">
 					<xsl:with-param name="type" select="'section'"/>
 				</xsl:call-template>
@@ -2613,19 +2342,19 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
 			<xsl:choose>
 				<xsl:when test="$expandable = true()">
 					<a href="#" class="expandable" title="{$EXPAND_TEXT}">
-                                            <xsl:if test="$displayMode != 'simple'">
-						<xsl:choose>
-							<xsl:when test="$expanded = true()">
-								<img class="plus-minus" src="{$MINUS_IMAGE}"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<img class="plus-minus" src="{$PLUS_IMAGE}"/>
-							</xsl:otherwise>
-						</xsl:choose>
-                                            </xsl:if>
-                                            <span class="ui-mde-section-title">
-                                                    <xsl:value-of select="$title"/>
-                                            </span>
+						<xsl:if test="$displayMode != 'simple'">
+							<xsl:choose>
+								<xsl:when test="$expanded = true()">
+									<img class="plus-minus" src="{$MINUS_IMAGE}"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<img class="plus-minus" src="{$PLUS_IMAGE}"/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:if>
+						<span class="ui-mde-section-title">
+							<xsl:value-of select="$title"/>
+						</span>
 					</a>
 				</xsl:when>
 				<xsl:otherwise>
@@ -2634,79 +2363,77 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
 					</span>
 				</xsl:otherwise>
 			</xsl:choose>
-                </xsl:element>
+		</xsl:element>
 	</xsl:template>
 	<xsl:template name="repeatable-menu">
 		<xsl:param name="type" select="'element'"/>
 		<!-- allowed values: 'element' or 'section'-->
 		<span class="menu-wrapper">
-                        <xsl:if test="$displayMode != 'simple'">
-                                <xsl:element name="img">
-                                        <xsl:attribute name="src"><xsl:value-of select="$MENU_IMAGE"/></xsl:attribute>
-                                        <xsl:attribute name="title"><xsl:value-of select="$MENU_TOOLTIP"/></xsl:attribute>
-                                        <xsl:attribute name="class">menu-img</xsl:attribute>
-                                </xsl:element>
-                        </xsl:if>
-                        <xsl:element name="ul">
-                                <xsl:attribute name="class">menu</xsl:attribute>
-                                <xsl:attribute name="style">
-                                    <xsl:if test="$displayMode != 'simple'">display: none;</xsl:if>
-                                </xsl:attribute>
+			<xsl:if test="$displayMode != 'simple'">
+				<xsl:element name="img">
+					<xsl:attribute name="src"><xsl:value-of select="$MENU_IMAGE"/></xsl:attribute>
+					<xsl:attribute name="title"><xsl:value-of select="$MENU_TOOLTIP"/></xsl:attribute>
+					<xsl:attribute name="class">menu-img</xsl:attribute>
+				</xsl:element>
+			</xsl:if>
+			<xsl:element name="ul">
+				<xsl:attribute name="class">menu</xsl:attribute>
+				<xsl:attribute name="style"><xsl:if test="$displayMode != 'simple'">display: none;</xsl:if></xsl:attribute>
 				<li class="menuaddabove">
 					<a href="#">
-                                                <xsl:choose>
-                                                        <xsl:when test="$displayMode = 'simple'">
-                                                                <i class="icon-insert-above"></i>
-                                                        </xsl:when>
-                                                        <xsl:otherwise>
-                                                                <xsl:choose>
-                                                                        <xsl:when test="$type = 'element'">
-                                                                                <xsl:value-of select="$ADD_ELEMENT_ABOVE_TEXT"/>
-                                                                        </xsl:when>
-                                                                        <xsl:when test="$type = 'section'">
-                                                                                <xsl:value-of select="$ADD_SECTION_ABOVE_TEXT"/>
-                                                                        </xsl:when>
-                                                                </xsl:choose>
-                                                        </xsl:otherwise>
-                                                </xsl:choose>
+						<xsl:choose>
+							<xsl:when test="$displayMode = 'simple'">
+								<i class="icon-insert-above"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:choose>
+									<xsl:when test="$type = 'element'">
+										<xsl:value-of select="$ADD_ELEMENT_ABOVE_TEXT"/>
+									</xsl:when>
+									<xsl:when test="$type = 'section'">
+										<xsl:value-of select="$ADD_SECTION_ABOVE_TEXT"/>
+									</xsl:when>
+								</xsl:choose>
+							</xsl:otherwise>
+						</xsl:choose>
 					</a>
 				</li>
 				<li class="menuaddbelow">
 					<a href="#">
-                                                <xsl:choose>
-                                                        <xsl:when test="$displayMode = 'simple'">
-                                                                <i class="icon-insert-below"></i>
-                                                        </xsl:when>
-                                                        <xsl:otherwise>
-                                                                <xsl:choose>
-                                                                        <xsl:when test="$type = 'element'">
-                                                                                <xsl:value-of select="$ADD_ELEMENT_BELOW_TEXT"/>
-                                                                        </xsl:when>
-                                                                        <xsl:when test="$type = 'section'">
-                                                                                <xsl:value-of select="$ADD_SECTION_BELOW_TEXT"/>
-                                                                        </xsl:when>
-                                                                </xsl:choose>
-                                                        </xsl:otherwise>
-                                                </xsl:choose>
+						<xsl:choose>
+							<xsl:when test="$displayMode = 'simple'">
+								<i class="icon-insert-below"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:choose>
+									<xsl:when test="$type = 'element'">
+										<xsl:value-of select="$ADD_ELEMENT_BELOW_TEXT"/>
+									</xsl:when>
+									<xsl:when test="$type = 'section'">
+										<xsl:value-of select="$ADD_SECTION_BELOW_TEXT"/>
+									</xsl:when>
+								</xsl:choose>
+							</xsl:otherwise>
+						</xsl:choose>
 					</a>
 				</li>
 				<li class="menudelete">
 					<a href="#">
-                                                <xsl:choose>
-                                                        <xsl:when test="$displayMode = 'simple'">
-                                                                <i class="icon-bin"></i>
-                                                        </xsl:when>
-                                                        <xsl:otherwise>
-                                                                <xsl:choose>
-                                                                        <xsl:when test="$type = 'element'">
-                                                                                <xsl:value-of select="$DELETE_ELEMENT_TEXT"/>
-                                                                        </xsl:when>
-                                                                        <xsl:when test="$type = 'section'">
-                                                                                <xsl:value-of select="$DELETE_SECTION_TEXT"/>
-                                                                        </xsl:when>
-                                                                </xsl:choose>
-                                                        </xsl:otherwise>
-                                                </xsl:choose>
+						<xsl:choose>
+							<xsl:when test="$displayMode = 'simple'">
+								<i class="icon-bin"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:choose>
+									<xsl:when test="$type = 'element'">
+										<xsl:value-of select="$DELETE_ELEMENT_TEXT"/>
+									</xsl:when>
+									<xsl:when test="$type = 'section'">
+										<xsl:value-of select="$DELETE_SECTION_TEXT"/>
+									</xsl:when>
+								</xsl:choose>
+							</xsl:otherwise>
+						</xsl:choose>
 					</a>
 				</li>
 			</xsl:element>
@@ -2815,7 +2542,9 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
 	</xsl:template>
 	<xsl:template name="wikiHelpPopupLink">
 		<xsl:if test="not($globalReadonly)">
-       <a href="#" class="ui-mde-wiki-help-link"><img src="scripts/mde/images/info.png"></img></a>
+			<a href="#" class="ui-mde-wiki-help-link">
+				<img src="scripts/mde/images/info.png"/>
+			</a>
 		</xsl:if>
 	</xsl:template>
 	<!-- EvdP: Doet speciale extra acties voor types van ISO 19139. -->
