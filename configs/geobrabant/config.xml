@@ -129,10 +129,10 @@
 
     <cswServers>
         <cswServer>
-            <name>csw1</name>
-            <url>http://x13.b3p.nl:8080/geonetwork/srv/en/csw</url>
+            <name>geobrabant</name>
+            <url>http://acc.geobrabant.nl/geonetwork/srv/eng/csw</url>
             <!--Volgende elementen zijn optioneel: -->
-            <loginUrl>http://x13.b3p.nl:8080/geonetwork/srv/en/xml.user.login</loginUrl>
+            <loginUrl>http://acc.geobrabant.nl/geonetwork/j_spring_security_check</loginUrl>
             <username>admin</username>
             <password>***REMOVED***</password>
         </cswServer>
