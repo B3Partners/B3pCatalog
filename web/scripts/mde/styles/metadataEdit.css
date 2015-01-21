@@ -61,6 +61,11 @@
     color: #1962a0;
 }
 
+.ui-mde .help-description {
+    padding: 8px 10px;
+    color: #777;
+}
+
 /* pop-up menus */
 
 .ui-mde ul.menu {
@@ -277,6 +282,14 @@ at exactly the same spot as the text in Firefox (not in IE ofcourse) */
 /* misc */
 .ui-mde div.hidden {
     display: none;
+}
+
+.info-tab {
+    padding: 10px;
+}
+
+.info-tab h1 {
+    margin: 5px 0;
 }
 
 .ui-mde .ui-mde-tab-definition {

@@ -18,87 +18,60 @@ Created on : Jan 7, 2015, 12:06:35 PM
 Author     : geertplaisier
 */
 
-/* ICONS */
-
-@font-face {
-	font-family: 'icons';
-	src: url('fonts/icons.eot');
-}
-@font-face {
-	font-family: 'icons';
-	src: url(data:application/x-font-ttf;charset=utf-8;base64,AAEAAAALAIAAAwAwT1MvMg8SBtYAAAC8AAAAYGNtYXDp5+aEAAABHAAAAFRnYXNwAAAAEAAAAXAAAAAIZ2x5ZuKfNNAAAAF4AAABxGhlYWQEyDUtAAADPAAAADZoaGVhB8cDxAAAA3QAAAAkaG10eA4AACwAAAOYAAAAHGxvY2EAtgFMAAADtAAAABBtYXhwAA8AOwAAA8QAAAAgbmFtZa5QMv0AAAPkAAABM3Bvc3QAAwAAAAAFGAAAACAAAwQAAZAABQAAApkCzAAAAI8CmQLMAAAB6wAzAQkAAAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAAAAAAAABAAADprAPA/8AAQAPAAEAAAAABAAAAAAAAAAAAAAAgAAAAAAACAAAAAwAAABQAAwABAAAAFAAEAEAAAAAMAAgAAgAEAAEAIOYB6az//f//AAAAAAAg5gDprP/9//8AAf/jGgQWWgADAAEAAAAAAAAAAAAAAAAAAQAB//8ADwABAAAAAAAAAAAAAgAANzkBAAAAAAEAAAAAAAAAAAACAAA3OQEAAAAAAQAAAAAAAAAAAAIAADc5AQAAAAAFABUAhAQEAsEABgALABAAFQAiAAATIRUjESERBTUhFSEHIRUhNRUhFSE1ATM1MxUzFSMVIzUjNRUCeHf9/wI9/f4CAnf+dQGL/nUBiwEBY2JjY2JjApnZ/sQCFZ5jYztjY55jYwE8Y2NjYmJjAAAABQACAJYD9gLWAAwAEwAYAB0AIgAAJTUzNTMVMxUjFSM1IwURIREzFSElIRUhNSc1IRUhPQEhFSECzGNjZGRjY/02AgR3/YUCP/38AgR3/nMBjf5zAY36Y2NjY2RkPAIY/sLan2NjO2Rkn2NjAAAAAAcAFQCOAgUC8gAKAA8AFAAZAB4AMwA4AAATERQWMyEyNjURIRMjETMRMyMRMxEzIxEzETMjETMREyM1NCYrASIGHQEjIgYdASE1NCYjKwE1MxU7FhABWBAW/lxyJiZNJiZMJiZNJydVfBAMhgwRfAwQAfARDKJycgIz/oIQFxcQAX7+qAEL/vUBC/71AQv+9QEL/vUByjAMEREMMBEMLy8MESYmAAAAAAEAAAABAADztPYAXw889QALBAAAAAAA0NL4nwAAAADQ0vifAAAAAAQEAvIAAAAIAAIAAAAAAAAAAQAAA8D/wAAABAAAAP/8BAQAAQAAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAAACAAAABAAAFQQAAAIEAAAVAAAAAAAKABQAHgBWAI4A4gABAAAABwA5AAcAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAADgCuAAEAAAAAAAEACgAAAAEAAAAAAAIADgA5AAEAAAAAAAMACgAgAAEAAAAAAAQACgBHAAEAAAAAAAUAFgAKAAEAAAAAAAYABQAqAAEAAAAAAAoANABRAAMAAQQJAAEACgAAAAMAAQQJAAIADgA5AAMAAQQJAAMACgAgAAMAAQQJAAQACgBHAAMAAQQJAAUAFgAKAAMAAQQJAAYACgAvAAMAAQQJAAoANABRAGkAYwBvAG4AcwBWAGUAcgBzAGkAbwBuACAAMQAuADAAaQBjAG8AbgBzaWNvbnMAaQBjAG8AbgBzAFIAZQBnAHUAbABhAHIAaQBjAG8AbgBzAEYAbwBuAHQAIABnAGUAbgBlAHIAYQB0AGUAZAAgAGIAeQAgAEkAYwBvAE0AbwBvAG4ALgAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==) format('truetype'),
-		 url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAAAWEAAsAAAAABTgAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABPUy8yAAABCAAAAGAAAABgDxIG1mNtYXAAAAFoAAAAVAAAAFTp5+aEZ2FzcAAAAbwAAAAIAAAACAAAABBnbHlmAAABxAAAAcQAAAHE4p800GhlYWQAAAOIAAAANgAAADYEyDUtaGhlYQAAA8AAAAAkAAAAJAfHA8RobXR4AAAD5AAAABwAAAAcDgAALGxvY2EAAAQAAAAAEAAAABAAtgFMbWF4cAAABBAAAAAgAAAAIAAPADtuYW1lAAAEMAAAATMAAAEzrlAy/XBvc3QAAAVkAAAAIAAAACAAAwAAAAMEAAGQAAUAAAKZAswAAACPApkCzAAAAesAMwEJAAAAAAAAAAAAAAAAAAAAARAAAAAAAAAAAAAAAAAAAAAAQAAA6awDwP/AAEADwABAAAAAAQAAAAAAAAAAAAAAIAAAAAAAAgAAAAMAAAAUAAMAAQAAABQABABAAAAADAAIAAIABAABACDmAems//3//wAAAAAAIOYA6az//f//AAH/4xoEFloAAwABAAAAAAAAAAAAAAAAAAEAAf//AA8AAQAAAAAAAAAAAAIAADc5AQAAAAABAAAAAAAAAAAAAgAANzkBAAAAAAEAAAAAAAAAAAACAAA3OQEAAAAABQAVAIQEBALBAAYACwAQABUAIgAAEyEVIxEhEQU1IRUhByEVITUVIRUhNQEzNTMVMxUjFSM1IzUVAnh3/f8CPf3+AgJ3/nUBi/51AYsBAWNiY2NiYwKZ2f7EAhWeY2M7Y2OeY2MBPGNjY2JiYwAAAAUAAgCWA/YC1gAMABMAGAAdACIAACU1MzUzFTMVIxUjNSMFESERMxUhJSEVITUnNSEVIT0BIRUhAsxjY2RkY2P9NgIEd/2FAj/9/AIEd/5zAY3+cwGN+mNjY2NkZDwCGP7C2p9jYztkZJ9jYwAAAAAHABUAjgIFAvIACgAPABQAGQAeADMAOAAAExEUFjMhMjY1ESETIxEzETMjETMRMyMRMxEzIxEzERMjNTQmKwEiBh0BIyIGHQEhNTQmIysBNTMVOxYQAVgQFv5cciYmTSYmTCYmTScnVXwQDIYMEXwMEAHwEQyicnICM/6CEBcXEAF+/qgBC/71AQv+9QEL/vUBC/71AcowDBERDDARDC8vDBEmJgAAAAABAAAAAQAA87T2AF8PPPUACwQAAAAAANDS+J8AAAAA0NL4nwAAAAAEBALyAAAACAACAAAAAAAAAAEAAAPA/8AAAAQAAAD//AQEAAEAAAAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAAAgAAAAQAABUEAAACBAAAFQAAAAAACgAUAB4AVgCOAOIAAQAAAAcAOQAHAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAA4ArgABAAAAAAABAAoAAAABAAAAAAACAA4AOQABAAAAAAADAAoAIAABAAAAAAAEAAoARwABAAAAAAAFABYACgABAAAAAAAGAAUAKgABAAAAAAAKADQAUQADAAEECQABAAoAAAADAAEECQACAA4AOQADAAEECQADAAoAIAADAAEECQAEAAoARwADAAEECQAFABYACgADAAEECQAGAAoALwADAAEECQAKADQAUQBpAGMAbwBuAHMAVgBlAHIAcwBpAG8AbgAgADEALgAwAGkAYwBvAG4Ac2ljb25zAGkAYwBvAG4AcwBSAGUAZwB1AGwAYQByAGkAYwBvAG4AcwBGAG8AbgB0ACAAZwBlAG4AZQByAGEAdABlAGQAIABiAHkAIABJAGMAbwBNAG8AbwBuAC4AAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=) format('woff');
-	font-weight: normal;
-	font-style: normal;
-}
-
-[class^="icon-"], [class*=" icon-"] {
-	font-family: 'icons';
-	speak: none;
-	font-style: normal;
-	font-weight: normal;
-	font-variant: normal;
-	text-transform: none;
-	line-height: 1;
-
-	/* Better Font Rendering =========== */
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-}
-
-.icon-insert-above:before {
-	content: "\e600";
-}
-
-.icon-insert-below:before {
-	content: "\e601";
-}
-
-.icon-bin:before {
-	content: "\e9ac";
-}
-
 /* COLOR SCHEMES */
-
 .ui-mde .ui-mde-simple.color-scheme-light .color-1.ui-mde-section .ui-mde-section-header {
-    background-color: #76828D;
-    background-color: rgba(118,130,141,1);
+	background-color: rgb(0, 50, 95);
 }
 .ui-mde .ui-mde-simple.color-scheme-light .color-1.ui-mde-section .ui-mde-section-header.expandable:hover {
-	background-color: rgba(118,130,141,.9);	
+	background-color: rgba(0, 50, 95, .9);
 }
 .ui-mde .ui-mde-simple.color-scheme-light .color-1.ui-mde-section .ui-mde-section-content {
-	border: 1px solid #76828D;
+	border: 1px solid rgb(0, 50, 95);
 }
 .ui-mde .ui-mde-simple.color-scheme-light .color-2.ui-mde-section .ui-mde-section-header {
-	background-color: #B6C0C9;
-	background-color: rgba(182,192,201,1);
+	background-color: rgb(0, 80, 130);
 }
 .ui-mde .ui-mde-simple.color-scheme-light .color-2.ui-mde-section .ui-mde-section-header.expandable:hover {
-	background-color: rgba(182,192,201,.9);	
+	background-color: rgba(0, 80, 130, .9);
 }
 .ui-mde .ui-mde-simple.color-scheme-light .color-2.ui-mde-section .ui-mde-section-content {
-	border: 1px solid #B6C0C9;
+	border: 1px solid rgb(0, 80, 130);
 }
 .ui-mde .ui-mde-simple.color-scheme-light .color-3.ui-mde-section .ui-mde-section-header {
-	background-color: #909BA5;
-	background-color: rgba(144,155,165,1);
+	background-color: rgb(40, 145, 225);
 }
 .ui-mde .ui-mde-simple.color-scheme-light .color-3.ui-mde-section .ui-mde-section-header.expandable:hover {
-	background-color: rgba(144,155,165,.9);	
+	background-color: rgba(40, 145, 225, .9);
 }
 .ui-mde .ui-mde-simple.color-scheme-light .color-3.ui-mde-section .ui-mde-section-content {
-	border: 1px solid #909BA5;
+	border: 1px solid rgb(40, 145, 225);
 }
 .ui-mde .ui-mde-simple.color-scheme-light .color-4.ui-mde-section .ui-mde-section-header {
-	background-color: #495662;
-	background-color: rgba( 73, 86, 98,1);
+	background-color: rgb(145, 180, 215);
 }
 .ui-mde .ui-mde-simple.color-scheme-light .color-4.ui-mde-section .ui-mde-section-header.expandable:hover {
-	background-color: rgba( 73, 86, 98,.9);	
+	background-color: rgba(145, 180, 215, .9);
 }
 .ui-mde .ui-mde-simple.color-scheme-light .color-4.ui-mde-section .ui-mde-section-content {
-	border: 1px solid #495662;
+	border: 1px solid rgb(145, 180, 215);
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-5.ui-mde-section .ui-mde-section-header {
+	background-color: rgb(255, 240, 170);
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-5.ui-mde-section .ui-mde-section-header.expandable:hover {
+	background-color: rgba(255, 240, 170, .9);
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-5.ui-mde-section .ui-mde-section-content {
+	border: 1px solid rgb(255, 240, 170);
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-6.ui-mde-section .ui-mde-section-header {
+	background-color: rgb(255, 220, 120);
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-6.ui-mde-section .ui-mde-section-header.expandable:hover {
+	background-color: rgba(255, 220, 120, .9);
+}
+.ui-mde .ui-mde-simple.color-scheme-light .color-6.ui-mde-section .ui-mde-section-content {
+	border: 1px solid rgb(255, 220, 120);
 }
 .ui-mde .ui-mde-simple.color-scheme-light .ui-mde-section .ui-mde-section-header a {
 	color: #EEEEEE;
@@ -106,10 +79,10 @@ Author     : geertplaisier
 .ui-mde .ui-mde-simple.color-scheme-light .ui-mde-section .ui-mde-section-header a:hover {
 	color: #FFFFFF;
 }
-.ui-mde .ui-mde-simple.color-scheme-light .color-2.ui-mde-section .ui-mde-section-header a {
-	color: #555555;
+.ui-mde .ui-mde-simple.color-scheme-light .color-5.ui-mde-section .ui-mde-section-header a {
+	color: #333333;
 }
-.ui-mde .ui-mde-simple.color-scheme-light .color-2.ui-mde-section .ui-mde-section-header a:hover {
+.ui-mde .ui-mde-simple.color-scheme-light .color-6.ui-mde-section .ui-mde-section-header a {
 	color: #333333;
 }
 
@@ -124,7 +97,7 @@ Author     : geertplaisier
 
 .ui-mde .ui-mde-simple .ui-mde-section .ui-mde-section-header {
     margin: 0;
-    padding: 10px 15px;
+    padding: 7px 15px;
     background-color: #76828D;
 }
 
@@ -138,7 +111,7 @@ Author     : geertplaisier
 
 .ui-mde .ui-mde-simple .ui-mde-section .ui-mde-section-header > a {
     display: block;
-    padding: 10px 15px;
+    padding: 7px 15px;
 }
 
 .ui-mde .ui-mde-simple .ui-mde-section .ui-mde-section-content {
@@ -150,6 +123,11 @@ Author     : geertplaisier
 
 .ui-mde .ui-mde-simple .ui-mde-section .ui-mde-element {
     border: 1px solid #eeeeee;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-key {
+    font-weight: normal;
+    line-height: 1em;
 }
 
 .ui-mde .ui-mde-simple .ui-mde-section .ui-mde-element > .ui-mde-key {
@@ -186,8 +164,12 @@ Author     : geertplaisier
     margin: 0;
 }
 
+.ui-mde .ui-mde-simple .ui-mde-section .ui-mde-element textarea {
+    height: 100px;
+}
+
 .ui-mde .ui-mde-simple .ui-mde-section .ui-mde-section-title {
-    
+    font-weight: normal;
 }
 
 .ui-mde .ui-mde-simple .ui-mde-section .ui-mde-section-title:hover {
@@ -229,4 +211,8 @@ Author     : geertplaisier
 
 .ui-mde a.ui-mde-wiki-help-link img {
     vertical-align: bottom;
+}
+
+.ui-mde .ui-mde-simple .ui-mde-tab-definition {
+    padding-right: 20px;
 }
