@@ -12,6 +12,8 @@
 
         <link rel="stylesheet" href="${contextPath}/scripts/mde/styles/jquery-ui-latest.custom.css" type="text/css" media="screen" />
         <link rel="stylesheet" href="${contextPath}/styles/main.css" type="text/css" media="screen" />
+        <link rel="stylesheet" href="${contextPath}/styles/icons.css" type="text/css" media="screen" />
+        <link rel="stylesheet" href="${contextPath}/styles/deploy.css" type="text/css" media="screen" />
 
         <link rel="shortcut icon" href="${contextPath}/images/favicon.ico" type="image/x-icon" />
 
@@ -24,7 +26,7 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 theLayout = $("body").layout({
-                    north__size: 50,
+                    north__size: 60,
                     west__size: 100,
                     east__size: 100,
                     /*south__size: 60,*/
@@ -35,7 +37,7 @@
                     enableCursorHotkey: false
                 });
                 
-                $(".submit").button();
+                // $(".submit").button();
             });
         </script>
 
@@ -49,8 +51,10 @@
 
         </div>
         <div class="ui-layout-center" id="center">
+            <div class="form-wrap">
             <stripes:layout-component name="messages"/>
             <stripes:layout-component name="content"/>
+            </div>
         </div>
         <div class="ui-layout-east right-background" id="east">
 
