@@ -9,19 +9,19 @@
 <div class="ui-layout-ignore">
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#main-tabs > li").hover(function() {
+            var tabs = $("#main-tabs > li");
+            tabs.hover(function() {
                 $(this).add("a", this).toggleClass("main-tab-hover");
-            });
-
-            $("#main-tabs > li").click(function() {
+            }).click(function() {
                 showTab($(this).find("a"));
                 return false;
-            });
-            $("#main-tabs > li > a").click(function() {
+            }).find("> a").click(function() {
                 showTab(this);
                 return false;
             });
-
+            if(tabs.length === 1) {
+                tabs.hide();
+            }
             if ($("#main-tabs > li.main-tab-selected").length == 0)
                 showTab($("#main-tabs > li > a").first());
             
@@ -76,20 +76,27 @@
                 </c:if>                
             </div>
             <ul id="main-tabs" class="ui-helper-reset">
-                <li class="ui-corner-top">
-                    <a href="#filetree">Metadata bewerken</a>
-                </li>
+                <stripes:useActionBean beanclass="nl.b3p.catalog.stripes.AdminCheckActionBean" event="init" var="b"/>
                 <stripes:useActionBean beanclass="nl.b3p.catalog.stripes.AppConfigCheckActionBean" event="init" var="c"/>
-                <c:if test="${!empty c.config.defaultCswServer && c.config.defaultCswServer.url != null}">
+                <c:if test="${empty pageContext.request.remoteUser}">
                     <li class="ui-corner-top">
-                        <a href="#search">Metadata doorzoeken</a> 
+                        <a href="#info">Informatie</a>
                     </li>
                 </c:if>
-                <stripes:useActionBean beanclass="nl.b3p.catalog.stripes.AdminCheckActionBean" event="init" var="b"/>
-                <c:if test="${b.admin}">
+                <c:if test="${!empty pageContext.request.remoteUser}">
                     <li class="ui-corner-top">
-                        <a href="#admin">Beheer</a>
+                        <a href="#filetree">Metadata bewerken</a>
                     </li>
+                    <c:if test="${!empty c.config.defaultCswServer && c.config.defaultCswServer.url != null}">
+                        <li class="ui-corner-top">
+                            <a href="#search">Metadata doorzoeken</a> 
+                        </li>
+                    </c:if>
+                    <c:if test="${b.admin}">
+                        <li class="ui-corner-top">
+                            <a href="#admin">Beheer</a>
+                        </li>
+                    </c:if>
                 </c:if>
             </ul>
             <div id="page-tabs-and-toolbar" class="ui-helper-reset">

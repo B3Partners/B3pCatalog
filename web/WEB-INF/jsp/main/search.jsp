@@ -11,7 +11,6 @@
 <div id="search" class="tab-definition">
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#searchButton").button();
             $("#searchForm input:text, #searchForm select").width("200px");
             $("#searchForm").ajaxForm({
                 target: "#searchResultsContainer",
@@ -66,7 +65,7 @@
                 </tr>
             </tbody>
         </table>
-        <stripes:submit name="search" id="searchButton" value="Zoek"/>
+        <stripes:submit name="search" id="searchButton" value="Zoek" />
     </stripes:form>
 
     <div id="searchResultsContainer"></div>

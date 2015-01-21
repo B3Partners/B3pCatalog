@@ -690,7 +690,7 @@ $.widget("ui.mde", {
 
     _createPicklist: function($element, autoClose) {
         var self = this;
-        var picklist = this._getPicklist($element)
+        var picklist = this._getPicklist($element, autoClose)
             .clone()
             .addClass("ui-mde-picklist")
             .keydown(function(event) {return self._checkKey(event);})
@@ -718,14 +718,15 @@ $.widget("ui.mde", {
         return picklist;
     },
 
-    _getPicklist: function($element) {
+    _getPicklist: function($element, autoClose) {
         var self = this;
         var id = $element.attr("ui-mde-picklist");
         if (!this._isDynamicPicklist(id)) {
             return $("#" + id);
         } else {
             if (id === this.PICKLIST_ORGANISATIONS) {
-                return this._createDynamicPicklist(id, function(select) {
+                return this._createDynamicPicklist(id, autoClose, function(select) {
+                    select.children().remove();
                     $.each(self.options.organisations, function(organisationName, organisationContents) {
                         select.append($("<option></option>").attr({
                             value: organisationName,
@@ -734,25 +735,9 @@ $.widget("ui.mde", {
                     });
                 });
             } else if (id === this.PICKLIST_CONTACTS) {
-                var section = $element.closest(".ui-mde-section");
-                var org = this._findOrganisationContactNode(section, this.ORG_XPATH.ORGANISATION_NAME);
-                var orgValue = org.length ? this._getSavedValueOnClientSide(org) : "";
-                // check if the organisation exists in the defined picklists
-                var orgContent = orgValue in this.options.organisations ? this.options.organisations[orgValue] : null;
-
-                var contacts;
-                if (!!orgContent && orgContent.contacts) {
-                    // exists; use contacts of this org only.
-                    contacts = [];
-                    $.each(orgContent.contacts, function(contactName, value) {
-                        contacts.push(contactName);
-                    });
-                } else {
-                    // does not exist; use all contacts.
-                    contacts = this._getAllContacts();
-                }
-                return this._createDynamicPicklist(id, function(select) {
-                    $.each(contacts, function(index, contactName) {
+                return this._createDynamicPicklist(id, autoClose, function(select) {
+                    select.children().remove();
+                    $.each(self._getContactsForSection($element), function(index, contactName) {
                         select.append($("<option />", {
                             value: contactName,
                             title: contactName,
@@ -765,6 +750,27 @@ $.widget("ui.mde", {
                 return null;
             }
         }
+    },
+    
+    _getContactsForSection: function($element) {
+        var section = $element.closest(".ui-mde-section");
+        var org = this._findOrganisationContactNode(section, this.ORG_XPATH.ORGANISATION_NAME);
+        var orgValue = org.length ? this._getSavedValueOnClientSide(org) : "";
+        // check if the organisation exists in the defined picklists
+        var orgContent = orgValue in this.options.organisations ? this.options.organisations[orgValue] : null;
+
+        var contacts;
+        if (!!orgContent && orgContent.contacts) {
+            // exists; use contacts of this org only.
+            contacts = [];
+            $.each(orgContent.contacts, function(contactName, value) {
+                contacts.push(contactName);
+            });
+        } else {
+            // does not exist; use all contacts.
+            contacts = this._getAllContacts();
+        }
+        return contacts;
     },
 
     // Description: code called by picklists when selection changed (onchange)
@@ -785,18 +791,18 @@ $.widget("ui.mde", {
             var $section = $select.closest(".ui-mde-section");
             switch(picklistId) {
                 case this.PICKLIST_ORGANISATIONS: {
-                    this._deleteOrganisationContactValue($section, self.ORG_XPATH.INDIVIDUAL_NAME);
-                    this._fillOrganisationContactValues($section, newValue, this.options.organisations, true);
+                    this._deleteOrganisationContactValue($section, self.ORG_XPATH.INDIVIDUAL_NAME, autoClose);
+                    this._fillOrganisationContactValues($section, newValue, this.options.organisations, true, autoClose);
                     break;
                 }
                 case this.PICKLIST_CONTACTS: {
                     $.each(this.options.organisations, function(organisationName, organisationContents) {
                         if (organisationContents.contacts && organisationContents.contacts[newValue]) {
                             // first fill with organisation values
-                            self._fillOrganisationContactValue($section, self.ORG_XPATH.ORGANISATION_NAME, organisationName, true);
-                            self._fillOrganisationContactValues($section, organisationName, self.options.organisations, true);
+                            self._fillOrganisationContactValue($section, self.ORG_XPATH.ORGANISATION_NAME, organisationName, true, autoClose);
+                            self._fillOrganisationContactValues($section, organisationName, self.options.organisations, true, autoClose);
                             // then overwrite with contact values if not empty
-                            self._fillOrganisationContactValues($section, newValue, organisationContents.contacts, false);
+                            self._fillOrganisationContactValues($section, newValue, organisationContents.contacts, false, autoClose);
                             return false;
                         }
                         return true;
@@ -1011,12 +1017,22 @@ $.widget("ui.mde", {
 
         var self = this;
         
-        var simpleMode = $('#edit-doc-root').hasClass('ui-mde-simple');
+        if (this.options.viewMode) {
+            $('.help-description').remove();
+        }
         
+        var simpleMode = $('#edit-doc-root').hasClass('ui-mde-simple');
         if (this.options.tabContainerSelector !== "#ui-mde-tabs-container") {
             var tabs = $("#ui-mde-tabs-container").html();
             $(this.options.tabContainerSelector).html(tabs);
             $("#ui-mde-tabs-container").remove();
+            // Hide tabs if there is only 1 tab
+            var tabList = $(this.options.tabContainerSelector).find('.ui-helper-reset').children('li');
+            if(tabList.length === 1) {
+                this.options.currentTab = tabList.find('a');
+                tabList.hide();
+                $('#toolbar').css({ bottom: '10px' });
+            }
         }
         $("#ui-mde-tabs > li").hover(function() {
             $(this).add("a", this).toggleClass("ui-mde-tab-hover");
@@ -1191,6 +1207,11 @@ $.widget("ui.mde", {
             }).remove();
         });
         
+        // If we are in view mode we should start editMode
+        if(this.options.viewMode) {
+            return;
+        }
+        
         // Set all inputs to editMode -> needs more work, discuss first
         $('.ui-mde-element', self.element).not('.ui-mde-element-ro').each(function() {
             self._startEdit($(this).find('.ui-mde-value.ui-mde-clickable'), /*altClick=*/false, /*autoFocus=*/false, /*autoClose=*/false);
@@ -1307,14 +1328,18 @@ $.widget("ui.mde", {
         });
     },
 
-    _createDynamicPicklist: function(id, fillPicklistCallback) {
+    _createDynamicPicklist: function(id, autoClose, fillPicklistCallback) {
         var self = this;
+        var doAutoClose = true;
+        if(autoClose === false) {
+            doAutoClose = false;
+        }
         var select = $("<select/>", {
             id: id,
             "class": "ui-mde-picklist",
             keydown: function(event) {return self._checkKey(event);},
-            change: function(event) {return self._selectPicklistValue(event);},
-            blur: function(event) {return self._destroyPicklist(event);}
+            change: function(event) {return self._selectPicklistValue(event, doAutoClose);},
+            blur: function(event) {return doAutoClose ? self._destroyPicklist(event) : false;}
         });
         fillPicklistCallback(select);
         return select;
@@ -1324,24 +1349,24 @@ $.widget("ui.mde", {
         return $.inArray(id, this.DYNAMIC_PICKLISTS) >= 0;
     },
 
-    _fillOrganisationContactValues: function($section, newValue, contentsObject, overwrite) {
+    _fillOrganisationContactValues: function($section, newValue, contentsObject, overwrite, autoClose) {
         if (typeof contentsObject != "undefined") {
             var newOrgContact = contentsObject[newValue];
             if (!!newOrgContact) {
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.ADDRESS, newOrgContact.address, overwrite);
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.CITY, newOrgContact.city, overwrite);
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.STATE, newOrgContact.state, overwrite);
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.POSTAL_CODE, newOrgContact.postalCode, overwrite);
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.COUNTRY, newOrgContact.country, overwrite);
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.VOICE, newOrgContact.voice, overwrite);
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.EMAIL, newOrgContact.email, overwrite);
-                this._fillOrganisationContactValue($section, this.ORG_XPATH.URL, newOrgContact.url, overwrite);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.ADDRESS, newOrgContact.address, overwrite, autoClose);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.CITY, newOrgContact.city, overwrite, autoClose);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.STATE, newOrgContact.state, overwrite, autoClose);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.POSTAL_CODE, newOrgContact.postalCode, overwrite, autoClose);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.COUNTRY, newOrgContact.country, overwrite, autoClose);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.VOICE, newOrgContact.voice, overwrite, autoClose);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.EMAIL, newOrgContact.email, overwrite, autoClose);
+                this._fillOrganisationContactValue($section, this.ORG_XPATH.URL, newOrgContact.url, overwrite, autoClose);
             }
         }
     },
 
 
-    _fillOrganisationContactValue: function($section, xpathEnd, newValue, overwrite) {
+    _fillOrganisationContactValue: function($section, xpathEnd, newValue, overwrite, autoClose) {
         var $node = this._findOrganisationContactNode($section, xpathEnd);
         if ($node.length) {
             if (typeof newValue == "undefined" || newValue === null) {
@@ -1352,16 +1377,22 @@ $.widget("ui.mde", {
 
                 // Line beneath has a effect that when an organization is selected in 
                 // a certain tab that all relevant fields in the mde for this tab. 
-                $node.text(newValue); 
+                if(autoClose) {
+                    $node.text(newValue);
+                } else {
+                    $node.find('input, textarea, select').val(newValue);
+                }
             }
         }
     },
 
-    _deleteOrganisationContactValue: function($section, xpathEnd) {
+    _deleteOrganisationContactValue: function($section, xpathEnd, autoClose) {
         var $node = this._findOrganisationContactNode($section, xpathEnd);
         if ($node.length > 0) {
             this._saveValueOnClientSide($node, "");
-            $node.text(this._getDefaultValue($node));
+            if(autoClose) {
+                $node.text(this._getDefaultValue($node));
+            }
         }
     },
 

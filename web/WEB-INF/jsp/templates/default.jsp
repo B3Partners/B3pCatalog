@@ -31,6 +31,7 @@
         <!--[if lte IE 7]> <link rel="stylesheet" type="text/css" href="${contextPath}/scripts/mde/styles/metadataEdit-ie7.css" /> <![endif]-->
         <link rel="stylesheet" type="text/css" href="${contextPath}/styles/jquery.filetree.css" />
         <link rel="stylesheet" type="text/css" href="${contextPath}/styles/main.css" />
+        <link rel="stylesheet" type="text/css" href="${contextPath}/styles/icons.css" />
         <link rel="stylesheet" type="text/css" href="${contextPath}/styles/deploy.css" />
 
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/jquery/jquery-latest.js"></script>
@@ -87,7 +88,7 @@
                     // per pane:
                     west__size: getWestSize(),
                     west__resizable: true,
-                    west__spacing_open: 8,
+                    west__spacing_open: 4,
                     enableCursorHotkey: false,
                     onresize: B3pCatalog.resizeTabsAndToolbar
                 });
@@ -105,7 +106,9 @@
             });
             
             function getWestSize() {
-                return $("body").width() / 3;
+                var maxwidth = 375;
+                var third = $("body").width() / 3;
+                return third < maxwidth ? third: maxwidth;
             }
 
         </script>

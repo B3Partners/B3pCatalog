@@ -127,27 +127,34 @@ B3pCatalog.addFile = function() {
 
 // add file to tree in client, when saved the file will be created in the root
 // only works for file roots
-B3pCatalog._addFile = function(bestandsnaam) {
-    // Find currently selected item
-    var $selectedItem = $("#filetree-file").find('.selected');
-    // Only works if an item is selected
-    if($selectedItem.length === 0) {
-        return;
+B3pCatalog._addFile = function(bestandsnaam, skipTree) {
+    if(!skipTree) {
+        // Find currently selected item
+        var $selectedItem = $("#filetree-file").find('.selected');
+        // Only works if an item is selected
+        if($selectedItem.length === 0) {
+            return;
+        }
+        // Get rel
+        var rel = $selectedItem.attr('rel');
+        // Extract folder
+        var folder = rel.substring(0, rel.lastIndexOf('/') + 1);
+        // Create new list item
+        var $newListItem = $('<li class="file ext_txt"></li>');
+        // Create new link
+        var $newLinkItem = $('<a href="#" rel="' + folder + bestandsnaam + '" title="' + bestandsnaam + '" isgeo="true">' + bestandsnaam + '</a>').appendTo($newListItem);
+        // Append list item after selected item
+        $selectedItem.parent().after($newListItem);
+        // Trigger tree rebind (to add click event to items)
+        $("#filetree-file").trigger('rebindtree');
+        // Trigger click
+        $newLinkItem.trigger('click');
+    } else {
+        if(bestandsnaam === '') {
+            bestandsnaam = 'md-' + (new Date()).getTime() + '.xml';
+        }
+        folder = "0/";
     }
-    // Get rel
-    var rel = $selectedItem.attr('rel');
-    // Extract folder
-    var folder = rel.substring(0, rel.lastIndexOf('/') + 1);
-    // Create new list item
-    var $newListItem = $('<li class="file ext_txt"></li>');
-    // Create new link
-    var $newLinkItem = $('<a href="#" rel="' + folder + bestandsnaam + '" title="' + bestandsnaam + '" isgeo="true">' + bestandsnaam + '</a>').appendTo($newListItem);
-    // Append list item after selected item
-    $selectedItem.parent().after($newListItem);
-    // Trigger tree rebind (to add click event to items)
-    $("#filetree-file").trigger('rebindtree');
-    // Trigger click
-    $newLinkItem.trigger('click');
 
     B3pCatalog.loadMetadata(
             B3pCatalog.modes.FILE_MODE,
@@ -1261,10 +1268,10 @@ B3pCatalog.importMetadata = function() {
         css: {
             width: "100%",
             height: "200px", //"100%",
-            margin: 0,
-            padding: 0
+            margin: 0
+            // padding: 0
         }
-    })
+    });
     var placeholderText = "Plak uw te importeren metadata hier";
     if ("placeholder" in $textarea[0]) {
         $textarea.attr("placeholder", placeholderText);
@@ -1552,7 +1559,7 @@ B3pCatalog.createAdminOrganisationsToolbar = function() {
                     return false;
                 }
             }).button({
-        icons: {primary: "ui-icon-b3p-save_16"}
+        icons: {primary: "ui-icon-b3p-save_16 icon-disk"}
     })
             );
 
@@ -1576,7 +1583,7 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
                     }
                 }).button({
             disabled: true,
-            icons: {primary: "ui-icon-b3p-save_16"}
+            icons: {primary: "ui-icon-b3p-save_16 icon-disk"}
         })
                 );
         toolbar.append(
@@ -1597,7 +1604,7 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
                     }
                 }).button({
             disabled: false,
-            icons: {primary: "ui-icon-b3p-delete_16"}
+            icons: {primary: "ui-icon-b3p-delete_16 icon-cross"}
         })
                 );
         toolbar.append(
@@ -1613,7 +1620,7 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
                     }
                 }).button({
             disabled: false,
-            icons: {primary: "ui-icon-b3p-sync_16"}
+            icons: {primary: "ui-icon-b3p-sync_16 icon-refresh"}
         })
                 );
         toolbar.append(
@@ -1629,7 +1636,7 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
                     }
                 }).button({
             disabled: false,
-            icons: {primary: "ui-icon-b3p-down_16"}
+            icons: {primary: "ui-icon-b3p-down_16 icon-download"}
         })
                 );
     }
@@ -1652,7 +1659,7 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
                 }
             }).button({
         disabled: false,
-        icons: {primary: "ui-icon-b3p-up_16"}
+        icons: {primary: "ui-icon-b3p-up_16 icon-upload"}
     })
             );
 
@@ -1676,7 +1683,7 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
                     }
                 }).button({
             disabled: false,
-            icons: {primary: "ui-icon-b3p-sync_alt_16"}
+            icons: {primary: "ui-icon-b3p-sync_alt_16 icon-publish"}
         })
                 );
 

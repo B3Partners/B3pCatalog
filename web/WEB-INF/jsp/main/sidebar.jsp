@@ -9,6 +9,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <div id="sidebar" class="ui-layout-content">
+    <%@include file="info.jsp" %>
     <%@include file="filetree.jsp" %>
     <%@include file="search.jsp" %>
     <%@include file="admin.jsp" %>
