@@ -78,7 +78,7 @@
 					<xsl:apply-templates select="gmd:fileIdentifier"/>
 				</div>
 			</div>
-			<div class="ui-mde-section color-1">
+			<div class="ui-mde-section color-2">
 				<xsl:call-template name="section-title">
 					<xsl:with-param name="title">Kenmerken</xsl:with-param>
 				</xsl:call-template>
@@ -96,7 +96,7 @@
 						<xsl:apply-templates select="gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword/gco:CharacterString"/>
 				</div>
 			</div>
-			<div class="ui-mde-section color-1">
+			<div class="ui-mde-section color-3">
 				<xsl:call-template name="section-title">
 					<xsl:with-param name="title">Actualiteit</xsl:with-param>
 				</xsl:call-template>
@@ -109,7 +109,7 @@
 				</div>
 			</div>
 		<xsl:for-each select="gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine">
-			<div class="ui-mde-section color-1">
+			<div class="ui-mde-section color-4">
 				<xsl:call-template name="section-title">
 					<xsl:with-param name="title">Naar de dataset  <xsl:call-template name="position"/>
 					</xsl:with-param>
@@ -122,7 +122,7 @@
 					</div>
 			</div>
 		</xsl:for-each>
-			<div class="ui-mde-section color-1">
+			<div class="ui-mde-section color-5">
 				<xsl:call-template name="section-title">
 					<xsl:with-param name="title">Openheid</xsl:with-param>
 				</xsl:call-template>
@@ -134,7 +134,7 @@
 				</div>
 			</div>
 		<xsl:for-each select="gmd:contact">
-			<div class="ui-mde-section color-1">
+			<div class="ui-mde-section color-6">
 				<xsl:call-template name="section-title">
 					<xsl:with-param name="title">Contactgegevens dataset</xsl:with-param>
 				</xsl:call-template>
@@ -692,6 +692,7 @@
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 25 Samenvatting'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.2_Samenvatting</xsl:with-param>
+                        <xsl:with-param name="help-description">Een korte beschrijving van de inhoud van de dataset. Denk aan de  aard, omvang, tijdsperiode, scope, dekking, belangrijkste variabelen en andere relevante  eigenschappen van de data.</xsl:with-param>
 			<xsl:with-param name="type" select="'rich-text'"/>
 			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
@@ -1224,6 +1225,7 @@
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 360 titel'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.1_Titel_van_de_bron</xsl:with-param>
+                        <xsl:with-param name="help-description">De herkenbare naam van de dataset waarmee de gebruiker de dataset voldoende kan herkennen. <em>Bijvoorbeeld: Strooiroutes; oplaadpunten elektrisch vervoer; Verkeersintensiteiten op lokale wegen; Gemeentelijk vastgoed.</em></xsl:with-param>
 			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
@@ -2150,6 +2152,7 @@
 		<!-- speciaal type: normal, rich-text of image-url (dit zijn allemaal gco:CharacterString's; uit het data-type is dus niets af te leiden) -->
 		<xsl:param name="help-text"/>
 		<xsl:param name="help-link"/>
+                <xsl:param name="help-description"/>
 		<xsl:param name="link">false</xsl:param>
 		<xsl:param name="no-bold-title" select="false()"/>
 		<xsl:param name="bold-value" select="false()"/>
@@ -2296,6 +2299,11 @@
 				</xsl:choose>
 				<xsl:comment/>
 			</xsl:element>
+                        <xsl:if test="$help-description != ''">
+                            <div class="help-description">
+                                <xsl:value-of select="$help-description" disable-output-escaping="yes" />
+                            </div>
+                        </xsl:if>
 		</div>
 	</xsl:template>
 	<xsl:template name="element-title">
@@ -2542,9 +2550,7 @@ een <div class="ui-mde-section-content"/> met daarin de content van de section
 	</xsl:template>
 	<xsl:template name="wikiHelpPopupLink">
 		<xsl:if test="not($globalReadonly)">
-			<a href="#" class="ui-mde-wiki-help-link">
-				<img src="scripts/mde/images/info.png"/>
-			</a>
+			<a href="#" class="ui-mde-wiki-help-link icon-info"></a>
 		</xsl:if>
 	</xsl:template>
 	<!-- EvdP: Doet speciale extra acties voor types van ISO 19139. -->
