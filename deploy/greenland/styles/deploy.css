@@ -1,0 +1,141 @@
+/* Override deze file in een deploy structuur met klantspecifieke opmaak */
+body, ul#main-tabs > li, ul.jqueryFileTree {
+    font-family: "Helvetica Neue", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.42857;
+    color: #333;
+}
+ul.jqueryFileTree {
+    line-height: 1.8;
+}
+ul.jqueryFileTree li {
+    background-position: left 4px;
+}
+.login-info-block {
+    font-size: inherit;
+    line-height: inherit;
+    top: 5px;
+}
+.logout-link, .login-link, .login-info-block, #header-logo {
+    color: rgb(230, 235, 245);
+}
+.title-bar, .footer, .nav-bar  {
+    background-image: none;
+    background-color: rgb(0, 80, 130);
+    border: 0 none;
+}
+#header-logo {
+    text-shadow: 0px 2px 0px rgba(0, 0, 0, 0.3);
+    font-size: 36px;
+    line-height: 1em;
+    padding: 10px 0 0 10px;
+    font-weight: 500;
+}
+.footer .footer-logo {
+    width: 130px;
+    height: 100%;
+    float: right;
+    margin-right: 10px;
+    background: url(b3p-logo.png);
+    background-image: url(../images/b3p-logo.svg), none;
+    background-position: 100% 60%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    border: 0 none;
+}
+.nav-bar {
+    height: 100px;
+}
+ul#main-tabs, #page-tabs-and-toolbar {
+    bottom: 0;
+}
+ul#main-tabs {
+    left: 0;
+}
+ul#main-tabs > li.main-tab-selected, ul#main-tabs > li.main-tab-hover {
+    background-color: #FFFFFF;
+}
+ul#main-tabs > li.main-tab-hover a.main-tab-hover, ul#main-tabs > li.main-tab-selected > a {
+    text-decoration: none;
+    color: #333;
+}
+ul#main-tabs > li a {
+    color: rgb(255, 220, 120);
+    font-weight: normal;
+}
+.ui-layout-resizer {
+    background-color: rgb(230, 235, 245);
+    border-color: rgb(230, 235, 245);
+}
+.left-background, .right-background {
+    background-image: none;
+    background-color: #FFFFFF;
+}
+button, input, select, textarea, .ui-mde .ui-mde-element input.inputfield, .ui-mde .ui-mde-element textarea, .ui-mde .ui-mde-element select.ui-mde-picklist {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    padding: 0.4em 0.6em;
+    border: 1px solid #CCC;
+    box-shadow: 0px 1px 3px #DDD inset;
+    border-radius: 2px;
+    box-sizing: border-box;
+}
+input:focus, .ui-mde .ui-mde-element input.inputfield:focus, textarea:focus, .ui-mde .ui-mde-element textarea:focus {
+    border: 1px solid rgb(0, 80, 130);
+}
+button, select, input[type=button], input[type=submit] {
+    box-shadow: none;
+    cursor: pointer;
+}
+.form-wrap {
+    max-width: 350px;
+    margin: 30px auto;
+}
+.form_ll fieldset ol li .text, .form_ll fieldset ol li textarea {
+    width: 100%;
+}
+.form_ll ol {
+    padding: 0;
+}
+.form_ll fieldset ol li {
+    margin: 10px 0;
+    padding: 0;
+    background-color: #FFFFFF;
+}
+fieldset {
+    border: 0;
+    padding: 0;
+    border-top: 1px solid #CCC;
+}
+fieldset legend {
+    margin-left: 10px;
+}
+.message_err, .message_info  {
+    margin-bottom: 1em;
+}
+ul.jqueryFileTree a:hover, ul.jqueryFileTree .selected {
+    color: rgb(0, 80, 130);
+    background-color: transparent;
+}
+ul.jqueryFileTree .selected:after {
+    content: "\25CF";
+}
+#toolbar {
+    left: auto;
+    right: 10px;
+}
+#toolbar .ui-button .ui-icon, .button-icon.ui-icon {
+    background-image: none;
+    text-indent: 0;
+}
+.wide-button {
+    min-width: 190px;
+    max-width: 275px;
+    margin-bottom: 10px;
+    display: block;
+}
+.info-tab h1 {
+    color: rgb(0, 80, 130);
+}
