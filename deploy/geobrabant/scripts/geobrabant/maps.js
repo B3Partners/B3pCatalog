@@ -46,11 +46,29 @@
                 if(this.activeButton) {
                     this.activeButton.className = this.activeButton.className.replace(' active', '');
                 }
-                this.iframe.src = button.getAttribute('data-url');
+                this.iframe.src = this.createUrl(button.getAttribute('data-url'), this.getMapExtent());
                 button.className += ' active';
                 this.activeButton = button;
             }
-        }
+        },
+		
+		getMapExtent: function() {
+			try {
+				return this.iframe.contentWindow.viewerController.mapComponent.getMap().getExtent();
+			} catch(e) {
+				return null;
+			}
+		},
+		
+		createUrl: function(url, extent) {
+			if(extent !== null) {
+				var index = url.indexOf("?");
+				url += (index > 0 ? '&' : '?');
+				url += 'extent=';
+                url += extent.minx+","+extent.miny+","+extent.maxx+","+extent.maxy;
+			}
+			return url;
+		}
 
     };
     GeoBrabant.Maps.init();
