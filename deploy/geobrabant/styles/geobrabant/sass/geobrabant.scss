@@ -168,7 +168,7 @@ h2 {
 
     .logo {
         margin: 0 auto;
-        width: 35%;
+        width: 75%;
         height: 100%;
     }
 }
@@ -181,9 +181,8 @@ h2 {
     .wrapper {
         display: inline-block;
         height: 100%;
-        width: 80%;
+        width: 350px;
         margin: 0 20px 0 20px;
-        max-width: 350px;
         background-color: #f8f8f8;
         -webkit-box-shadow: 0px 1px 6px 0px rgba(0, 0, 0, 0.53);
         -moz-box-shadow:    0px 1px 6px 0px rgba(0, 0, 0, 0.53);
@@ -508,6 +507,53 @@ p {
         .button {
             width: 90%;
         }   
+    }
+    .home-menu .wrapper {
+        margin: 0 10px;
+    }
+}
+
+@media (max-width: 750px) {
+    .home-menu {
+        height: auto;
+        .wrapper {
+            margin: 10px auto;
+            height: 410px;
+        }
+    }
+    .contact {
+        text-align: center !important;
+        .contact-col {
+            width: 50%;
+            text-align: left;
+        }
+    }
+}
+
+@media (max-width: 625px) {
+    .hero-unit {
+        margin-top: 10px;
+    }
+    .home-wrapper .soc-media {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 525px) {
+    .home-menu {
+        height: auto;
+        .wrapper {
+            margin: 10px auto;
+            height: 410px;
+            width: 90%;
+        }
+    }
+    .contact {
+        text-align: center !important;
+        .contact-col {
+            width: 90%;
+            text-align: left;
+        }
     }
 }
 
