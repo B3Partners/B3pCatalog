@@ -56,14 +56,16 @@ public class GeoBrabantAction extends DefaultAction {
     public Resolution kaarten() {
         // This JSON should be fetched from a server somewhere
         String mapsJson = "[" +
-            "{ \"title\": \"Plannen\", \"description\":\"Wet, Regelgeving &amp; Planvorming\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/wet_regelgeving_planvorming/v1\" }," + 
-            "{ \"title\": \"Recreatie\", \"description\":\"Recreatie &amp; Vrijetijd\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/recreatie_vrijetijd/v1\" }," + 
-            "{ \"title\": \"Zorg\", \"description\":\"Zorg &amp; Gezondheid\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/zorg_en_gezondheid/v1\" }," + 
-            "{ \"title\": \"Voor- zieningen\", \"description\":\"Voorzieningen\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/voorzieningen/v1\" }," + 
-            "{ \"title\": \"Veiligheid\", \"description\":\"Veiligheid\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/veiligheid/v1\" }," + 
-            "{ \"title\": \"Economie\", \"description\":\"Economie &amp; bedrijvigheid\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/economie_bedrijvigheid/v1\" }," + 
-            "{ \"title\": \"Verkeer\", \"description\":\"Verkeer, Vervoer &amp; Infrastructuur\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/verkeer_vervoer_infrastructuur/v1\" }," + 
-            "{ \"title\": \"Cultuur &amp; Natuur\", \"description\":\"Cultuur &amp; Natuur\", \"url\": \"http://geobrabant.b3p.nl/viewer/app/cultuur_natuur/v1\" }" + 
+            "{ \"class\": \"wat-mag-waar\", \"title\": \"Wat mag waar?\", \"description\": \"Wat mag waar?\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
+			"{ \"class\": \"bekendmakingen\", \"title\": \"Bekendmakingen\", \"description\": \"Bekendmakingen\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
+			"{ \"class\": \"bereikbaarheid\", \"title\": \"Bereikbaarheid\", \"description\": \"Bereikbaarheid\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
+			"{ \"class\": \"veiligheid\", \"title\": \"Veiligheid\", \"description\": \"Veiligheid\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
+			"{ \"class\": \"zorg\", \"title\": \"Zorg\", \"description\": \"Zorg\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
+			"{ \"class\": \"onderwijs-kinderopvang\", \"title\": \"Onderwijs &amp; Kinderopvang\", \"description\": \"Onderwijs &amp; Kinderopvang\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
+			"{ \"class\": \"wijkvoorzieningen\", \"title\": \"Wijkvoorzieningen\", \"description\": \"Wijkvoorzieningen\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
+			"{ \"class\": \"recreatie\", \"title\": \"Recreatie\", \"description\": \"Recreatie\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
+			"{ \"class\": \"kunst-cultuur\", \"title\": \"Kunst &amp; Cultuur\", \"description\": \"Kunst &amp; Cultuur\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
+			"{ \"class\": \"werklocaties\", \"title\": \"Werklocaties\", \"description\": \"Werklocaties\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }" +
         "]";
         this.mapsList = new ArrayList<MapsBean>();
         try {
@@ -74,6 +76,7 @@ public class GeoBrabantAction extends DefaultAction {
                 map.setTitle(rec.getString("title"));
                 map.setDescription(rec.getString("description"));
                 map.setUrl(rec.getString("url"));
+				map.setCssClass(rec.getString("class"));
                 this.mapsList.add(map);
             }
         } catch (JSONException ex) {
@@ -130,6 +133,8 @@ public class GeoBrabantAction extends DefaultAction {
         private String description;
         
         private String url;
+		
+		private String cssClass;
         
         public MapsBean() {
             
@@ -158,6 +163,14 @@ public class GeoBrabantAction extends DefaultAction {
         public void setUrl(String url) {
             this.url = url;
         }
+
+		public String getCssClass() {
+			return cssClass;
+		}
+
+		public void setCssClass(String cssClass) {
+			this.cssClass = cssClass;
+		}
 
     }
 

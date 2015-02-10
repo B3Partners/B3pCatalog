@@ -14,7 +14,7 @@
             this.buttons = this.buttonContainer.querySelectorAll('.button');
             this.content = document.querySelector('.content');
             this.iframe = this.content.querySelector('iframe');
-            this.maximizeIframeHeight();
+            // this.maximizeIframeHeight();
             this.handleButtonClick({ target: this.buttons.length ? this.buttons[0] : null });
             this.setListeners();
         },
@@ -22,7 +22,7 @@
         setListeners: function() {
             var me = this;
             window.addEventListener('resize', function() {
-                me.maximizeIframeHeight();
+                // me.maximizeIframeHeight();
             }, true);
             for(var i = 0; i < this.buttons.length; i++) {
                 this.buttons[i].addEventListener('click', function(e) {
