@@ -16,15 +16,11 @@
         <title>${pageTitle}</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-		<link href='http://fonts.googleapis.com/css?family=Lato:400,300,300italic,400italic' rel='stylesheet' type='text/css'>
-        <link href="${contextPath}/styles/geobrabant/geobrabant2.css" media="all" rel="stylesheet" type="text/css" />
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic' rel='stylesheet' type='text/css'>
+        <link href="${contextPath}/styles/geobrabant/geobrabant.css" media="all" rel="stylesheet" type="text/css" />
     </head>
     <body>
-        <header>
-            <a href="#" class="pull-left"><span class="icon-menu_links"></span> Home</a>
-			<a href="#">${title}</a>
-			<a href="#" class="pull-right">Catalogus <span class="icon-menu_rechts"></span></a>
-        </header>
+        <stripes:layout-component name="header"/>
         <section class="${activePage}">
             <stripes:layout-component name="content"/>
         </section>

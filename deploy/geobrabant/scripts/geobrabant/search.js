@@ -28,7 +28,6 @@
         search: function(searchString, searchType) {
             var me = this;
             this.config.searchString = this.prepareSearchString(searchString);
-            console.log(this.config.searchString);
             if(this.config.searchString === '') {
                 this.resultContainer.html(this.defaultContent);
                 return;
@@ -59,7 +58,7 @@
                 },
                 error: function(jqXHR) {
                     me.resultContainer.html($("<div/>", {
-                        "class": "message_err",
+                        "class": "message_err " + me.config.resultClass,
                         html: jqXHR.responseText
                     }));
                 }

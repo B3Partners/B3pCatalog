@@ -9,48 +9,81 @@
 
 <stripes:layout-render name="/WEB-INF/jsp/templates/geobrabant.jsp" pageTitle="Welkom bij GeoBrabant" activePage="home">
     <stripes:layout-component name="content">
-        <div id="slider">
-            <img src="${contextPath}/images/geobrabant/slider/vergadering.jpg" title="" alt="" />
-            <img src="${contextPath}/images/geobrabant/slider/drongelens_kanaal.jpg" title="" alt="" />
-            <img src="${contextPath}/images/geobrabant/slider/caners_achterzijde.jpg" title="" alt="" />
+        <div class="scroll-wrapper">
+            <div class="home-wrapper">
+                <jsp:include page="socialmedia.jsp" />
+                <div class="hero-unit">
+                    <div class="logo"></div>
+                </div>
+                <div class="home-menu">
+                    <div class="wrapper">
+                        <a href="<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" event="kaarten"/>">
+                            <img src="${contextPath}/styles/geobrabant/images/kaartviewer_picture.png" alt="Kaartviewer" />
+                        </a>
+                        De GeoBrabant kaartviewer geeft op een inzichtelijke<br />
+                        manier weer wat er bij u in de omgeving te vinden is.
+                        <a href="<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" event="kaarten"/>" class="hide-text button button-kaarten">Kaartviewer</a>
+                    </div>
+                    <div class="wrapper">
+                        <a href="<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" event="catalogus"/>">
+                            <img src="${contextPath}/styles/geobrabant/images/catalogus_picture.png" alt="Catalogus" />
+                        </a>
+                        Via de catalogus krijgt u toegang tot alle datasets.<br />
+                        Datasets zoeken, bekijken en downloaden.
+                        <a href="<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" event="catalogus"/>" class="hide-text button button-catalogus">Catalogus</a>
+                    </div>
+                </div>
+                <div class="home-section">
+                    <h1><span>Over <span class="brabant">GeoBrabant</span></span></h1>
+                    <img src="${contextPath}/images/geobrabant/facebook.png" />
+                    GeoBrabant is het verzamelknooppunt van de ruimtelijke informatie in de Brabantse regio. De provincie Noord-Brabant, de 3 Brabantse waterschappen en de Brabantse gemeenten werken samen aan deze voorziening. Hiermee wordt de basis neergelegd voor een gezamenlijke dienstverlening en bedrijfsvoering. Op een moderne manier biedt GeoBrabant provinciedekkende geodata en hulpmiddelen aan voor maatschappelijke organisaties en ondersteunt het de duurzame Brabantse thema’s, zoals Agrifood Capital. Het betreft nieuwe en op-maat diensten die in samenspraak met het bedrijfsleven en onderwijs ontwikkeld zullen worden.
+                </div>
+                <div class="home-section">
+                    <h1><span>Diensten</span></h1>
+                    <strong>1: </strong>Open data voor burgers, bedrijven en onderwijs<br />
+                    <strong>2. </strong>Dataopslag en webviewer voor het regionaal programma Agrifood Capital (Noord Oost Brabant)<br />
+                    <strong>3. </strong>Dataopslag en webviewer voor de Veiligheidsregio Brabant Noord<br />
+                    <strong>4. </strong>Beschikbaar stellen van open data voor HAS Hogeschool opleiding Geo Media & Design<br />
+                    <strong>5. </strong>Beschikbaar stellen van overheidsdata van de drie deelnemende overheden voor interne medewerkers<br />
+                    <strong>6. </strong>Beschikbaar stellen van meer diensten en services en ontzorgen van andere overheden (groeitraject)<br />
+                </div>
+                <div class="home-section contact">
+                    <h1><span>Contact</span></h1>
+                    <div class="contact-col">
+                        <a href="http://www.s-hertogenbosch.nl/" target="_new" class="contact-logo">
+                            <img src="${contextPath}/styles/geobrabant/images/gemeente.png" alt="Gemeente 's Hertogenbosch" />
+                        </a>
+                        <div class="description">
+                            Contactpersoon GeoBrabant<br />
+                            Constant Botter
+                            <span class="email">c.botter@s-hertogenbosch.nl</span>
+                            <span class="phone">(0)6 21 14 59 24</span>
+                        </div>
+                    </div>
+                    <div class="contact-col">
+                        <a href="http://www.aaenmaas.nl/" target="_new" class="contact-logo">
+                            <img src="${contextPath}/styles/geobrabant/images/waterschap_aa_en_maas.png" alt="Waterschap Aa en Maas" />
+                        </a>
+                        <div class="description">
+                            Contactpersoon GeoBrabant<br />
+                            Lambik Swinkels
+                            <span class="email">LSwinkels@aaenmaas.nl</span>
+                            <span class="phone">(0)6 13 95 41 62</span>
+                        </div>
+                    </div>
+                    <div class="contact-col">
+                        <a href="http://www.brabant.nl/" target="_new" class="contact-logo">
+                            <img src="${contextPath}/styles/geobrabant/images/provincie.png" alt="Provincie Noord-Brabant" />
+                        </a>
+                        <div class="description">
+                            Contactpersoon GeoBrabant<br />
+                            Erik Dietvorst
+                            <span class="email">EDietvorst@brabant.nl</span>
+                            <span class="phone">(0)73 681 28 12</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col">
-            <h2>Direct naar de kaarten</h2>
-            <img src="${contextPath}/images/geobrabant/kaarten.png" />
-            <p>
-                Hier kunt u direct toegang krijgen tot de kaartbeelden. Ingedeeld in een 8 tal thema’s waarmee we de meest gestelde vragen hopen te kunnen beantwoorden.
-            </p>
-            <p>
-                <a href="<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" event="kaarten"/>" class="button"><b class="icon-map"></b> Naar de kaarten</a>
-            </p>
-        </div>
-        <div class="col">
-            <h2>Help me bij het zoeken</h2>
-            <img src="${contextPath}/images/geobrabant/catalogus.png" />
-            <p>
-                Hier vindt u onze Catalogus, waarmee u direct toegang krijgt tot het register met beschrijvingen van de datasets.  Via zoektermen is het mogelijk om de juiste informatie te vinden, te bekijken en te downloaden.
-            </p>
-            <p>
-                <a href="<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" event="catalogus"/>" class="button"><b class="icon-search"></b> Naar de catalogus</a>
-            </p>
-        </div>
-        <div class="col feed">
-            <h2>Populair op GEOBrabant</h2>
-            <img src="${contextPath}/images/geobrabant/facebook.png" />
-            <a class="twitter-timeline" href="https://twitter.com/B3Partners/b3partners" data-widget-id="349847499529400320" width="300" height="250" data-link-color="#ed1b24">Tweets from @B3Partners</a>
-            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-        </div>
-    </stripes:layout-component>
-    <stripes:layout-component name="footerscripts">
-        <script src="${contextPath}/scripts/geobrabant/ideal-image-slider.min.js"></script>
-        <script>
-        var slider = new IdealImageSlider.Slider({
-            selector: '#slider',
-            height: 350,
-            interval: 4000
-        });
-        slider.addCaptions();
-        slider.start();
-        </script>
     </stripes:layout-component>
 </stripes:layout-render>
