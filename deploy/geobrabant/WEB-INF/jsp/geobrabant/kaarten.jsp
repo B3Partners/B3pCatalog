@@ -19,7 +19,7 @@
         <div class="buttons">
             <div class="logo"></div>
             <hr />
-            <jsp:include page="socialmedia.jsp" />
+            <jsp:include page="/WEB-INF/jsp/geobrabant/socialmedia.jsp" />
             <hr />
             <strong>Kies een thema:</strong>
             <c:forEach items="${actionBean.mapsList}" var="map">

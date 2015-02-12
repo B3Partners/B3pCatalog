@@ -11,7 +11,7 @@
     <stripes:layout-component name="content">
         <div class="scroll-wrapper">
             <div class="home-wrapper">
-                <jsp:include page="socialmedia.jsp" />
+                <jsp:include page="/WEB-INF/jsp/geobrabant/socialmedia.jsp" />
                 <div class="hero-unit">
                     <div class="logo"></div>
                 </div>
