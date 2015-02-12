@@ -56,16 +56,16 @@ public class GeoBrabantAction extends DefaultAction {
     public Resolution kaarten() {
         // This JSON should be fetched from a server somewhere
         String mapsJson = "[" +
-            "{ \"class\": \"wat-mag-waar\", \"title\": \"Wat mag waar?\", \"description\": \"Wat mag waar?\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
-            "{ \"class\": \"bekendmakingen\", \"title\": \"Bekendmakingen\", \"description\": \"Bekendmakingen\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
-            "{ \"class\": \"bereikbaarheid\", \"title\": \"Bereikbaarheid\", \"description\": \"Bereikbaarheid\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
-            "{ \"class\": \"veiligheid\", \"title\": \"Veiligheid\", \"description\": \"Veiligheid\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
-            "{ \"class\": \"zorg\", \"title\": \"Zorg\", \"description\": \"Zorg\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
-            "{ \"class\": \"onderwijs-kinderopvang\", \"title\": \"Onderwijs &amp; Kinderopvang\", \"description\": \"Onderwijs &amp; Kinderopvang\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
-            "{ \"class\": \"wijkvoorzieningen\", \"title\": \"Wijkvoorzieningen\", \"description\": \"Wijkvoorzieningen\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
-            "{ \"class\": \"recreatie\", \"title\": \"Recreatie\", \"description\": \"Recreatie\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
-            "{ \"class\": \"kunst-cultuur\", \"title\": \"Kunst &amp; Cultuur\", \"description\": \"Kunst &amp; Cultuur\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }," +
-            "{ \"class\": \"werklocaties\", \"title\": \"Werklocaties\", \"description\": \"Werklocaties\", \"url\": \"http://localhost:8084/viewer/app/nieuw/v1\" }" +
+            "{ \"class\": \"wat-mag-waar\", \"title\": \"Wat mag waar?\", \"description\": \"Wat mag waar?\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
+            "{ \"class\": \"bekendmakingen\", \"title\": \"Bekendmakingen\", \"description\": \"Bekendmakingen\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
+            "{ \"class\": \"bereikbaarheid\", \"title\": \"Bereikbaarheid\", \"description\": \"Bereikbaarheid\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
+            "{ \"class\": \"veiligheid\", \"title\": \"Veiligheid\", \"description\": \"Veiligheid\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
+            "{ \"class\": \"zorg\", \"title\": \"Zorg\", \"description\": \"Zorg\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
+            "{ \"class\": \"onderwijs-kinderopvang\", \"title\": \"Onderwijs &amp; Kinderopvang\", \"description\": \"Onderwijs &amp; Kinderopvang\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
+            "{ \"class\": \"wijkvoorzieningen\", \"title\": \"Wijkvoorzieningen\", \"description\": \"Wijkvoorzieningen\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
+            "{ \"class\": \"recreatie\", \"title\": \"Recreatie\", \"description\": \"Recreatie\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
+            "{ \"class\": \"kunst-cultuur\", \"title\": \"Kunst &amp; Cultuur\", \"description\": \"Kunst &amp; Cultuur\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
+            "{ \"class\": \"werklocaties\", \"title\": \"Werklocaties\", \"description\": \"Werklocaties\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }" +
         "]";
         this.mapsList = new ArrayList<MapsBean>();
         try {
