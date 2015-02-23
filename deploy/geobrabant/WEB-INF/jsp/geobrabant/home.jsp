@@ -22,7 +22,7 @@
                         </a>
                         De GeoBrabant kaartviewer geeft op een inzichtelijke<br />
                         manier weer wat er bij u in de omgeving te vinden is.
-                        <a href="<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" event="kaarten"/>" class="hide-text button button-kaarten">Kaartviewer</a>
+                        <a href="<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" event="kaarten"/>" class="button">Kaartviewer</a>
                     </div>
                     <div class="wrapper">
                         <a href="<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" event="catalogus"/>">
@@ -30,7 +30,7 @@
                         </a>
                         Via de catalogus krijgt u toegang tot alle datasets.<br />
                         Datasets zoeken, bekijken en downloaden.
-                        <a href="<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" event="catalogus"/>" class="hide-text button button-catalogus">Catalogus</a>
+                        <a href="<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" event="catalogus"/>" class="button">Catalogus</a>
                     </div>
                 </div>
                 <div class="home-section">
