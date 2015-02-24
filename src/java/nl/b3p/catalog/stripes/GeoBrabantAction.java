@@ -56,16 +56,16 @@ public class GeoBrabantAction extends DefaultAction {
     public Resolution kaarten() {
         // This JSON should be fetched from a server somewhere
         String mapsJson = "[" +
-            "{ \"class\": \"wat-mag-waar\", \"title\": \"Wat mag waar?\", \"description\": \"Wat mag waar?\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
-            "{ \"class\": \"bekendmakingen\", \"title\": \"Bekendmakingen\", \"description\": \"Bekendmakingen\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
-            "{ \"class\": \"bereikbaarheid\", \"title\": \"Bereikbaarheid\", \"description\": \"Bereikbaarheid\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
-            "{ \"class\": \"veiligheid\", \"title\": \"Veiligheid\", \"description\": \"Veiligheid\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
-            "{ \"class\": \"zorg\", \"title\": \"Zorg\", \"description\": \"Zorg\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
-            "{ \"class\": \"onderwijs-kinderopvang\", \"title\": \"Onderwijs &amp; Kinderopvang\", \"description\": \"Onderwijs &amp; Kinderopvang\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
-            "{ \"class\": \"wijkvoorzieningen\", \"title\": \"Wijkvoorzieningen\", \"description\": \"Wijkvoorzieningen\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
-            "{ \"class\": \"recreatie\", \"title\": \"Recreatie\", \"description\": \"Recreatie\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
-            "{ \"class\": \"kunst-cultuur\", \"title\": \"Kunst &amp; Cultuur\", \"description\": \"Kunst &amp; Cultuur\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }," +
-            "{ \"class\": \"werklocaties\", \"title\": \"Werklocaties\", \"description\": \"Werklocaties\", \"url\": \"http://acc.geobrabant.nl/viewer/app/template2/v1\" }" +
+            "{ \"class\": \"wat-mag-waar\", \"title\": \"Wat mag waar?\", \"description\": \"Wat mag waar?\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN01/v1\" }," +
+            "{ \"class\": \"bekendmakingen\", \"title\": \"Bekendmakingen\", \"description\": \"Bekendmakingen\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN02/v1\" }," +
+            "{ \"class\": \"bereikbaarheid\", \"title\": \"Bereikbaarheid\", \"description\": \"Bereikbaarheid\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN03/v1\" }," +
+            "{ \"class\": \"veiligheid\", \"title\": \"Veiligheid\", \"description\": \"Veiligheid\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN04/v1\" }," +
+            "{ \"class\": \"zorg\", \"title\": \"Zorg\", \"description\": \"Zorg\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN05/v1\" }," +
+            "{ \"class\": \"onderwijs-kinderopvang\", \"title\": \"Onderwijs &amp; Kinderopvang\", \"description\": \"Onderwijs &amp; Kinderopvang\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN06/v1\" }," +
+            "{ \"class\": \"wijkvoorzieningen\", \"title\": \"Wijkvoorzieningen\", \"description\": \"Wijkvoorzieningen\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN07/v1\" }," +
+            "{ \"class\": \"recreatie\", \"title\": \"Recreatie\", \"description\": \"Recreatie\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN08/v1\" }," +
+            "{ \"class\": \"kunst-cultuur\", \"title\": \"Kunst &amp; Cultuur\", \"description\": \"Kunst &amp; Cultuur\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN09/v1\" }," +
+            "{ \"class\": \"werklocaties\", \"title\": \"Werklocaties\", \"description\": \"Werklocaties\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN10/v1\" }" +
         "]";
         this.mapsList = new ArrayList<MapsBean>();
         try {
@@ -76,7 +76,7 @@ public class GeoBrabantAction extends DefaultAction {
                 map.setTitle(rec.getString("title"));
                 map.setDescription(rec.getString("description"));
                 map.setUrl(rec.getString("url"));
-				map.setCssClass(rec.getString("class"));
+		map.setCssClass(rec.getString("class"));
                 this.mapsList.add(map);
             }
         } catch (JSONException ex) {
