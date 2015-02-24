@@ -56,16 +56,16 @@ public class GeoBrabantAction extends DefaultAction {
     public Resolution kaarten() {
         // This JSON should be fetched from a server somewhere
         String mapsJson = "[" +
-            "{ \"class\": \"wat-mag-waar\", \"title\": \"Wat mag waar?\", \"description\": \"Wat mag waar?\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN01/v1\" }," +
-            "{ \"class\": \"bekendmakingen\", \"title\": \"Bekendmakingen\", \"description\": \"Bekendmakingen\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN02/v1\" }," +
-            "{ \"class\": \"bereikbaarheid\", \"title\": \"Bereikbaarheid\", \"description\": \"Bereikbaarheid\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN03/v1\" }," +
-            "{ \"class\": \"veiligheid\", \"title\": \"Veiligheid\", \"description\": \"Veiligheid\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN04/v1\" }," +
-            "{ \"class\": \"zorg\", \"title\": \"Zorg\", \"description\": \"Zorg\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN05/v1\" }," +
-            "{ \"class\": \"onderwijs-kinderopvang\", \"title\": \"Onderwijs &amp; Kinderopvang\", \"description\": \"Onderwijs &amp; Kinderopvang\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN06/v1\" }," +
-            "{ \"class\": \"wijkvoorzieningen\", \"title\": \"Wijkvoorzieningen\", \"description\": \"Wijkvoorzieningen\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN07/v1\" }," +
-            "{ \"class\": \"recreatie\", \"title\": \"Recreatie\", \"description\": \"Recreatie\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN08/v1\" }," +
-            "{ \"class\": \"kunst-cultuur\", \"title\": \"Kunst &amp; Cultuur\", \"description\": \"Kunst &amp; Cultuur\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN09/v1\" }," +
-            "{ \"class\": \"werklocaties\", \"title\": \"Werklocaties\", \"description\": \"Werklocaties\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN10/v1\" }" +
+            "{ \"class\": \"wat-mag-waar\", \"title\": \"Wat mag waar?\", \"description\": \"Waar ligt dat stukje grond? Zou ik hier mogen bouwen? Vragen die u beantwoord zult zien worden via dit thema. Bekijk welk perceel waar ligt en wat je ermee mag doen.\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN01/v1\" }," +
+            "{ \"class\": \"bekendmakingen\", \"title\": \"Bekendmakingen\", \"description\": \"Via bekendmakingen kunt u zien welke vergunningaanvragen in uw buurt zijn ingediend of verleend zijn. Hierdoor blijft u op de hoogte van de ontwikkelingen bij u in de buurt.\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN02/v1\" }," +
+            "{ \"class\": \"bereikbaarheid\", \"title\": \"Bereikbaarheid\", \"description\": \"Via dit thema kunt u erachter komen hoe de beriekbaarheid van een bepaald gebied is. Zo vindt u bijvoorbeeld waar de dichtstbijzijnde parkeergarage is, waar u oplaadpalen aantreft en actuele informatie over verkeer en wegwerkzaamheden\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN03/v1\" }," +
+            "{ \"class\": \"veiligheid\", \"title\": \"Veiligheid\", \"description\": \"In dit thema vindt u informatie over de veiligheid in uw buurt. Waar zit de politie en brandweer, maar ook overstromingsrisico, waterkeringen en de veiligheidsregio staan hier.\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN04/v1\" }," +
+            "{ \"class\": \"zorg\", \"title\": \"Zorg\", \"description\": \"Ziekenhuizen, doktersposten en verzorgingshuizen. Alle data met betrekking tot de (medische) zorg staan in dit thema beschreven.\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN05/v1\" }," +
+            "{ \"class\": \"onderwijs-kinderopvang\", \"title\": \"Onderwijs &amp; Kinderopvang\", \"description\": \"In dit thema vindt u de locatie van alle scholen en kinderopvang.\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN06/v1\" }," +
+            "{ \"class\": \"wijkvoorzieningen\", \"title\": \"Wijkvoorzieningen\", \"description\": \"Waar bij mij in de buurt bevinden zich afvalbakken, hondenuitlaatplaatsen en de speeltuin? Dergelijke wijkvoorzieningen vindt u in dit thema, evenals buurthuizen, winkelcentra, etc.\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN07/v1\" }," +
+            "{ \"class\": \"recreatie\", \"title\": \"Recreatie\", \"description\": \"Waar kan ik bij mij in de buurt vrije tijd besteden? In dit thema ziet u waar u kunt sporten en ontspannen. Ook wandel- en fietspaden, natuurgebieden en horecagelegenheden vindt u hier terug.\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN08/v1\" }," +
+            "{ \"class\": \"kunst-cultuur\", \"title\": \"Kunst &amp; Cultuur\", \"description\": \"In dit thema vindt u alle informatie over cultuurhistorie en musea: gemeentelijke- en rijksmonumenten, maar ook archeologische monumenten.\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN09/v1\" }," +
+            "{ \"class\": \"werklocaties\", \"title\": \"Werklocaties\", \"description\": \"In dit thema vindt u alles over bedrijvigheid. Bedrijventerreinen en kantoorlocaties, maar ook winkelcentra bij u in de buurt.\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN10/v1\" }" +
         "]";
         this.mapsList = new ArrayList<MapsBean>();
         try {
