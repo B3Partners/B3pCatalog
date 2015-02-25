@@ -1,16 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="122px" height="100px" viewBox="0 0 122 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
-    <!-- Generator: Sketch 3.2.2 (9983) - http://www.bohemiancoding.com/sketch -->
-    <title>Rectangle 4</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Viewer" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
-        <g id="Desktop-HD" sketch:type="MSArtboardGroup" transform="translate(-30.000000, -551.000000)" fill="#F7F7F7">
-            <g id="Knoppen_side" sketch:type="MSLayerGroup" transform="translate(21.800316, 89.463054)">
-                <g id="Group" transform="translate(8.000000, 265.000000)" sketch:type="MSShapeGroup">
-                    <rect id="Rectangle-4" x="0.572398533" y="197.244862" width="121.135758" height="98.544936"></rect>
-                </g>
-            </g>
-        </g>
-    </g>
-</svg>
+<svg width="122" height="100" viewBox="0 0 122 100" xmlns="http://www.w3.org/2000/svg" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"><title>Rectangle 4</title><desc>Created with Sketch.</desc><path d="M.372.708h121.136v98.545h-121.136z" sketch:type="MSShapeGroup" fill="#F7F7F7"/></svg>

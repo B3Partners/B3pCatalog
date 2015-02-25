@@ -144,7 +144,7 @@ h2 {
     background-size: contain;
     background-position: center center;
     background-repeat: no-repeat;
-    background-image: url(images/geobrabant_logo.svg);
+    background-image: url(images/geobrabant_logo_outline.svg);
 }
 
 .home-wrapper {
@@ -353,6 +353,7 @@ h2 {
         background-color: #A8A8A8;
         opacity: .34;
         margin: 15px;
+		clear: both;
     }
     strong {
         font-weight: 400;
@@ -364,7 +365,8 @@ h2 {
     }
 
     .button {
-        display: inline-block;
+        display: block;
+		float: left;
         width: 50%;
         height: 10%;
         min-height: 100px;
@@ -511,6 +513,8 @@ p {
         min-width: 130px;
         .button {
             width: 90%;
+			float: none;
+			display: inline-block;
         }   
     }
     .home-menu .wrapper {
