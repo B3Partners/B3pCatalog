@@ -106,9 +106,11 @@
 			<acl access="write">
 				<role>editor</role>
 				<role>admin</role>
+				<role>none</role>
 			</acl>
 			<acl access="comment">
 				<role>viewer</role>
+				<role>none</role>
 			</acl>
       <acl access="read">
 				<role>none</role>
