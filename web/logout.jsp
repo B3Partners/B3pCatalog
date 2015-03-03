@@ -14,6 +14,6 @@
     </stripes:layout-component>
     <stripes:layout-component name="content">
         <p>
-        <a href="${contextPath}">Klik om opnieuw in te loggen</a>
+        <a href="${contextPath}/login.jsp">Klik om opnieuw in te loggen</a>
     </stripes:layout-component>
 </stripes:layout-render>
