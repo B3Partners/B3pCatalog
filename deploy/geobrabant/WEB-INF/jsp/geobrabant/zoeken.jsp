@@ -8,6 +8,13 @@
 <%@include file="/WEB-INF/jsp/commons/taglibs.jsp" %>
 
 <stripes:layout-render name="/WEB-INF/jsp/templates/geobrabant.jsp" pageTitle="Welkom bij GeoBrabant - Zoekresultaat" activePage="zoeken">
+    <stripes:layout-component name="header">
+        <header>
+            <a href="<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" />" class="pull-left">Home</a>
+            <a href="#">Catalogus</a>
+            <a href="<stripes:url beanclass="nl.b3p.catalog.stripes.GeoBrabantAction" event="kaarten"/>" class="pull-right">Kaartviewer</a>
+        </header>
+    </stripes:layout-component>
     <stripes:layout-component name="content">
         <div class="col col-2 zoekresultaten"></div>
         <div class="col zoekresultaten_buttons">
