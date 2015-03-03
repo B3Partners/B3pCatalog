@@ -15,8 +15,15 @@
             this.content = document.querySelector('.content');
             this.iframe = this.content.querySelector('iframe');
             // this.maximizeIframeHeight();
-            this.handleButtonClick({ target: this.buttons.length ? this.buttons[0] : null });
-            this.setListeners();
+            if (this.buttons.length) {
+                var activeButton = this.buttons[0];
+                var appName = this.getParameterByName('appName');
+                if (appName !== "") {
+                    activeButton = this.buttonContainer.querySelector('.'+appName);
+                }
+                this.handleButtonClick({target: activeButton});
+                this.setListeners();
+            }
         },
 
         setListeners: function() {
@@ -52,23 +59,29 @@
             }
         },
 		
-		getMapExtent: function() {
-			try {
-				return this.iframe.contentWindow.viewerController.mapComponent.getMap().getExtent();
-			} catch(e) {
-				return null;
-			}
-		},
-		
-		createUrl: function(url, extent) {
-			if(extent !== null) {
-				var index = url.indexOf("?");
-				url += (index > 0 ? '&' : '?');
-				url += 'extent=';
-                url += extent.minx+","+extent.miny+","+extent.maxx+","+extent.maxy;
-			}
-			return url;
-		}
+        getMapExtent: function () {
+            try {
+                return this.iframe.contentWindow.viewerController.mapComponent.getMap().getExtent();
+            } catch (e) {
+                return null;
+            }
+        },
+        createUrl: function (url, extent) {
+            if (extent !== null) {
+                var index = url.indexOf("?");
+                url += (index > 0 ? '&' : '?');
+                url += 'extent=';
+                url += extent.minx + "," + extent.miny + "," + extent.maxx + "," + extent.maxy;
+            }
+            return url;
+        },
+        
+        getParameterByName: function (name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                    results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
 
     };
     GeoBrabant.Maps.init();
