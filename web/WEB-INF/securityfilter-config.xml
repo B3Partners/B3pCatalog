@@ -70,7 +70,7 @@
             <form-login-page>/login.jsp</form-login-page>
             <form-logout-page>/logout.jsp</form-logout-page>
             <form-error-page>/loginError.jsp</form-error-page>
-            <form-default-page>/</form-default-page>
+            <form-default-page>/editor.jsp</form-default-page>
         </form-login-config>
     </login-config>
 
