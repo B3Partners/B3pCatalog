@@ -1253,7 +1253,9 @@ $.widget("ui.mde", {
 
     // IE 6 and 7 turn a href into an absolute path
     _getBracketNormalizedHref: function(href) {
-        return href.substring(href.indexOf("#")); // find first #
+        if (typeof href === "string") {
+            return href.substring(href.indexOf("#")); // find first #
+        }
     },
 
     //////////////////////////////// Save values ///////////////////////////////////

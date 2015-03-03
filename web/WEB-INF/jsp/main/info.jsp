@@ -11,10 +11,11 @@
 <div id="info" class="tab-definition info-tab">
 
     <h1>
-        <i class="icon-info"></i> ${title}
+        <i class="icon-info"></i>
     </h1>
     <p>
-        Informatie over de ${title}
+        Maak hier nieuwe metadata aan of
+        laad metadata in.
     </p>
     
     <div id="infobuttons"></div>
