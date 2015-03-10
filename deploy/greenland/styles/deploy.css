@@ -21,15 +21,27 @@ ul.jqueryFileTree li {
 }
 .title-bar, .footer, .nav-bar  {
     background-image: none;
-    background-color: rgb(0, 80, 130);
+    background-color: #182F5C;
     border: 0 none;
 }
+.footer {
+    background-color: #919191;
+}
 #header-logo {
-    text-shadow: 0px 2px 0px rgba(0, 0, 0, 0.3);
+    color: #FFFFFF;
+}
+#header-logo h1 {
     font-size: 36px;
-    line-height: 1em;
-    padding: 10px 0 0 10px;
-    font-weight: 500;
+    font-weight: 200;
+    margin-bottom: 0;
+}
+#header-logo h2 {
+    font-size: 16px;
+    font-weight: 200;
+    margin: 5px 0 0 75px;
+}
+.login-info-block {
+    display: none;
 }
 .footer .footer-logo {
     width: 130px;
@@ -43,8 +55,48 @@ ul.jqueryFileTree li {
     background-repeat: no-repeat;
     border: 0 none;
 }
-.nav-bar {
+.footer {
     height: 100px;
+}
+.footer-content {
+    height: 100px;
+    text-align: center;
+}
+.footer-text {
+    color: #FFFFFF;
+    font-size: 14px;
+    margin-top: 25px;
+    display: inline-block;
+    width: 700px;
+    text-align: center;
+    position: static;
+}
+.nav-bar {
+    height: 130px;
+}
+.sub-menu {
+    float: right;
+    margin: -20px 10px 0 0;
+}
+.sub-menu ul {
+    list-style: none;
+}
+.sub-menu li {
+    float: left;
+}
+.sub-menu li:after {
+    content: "|";
+    margin: 0 5px;
+    color: #FFFFFF;
+}
+.sub-menu li:last-of-type:after {
+    content: "";
+    margin: 0;
+}
+.sub-menu li a {
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 12px;
 }
 ul#main-tabs, #page-tabs-and-toolbar {
     bottom: 0;
@@ -137,5 +189,22 @@ ul.jqueryFileTree .selected:after {
     display: block;
 }
 .info-tab h1 {
-    color: rgb(0, 80, 130);
+    font-weight: 200;
+    margin-bottom: 15px;
+}
+.info-tab ol {
+    margin: 0;
+    list-style-position: outside;
+    padding-left: 1.25em;
+}
+.info-tab li {
+    padding: 0 0 15px 15px;
+}
+
+.info-tab li strong {
+    display: block;
+}
+
+.info-tab li a {
+    color: #333;
 }
