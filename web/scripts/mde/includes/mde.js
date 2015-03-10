@@ -1080,13 +1080,16 @@ $.widget("ui.mde", {
         });
 
         $(".ui-mde-section-header a", this.element).click(function(event) {
-            var sectionContent = $(event.target).closest(".ui-mde-section").find(".ui-mde-section-content").first();
+            var currentSection = $(event.target).closest(".ui-mde-section");
+            var sectionContent = currentSection.find(".ui-mde-section-content").first();
+            currentSection.find('.ui-mde-section-header').first().toggleClass('expanded');
             sectionContent.toggle();
             
             // Close other section on same level in simple mode
             if(simpleMode) {
-                var currentSection = $(event.target).closest(".ui-mde-section");
-                currentSection.parent().children('.ui-mde-section').not(currentSection).find(".ui-mde-section-content").hide();
+                var otherSections = currentSection.parent().children('.ui-mde-section').not(currentSection);
+                otherSections.find(".ui-mde-section-content").hide();
+                otherSections.find(".ui-mde-section-header").removeClass("expanded");
             } else {
                 // toggle plus/minus image
                 var imgSrc = self.BASE_FULL_PATH + (sectionContent.is(":visible") ? self.MINUS_IMAGE : self.PLUS_IMAGE);
@@ -1193,7 +1196,7 @@ $.widget("ui.mde", {
         var self = this;
 
         // By default all panels are closed, open up the first one
-        $('.ui-mde-tab-definition').children('.ui-mde-section').first().children('.ui-mde-section-content').first().show();
+        // $('.ui-mde-tab-definition').children('.ui-mde-section').first().children('.ui-mde-section-content').first().show();
 
         $('.ui-mde-section-content', self.element).each(function() {
             // Make sure all 'simple' input fields are at the beginning of the section

@@ -1569,6 +1569,36 @@ B3pCatalog.createAdminOrganisationsToolbar = function() {
 B3pCatalog.createMdeToolbar = function(viewMode) {
     var toolbar = $("#toolbar");
     toolbar.empty();
+    
+    var simpleMode = $('#edit-doc-root').hasClass('ui-mde-simple');
+    if(simpleMode) {
+        toolbar.append(
+            $("<a />", {
+                href: "#",
+                id: "exportMD",
+                text: "maak metadatabestand",
+                title: "Metadatabestand maken",
+                click: function(event) {
+                    $(this).removeClass("ui-state-hover");
+                    B3pCatalog.saveDataUserConfirm({
+                        done: function() {
+                            B3pCatalog.exportMetadata();
+                        },
+                        text: "Wilt u uw wijzigingen opslaan alvorens de metadata te maken?",
+                        asyncSave: false // data needs to be saved already when we do our export request
+                    });
+                    return false;
+                }
+            }).button({
+                disabled: false,
+                icons: { primary: "ui-icon-b3p-up_16 icon-check" }
+            })
+        );
+        toolbar.appendTo("#bottom-wrapper");
+        B3pCatalog.resizeTabsAndToolbar();
+        return;
+    }
+    
     if (viewMode === false) {
         toolbar.append(
                 $("<a />", {
@@ -1735,7 +1765,31 @@ B3pCatalog.saveOrganisations = function() {
     });
 };
 
-
+$(document).ready(function() {
+    // Convert 'nice-checkboxes' to nice checkbox
+    $('.nice-checkbox').each(function() {
+        var checkbox = $(this);
+        var checkboxReplace = $('<span class="checkbox icon-checkbox-unchecked"></span>');
+        function toggleStyle() {
+            if(checkbox[0].checked) {
+                checkboxReplace.removeClass('icon-checkbox-unchecked').addClass('icon-checkbox-checked');
+            } else {
+                checkboxReplace.removeClass('icon-checkbox-checked').addClass('icon-checkbox-unchecked');
+            }
+        }
+        checkboxReplace.click(function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            checkbox[0].checked = !checkbox[0].checked;
+            toggleStyle();
+        });
+        checkbox.change(function() {
+            toggleStyle();
+        });
+        toggleStyle();
+        $(this).hide().after(checkboxReplace);
+    });
+});
 
 // dialogs:
 (function($) {
