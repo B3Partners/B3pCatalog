@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -241,6 +242,19 @@ public class CatalogAppConfig implements ServletContextListener {
                 ));
             }
         }        
+    }
+    
+    public boolean isNoWritableRoots(HttpServletRequest request) {
+        if (roots==null || roots.isEmpty()) {
+            return true;
+        }
+        for (Root root : roots) {
+            AclAccess highest = root.getRequestUserHighestAccessLevel(request);
+            if (highest.getSecurityLevel() > AclAccess.READ.getSecurityLevel()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void contextDestroyed(ServletContextEvent sce) {

@@ -529,7 +529,7 @@ public class MetadataAction extends DefaultAction {
             md = preprocessXml(md);
 
             //datestamp and uuid added when empty
-            md = addDateUUID(md, newUuid);
+            md = addDateUUID(md, newUuid==null?false:newUuid);
             
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
 

@@ -19,7 +19,7 @@
     </script>
 
     <h2>Inloggen bij ${title}</h2>
-    <p>U dient in te loggen bij ${title} met uw gewone ${customer} gebruikersnaam en wachtwoord. Dit is nodig om te bepalen of u enkel commentaar kunt leveren op metadata of dat u metadata ook kan aanpassen en aanmaken.</p>
+    <p>U dient in te loggen bij ${title}. Dit is nodig om te bepalen of u enkel commentaar kunt leveren op metadata of dat u metadata ook kan aanpassen en aanmaken.</p>
 
     <form id="login-form" method="post" action="j_security_check" class="form_ll">
 

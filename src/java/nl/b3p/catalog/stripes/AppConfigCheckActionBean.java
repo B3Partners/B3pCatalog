@@ -39,4 +39,8 @@ public class AppConfigCheckActionBean extends DefaultAction {
         config = CatalogAppConfig.getConfig();
         return null;
     }    
+    
+    public boolean isNoWritableRoots() {
+        return config.isNoWritableRoots(getContext().getRequest());
+    }
 }

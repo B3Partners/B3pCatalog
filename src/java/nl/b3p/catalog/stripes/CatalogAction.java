@@ -7,14 +7,12 @@ package nl.b3p.catalog.stripes;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
-import net.sourceforge.stripes.action.ErrorResolution;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
@@ -38,13 +36,11 @@ import nl.b3p.csw.client.OutputBySearch;
 import nl.b3p.csw.client.OwsException;
 import nl.b3p.csw.jaxb.csw.GetRecords;
 import nl.b3p.csw.server.GeoNetworkCswServer;
-import nl.b3p.csw.util.OperatesOn;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.Text;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
