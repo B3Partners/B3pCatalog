@@ -10,7 +10,7 @@
 <div class="ui-layout-content footer">
     <div class="footer-content">
         <div class="footer-text footer-text-vertical-center">
-            De OpenDataMaker is in opdracht van Provincie Noord-Holland gemaakt in het kader van het Open Data Praktijkprogramma Noord-Holland Slimmer 2014
+            De OpenMetadataMaker is in opdracht van Provincie Noord-Holland gemaakt in het kader van het Open Data Praktijkprogramma Noord-Holland Slimmer 2014
         </div>
     </div>
 </div>

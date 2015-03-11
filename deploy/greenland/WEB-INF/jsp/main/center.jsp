@@ -11,6 +11,7 @@
     <div id="infobuttons" class="content-center"></div>
     <div id="center-wrapper"></div>
     <div id="bottom-wrapper" class="content-center">
+        <%--
         <div class="checkbox-row">
             <input type="checkbox" class="nice-checkbox" value="natgeo" id="natgeo" />
             <label for="natgeo">
@@ -25,6 +26,7 @@
                 <span class="info">Vink aan als deze dataset ook wordt opgenomen in Data.overheid.nl. H&eacute;t open data portaal van de Nederlandse overheid.</span>
             </label>
         </div>
+        --%>
     </div>
     <script>
         $(document).ready(function() {

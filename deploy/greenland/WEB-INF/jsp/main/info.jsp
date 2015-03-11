@@ -13,12 +13,12 @@
     <ol>
         <li>
             <strong>Beschrijf je dataset</strong>
-            Via de OpenDataMaker kun je als datahouder datasets beschrijven op een aantal relevante aspecten waarmee de data goed te beoordelen zijn op inhoud en hergebruikwaarde. De velden corresponderen met in Nederland geldende standaarden voor metadata.
+            Via de OpenMetadataMaker kun je als datahouder datasets beschrijven op een aantal relevante aspecten waarmee de data goed te beoordelen zijn op inhoud en hergebruikwaarde. De velden corresponderen met in Nederland geldende standaarden voor metadata.
             <a href="#">zie voorbeeld</a>
         </li>
         <li>
             <strong>Maak hiervan een metadatabestand</strong>
-            De OpenDataMaker maakt van de volledige beschrijving een metadatabestand in xml formaat die je kunt downloaden en gebruiken. Aan de xml wordt opmaak meegegeven zodat deze na openen direct leesbaar is.
+            De OpenMetadataMaker maakt van de volledige beschrijving een metadatabestand in xml formaat die je kunt downloaden en gebruiken. Aan de xml wordt opmaak meegegeven zodat deze na openen direct leesbaar is.
             <a href="#">zie voorbeeld</a>
         </li>
         <li>
