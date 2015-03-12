@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gfc="http://www.isotc211.org/2005/gfc" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml" xmlns:b3p="http://www.b3partners.nl/xsd/metadata" xmlns:pbl="http://www.pbl.nl/xsd/metadata" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:srv="http://www.isotc211.org/2005/srv" exclude-result-prefixes="xlink gmd gfc gmx gco gml b3p pbl dc srv">
+
+<!-- nog opzoeken
+		<xsl:with-param name="help-description" select="'De benaming van het grondgebied waarop de dataset betrekking heeft? Bijvoorbeeld: Nederland; Gemeente Purmerend; Het dorp Tuitjenhorn; Provincie Noord-Holland; Nationaal Park Zuid-Kennemerland; De Utrechtse wijk Leidsche Rijn.'"/>
+		<xsl:with-param name="help-description" select="'Vul hier naar behoefte in, alles wat wel relevant is om te noemen ten aanzien van de dataset maar wat niet past in een van de bovenstaande velden.'"/>
+-->
 	<!-- These parameters must be set by the transformer -->
 	<xsl:param name="basePath"/>
 	<xsl:param name="displayMode">simple</xsl:param>
@@ -661,6 +666,7 @@
 			<xsl:with-param name="title">Metadata datum</xsl:with-param>
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 9 Metadata datum'"/>
+			<xsl:with-param name="help-description" select="'De datum waarop dit metadatabestand voor het laatst is gewijzigd.'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.45_Metadata_datum</xsl:with-param>
 			<xsl:with-param name="default-value">Klik om te bewerken [<xsl:value-of select="$dateFormatUserHint"/>]</xsl:with-param>
 		</xsl:call-template>
@@ -692,7 +698,7 @@
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 25 Samenvatting'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.2_Samenvatting</xsl:with-param>
-                        <xsl:with-param name="help-description">Een korte beschrijving van de inhoud van de dataset. Denk aan de  aard, omvang, tijdsperiode, scope, dekking, belangrijkste variabelen en andere relevante  eigenschappen van de data.</xsl:with-param>
+            <xsl:with-param name="help-description">Een korte beschrijving van de inhoud van de dataset. Denk aan de  aard, omvang, tijdsperiode, scope, dekking, belangrijkste variabelen en andere relevante  eigenschappen van de data.</xsl:with-param>
 			<xsl:with-param name="type" select="'rich-text'"/>
 			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
@@ -703,6 +709,7 @@
 			<xsl:with-param name="title">Doel van de vervaardiging</xsl:with-param>
 			<xsl:with-param name="optionality" select="'optional'"/>
 			<xsl:with-param name="help-text" select="'ISO 26 Doel van de vervaardiging'"/>
+			<xsl:with-param name="help-description" select="'Het doel waarvoor de data oorspronkelijk is gemaakt, voor welk doel de data door de datahoudende organisatie wordt gebruikt. '"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 28 Status MD_Metadata.identificationInfo>MD_DataIdentification.status Codelijst MD_ProgressCode (B.5.23)-->
@@ -771,6 +778,7 @@
 			<xsl:with-param name="repeatable-path" select=".."/>
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 53 Trefwoorden, kies ook minimaal een trefwoord dat het soort service beschrijft zoals infoMapAccessService of infoFeatureAccessService'"/>
+			<xsl:with-param name="help-description" select="'De meest relevante trefwoorden die op de dataset van toepassing zijn. Waarmee de dataset beter gevonden kan worden. Houd het aantal trefwoorden beperkt. Twijfel = nee.'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.11_Trefwoord</xsl:with-param>
 			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
@@ -858,6 +866,7 @@
 			<xsl:with-param name="repeatable-path" select=".."/>
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 68 Gebruiksbeperkingen Verplicht om op zijn minst één van de vier elementen (juridische) toegangsrestricties, overige beperkingen, veiligheidsrestricties of gebruiksbeperkingen op te nemen.'"/>
+			<xsl:with-param name="help-description" select="'Wie data hergebruikt, moet weten welke voorwaarden er gelden. De Nederlandse overheid wil overheidsinformatie zoveel mogelijk gratis en zonder voorwaarden beschikbaar stellen. Bij voorkeur via de Creative Commons Zero (CC0) Publiek Domein Verklaring. Met deze verklaring wordt afstand gedaan van alle rechten. '"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.36_Gebruiksbeperkingen</xsl:with-param>
 			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
@@ -883,6 +892,7 @@
 			<xsl:with-param name="repeatable-path" select=".."/>
 			<xsl:with-param name="optionality" select="'conditional'"/>
 			<xsl:with-param name="help-text" select="'ISO 70 (juridische) toegangsrestricties [keuzelijst] Het is verplicht op zijn minst één van de drie elementen (juridische) toegangsrestricties, overige beperkingen of veiligheidsrestricties op te nemen.'"/>
+			<xsl:with-param name="help-description" select="'http://creativecommons.org/publicdomain/zero/1.0/deed.nl'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.33_Juridische_toegangsrestricties</xsl:with-param>
 			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
@@ -918,6 +928,7 @@
 			<xsl:with-param name="title">Algemene beschrijving herkomst</xsl:with-param>
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 83 Algemene beschrijving herkomst'"/>
+			<xsl:with-param name="help-description" select="'De wijze waarop de data zijn verzameld, de herkomst van de data, het productieproces. '"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.23_Algemene_beschrijving_herkomst</xsl:with-param>
 			<xsl:with-param name="type" select="'rich-text'"/>
 		</xsl:call-template>
@@ -1075,7 +1086,8 @@
 			<xsl:with-param name="title">Compleetheid</xsl:with-param>
 			<xsl:with-param name="repeatable" select="true()"/>
 			<xsl:with-param name="repeatable-path" select=".."/>
-			<xsl:with-param name="help-text">Afwijking van de x- en y-coördinaten ten opzichte van de werkelijke plaats op aarde.</xsl:with-param>
+			<xsl:with-param name="help-description" select="'De volledigheid van de dataset. Bijvoorbeeld: De dataset bevat alle bomen in de openbare ruimte van de gemeente Utrecht behalve die van Leidsche Rijn omdat deze wijk in ontwikkeling nog door de projectorganisatie beheerd wordt. '"/>
+			<xsl:with-param name="help-text">ISO 137 Completeness</xsl:with-param>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 139 Niveau kwaliteitsbeschrijving 
@@ -1225,7 +1237,7 @@
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 360 titel'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.1_Titel_van_de_bron</xsl:with-param>
-                        <xsl:with-param name="help-description">De herkenbare naam van de dataset waarmee de gebruiker de dataset voldoende kan herkennen. <em>Bijvoorbeeld: Strooiroutes; oplaadpunten elektrisch vervoer; Verkeersintensiteiten op lokale wegen; Gemeentelijk vastgoed.</em></xsl:with-param>
+            <xsl:with-param name="help-description">De herkenbare naam van de dataset waarmee de gebruiker de dataset voldoende kan herkennen. <em>Bijvoorbeeld: Strooiroutes; oplaadpunten elektrisch vervoer; Verkeersintensiteiten op lokale wegen; Gemeentelijk vastgoed.</em></xsl:with-param>
 			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
 	</xsl:template>
@@ -1312,6 +1324,7 @@
 				<xsl:apply-templates select="gmd:CI_Date">
 					<xsl:with-param name="readonly" select="$globalReadonly"/>
 					<xsl:with-param name="optionality">mandatory</xsl:with-param>
+					<xsl:with-param name="help-description" select="'De datum waarop de originele dataset, de brondata voor het eerst is gemaakt. Geeft informatie over de historie en gecombineerd met de updatefrequentie over de tijdspanne van de dataset.'"/>
 				</xsl:apply-templates>
 			</div>
 		</div>
@@ -1400,6 +1413,7 @@
 			<xsl:with-param name="picklist">picklist_SV_ServiceType</xsl:with-param>
 			<xsl:with-param name="optionality" select="'conditional'"/>
 			<xsl:with-param name="help-text" select="'ISO 398 protocol [keuzelijst] Verplicht als er een URL is opgegeven.'"/>
+			<xsl:with-param name="help-description" select="'Het type service waarmee de data wordt aangeroepen of gedownload kan worden. De meest bekende services voor geodata bijvoorbeeld zijn WMS (Web Map Service) en WFS (Web Feature Service). Hiermee kan via een weblink (URL), een directe en actuele koppeling met de brondata tot stand gebracht worden.'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.6_Protocol</xsl:with-param>
 		</xsl:call-template>
 	</xsl:template>
@@ -1410,6 +1424,7 @@
 			<xsl:with-param name="title">Naam</xsl:with-param>
 			<xsl:with-param name="optionality" select="'conditional'"/>
 			<xsl:with-param name="help-text" select="'ISO 400 naam Verplicht gesteld voor de OGC:WMS, OGC:WFS en OGC:WCS.'"/>
+			<xsl:with-param name="help-description" select="'De bestandsnaam inclusief de extensie of de kaartlaagnaam voor gebruik bij WMS en WFS.'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.7_Naam</xsl:with-param>
 			<xsl:with-param name="no-bold-title" select="$no-bold-title"/>
 		</xsl:call-template>
@@ -1561,6 +1576,7 @@
 			<xsl:with-param name="title">Naam organisatie</xsl:with-param>
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 376 naam organisatie'"/>
+			<xsl:with-param name="help-description" select="'De  naam van de (overheids)organisatie die verantwoordelijk is voor de dataset. Voluit geschreven. Bijvoorbeeld: Gemeente Haarlem; Rijkswaterstaat (RWS). '"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.37_Verantwoordelijke_organisatie_bron</xsl:with-param>
 			<xsl:with-param name="picklist" select="'picklist_organisations'"/>
 			<xsl:with-param name="readonly" select="$readonly"/>
@@ -1573,6 +1589,7 @@
 			<xsl:with-param name="title">Naam contactpersoon</xsl:with-param>
 			<xsl:with-param name="optionality" select="'optional'"/>
 			<xsl:with-param name="help-text" select="'ISO 375 naam contactpersoon'"/>
+			<xsl:with-param name="help-description" select="'Het gaat hier om de eerste persoon met wie contact opgenomen kan worden bij vragen. Deze persoon is in staat om alle vragen te adresseren. Bij zichzelf of bij collega s.'"/>
 			<xsl:with-param name="picklist" select="'picklist_contacts'"/>
 			<xsl:with-param name="readonly" select="$readonly"/>
 		</xsl:call-template>
@@ -1583,6 +1600,7 @@
 			<xsl:with-param name="title">Rol contactpersoon</xsl:with-param>
 			<xsl:with-param name="optionality" select="'optional'"/>
 			<xsl:with-param name="help-text" select="'ISO 377 rol contactpersoon'"/>
+			<xsl:with-param name="help-description" select="'De functie van de contactpersoon binnen zijn of haar organisatie.'"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- ISO 379 rol organisatie -->
@@ -1641,6 +1659,7 @@
 			<xsl:with-param name="title">E-mail</xsl:with-param>
 			<xsl:with-param name="optionality" select="'mandatory'"/>
 			<xsl:with-param name="help-text" select="'ISO 386 e-mail'"/>
+			<xsl:with-param name="help-description" select="'Het e-mailadres van de contactpersoon.'"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.38_Verantwoordelijke_organisatie_bron:_e-mail</xsl:with-param>
 		</xsl:call-template>
 	</xsl:template>
@@ -1660,6 +1679,7 @@
 			<xsl:with-param name="title">URL</xsl:with-param>
 			<xsl:with-param name="optionality" select="$optionality"/>
 			<xsl:with-param name="help-text" select="'ISO 397 link'"/>
+			<xsl:with-param name="help-description" select="'De link naar de service of naar het te downloaden bestand. '"/>
 			<xsl:with-param name="help-link">http://wiki.geonovum.nl/index.php?title=2.4.5_URL</xsl:with-param>
 			<xsl:with-param name="no-bold-title" select="$no-bold-title"/>
 		</xsl:call-template>
@@ -1891,6 +1911,7 @@
 		<xsl:call-template name="element">
 			<xsl:with-param name="title">Herzieningsfrequentie</xsl:with-param>
 			<xsl:with-param name="help-text" select="'ISO 143 Herzieningsfrequentie. Frequentie waarmee de data herzien wordt.'"/>
+			<xsl:with-param name="help-description" select="'Frequentie waarmee de data herzien wordt.'"/>
 			<xsl:with-param name="picklist" select="'picklist_MD_MaintenanceFrequencyCode'"/>
 			<xsl:with-param name="readonly" select="$globalReadonly"/>
 		</xsl:call-template>
