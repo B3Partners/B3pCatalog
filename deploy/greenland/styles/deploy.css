@@ -56,7 +56,9 @@ ul.jqueryFileTree li {
     border: 0 none;
 }
 .footer {
-    height: 100px;
+    /* height: 100px; */
+    height: 0;
+    display: none;
 }
 .footer-content {
     height: 100px;
