@@ -1580,13 +1580,8 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
                 title: "Metadatabestand maken",
                 click: function(event) {
                     $(this).removeClass("ui-state-hover");
-                    B3pCatalog.saveDataUserConfirm({
-                        done: function() {
-                            B3pCatalog.exportMetadata();
-                        },
-                        text: "Wilt u uw wijzigingen opslaan alvorens de metadata te maken?",
-                        asyncSave: false // data needs to be saved already when we do our export request
-                    });
+                    B3pCatalog.saveMetadata({async: false});
+                    B3pCatalog.exportMetadata();
                     return false;
                 }
             }).button({
