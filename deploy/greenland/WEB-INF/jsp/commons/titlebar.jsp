@@ -15,6 +15,16 @@
     <ul>
         <li><a href="#" class="dialog-link" data-target="over-openmetadatamaker">Over OpenMetadataMaker</a></li>
         <li><a href="#" class="dialog-link" data-target="over-open-source">Open Source</a></li>
+        <c:if test="${!empty pageContext.request.remoteUser}">
+            <li>
+                <fmt:message key="loggedInAs"/>:
+                ${pageContext.request.remoteUser}
+            </li>
+            <li><a href="#">Uitloggen</a></li>
+        </c:if>
+        <c:if test="${empty pageContext.request.remoteUser}">
+            <li><stripes:link href="/login.jsp">Inloggen</stripes:link></li>
+        </c:if> 
     </ul>
 </div>
 <div id="over-openmetadatamaker" style="display: none;" title="Over OpenMetadataMaker">
@@ -36,10 +46,10 @@
 </div>
 <div id="over-open-source" style="display: none;" title="Open Source">
     <p>
-        De OpenMetadataMaker is een open source product. Dit betekent dat de broncode voor iedereen toegankelijk en herbruikbaar is. De code is beschikbaar via [naam/URL]
+        De OpenMetadataMaker is een open source product. Dit betekent dat de broncode voor iedereen toegankelijk en herbruikbaar is. De code is beschikbaar via support@b3partners.nl
     </p>
     <p>
-        De OpenMetadataMaker is gebouwd door B3Partners. B3Partners beheert de broncode van de OpenMetadataMaker. Heeft u (aanvullende) vragen over de broncode of het hergebruik ervan binnen uw eigen omgeving of anderszins, dan kunt u vanzelfsprekend ook contact opnemen met B3Partners via ... [B3P ZELF INVULLEN en zijn jullie het hiermee eens?]
+        De OpenMetadataMaker is gebouwd door B3Partners. B3Partners beheert de broncode van de OpenMetadataMaker. Heeft u (aanvullende) vragen over de broncode of het hergebruik ervan binnen uw eigen omgeving of anderszins, dan kunt u vanzelfsprekend ook contact opnemen met B3Partners via support@b3partners.nl
     </p>
 </div>
 <script>
@@ -47,7 +57,8 @@
         $('#over-openmetadatamaker, #over-open-source').dialog({
             autoOpen: false,
             width: 500,
-            height: 450
+            height: 450,
+            modal: true
         });
         $('.dialog-link').click(function(e) {
             e.preventDefault();
