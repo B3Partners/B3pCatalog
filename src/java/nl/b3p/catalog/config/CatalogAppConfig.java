@@ -244,19 +244,24 @@ public class CatalogAppConfig implements ServletContextListener {
         }        
     }
     
-    public boolean isNoWritableRoots(HttpServletRequest request) {
+    public boolean isAddOnly(HttpServletRequest request) {
         if (roots==null || roots.isEmpty()) {
-            return true;
+            return false;
         }
+        boolean addOnly = false;
         for (Root root : roots) {
             AclAccess highest = root.getRequestUserHighestAccessLevel(request);
-            if (highest.getSecurityLevel() > AclAccess.READ.getSecurityLevel()) {
+            if (highest.getSecurityLevel() == AclAccess.ADD.getSecurityLevel()) {
+                addOnly = true;
+            }
+            if (highest.getSecurityLevel() != AclAccess.ADD.getSecurityLevel()) {
                 return false;
             }
         }
-        return true;
+        return addOnly;
     }
 
+    
     public void contextDestroyed(ServletContextEvent sce) {
     }
 }

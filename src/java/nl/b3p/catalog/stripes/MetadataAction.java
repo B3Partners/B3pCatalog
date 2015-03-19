@@ -158,7 +158,7 @@ public class MetadataAction extends DefaultAction {
             root = Root.getRootForPath(path, getContext().getRequest(), AclAccess.READ);
             rootAccess = root.getRequestUserHighestAccessLevel(getContext().getRequest());
             if (viewMode==null || !viewMode.booleanValue()) {
-                viewMode = rootAccess == null || rootAccess.getSecurityLevel() < AclAccess.WRITE.getSecurityLevel();
+                viewMode = rootAccess == null || rootAccess.getSecurityLevel() < AclAccess.ADD.getSecurityLevel();
             }
             extraHeaders.put("X-MDE-Access", rootAccess.name());
 
@@ -369,7 +369,7 @@ public class MetadataAction extends DefaultAction {
         try {
             determineRoot();
 
-            if (rootAccess.getSecurityLevel() < AclAccess.WRITE.getSecurityLevel()) {
+            if (rootAccess.getSecurityLevel() < AclAccess.ADD.getSecurityLevel()) {
                 throw new B3PCatalogException("Geen rechten om metadata op te slaan op deze locatie");
             }
 

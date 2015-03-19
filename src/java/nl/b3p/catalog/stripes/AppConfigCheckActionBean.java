@@ -40,7 +40,8 @@ public class AppConfigCheckActionBean extends DefaultAction {
         return null;
     }    
     
-    public boolean isNoWritableRoots() {
-        return config.isNoWritableRoots(getContext().getRequest());
+    public boolean isAddOnly() {
+        return config.isAddOnly(getContext().getRequest());
     }
+
 }

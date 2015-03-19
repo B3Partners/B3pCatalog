@@ -78,14 +78,18 @@
             <ul id="main-tabs" class="ui-helper-reset">
                 <stripes:useActionBean beanclass="nl.b3p.catalog.stripes.AdminCheckActionBean" event="init" var="b"/>
                 <stripes:useActionBean beanclass="nl.b3p.catalog.stripes.AppConfigCheckActionBean" event="init" var="c"/>
-                <c:if test="${!c.config.isNoWritableRoots(pageContext.request)}">
-                    <li class="ui-corner-top">
-                        <a href="#info">Informatie</a>
-                    </li>
-                    <li class="ui-corner-top">
-                        <a href="#filetree">Metadata bewerken</a>
-                    </li>
-                </c:if>
+                <c:choose>
+                    <c:when test="${c.addOnly}">
+                        <li class="ui-corner-top">
+                            <a href="#info">123</a>
+                        </li>
+                    </c:when>
+                    <c:otherwise>
+                        <li class="ui-corner-top">
+                            <a href="#filetree">Metadata bewerken</a>
+                        </li>
+                    </c:otherwise>
+                </c:choose>
                 <c:if test="${!empty c.config.defaultCswServer && c.config.defaultCswServer.url != null}">
                     <li class="ui-corner-top">
                         <a href="#search">Metadata doorzoeken</a> 

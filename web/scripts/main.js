@@ -641,7 +641,7 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
                         // TODO: on demand van PBL bv: laatst geopende doc opslaan
                         //$.cookie();
                         var access = jqXHR.getResponseHeader("X-MDE-Access");
-                        var viewMode = access != "WRITE";
+                        var viewMode = (access != "WRITE" && access != "ADD");
 
                         B3pCatalog.createMdeHtml(data, false, isGeo, viewMode);
                     }
@@ -690,7 +690,7 @@ B3pCatalog.loadMetadata = function(mode, path, title, isGeo, cancel) {
                     // TODO: on demand van PBL bv: laatst geopende doc opslaan
                     //$.cookie();
                     var access = jqXHR.getResponseHeader("X-MDE-Access");
-                    var viewMode = access != "WRITE";
+                    var viewMode = (access != "WRITE" && access != "ADD");
 
                     B3pCatalog.createMdeHtml(data, false, isGeo, viewMode);
                 }

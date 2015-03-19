@@ -25,7 +25,8 @@ import javax.xml.bind.annotation.XmlEnumValue;
  */
 @XmlEnum(String.class)
 public enum AclAccess {
-    @XmlEnumValue("write") WRITE(3), 
+    @XmlEnumValue("write") WRITE(4), 
+    @XmlEnumValue("add") ADD(3), 
     @XmlEnumValue("comment") COMMENT(2), 
     @XmlEnumValue("read") READ(1), 
     @XmlEnumValue("none") NONE(0);    
