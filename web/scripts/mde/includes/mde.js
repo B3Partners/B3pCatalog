@@ -157,6 +157,11 @@ $.widget("ui.mde", {
         
         //console.log("add section");
         log("add section");
+
+        var openedBlock = $('.ui-mde-section-header.expanded').closest('.ui-mde-section');
+        var blockIndex = openedBlock.parent().find('.ui-mde-section').index(openedBlock);
+        window.localStorage.setItem('last-open-index', blockIndex);
+        window.localStorage.setItem('last-scroll-position', this.options.scrollableContainer.scrollTop);
         
         this._showSpinner();
         
@@ -190,6 +195,11 @@ $.widget("ui.mde", {
         if (returnKey == 7 || returnKey === false) {
             return;
         }
+        
+        var openedBlock = $('.ui-mde-section-header.expanded').closest('.ui-mde-section');
+        var blockIndex = openedBlock.parent().find('.ui-mde-section').index(openedBlock);
+        window.localStorage.setItem('last-open-index', blockIndex);
+        window.localStorage.setItem('last-scroll-position', this.options.scrollableContainer.scrollTop);
         
         this._showSpinner();
         
@@ -1021,6 +1031,7 @@ $.widget("ui.mde", {
             $('.help-description').remove();
         }
         
+        this.options.scrollableContainer = $('#edit-doc-root').closest('.ui-layout-content')[0];
         var simpleMode = $('#edit-doc-root').hasClass('ui-mde-simple');
         if (this.options.tabContainerSelector !== "#ui-mde-tabs-container") {
             var tabs = $("#ui-mde-tabs-container").html();
@@ -1079,17 +1090,24 @@ $.widget("ui.mde", {
             self._createRichTextElement($(this));
         });
 
+        var scrollPos = $('#infobuttons').outerHeight(true);
         $(".ui-mde-section-header a", this.element).click(function(event) {
             var currentSection = $(event.target).closest(".ui-mde-section");
             var sectionContent = currentSection.find(".ui-mde-section-content").first();
-            currentSection.find('.ui-mde-section-header').first().toggleClass('expanded');
+            var currentSectionHeader = currentSection.find('.ui-mde-section-header').first();
+            currentSectionHeader.toggleClass('expanded');
             sectionContent.toggle();
             
             // Close other section on same level in simple mode
             if(simpleMode) {
-                var otherSections = currentSection.parent().children('.ui-mde-section').not(currentSection);
+                var allSections = currentSection.parent().children('.ui-mde-section');
+                var otherSections = allSections.not(currentSection);
                 otherSections.find(".ui-mde-section-content").hide();
                 otherSections.find(".ui-mde-section-header").removeClass("expanded");
+                // scroll in view
+                var elIndex = allSections.index(currentSection) + 1;
+                var elHeight = currentSectionHeader.outerHeight();
+                self.options.scrollableContainer.scrollTop = scrollPos + (elIndex * elHeight) - (elIndex === 1 ? 20 : 10);
             } else {
                 // toggle plus/minus image
                 var imgSrc = self.BASE_FULL_PATH + (sectionContent.is(":visible") ? self.MINUS_IMAGE : self.PLUS_IMAGE);
@@ -1403,6 +1421,21 @@ $.widget("ui.mde", {
 
     _findOrganisationContactNode: function($section, xpath) {
         return $section.find(".ui-mde-value[ui-mde-fullpath$='" + RegExp.escape(xpath) + "']");
+    },
+    
+    scrollTo: function(scrollPos) {
+        this.options.scrollableContainer.scrollTop = scrollPos;
+    },
+    
+    openBlock: function(index) {
+        var currentSection = $($('.ui-mde-tab-definition').find('.ui-mde-section').get(index));
+        if(currentSection.length !== 1) {
+            return;
+        }
+        var sectionContent = currentSection.find(".ui-mde-section-content").first();
+        var currentSectionHeader = currentSection.find('.ui-mde-section-header').first();
+        currentSectionHeader.toggleClass('expanded');
+        sectionContent.toggle();
     }
 });
 
