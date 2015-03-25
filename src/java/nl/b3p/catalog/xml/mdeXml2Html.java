@@ -433,6 +433,12 @@ public class mdeXml2Html {
         cleanUpMetadata(mdNode, elementsToBeRemoved);
     }
     
+    /**
+     * Removes elements safely from metadata
+     * @param mdNode
+     * @param elementsToBeRemoved
+     * @throws B3PCatalogException 
+     */
     public static void cleanUpMetadata(Element mdNode, List<String> elementsToBeRemoved) throws B3PCatalogException {
         List<Element> mdChildren = mdNode.getChildren();
         List<Element> childrenToBeRemoved = new ArrayList<Element>();
@@ -633,7 +639,7 @@ public class mdeXml2Html {
         // organisation name present, if not ignore
         if (!deleteOK && node.getName().equals("CI_RoleCode")) {
             deleteOK = true;
-            Element oe = node.getParentElement().getParentElement();
+            Element oe = node.getParentElement().getParentElement(); //CI_ResponsibleParty
             List<Element> oecs = oe.getChildren();
             for (Element e : oecs) {
                 if (e.getName().equals("organisationName")) {
@@ -649,6 +655,29 @@ public class mdeXml2Html {
                     }
                 }
              }
+        }
+        
+        // if CI_DateTypeCode check if there is a
+        // date present, if not ignore
+        if (!deleteOK && node.getName().equals("CI_DateTypeCode")) {
+            deleteOK = true;
+            Element oe = node.getParentElement().getParentElement(); //CI_Date
+            List<Element> oecs = oe.getChildren();
+            for (Element e : oecs) {
+                if (e.getName().equals("date")) {
+                    List<Element> ecs = e.getChildren();
+                    for (Element o : ecs) {
+                        if (o.getName().equals("Date")
+                                || o.getName().equals("DateTime")) {
+                            String value = StringUtils.deleteWhitespace(o.getText());
+                            if (value != null && !value.isEmpty()) {
+                                deleteOK = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
         
         return deleteOK;
