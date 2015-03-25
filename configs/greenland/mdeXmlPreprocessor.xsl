@@ -2487,6 +2487,7 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template match="gmd:MD_Constraints">
 		<xsl:copy>
 			<xsl:choose>
+				<!-- Niet gebruikt in MDE: gmd:useLimitation -->
 				<xsl:when test="not(../../gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation)">
 					<!--Child element missing, create it-->
 					<xsl:call-template name="add-useLimitation"/>
@@ -2504,15 +2505,14 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	</xsl:template>
 	<xsl:template match="gmd:MD_LegalConstraints">
 		<xsl:copy>
-			<!-- Niet gebruikt in MDE: gmd:useLimitation -->
 			<xsl:choose>
-				<xsl:when test="not(../../gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation)">
+				<xsl:when test="not(../../gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useLimitation)">
 					<!--Child element missing, create it-->
 					<xsl:call-template name="add-useLimitation"/>
 				</xsl:when>
 				<xsl:otherwise>
 					<!--Child element exists, copy it-->
-					<xsl:apply-templates select="../../gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation"/>
+					<xsl:apply-templates select="../../gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useLimitation"/>
 				</xsl:otherwise>
 			</xsl:choose>
 			<xsl:choose>
@@ -4994,8 +4994,16 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	</xsl:template>
 	<xsl:template name="add-MD_LegalConstraints">
 		<xsl:element name="gmd:MD_LegalConstraints">
-			<xsl:call-template name="add-accessConstraints"/>
-			<xsl:call-template name="add-otherConstraints"/>
+			<xsl:choose>
+				<xsl:when test="$fillDefaults">
+					<xsl:call-template name="add-MD_LegalConstraints-default"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:call-template name="add-useLimitation"/>
+					<xsl:call-template name="add-accessConstraints"/>
+					<xsl:call-template name="add-otherConstraints"/>
+				</xsl:otherwise>
+			</xsl:choose>
 		</xsl:element>
 	</xsl:template>
 	<xsl:template name="add-accessConstraints">
@@ -5463,7 +5471,14 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-CI_DateTypeCode">
 		<xsl:element name="gmd:CI_DateTypeCode">
 			<xsl:attribute name="codeList">http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode</xsl:attribute>
-			<xsl:attribute name="codeListValue"/>
+			<xsl:choose>
+				<xsl:when test="$fillDefaults">
+					<xsl:call-template name="add-CI_DateTypeCode-default"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:attribute name="codeListValue"/>
+				</xsl:otherwise>
+			</xsl:choose>
 		</xsl:element>
 	</xsl:template>
 	<xsl:template name="add-MD_CharacterSetCode">
@@ -5813,6 +5828,24 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 			</xsl:choose>
 		</xsl:element>
 	</xsl:template>
+	<xsl:template name="add-MD_LegalConstraints-default">
+		<xsl:element name="gmd:useLimitation">
+			<xsl:element name="gco:CharacterString">Geen gebruiksbeperking</xsl:element>
+		</xsl:element>
+		<xsl:element name="gmd:accessConstraints">
+			<xsl:element name="gmd:MD_RestrictionCode">
+				<xsl:attribute name="codeList">http://www.isotc211.org/2005/resources/codeList.xml#MD_RestrictionCode</xsl:attribute>
+				<xsl:attribute name="codeListValue">otherRestrictions</xsl:attribute>
+				<xsl:text>anders</xsl:text>
+			</xsl:element>
+		</xsl:element>
+		<xsl:element name="gmd:otherConstraints">
+			<xsl:element name="gco:CharacterString">Geen beperkingen</xsl:element>
+		</xsl:element>
+		<xsl:element name="gmd:otherConstraints">
+			<xsl:element name="gco:CharacterString">http://creativecommons.org/publicdomain/zero/1.0/</xsl:element>
+		</xsl:element>
+	</xsl:template>
 	<xsl:template name="add-metadataStandardName-default">
 		<xsl:choose>
 				<xsl:when test="$serviceMode">
@@ -5908,6 +5941,10 @@ moet het toch gewoon gco:CharacterString zijn zoals in de xsd staat.
 	<xsl:template name="add-LanguageCode-default">
 		<xsl:attribute name="codeListValue">dut</xsl:attribute>
 		<xsl:text>Nederlands</xsl:text>
+	</xsl:template>
+	<xsl:template name="add-CI_DateTypeCode-default">
+		<xsl:attribute name="codeListValue">creation</xsl:attribute>
+		<xsl:text>creatie</xsl:text>
 	</xsl:template>
 	<xsl:template name="add-MD_CharacterSetCode-default">
 		<xsl:attribute name="codeListValue">utf8</xsl:attribute>

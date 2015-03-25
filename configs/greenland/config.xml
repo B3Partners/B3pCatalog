@@ -64,38 +64,14 @@
          Minimaal één root moet zijn gedefinieerd.
     --> 
     <roots>
-        <!-- Browse bestanden vanaf het pad "C:\catalog_test".
-        
-             Voor synchroniseren van shapefiles is ArcView licentie nodig. 
-             Werkt met de forkSynchroniser optie.
-             
-             Voor weergave inhoud, lezen en schrijven van metadata en 
-             synchroniseren van Esri file geodatabases is een ArcView licentie 
-             nodig.
-        -->
-<!--        <fileRoot name="GIS data" path="/home/janbessels/dev/metadata">
-        
-			 Autorisatie voor deze root
 
-                "access" kan één van onderstaande waardes hebben:
-                  "write"  : gebruiker met deze rol kan metadata wijzigen
-                  "comment": gebruiker met deze rol kan metadata lezen en commentaar toevoegen
-                  "read"   : gebruiker kan alleen metadata lezen
-                  "none"   : root wordt niet getoond in de boomstructuur voor gebruiker, kan geen metadata lezen
-
-
-                Indien geen <acl> elementen aanwezig zijn is het default <acl access="write"><role>*</role></acl>
-            
-			<acl access="write">
-				<role>none</role>
-			</acl>
-        </fileRoot>-->
         <fileRoot name="GIS data" path="/opt/configs/openmetadatamaker.nl/b3pcatalog/metadata">
         
 			<!-- Autorisatie voor deze root
 
                 "access" kan één van onderstaande waardes hebben:
                   "write"  : gebruiker met deze rol kan metadata wijzigen
+                  "add"  	 : gebruiker met deze rol kan metadata toevoegen, maar niet in lijst zien
                   "comment": gebruiker met deze rol kan metadata lezen en commentaar toevoegen
                   "read"   : gebruiker kan alleen metadata lezen
                   "none"   : root wordt niet getoond in de boomstructuur voor gebruiker, kan geen metadata lezen
@@ -106,16 +82,11 @@
 			<acl access="write">
 				<role>editor</role>
 				<role>admin</role>
+			</acl>
+			<acl access="add">
 				<role>none</role>
 			</acl>
-			<acl access="comment">
-				<role>viewer</role>
-				<role>none</role>
-			</acl>
-      <acl access="read">
-				<role>none</role>
-			</acl>
-        </fileRoot>
+      </fileRoot>
         
     </roots>
     
