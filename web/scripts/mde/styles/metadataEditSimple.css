@@ -246,6 +246,10 @@ Author     : geertplaisier
     padding: 20px 20px 0 20px;
 }
 
+#bottom-wrapper {
+    padding: 20px;
+}
+
 .checkbox-row {
     padding: 5px 0;
 }
@@ -283,4 +287,9 @@ Author     : geertplaisier
 
 #bottom-wrapper #toolbar a:hover {
     border: 0 none;
+}
+
+/* Hide for now */
+.menuaddabove {
+    display: none;
 }

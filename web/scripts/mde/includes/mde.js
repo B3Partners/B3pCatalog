@@ -826,10 +826,19 @@ $.widget("ui.mde", {
         if (newValue != undefined && // undefined == null
             newValue !== "" &&
             newValue !== this.DEFAULT_PICKLIST_TEXT) {
-            if(autoClose) $element.text(newText);
+            if(!autoClose) {
+                $element.find('input').val(newText);
+            } else {
+                $element.text(newText);
+            }
             this._saveValueOnClientSide($element, newValue, newText);
         } else {
-            if(autoClose) $element.text(this.DEFAULT_PICKLIST_TEXT);
+            if(!autoClose) {
+                $element.find('input').val("");
+                this._saveValueOnClientSide($element, "", "");
+            } else {
+                $element.text(this.DEFAULT_PICKLIST_TEXT);
+            }
         }
 
         this.preEditText = undefined;
@@ -1161,6 +1170,9 @@ $.widget("ui.mde", {
             //$(".ui-mde-value").click(function(event) {
             $(".ui-mde-clickable").click(function(event) {
                 self.log(".ui-mde-value click");
+                if(simpleMode) {
+                    return;
+                }
                 return self._startEdit($(event.target), event.altKey, /*autoFocus=*/true, /*autoClose=*/true);
             });
 
@@ -1415,6 +1427,26 @@ $.widget("ui.mde", {
             this._saveValueOnClientSide($node, "");
             if(autoClose) {
                 $node.text(this._getDefaultValue($node));
+            } else {
+                var me = this;
+                // setTimeout is required to run after value has been saved
+                setTimeout(function() {
+                    $node.find('input').val("");
+                    var select = $node.find('select');
+                    select.children().remove();
+                    select.append($("<option />", {
+                        text: me.DEFAULT_PICKLIST_TEXT,
+                        val: me.DEFAULT_PICKLIST_TEXT
+                    }));
+                    select.val(me.DEFAULT_PICKLIST_TEXT);
+                    $.each(me._getContactsForSection(select), function(index, contactName) {
+                        select.append($("<option />", {
+                            value: contactName,
+                            title: contactName,
+                            text: contactName
+                        }));
+                    });
+                }, 0);
             }
         }
     },
