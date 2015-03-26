@@ -16,8 +16,11 @@ ul.jqueryFileTree li {
     line-height: inherit;
     top: 5px;
 }
-.logout-link, .login-link, .login-info-block, #header-logo, .sub-menu li a {
+.logout-link, .login-link, .login-info-block, #header-logo, .sub-menu li a, .sub-menu li {
     color: rgb(230, 235, 245);
+}
+.logout-link {
+    margin: 0;
 }
 .title-bar, .footer, .nav-bar  {
     background-image: none;

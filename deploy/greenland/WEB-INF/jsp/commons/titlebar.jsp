@@ -17,10 +17,11 @@
         <li><a href="#" class="dialog-link" data-target="over-open-source">Open Source</a></li>
         <c:if test="${!empty pageContext.request.remoteUser}">
             <li>
+                <fmt:message key="loggedIn"/>
                 <fmt:message key="loggedInAs"/>:
                 ${pageContext.request.remoteUser}
             </li>
-            <li><a href="#">Uitloggen</a></li>
+            <li><a href="#" class="logout-link">Uitloggen</a></li>
         </c:if>
         <c:if test="${empty pageContext.request.remoteUser}">
             <li><stripes:link href="/login.jsp">Inloggen</stripes:link></li>
