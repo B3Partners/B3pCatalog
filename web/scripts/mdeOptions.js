@@ -16,12 +16,15 @@ B3pCatalog.getExtraMdeOptions = function(isGeo, viewMode) {
         afterInit: B3pMde.afterInit
     };
 
+    /*
+     * Geotabs toggle functionaliteit uitgezet
     if (typeof isGeo === "boolean" && !isGeo) {
         $.extend(extraOptions, {
             geoTabsMinimizable: true,
             geoTabsMinimized: true
         });
     }
+    */
     if (typeof viewMode === "boolean") {
         $.extend(extraOptions, {
             viewMode: viewMode

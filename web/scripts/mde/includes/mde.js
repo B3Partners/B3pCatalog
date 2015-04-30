@@ -291,12 +291,12 @@ $.widget("ui.mde", {
             case "currentTab":
                 this._showTab(value);
                 break;
-            case "geoTabsMinimized":
+            /* case "geoTabsMinimized":
                 this._getGeoTabs().toggle(!value);
                 if (!$("#ui-mde-tabs a[href$='" + this.options.currentTab + "']").is(":visible")) {
                     this._showTab();
                 }
-                break;
+                break; */
             default:
                 $.Widget.prototype._setOption.apply(this, arguments);
                 break;
@@ -1065,6 +1065,9 @@ $.widget("ui.mde", {
             self._showTab(this);
             return false;
         });
+        /*
+         * Geo tabs zijn altijd zichtbaar
+         * 
         if (this.options.geoTabsMinimizable) {
             var geoTabsToggleContainer = $("<div />", {
                 id: "ui-mde-geoTabsToggle-container"
@@ -1088,7 +1091,7 @@ $.widget("ui.mde", {
 
             this.option("geoTabsMinimized", this.options.geoTabsMinimized);
         }
-
+        */
         this._showTab(this.options.currentTab);
                 
         $(".ui-mde-comment-date", this.element).each(function() {
@@ -1265,6 +1268,14 @@ $.widget("ui.mde", {
         var self = this;
         if (!aElem || (typeof aElem === "string" && $(this._getBracketNormalizedHref(aElem)).length == 0)) {
             aElem = $("#ui-mde-tabs > li > a:visible").first(); //default tab
+        }
+        
+        if(aElem.length === 0) {
+            var tabs = $("#ui-mde-tabs > li");
+            // If there is only 1 tab, we can use this href, whether it is visible or not
+            if(tabs.length === 1) {
+                aElem = tabs.find('> a').first();
+            }
         }
 
         $("#ui-mde-tabs > li > a").each(function() {
