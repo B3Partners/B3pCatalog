@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Webapp-users>
-    <role rolename="admin"/>
-    <role rolename="editor"/>
-    <role rolename="viewer"/>
-    <user username="beheerder" password="sittard" roles="admin,editor,viewer"/>
-    <user username="editor" password="sittard" roles="editor,viewer"/>
-    <user username="viewer" password="sittard" roles="viewer"/>
-</Webapp-users>
