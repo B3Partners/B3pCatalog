@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pbl="http://www.pbl.nl/xsd/metadata" xmlns:b3p="http://www.b3partners.nl/xsd/metadata" xmlns:dc="http://purl.org/dc/elements/1.1/" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://www.pbl.nl/xsd/metadata">
+	<xs:import schemaLocation="b3p.xsd" namespace="http://www.b3partners.nl/xsd/metadata"/>
+	<xs:import schemaLocation="http://www.dublincore.org/schemas/xmls/qdc/2008/02/11/dc.xsd" namespace="http://purl.org/dc/elements/1.1/"/>
+	
+	<xs:element name="frequency" substitutionGroup="dc:any"/>
+	<xs:element name="testsPerformed" substitutionGroup="dc:any"/>
+
+	<xs:complexType name="metadataPBLType">
+		<xs:complexContent>
+			<xs:extension base="b3p:abstractB3PElementType">
+				<xs:sequence>
+					<xs:group ref="dc:elementsGroup" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="metadataPBL" type="pbl:metadataPBLType" substitutionGroup="b3p:abstractB3PElement"/>
+	
+	
+</xs:schema>

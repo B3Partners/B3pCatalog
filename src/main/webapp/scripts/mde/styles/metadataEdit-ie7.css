@@ -1,0 +1,13 @@
+.ui-mde .ui-mde-element select.ui-mde-picklist {
+	margin-top: -3px;
+	margin-left: -5px;
+}
+
+.ui-mde .ui-mde-key .menu-wrapper img {
+	margin-left: 0px;
+    margin-right: 0px;
+}
+
+.ui-mde .ui-mde-section-header .menu-wrapper img {
+    margin-left: 0px;
+}
