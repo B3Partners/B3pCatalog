@@ -4,7 +4,7 @@
 
     <groupId>nl.b3p</groupId>
     <artifactId>B3pCatalog</artifactId>
-    <version>4.2</version>
+    <version>4.2-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>B3pCatalog</name>
@@ -72,13 +72,13 @@
         <dependency>
             <groupId>nl.b3p</groupId>
             <artifactId>b3p-commons-gis</artifactId>
-            <version>4.2</version>
+            <version>4.2-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>nl.b3p</groupId>
             <artifactId>b3p-commons-csw</artifactId>
-            <version>4.2</version>
+            <version>4.2-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -99,7 +99,7 @@
         <repository>
             <id>nl.b3p.gissuite</id>
             <name>B3P GIS Suite Maven Repository</name>
-            <url>file://${project.basedir}/../repo</url>
+            <url>file://${project.basedir}/../B3pGisSuiteMvnRepo</url>
         </repository>
         <repository>
             <id>osgeo</id>
