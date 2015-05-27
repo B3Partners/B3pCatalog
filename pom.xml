@@ -4,7 +4,7 @@
 
     <groupId>nl.b3p</groupId>
     <artifactId>B3pCatalog</artifactId>
-    <version>4.2-SNAPSHOT</version>
+    <version>4.2.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>B3pCatalog</name>
@@ -12,7 +12,9 @@
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>windows-1252</project.build.sourceEncoding>
+        <geotools.version>10.4</geotools.version>
     </properties>
+    
 
     <dependencies>
         <dependency>
@@ -48,7 +50,7 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-shapefile-old</artifactId>
-            <version>10.4</version>
+            <version>${geotools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
@@ -61,14 +63,14 @@
             <version>1.5.8</version>
         </dependency>
         <dependency>
-            <groupId>nl.b3p</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>b3p-commons-gis</artifactId>
-            <version>4.2-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>nl.b3p</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>b3p-commons-csw</artifactId>
-            <version>4.2-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
