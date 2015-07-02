@@ -980,7 +980,7 @@ B3pCatalog.saveMetadata = function(settings) {
         var viewMode = mde.options.viewMode;
         var isGeo = !mde.options.geoTabsMinimized;
 
-        $.ajax({
+        return $.ajax({
             url: B3pCatalog.metadataUrl,
             type: "POST",
             dataType: "text",
@@ -1182,16 +1182,13 @@ B3pCatalog.exportMetadata = function() {
 };
 
 B3pCatalog._doExportMetadata = function(exportType) {
-    $("#mde").mde("option", "pageLeaveWarning", false);
-
-    window.location = B3pCatalog.metadataUrl + "?" + $.param({
+    var url = B3pCatalog.metadataUrl + "?" + $.param({
         "export": "t",
         path: B3pCatalog.currentFilename,
         mode: B3pCatalog.currentMode,
         exportType: exportType
     });
-        
-    $("#mde").mde("option", "pageLeaveWarning", true);
+    window.open(url, '', 'width=200,height=200');
 };
 
 B3pCatalog._exportMetadata = function() {
@@ -1590,8 +1587,9 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
                 title: "Metadatabestand maken",
                 click: function(event) {
                     $(this).removeClass("ui-state-hover");
-                    B3pCatalog.saveMetadata({async: false});
-                    B3pCatalog._doExportMetadata("datasets");
+                    B3pCatalog.saveMetadata().done(function() {
+                        B3pCatalog._doExportMetadata("datasets");
+                    });
                     return false;
                 }
             }).button({

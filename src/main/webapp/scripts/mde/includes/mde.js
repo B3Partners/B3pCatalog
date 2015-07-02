@@ -336,21 +336,29 @@ $.widget("ui.mde", {
             var $picklistElement = this._createPicklist($element, autoClose);
             //this.log("pickelem");
             //this.log($picklistElement);
-            $element.html($picklistElement);
+            
+            if($picklistElement !== null) {
+                $element.html($picklistElement);
+            } else {
+                $element.html(''); // Removes default text
+            }
 
             if (this._isDynamicPicklist(picklistId)) {
                 this.log("this._isDynamicPicklist(picklistId)");
                 $inputElement = this._createTextInput(altClick, $element);
                 $element.prepend($inputElement);
 
-                // prevent clicking from picklist/inputElement to inputElement/picklist to destroy both:
-                $picklistElement.add($inputElement)
-                    .mouseover(function() {self.mouseOverMultiInput = true;})
-                    .mouseout (function() {self.mouseOverMultiInput = false;});
+                if($picklistElement !== null) {
+                    // prevent clicking from picklist/inputElement to inputElement/picklist to destroy both:
+                    $picklistElement.add($inputElement)
+                        .mouseover(function() {self.mouseOverMultiInput = true;})
+                        .mouseout (function() {self.mouseOverMultiInput = false;});
 
-                $picklistElement.css("margin-left", $inputElement.outerWidth(true) + 5);
-                if ($picklistElement.length == 0)
+                    $picklistElement.css("margin-left", $inputElement.outerWidth(true) + 5);
+                }
+                if ($picklistElement === null || $picklistElement.length === 0) {
                     $inputElement.focus();
+                }
             }
 
             if(autoFocus) $picklistElement.focus();
@@ -700,8 +708,11 @@ $.widget("ui.mde", {
 
     _createPicklist: function($element, autoClose) {
         var self = this;
-        var picklist = this._getPicklist($element, autoClose)
-            .clone()
+        var picklist = this._getPicklist($element, autoClose);
+        if(picklist === null) {
+            return picklist;
+        }
+        picklist.clone()
             .addClass("ui-mde-picklist")
             .keydown(function(event) {return self._checkKey(event);})
             .change(function(event) {return self._selectPicklistValue(event, autoClose);})
@@ -734,6 +745,13 @@ $.widget("ui.mde", {
         if (!this._isDynamicPicklist(id)) {
             return $("#" + id);
         } else {
+            var organisations = 0;
+            for (var k in self.options.organisations) if (self.options.organisations.hasOwnProperty(k)) {
+                organisations++;
+            }
+            if((id === this.PICKLIST_ORGANISATIONS || id === this.PICKLIST_CONTACTS) && organisations === 0) {
+                return null;
+            }
             if (id === this.PICKLIST_ORGANISATIONS) {
                 return this._createDynamicPicklist(id, autoClose, function(select) {
                     select.children().remove();
@@ -879,6 +897,9 @@ $.widget("ui.mde", {
 
     _setPicklistLocalizedPrettyTitle: function($element, codeListValue) {
         var picklist = this._getPicklist($element);
+        if(picklist === null) {
+            return false;
+        }
         var localizedPrettyTitle = picklist.find('option[value="' + codeListValue + '"]').text();
 
         if (!localizedPrettyTitle) {
