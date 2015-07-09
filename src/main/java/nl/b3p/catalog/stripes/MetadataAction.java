@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
 import net.sourceforge.stripes.action.FileBean;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -52,6 +53,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.ProcessingInstruction;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -84,6 +86,7 @@ public class MetadataAction extends DefaultAction {
     public final static String CONTACTS = "contacts";
 
     public static final String SESSION_KEY_METADATA_XML = MetadataAction.class.getName() + ".METADATA_XML";
+    public static final String ISO2SIMPLE_HTML = "xsls/iso-simple-html.xsl";
     private final static DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     /* XXX niet nodig omdat objecten van verschillende types toch niet dezelfde
@@ -314,6 +317,24 @@ public class MetadataAction extends DefaultAction {
             md = syncBetweenElements(md);
 
             Document mdCopy = cleanupXmlCopy(md, exportType);
+            
+            if (EXPORT_TYPE_DATASETS.equals(exportType)) {
+                HttpServletRequest req = getContext().getRequest();
+                StringBuilder sb = new StringBuilder();
+                sb.append(req.getScheme());
+                sb.append("://");
+                sb.append(req.getServerName());
+                sb.append(":");
+                sb.append(req.getServerPort());
+                sb.append(req.getContextPath());
+                sb.append("/");
+                sb.append(ISO2SIMPLE_HTML);
+                ProcessingInstruction pi
+                        = new ProcessingInstruction("xml-stylesheet", "type='text/xsl' href='"
+                                + sb.toString() + "'");
+                mdCopy.addContent(0, pi);
+            }
+
             // Geen XML parsing door browser, geef door als String
             return new StreamingResolution("text/plain", new StringReader(DocumentHelper.getDocumentString(mdCopy)));
 
@@ -929,7 +950,7 @@ public class MetadataAction extends DefaultAction {
                     serviceMode = Boolean.TRUE;
                     datasetMode = Boolean.TRUE;
         }
-
+        
         // create copy because instance in session variable should not be cleaned
         Document mdCopy = new Document((Element) md.getRootElement().clone());
         mdeXml2Html.cleanUpMetadata(mdCopy, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
