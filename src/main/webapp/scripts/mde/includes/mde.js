@@ -712,16 +712,17 @@ $.widget("ui.mde", {
         if(picklist === null) {
             return picklist;
         }
-        picklist.clone()
+        var picklistClone = picklist.clone();
+        picklistClone
             .addClass("ui-mde-picklist")
             .keydown(function(event) {return self._checkKey(event);})
             .change(function(event) {return self._selectPicklistValue(event, autoClose);})
             .blur(function(event) {return autoClose ? self._destroyPicklist(event) : false; })
         ;
 
-        var selectElement = picklist.find('option[value="' + this.preEditText + '"]');
+        var selectElement = picklistClone.find('option[value="' + this.preEditText + '"]');
         if (selectElement.length > 0) {
-            picklist.val(this.preEditText);
+            picklistClone.val(this.preEditText);
         } else {
             var newTextValue = this.preEditText === "" ? 
             this.DEFAULT_PICKLIST_TEXT : 
@@ -732,11 +733,11 @@ $.widget("ui.mde", {
                 val: newTextValue
             });
 
-            picklist.prepend($newOption);
-            picklist.val(newTextValue);
+            picklistClone.prepend($newOption);
+            picklistClone.val(newTextValue);
         }
 
-        return picklist;
+        return picklistClone;
     },
 
     _getPicklist: function($element, autoClose) {
