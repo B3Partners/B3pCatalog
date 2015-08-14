@@ -57,9 +57,6 @@
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/mde.js"></script>
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mde/includes/commonOptions.js"></script>
 
-        <!-- B3p libs: -->
-        <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/log.js"></script>
-
         <!-- B3pCatalog main js -->
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/init.js.jsp"></script>
         <script type="text/javascript" charset="utf-8" src="${contextPath}/scripts/mdeOptions.js"></script>

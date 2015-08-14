@@ -1,6 +1,39 @@
 if (typeof B3pCatalog == "undefined")
     B3pCatalog = {};
 
+(function initLogFunctionality() {
+    var debugMode = true;
+    if(B3pCatalog && B3pCatalog.hasOwnProperty('basicMdeOptions') && B3pCatalog.basicMdeOptions.hasOwnProperty('logMode')) {
+        debugMode = B3pCatalog.basicMdeOptions.logMode;
+    }
+    // IE 8 en Firebug kunnen ook console.info/warn/error aan
+    window.log = function() {
+        if (!debugMode) {
+            return;
+        }
+        var message = arguments[0];
+        if (arguments.length > 1) {
+            message = Array.prototype.join.call(arguments, '; ');
+        }
+        if (window.console && window.console.log) {
+            console.log(message);
+        } else if (window.opera && window.opera.postError) {
+            window.opera.postError(message);
+        }
+    };
+    jQuery.fn.log = function(message) {
+        if (!debugMode) {
+            return this;
+        }
+        if (window.console && window.console.log) {
+            console.log("%s: %o", message, this);
+        } else if (window.opera && window.opera.postError) {
+            window.opera.postError(message);
+        }
+        return this;
+    };
+})();
+
 B3pCatalog.hashchange = function(event) {
    //console.log("hashchange", event);
     log("hashchange", event);
