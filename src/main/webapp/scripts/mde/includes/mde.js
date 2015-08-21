@@ -158,10 +158,15 @@ $.widget("ui.mde", {
         //console.log("add section");
         log("add section");
 
-        var openedBlock = $('.ui-mde-section-header.expanded').closest('.ui-mde-section');
-        var blockIndex = openedBlock.parent().find('.ui-mde-section').index(openedBlock);
-        window.localStorage.setItem('last-open-index', blockIndex);
-        window.localStorage.setItem('last-scroll-position', this.options.scrollableContainer.scrollTop);
+        var simpleMode = $('#edit-doc-root').hasClass('ui-mde-simple');
+        if(simpleMode && window.localStorage) {
+            var openedBlock = $('.ui-mde-section-header.expanded').closest('.ui-mde-section');
+            var blockIndex = openedBlock.parent().find('.ui-mde-section').index(openedBlock);
+            window.localStorage.setItem('last-open-index', blockIndex);
+        }
+        if(window.localStorage) {
+            window.localStorage.setItem('last-scroll-position', this.options.scrollableContainer.scrollTop);
+        }
         
         this._showSpinner();
         
@@ -196,10 +201,15 @@ $.widget("ui.mde", {
             return;
         }
         
-        var openedBlock = $('.ui-mde-section-header.expanded').closest('.ui-mde-section');
-        var blockIndex = openedBlock.parent().find('.ui-mde-section').index(openedBlock);
-        window.localStorage.setItem('last-open-index', blockIndex);
-        window.localStorage.setItem('last-scroll-position', this.options.scrollableContainer.scrollTop);
+        var simpleMode = $('#edit-doc-root').hasClass('ui-mde-simple');
+        if(simpleMode && window.localStorage) {
+            var openedBlock = $('.ui-mde-section-header.expanded').closest('.ui-mde-section');
+            var blockIndex = openedBlock.parent().find('.ui-mde-section').index(openedBlock);
+            window.localStorage.setItem('last-open-index', blockIndex);
+        }
+        if(window.localStorage) {
+            window.localStorage.setItem('last-scroll-position', this.options.scrollableContainer.scrollTop);
+        }
         
         this._showSpinner();
         

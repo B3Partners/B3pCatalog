@@ -1143,11 +1143,12 @@ B3pCatalog.createMdeHtml = function(htmlDoc, changedOnServer, isGeo, viewMode, e
         B3pCatalog.setChanged(changedOnServer);
         B3pCatalog.fadeMessage("Editor gegevens zijn ververst");
         
-        if(window.localStorage.getItem('last-open-index')) {
+        var simpleMode = $('#edit-doc-root').hasClass('ui-mde-simple');
+        if(simpleMode && window.localStorage && window.localStorage.getItem('last-open-index')) {
             mde.openBlock(window.localStorage.getItem('last-open-index'));
             window.localStorage.removeItem('last-open-index');
         }
-        if(window.localStorage.getItem('last-scroll-position')) {
+        if(window.localStorage && window.localStorage.getItem('last-scroll-position')) {
             mde.scrollTo(parseInt(window.localStorage.getItem('last-scroll-position'), 10));
             window.localStorage.removeItem('last-scroll-position');
         }
