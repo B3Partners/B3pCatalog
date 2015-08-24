@@ -158,8 +158,8 @@ $.widget("ui.mde", {
         //console.log("add section");
         log("add section");
 
-        var simpleMode = $('#edit-doc-root').hasClass('ui-mde-simple');
-        if(simpleMode && window.localStorage) {
+        var displayModeSimple = $('#edit-doc-root').hasClass('ui-mde-simple');
+        if(displayModeSimple && window.localStorage) {
             var openedBlock = $('.ui-mde-section-header.expanded').closest('.ui-mde-section');
             var blockIndex = openedBlock.parent().find('.ui-mde-section').index(openedBlock);
             window.localStorage.setItem('last-open-index', blockIndex);
@@ -201,8 +201,8 @@ $.widget("ui.mde", {
             return;
         }
         
-        var simpleMode = $('#edit-doc-root').hasClass('ui-mde-simple');
-        if(simpleMode && window.localStorage) {
+        var displayModeSimple = $('#edit-doc-root').hasClass('ui-mde-simple');
+        if(displayModeSimple && window.localStorage) {
             var openedBlock = $('.ui-mde-section-header.expanded').closest('.ui-mde-section');
             var blockIndex = openedBlock.parent().find('.ui-mde-section').index(openedBlock);
             window.localStorage.setItem('last-open-index', blockIndex);
@@ -1073,7 +1073,7 @@ $.widget("ui.mde", {
         }
         
         this.options.scrollableContainer = $('#edit-doc-root').closest('.ui-layout-content')[0];
-        var simpleMode = $('#edit-doc-root').hasClass('ui-mde-simple');
+        var displayModeSimple = $('#edit-doc-root').hasClass('ui-mde-simple');
         if (this.options.tabContainerSelector !== "#ui-mde-tabs-container") {
             var tabs = $("#ui-mde-tabs-container").html();
             $(this.options.tabContainerSelector).html(tabs);
@@ -1143,7 +1143,7 @@ $.widget("ui.mde", {
             sectionContent.toggle();
             
             // Close other section on same level in simple mode
-            if(simpleMode) {
+            if(displayModeSimple) {
                 var allSections = currentSection.parent().children('.ui-mde-section');
                 var otherSections = allSections.not(currentSection);
                 otherSections.find(".ui-mde-section-content").hide();
@@ -1205,7 +1205,7 @@ $.widget("ui.mde", {
             //$(".ui-mde-value").click(function(event) {
             $(".ui-mde-clickable").click(function(event) {
                 self.log(".ui-mde-value click");
-                if(simpleMode) {
+                if(displayModeSimple) {
                     return;
                 }
                 return self._startEdit($(event.target), event.altKey, /*autoFocus=*/true, /*autoClose=*/true);
@@ -1250,7 +1250,7 @@ $.widget("ui.mde", {
         }
         
         // Simple editing mode, init additional gui
-        if(simpleMode) {
+        if(displayModeSimple) {
             self._initSimpleGui();
         }
 
