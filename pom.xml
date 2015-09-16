@@ -15,7 +15,6 @@
         <geotools.version>10.4</geotools.version>
     </properties>
     
-
     <dependencies>
         <dependency>
             <groupId>com.esri</groupId>
@@ -70,12 +69,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>b3p-commons-gis</artifactId>
-            <version>${project.version}</version>
+            <version>4.2.1</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>b3p-commons-csw</artifactId>
-            <version>${project.version}</version>
+            <version>4.2.1</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -112,6 +111,11 @@
     </dependencies>
 
     <repositories>
+       <repository>
+            <id>repo.b3p.nl</id>
+            <name>B3P file Repository</name>
+            <url>http://repo.b3p.nl/nexus/content/repositories/releases/</url>
+        </repository>
         <repository>
             <id>nl.b3p.gissuite</id>
             <name>B3P GIS Suite Maven Repository</name>
@@ -123,6 +127,19 @@
             <url>http://download.osgeo.org/webdav/geotools/</url>
         </repository>
     </repositories>
+    <scm>
+        <connection>scm:git:git@github.com:B3Partners/B3pCatalog.git</connection>
+        <developerConnection>scm:git:git@github.com:B3Partners/B3pCatalog.git</developerConnection>
+        <url>https://github.com/B3Partners/B3pCatalog</url>
+      <tag>B3pCatalog-4.2.1</tag>
+    </scm>
+    <distributionManagement>
+        <repository>
+            <id>repo.b3p.nl</id>
+            <name>B3P file Repository</name>
+            <url>http://repo.b3p.nl/nexus/content/repositories/releases/</url>
+        </repository>
+    </distributionManagement>
 
     <build>
         <plugins>
@@ -139,6 +156,14 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+                 <configuration>
+                    <skip>true</skip>
+                </configuration>               
+           </plugin>
+           <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.1.1</version>
@@ -170,6 +195,14 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+           <plugin>                
+                <groupId>org.apache.maven.plugins</groupId>                
+                <artifactId>maven-release-plugin</artifactId>                
+                <version>2.5.2</version>                
+                <configuration>                    
+                    <pushChanges>true</pushChanges>                
+                </configuration>            
             </plugin>
         </plugins>
     </build>
