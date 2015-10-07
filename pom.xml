@@ -68,7 +68,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>b3p-commons-gis</artifactId>
-            <version>4.2.1</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -130,7 +130,7 @@
         <connection>scm:git:git@github.com:B3Partners/B3pCatalog.git</connection>
         <developerConnection>scm:git:git@github.com:B3Partners/B3pCatalog.git</developerConnection>
         <url>https://github.com/B3Partners/B3pCatalog</url>
-      <tag>B3pCatalog-4.2.1</tag>
+      <tag>B3pCatalog-${project.version}</tag>
     </scm>
     <distributionManagement>
         <repository>

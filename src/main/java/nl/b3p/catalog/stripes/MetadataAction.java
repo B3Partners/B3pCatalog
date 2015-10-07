@@ -321,13 +321,13 @@ public class MetadataAction extends DefaultAction {
             if (EXPORT_TYPE_DATASETS.equals(exportType)) {
                 HttpServletRequest req = getContext().getRequest();
                 StringBuilder sb = new StringBuilder();
-                sb.append(req.getScheme());
-                sb.append("://");
-                sb.append(req.getServerName());
-                sb.append(":");
-                sb.append(req.getServerPort());
-                sb.append(req.getContextPath());
-                sb.append("/");
+//                sb.append(req.getScheme());
+//                sb.append("://");
+//                sb.append(req.getServerName());
+//                sb.append(":");
+//                sb.append(req.getServerPort());
+//                sb.append(req.getContextPath());
+//                sb.append("/");
                 sb.append(ISO2SIMPLE_HTML);
                 ProcessingInstruction pi
                         = new ProcessingInstruction("xml-stylesheet", "type='text/xsl' href='"
