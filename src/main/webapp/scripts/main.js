@@ -65,12 +65,33 @@ B3pCatalog.hashchange = function(event) {
         return;
     }
     
+    /*
+     * Editor is started with uuid hash
+     */
     if (event.getState("uuid")) {
+        // Show search tab
         showTab($("#main-tabs a[href='#search']"));
+        // Add UUID to search field
         $('#searchStringBox').val(event.getState("uuid"));
         $('select[name=searchType]').val('Identifier');
+        // Append hidden field to instruct Stripes to search
         $('#searchForm').append('<input type="hidden" name="search" value="search" />');
+        // setTimeout to make sure the searchForm is loaded and .ajaxForm has been bound
         setTimeout(function() {
+            // Watch search complete event
+            $('#searchForm').bind('mde.search.complete', function() {
+                // Get results
+                var results = $("#searchResultsContainer").find('.search-result-title');
+                // If there is only 1 result, show that result
+                if(results.length === 1) {
+                    $("#search-results .search-result-title").removeClass("search-result-selected");
+                    results.addClass("search-result-selected");
+                    B3pCatalog.loadMetadataByUUID(results.attr("uuid"));
+                }
+                // Unbind search event
+                $('#searchForm').unbind('mde.search.complete');
+            });
+            // Trigger search
             $('#searchForm').trigger('submit');
         }, 0);
         return;
@@ -1281,12 +1302,12 @@ B3pCatalog._exportMetadata = function() {
 };
 
 B3pCatalog._exportMetadataByUUID = function() {
-    $("#mde").mde("option", "pageLeaveWarning", false);
-    window.location = B3pCatalog.catalogUrl + "?" + $.param({
+    var uuid = $("#search-results .search-result-selected").attr("uuid");
+    var url = B3pCatalog.catalogUrl + "?" + $.param({
         "export": "t",
-        uuid: $("#search-results .search-result-selected").attr("uuid")
+        uuid: uuid
     });
-    $("#mde").mde("option", "pageLeaveWarning", true);
+    window.open(url, '', 'width=200,height=200');
 };
 
 B3pCatalog.importMetadata = function() {
