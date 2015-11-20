@@ -43,5 +43,9 @@ public class AppConfigCheckActionBean extends DefaultAction {
     public boolean isAddOnly() {
         return config.isAddOnly(getContext().getRequest());
     }
+    
+    public int getHighestAccessLevel() {
+        return config.getRequestUserHighestAccessLevel(getContext().getRequest());
+    }
 
 }

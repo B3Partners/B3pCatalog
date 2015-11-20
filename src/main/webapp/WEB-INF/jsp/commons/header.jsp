@@ -85,9 +85,11 @@
                         </li>
                     </c:when>
                     <c:otherwise>
-                        <li class="ui-corner-top">
-                            <a href="#filetree">Metadata bewerken</a>
-                        </li>
+                        <c:if test="${c.getHighestAccessLevel() > 0}">
+                            <li class="ui-corner-top">
+                                <a href="#filetree">Metadata bewerken</a>
+                            </li>
+                        </c:if>
                     </c:otherwise>
                 </c:choose>
                 <c:if test="${!empty c.config.defaultCswServer && c.config.defaultCswServer.url != null}">

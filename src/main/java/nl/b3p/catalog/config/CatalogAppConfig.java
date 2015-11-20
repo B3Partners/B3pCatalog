@@ -260,6 +260,17 @@ public class CatalogAppConfig implements ServletContextListener {
         }
         return addOnly;
     }
+    
+    public int getRequestUserHighestAccessLevel(HttpServletRequest request) {
+        int highestAccess = AclAccess.NONE.getSecurityLevel();
+        for (Root root : roots) {
+            AclAccess highest = root.getRequestUserHighestAccessLevel(request);
+            if (highest.getSecurityLevel() > highestAccess) {
+                highestAccess = highest.getSecurityLevel();
+            }
+        }
+        return highestAccess;
+    }
 
     
     public void contextDestroyed(ServletContextEvent sce) {
