@@ -1730,7 +1730,7 @@ B3pCatalog.createMdeToolbar = function(viewMode) {
     })
             );
 
-    if (B3pCatalog.username != null && B3pCatalog.haveCsw) {
+    if (B3pCatalog.username != null && B3pCatalog.username !== "" && B3pCatalog.haveCsw) {
         toolbar.append(
                 $("<a />", {
                     href: "#",

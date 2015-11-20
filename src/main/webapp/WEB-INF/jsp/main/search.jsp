@@ -29,6 +29,9 @@
                         "class": "message_err",
                         html: jqXHR.responseText
                     }));
+                },
+                success: function() {
+                    $("#searchForm").trigger("mde.search.complete");
                 }
             });
         });
