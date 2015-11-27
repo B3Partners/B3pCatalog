@@ -1202,7 +1202,9 @@ B3pCatalog.setChanged = function(changed) {
         $(".ui-mde-changed-value", this.element).removeClass("ui-mde-changed-value");
     }
 
-    $("#saveMD").button("option", "disabled", !changed);
+    if($("#saveMD").button("option", "disabled") !== !changed) {
+        $("#saveMD").button("option", "disabled", !changed);
+    }
 
     B3pCatalog.mdeChanged = changed;
 };
