@@ -224,7 +224,8 @@ $.widget("ui.mde", {
     _submitComment: function(event) {
         var comment = $("#ui-mde-comment-textarea", this.element).val();
         
-        this.options.commentPosted(comment);
+        //verwijzing naar functie van externe wiki2html.js lib.
+        this.options.commentPosted(comment.wiki2html());
 
         $("#ui-mde-comment-textarea", this.element).val("").focus();
     },
@@ -710,7 +711,7 @@ $.widget("ui.mde", {
         // raw rich-text value needs to be escaped first, because we are going to add html tags in wiki2html.
          // we need to keep ' (and ") for wikitext. Therefore no full escaping:
         stringValue = stringValue.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/&/g, "&amp;");
-        // enige verwijzing naar functies van externe wiki2html.js lib.
+        //verwijzing naar functies van externe wiki2html.js lib.
         return stringValue.wiki2html();
     },
 
