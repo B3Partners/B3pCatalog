@@ -847,14 +847,13 @@ public class MetadataAction extends DefaultAction {
             Object dataset = ArcSDEHelperProxy.getDataset(root, path);
 
             if (dataset instanceof ArcSDEJDBCDataset) {
-
+                ArcSDEJDBCDataset ds = (ArcSDEJDBCDataset) dataset;
                 ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();
-
+                log.info("Synchroniseren SDE dataset pad " + path + ", absolute name " + ds.getAbsoluteName());
                 if (cfg.isEnabled()) {
-                    dataset = ArcSDEHelperProxy.getArcObjectsDataset(root, path);
+                    dataset = ArcSDEHelperProxy.getArcObjectsDataset(root, ds.getAbsoluteName());
                     ArcGISSynchronizer.synchronize(md, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
                 } else if (cfg.isForkSynchroniser()) {
-                    ArcSDEJDBCDataset ds = (ArcSDEJDBCDataset) dataset;
 
                     if (ds.getRoot().getArcobjectsConnection() == null) {
                         throw new Exception("ArcObjects niet geconfigureerd, synchroniseren niet mogelijk");

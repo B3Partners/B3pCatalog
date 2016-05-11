@@ -16,8 +16,11 @@ import nl.b3p.catalog.config.SDERoot;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirContent;
 import nl.b3p.catalog.filetree.DirEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class ArcSDEHelper {
+    private static final Log log = LogFactory.getLog(ArcSDEHelper.class);
     
     public static DirContent getDirContent(SDERoot root, String fullPath) throws Exception {
 
@@ -34,17 +37,18 @@ public class ArcSDEHelper {
     
     public static IDataset getDataset(Root r, String path) throws Exception {
         SDERoot root = (SDERoot)r;
-        path = Root.getPathPart(path);
         String paths[] = path.split(Pattern.quote(Root.SEPARATOR + ""));
-        
+
         String containingFeatureDatasetName = null;
         String datasetName = null;
         
         if(paths.length == 1) {
             datasetName = paths[0];
+            log.debug("Getting ArcObjects dataset for name " + datasetName);
         } else {
             containingFeatureDatasetName = paths[0];
             datasetName = paths[1];
+            log.debug("Getting ArcObjects dataset for name " + datasetName + ", in containing feature dataset " + containingFeatureDatasetName);
         }
             
         if(datasetName == null) {
@@ -56,6 +60,7 @@ public class ArcSDEHelper {
             IDataset ds;
             while ((ds = enumDataset.next()) != null) {
                 if (ds.getType() == esriDatasetType.esriDTFeatureDataset && ds.getName().equals(containingFeatureDatasetName)) {
+                    log.info("Found containing feature dataset " + containingFeatureDatasetName);
                     enumDataset = ds.getSubsets();
                     break;
                 }
@@ -66,6 +71,7 @@ public class ArcSDEHelper {
         }
         IDataset ds;
         while ((ds = enumDataset.next()) != null) {
+            log.debug("Checking dataset name " + ds.getName() + ", type " + ds.getType());
             if (ds.getType() != esriDatasetType.esriDTFeatureDataset && ds.getName().equals(datasetName)) {
                 return ds;
             }
