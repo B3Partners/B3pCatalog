@@ -65,10 +65,10 @@ public class ArcObjectsInitializer {
      */
     public static void initializeEditOrViewLicense() throws Exception {
         initializeLicense(new int[] {
-            esriLicenseProductCode.esriLicenseProductCodeArcInfo,
-            esriLicenseProductCode.esriLicenseProductCodeArcEditor,
+//            esriLicenseProductCode.esriLicenseProductCodeArcInfo,
+//            esriLicenseProductCode.esriLicenseProductCodeArcEditor,
             esriLicenseProductCode.esriLicenseProductCodeArcServer,
-            esriLicenseProductCode.esriLicenseProductCodeArcView,
+//            esriLicenseProductCode.esriLicenseProductCodeArcView,
             esriLicenseProductCode.esriLicenseProductCodeEngineGeoDB,
             esriLicenseProductCode.esriLicenseProductCodeEngine
         });                
@@ -79,8 +79,8 @@ public class ArcObjectsInitializer {
      */
     public static void initializeEditLicense() throws Exception {
         initializeLicense(new int[] {
-            esriLicenseProductCode.esriLicenseProductCodeArcInfo,
-            esriLicenseProductCode.esriLicenseProductCodeArcEditor,
+//            esriLicenseProductCode.esriLicenseProductCodeArcInfo,
+//            esriLicenseProductCode.esriLicenseProductCodeArcEditor,
             esriLicenseProductCode.esriLicenseProductCodeArcServer
         });                
     }
@@ -90,7 +90,7 @@ public class ArcObjectsInitializer {
      */
     public static void initializeViewLicense() throws Exception {
         initializeLicense(new int[] {
-            esriLicenseProductCode.esriLicenseProductCodeArcView,
+//            esriLicenseProductCode.esriLicenseProductCodeArcView,
             esriLicenseProductCode.esriLicenseProductCodeEngineGeoDB,
             esriLicenseProductCode.esriLicenseProductCodeEngine
         });                
