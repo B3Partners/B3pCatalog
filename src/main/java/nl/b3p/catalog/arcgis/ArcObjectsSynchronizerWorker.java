@@ -49,7 +49,7 @@ public class ArcObjectsSynchronizerWorker {
 
         IDataset ds = null;
         String formatName = null;
-        
+
         Document metadataAllElements = null;
         if(cl.hasOption("stdin")) {
             System.err.println("Reading XML document from stdin");
@@ -84,9 +84,6 @@ public class ArcObjectsSynchronizerWorker {
         } else if(TYPE_FGDB.equals(type)) {
             formatName = ArcGISSynchronizer.FORMAT_NAME_FGDB;
             ds = FGDBHelper.getTargetDataset(new File(dataset), esriDatasetType.esriDTFeatureClass);
-        } else if(TYPE_SHAPE.equals(type)) {
-            formatName = ArcGISSynchronizer.FORMAT_NAME_SHAPE;
-            ds = DatasetHelper.getShapeDataset(new File(dataset));
         } else {
             throw new IllegalArgumentException("Invalid type: " + type);
         }

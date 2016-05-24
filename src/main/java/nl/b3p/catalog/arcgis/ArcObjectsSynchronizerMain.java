@@ -27,41 +27,39 @@ import org.apache.log4j.*;
  */
 public class ArcObjectsSynchronizerMain {
     private static Log log;
-    
-    public static final String TYPE_SHAPE = "shape";
+
     public static final String TYPE_FGDB = "fgdb";
     public static final String TYPE_SDE = "sde";
     public static final String TYPE_SDEFILE = "sdefile";
-    
+
     private static Options buildOptions() {
-        Options options = new Options();        
-        
+        Options options = new Options();
+
         options.addOption(OptionBuilder.withDescription("ArcObjects home directory").withArgName("dir").hasArg().create("home"));
-        options.addOption(OptionBuilder.withDescription("shapefile, fgdb or sde").hasArg().isRequired().create("type"));
+        options.addOption(OptionBuilder.withDescription("fgdb or sde").hasArg().isRequired().create("type"));
         options.addOption(OptionBuilder.withDescription("target dataset").hasArg().isRequired().create("dataset"));
         options.addOption(OptionBuilder.withDescription("SDE connection file").hasArg().create("sdefile"));
         options.addOption(OptionBuilder.withDescription("SDE connection string").hasArg().create("sde"));
         options.addOption(OptionBuilder.withDescription("Read XML metadata document with all elements to synchronise from stdin").create("stdin"));
-        
+
         return options;
     }
-    
+
     private static void usage(Options options) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp(ArcObjectsSynchronizerMain.class.getSimpleName(), options);
 
         System.err.println("\nTarget dataset format:\n"
-                + "type shapefile: <path to shapefile>\n"
                 + "type fgdb: <path to fgdb dir>/[<feature dataset name>/]<dataset name>\n"
                 + "type sde: [<feature dataset name>/]<dataset name>");
     }
-    
+
     public static void main(String[] args) throws Exception {
         Logger root = Logger.getRootLogger();
         root.addAppender(new ConsoleAppender(new PatternLayout("%m%n"),ConsoleAppender.SYSTEM_ERR));
-        
+
         log = LogFactory.getLog(ArcObjectsSynchronizerMain.class);
-        
+
         Options options = buildOptions();
         CommandLine cl = null;
         try {
@@ -72,7 +70,7 @@ public class ArcObjectsSynchronizerMain {
             System.err.printf("%s\n\n", e.getMessage());
             usage(options);
             System.exit(1);
-        }          
+        }
 
         try {
             ArcObjectsLinker.link(cl.getOptionValue("home"));
@@ -80,7 +78,7 @@ public class ArcObjectsSynchronizerMain {
             ArcObjectsInitializer.initializeViewLicense();
 
             ArcObjectsSynchronizerWorker.synchronize(cl);
-    
+
             log.info("Completed");
             System.exit(0);
         } catch(Exception e) {

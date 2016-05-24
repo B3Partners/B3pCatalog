@@ -26,7 +26,6 @@ import nl.b3p.catalog.arcgis.ArcObjectsSynchronizerMain;
 import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
 import nl.b3p.catalog.arcgis.ArcSDEJDBCDataset;
 import static nl.b3p.catalog.arcgis.DatasetHelper.DATASET_TYPE_ANY;
-import nl.b3p.catalog.arcgis.DatasetHelperProxy;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.arcgis.Shapefiles;
 import nl.b3p.catalog.config.AclAccess;
@@ -131,7 +130,7 @@ public class MetadataAction extends DefaultAction {
 
     @Validate
     private String fileName = null;
-    
+
     @Validate
     private Boolean newUuid;
 
@@ -317,7 +316,7 @@ public class MetadataAction extends DefaultAction {
             md = syncBetweenElements(md);
 
             Document mdCopy = cleanupXmlCopy(md, exportType);
-            
+
             if (EXPORT_TYPE_DATASETS.equals(exportType)) {
                 HttpServletRequest req = getContext().getRequest();
                 StringBuilder sb = new StringBuilder();
@@ -551,7 +550,7 @@ public class MetadataAction extends DefaultAction {
 
             //datestamp and uuid added when empty
             md = addDateUUID(md, newUuid==null?false:newUuid);
-            
+
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
 
             String html = createHtmlFragment(md);
@@ -878,8 +877,16 @@ public class MetadataAction extends DefaultAction {
 
             boolean isFGDB = FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dataFile);
             ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();
-            if (cfg.isEnabled()) {
-                if (isFGDB) {
+            if(isFGDB && cfg.isEnabled()) {
+                if (cfg.isForkSynchroniser()) {
+                    md = ArcObjectsSynchronizerForker.synchronize(
+                            getContext().getServletContext(),
+                            FileListHelper.getFileForPath(root, path).getAbsolutePath(),
+                            ArcObjectsSynchronizerMain.TYPE_FGDB,
+                            null,
+                            metadata
+                    );
+                } else {
                     try {
                         FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
 
@@ -888,32 +895,15 @@ public class MetadataAction extends DefaultAction {
                     } finally {
                         FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
                     }
-                } else if (path.endsWith(Extensions.SHAPE)) {
-                    try {
-                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
-
-                        Object ds = DatasetHelperProxy.getShapeDataset(dataFile);
-                        ArcGISSynchronizer.synchronize(md, ds, ArcGISSynchronizer.FORMAT_NAME_SHAPE);
-                    } finally {
-                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
-                    }
                 }
-            } else if (cfg.isForkSynchroniser()) {
-                md = ArcObjectsSynchronizerForker.synchronize(
-                        getContext().getServletContext(),
-                        FileListHelper.getFileForPath(root, path).getAbsolutePath(),
-                        isFGDB ? ArcObjectsSynchronizerMain.TYPE_FGDB : ArcObjectsSynchronizerMain.TYPE_SHAPE,
-                        null,
-                        metadata
-                );
             } else if (path.endsWith(Extensions.SHAPE)) {
                 File shapeFile = FileListHelper.getFileForPath(root, path);
 
                     // TODO: Create a new method which combines the two. No point in first creating
                 // A JSON object and then saving it. The JSON step has to go.
                 // Implement this after all other requirements are done/tested.
-                String synchronizeData = Shapefiles.getMetadata(shapeFile.getCanonicalPath());
-                ShapefileSynchronizer.synchronizeFromLocalAccessJSON(md, synchronizeData);
+                String data = Shapefiles.getMetadata(shapeFile.getCanonicalPath());
+                ShapefileSynchronizer.synchronizeFromLocalAccessJSON(md, data);
 
             } else {
                 synchronizeRegularMetadata(md, dataFile);
@@ -949,7 +939,7 @@ public class MetadataAction extends DefaultAction {
                     serviceMode = Boolean.TRUE;
                     datasetMode = Boolean.TRUE;
         }
-        
+
         // create copy because instance in session variable should not be cleaned
         Document mdCopy = new Document((Element) md.getRootElement().clone());
         mdeXml2Html.cleanUpMetadata(mdCopy, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
