@@ -16,9 +16,6 @@
  */
 package nl.b3p.catalog.xml;
 
-import com.esri.arcgis.geodatabase.IFeatureClass;
-import com.esri.arcgis.geodatabase.esriFieldType;
-import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -37,13 +34,19 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class ShapefileSynchronizer {
     private static final Log log = LogFactory.getLog(ShapefileSynchronizer.class);
-    
+
     public static void synchronizeFromLocalAccessJSON(Document doc, String json) throws JDOMException, JSONException {
 
-        XPathHelper.applyXPathValuePair(doc, XPathHelper.DISTR_FORMAT_NAME, "ESRI Shapefile");        
-        XPathHelper.applyXPathValuePair(doc, XPathHelper.SPATIAL_REPR, "vector");      
+        XPathHelper.applyXPathValuePair(doc, XPathHelper.DISTR_FORMAT_NAME, "ESRI Shapefile");
+        XPathHelper.applyXPathValuePair(doc, XPathHelper.SPATIAL_REPR, "vector");
 
         JSONObject md = new JSONObject(json);
+
+        if(md.has("title")) {
+            String title = md.getString("title");
+            XPathHelper.applyXPathValuePair(doc, XPathHelper.TITLE, title);
+            XPathHelper.applyXPathValuePair(doc, XPathHelper.FC_TITLE, title);
+        }
 
         double minX = md.getDouble("minX");
         double minY = md.getDouble("minY");
@@ -61,10 +64,10 @@ public class ShapefileSynchronizer {
                 envelope = envelope.transform(targetCRS, true, 50);
                 log.debug("Transformed shapefile envelope " + envelope.toString());
 
-                minX = envelope.minX();
-                minY = envelope.minY();
-                maxX = envelope.maxX();
-                maxY = envelope.maxY();
+                minX = envelope.getMinimum(1);
+                minY = envelope.getMinimum(0);
+                maxX = envelope.getMaximum(1);
+                maxY = envelope.getMaximum(0);
 
                 Integer epsgCode = CRS.lookupEpsgCode(sourceCRS, true);
                 if(epsgCode != null) {
@@ -87,10 +90,10 @@ public class ShapefileSynchronizer {
         // jbd. Debugging. Fills in tab Datasets(1) with test values.
 //        XPathHelper.applyXPathValuePair(doc, XPathHelper.TITLE, "" + "DS1_Title_FORCED");
 //        XPathHelper.applyXPathValuePair(doc, XPathHelper.ALT_TITLE, "" + "DS1_Alt_Title_FORCED");
-        
+
         if(md.has("dbf")) {
             JSONArray fields = md.getJSONObject("dbf").getJSONArray("fields");
-         
+
             Element gfc_FC_FeatureCatalogue = XPathHelper.selectSingleElement(doc, XPathHelper.FEATURE_CATALOG);
             if(gfc_FC_FeatureCatalogue == null) {
                 // XXX ook gmx:name aanmaken? mogelijk verplicht in schema
@@ -99,16 +102,16 @@ public class ShapefileSynchronizer {
             } else {
                 gfc_FC_FeatureCatalogue.removeChildren(Names.GFC_FEATURE_TYPE, Namespaces.GFC);
             }
-            
+
             Element gfc_featureType = new Element(Names.GFC_FEATURE_TYPE, Namespaces.GFC);
             Element gfc_FC_FeatureType = new Element(Names.GFC_FC_FEATURE_TYPE, Namespaces.GFC);
             gfc_featureType.addContent(gfc_FC_FeatureType);
             gfc_FC_FeatureCatalogue.addContent(gfc_featureType);
-            
+
             addAttribute(gfc_FC_FeatureType, "SHAPE", md.getString("type"));
             for(int i = 0; i < fields.length(); i++) {
                 JSONObject field = fields.getJSONObject(i);
-                
+
                 String name = field.getString("name");
                 String type = field.getString("class");
                 if(type.startsWith("java.lang.")) {
@@ -119,10 +122,10 @@ public class ShapefileSynchronizer {
             }
         }
     }
-    
+
 
     public static void addAttribute(Element gfc_FC_FeatureType, String name, String type) {
-        
+
         Element gfc_carrierOfCharacteristics = new Element(Names.GFC_CARRIER_OF_CHARACTERISTICS, Namespaces.GFC);
         Element gfc_FC_FeatureAttribute = new Element(Names.GFC_FC_FEATURE_ATTRIBUTE, Namespaces.GFC);
 

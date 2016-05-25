@@ -35,7 +35,7 @@ import org.json.JSONObject;
 //TODO CvL: json tussenstuk er nog tussenuit
 public class Shapefiles {
     /** Returns a JSON object with shapefile and DBF metadata.
-     * 
+     *
      * @param file the shapefile to read
      * @return a JSON object, read the code to find out which properties
      */
@@ -45,6 +45,18 @@ public class Shapefiles {
             throw new IllegalArgumentException("File does not end with .shp: " + file);
         }
 
+        JSONObject j = new JSONObject();
+
+        String localFilename = new File(file).getName();
+        String title = "";
+        int dotIndex = localFilename.lastIndexOf(".");
+        if (dotIndex > 0) {
+            title = localFilename.substring(0, dotIndex);
+        } else if (dotIndex == 0) {
+            title = localFilename.substring(1);
+        }
+        j.put("title", title);
+
         FileChannel channel = new FileInputStream(file).getChannel();
         ShapefileHeader header = new ShapefileHeader();
         ByteBuffer bb = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
@@ -53,7 +65,6 @@ public class Shapefiles {
         channel = null;
         file = file.substring(0, file.length()-4) + ".dbf";
 
-        JSONObject j = new JSONObject();
         j.put("type", header.getShapeType().name);
         j.put("version", header.getVersion());
         j.put("minX", header.minX());
