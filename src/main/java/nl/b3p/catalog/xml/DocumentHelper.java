@@ -28,9 +28,11 @@ public class DocumentHelper {
     public static final String EMPTY_METADATA = "empty";
 
     public static String getDocumentString(Document xml) {
-        return new XMLOutputter(Format.getPrettyFormat()).outputString(xml);
+        XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+	outputter.getFormat().setEncoding("UTF-8");
+        return outputter.outputString(xml);
     }
-
+    
     public static Document getMetadataDocument(File mdFile) throws IOException, JDOMException, B3PCatalogException {
         if (mdFile == null)
             throw new B3PCatalogException("Metadata file is null.");

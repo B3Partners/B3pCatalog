@@ -335,7 +335,9 @@ public class MetadataAction extends DefaultAction {
             }
 
             // Geen XML parsing door browser, geef door als String
-            return new StreamingResolution("text/plain", new StringReader(DocumentHelper.getDocumentString(mdCopy)));
+            StreamingResolution r = new StreamingResolution("text/plain", new StringReader(DocumentHelper.getDocumentString(mdCopy)));
+            r.setCharacterEncoding("UTF-8");
+            return r;
 
         } catch (Exception e) {
             String message = "Fout bij toepassen wijzigingen op XML document: " + elementChanges + " " + sectionChange;
