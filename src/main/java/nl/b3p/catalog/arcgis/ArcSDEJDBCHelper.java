@@ -49,6 +49,19 @@ public abstract class ArcSDEJDBCHelper {
         return ds.getConnection();        
     }
     
+    public boolean isOracle() {
+        String databaseProductName = null;
+        try {
+            databaseProductName = getConnection().getMetaData().getDatabaseProductName();
+            if (databaseProductName.contains("Oracle")) {
+                return true;
+            }
+        } catch (Exception ex) {
+            throw new UnsupportedOperationException("Cannot get database product name", ex);
+        }
+        return false;
+     }
+    
     protected String getTableName(String name) {
         String prefix = root.getTablePrefix();
         if(prefix == null || prefix.trim().length() == 0) {

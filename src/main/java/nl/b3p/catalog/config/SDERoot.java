@@ -19,6 +19,7 @@ package nl.b3p.catalog.config;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 import nl.b3p.catalog.arcgis.ArcSDE10JDBCHelper;
+import nl.b3p.catalog.arcgis.ArcSDE10OracleHelper;
 import nl.b3p.catalog.arcgis.ArcSDE9xJDBCHelper;
 import nl.b3p.catalog.arcgis.ArcSDEHelperProxy;
 import nl.b3p.catalog.arcgis.ArcSDEJDBCHelper;
@@ -92,6 +93,11 @@ public class SDERoot extends Root {
             JDBCHelper =  SCHEMA_VERSION_9X.equals(schemaVersion) 
                     ? new ArcSDE9xJDBCHelper(this)
                     : new ArcSDE10JDBCHelper(this);
+            if (JDBCHelper instanceof ArcSDE10JDBCHelper &&
+                ((ArcSDE10JDBCHelper)JDBCHelper).isOracle() ) {
+                JDBCHelper =  new ArcSDE10OracleHelper(this);
+            }
+            
         }
         return JDBCHelper;
     }

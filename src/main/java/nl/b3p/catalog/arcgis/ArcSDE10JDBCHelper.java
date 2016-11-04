@@ -37,7 +37,6 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.io.IOUtils;
 import org.jdom.Document;
-import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
@@ -46,15 +45,18 @@ import org.jdom.output.XMLOutputter;
  * @author Matthijs Laan
  */
 public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
-    private static final String TABLE_ITEMS = "gdb_items";
-    private static final String TABLE_ITEMRELATIONSHIPS = "gdb_itemrelationships";
+    protected String TABLE_ITEMS;
+    protected String TABLE_ITEMRELATIONSHIPS;
     
-    private static final String TYPE_FEATURE_DATASET = "74737149-DCB5-4257-8904-B9724E32A530";
-    private static final String TYPE_FEATURE_CLASS   = "70737809-852C-4A03-9E22-2CECEA5B9BFA";
-    private static final String TYPE_RASTER          = "5ED667A3-9CA9-44A2-8029-D95BF23704B9";
-    
+    protected static final String TYPE_FEATURE_DATASET = "74737149-DCB5-4257-8904-B9724E32A530";
+    protected static final String TYPE_FEATURE_CLASS   = "70737809-852C-4A03-9E22-2CECEA5B9BFA";
+    protected static final String TYPE_RASTER          = "5ED667A3-9CA9-44A2-8029-D95BF23704B9";
+    protected static final String TYPE_RASTER_2        = "C29DA988-8C3E-45F7-8B5C-18E51EE7BEB4";
+        
     public ArcSDE10JDBCHelper(SDERoot root) {
         super(root);
+        TABLE_ITEMS = "gdb_items";
+        TABLE_ITEMRELATIONSHIPS = "gdb_itemrelationships";
     }
     
     @Override
@@ -89,7 +91,7 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
             String sql = "select i.objectid, i.name from " + getTableName(TABLE_ITEMS) + " i " + 
                       "join " + getTableName(TABLE_ITEMRELATIONSHIPS) + " r on (r.destid = i.uuid) " +
                       "join " + getTableName(TABLE_ITEMS) + " parent_i on (parent_i.uuid = r.originid) " +
-                      "where i.type in (?,?) ";
+                      "where i.type in (?,?,?) ";
 
             if(parent == null) {
                 sql += "and parent_i.path = '\\'";
@@ -107,9 +109,9 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
                 }
             };
             if(parent == null) {
-                return new QueryRunner().query(c, sql, h, TYPE_FEATURE_CLASS, TYPE_RASTER);
+                return new QueryRunner().query(c, sql, h, TYPE_FEATURE_CLASS, TYPE_RASTER, TYPE_RASTER_2);
             } else {
-                return new QueryRunner().query(c, sql, h, TYPE_FEATURE_CLASS, TYPE_RASTER, parent.getObjectID());
+                return new QueryRunner().query(c, sql, h, TYPE_FEATURE_CLASS, TYPE_RASTER, TYPE_RASTER_2, parent.getObjectID());
             }
         } finally {
             DbUtils.closeQuietly(c);
@@ -173,5 +175,5 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
         } finally {
              DbUtils.closeQuietly(c);
         }              
-    }
+    }  
 }
