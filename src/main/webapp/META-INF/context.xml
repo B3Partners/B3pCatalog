@@ -3,7 +3,7 @@
     <!-- Locatie van XML configuratiebestand. Een relatief pad is ten opzichte
          van CATALINA_BASE. Standaardwaarde in web.xml: conf/b3pcatalog/config.xml
     -->
-    <Parameter name="config" override="false" value="D:\Chris\git\_B3pGisSuite\B3pGisSuiteDeploys\B3pCatalog\configs\solutionparc\config.xml"/>
+    <Parameter name="config" override="false" value="C:\_B3pGisSuite\B3pCatalog\configs\solutionparc\config.xml"/>
 
     <!--
         Zie voor LDAP uitleg apart document over LDAP in Tomcat.
