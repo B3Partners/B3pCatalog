@@ -3,13 +3,13 @@
     <!-- Locatie van XML configuratiebestand. Een relatief pad is ten opzichte
          van CATALINA_BASE. Standaardwaarde in web.xml: conf/b3pcatalog/config.xml
     -->
-    <Parameter name="config" override="false" value="C:\_B3pGisSuite\B3pCatalog\configs\solutionparc\config.xml"/>
+    <Parameter name="config" override="false" value="D:\Chris\git\_B3pGisSuite\B3pGisSuiteDeploys\B3pCatalog\configs\solutionparc\config.xml"/>
 
     <!--
         Zie voor LDAP uitleg apart document over LDAP in Tomcat.
         In onderstaand voorbeeld wordt iedereen die gevonden worden in de LDAP
-        beheerder. Dit gaat er vanuit dat de normale leesacties gedaan kunnen
-        worden zonder inloggen.
+        admin ofwel beheerder. Dit gaat er vanuit dat de normale leesacties 
+        gedaan kunnen worden zonder inloggen.
         Het is ook mogelijk om iedereen te laten inloggen en dat via de LDAP
         de juiste rol wordt opgezocht.
         Indien voor het checken van LDAP geen inlog nodig is, dan kunnen
@@ -24,12 +24,12 @@
         connectionName="cn=ldapserviceaccount,dc=b3p,dc=nl"
         connectionPassword="secret"
         userBase="ou=medewerkers,dc=b3p,dc=nl"
-	    userSubtree="true"
+	userSubtree="true"
         userSearch="(mailNickname={0})"
-        commonRole="beheerder"
+        commonRole="admin"
     />
     -->
     <!-- Naam van admin rol -->
-    <Parameter name="adminRole" value="beheerder" override="false"/>    
+    <Parameter name="adminRole" value="admin" override="false"/>    
 
 </Context>
