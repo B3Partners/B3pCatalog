@@ -1,10 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context antiJARLocking="true" path="/b3pcatalog">
-
-    
     <!-- Locatie van XML configuratiebestand. Een relatief pad is ten opzichte
          van CATALINA_BASE. Standaardwaarde in web.xml: conf/b3pcatalog/config.xml
     -->
-    <Parameter name="config" value="D:/Chris/svn/_gissuite_4.2/B3pCatalog/configs/testconfig/config.xml" override="false"/>
+    <Parameter name="config" override="false" value="C:\_B3pGisSuite\B3pCatalog\configs\solutionparc\config.xml"/>
+
+    <!--
+        Zie voor LDAP uitleg apart document over LDAP in Tomcat.
+        In onderstaand voorbeeld wordt iedereen die gevonden worden in de LDAP
+        beheerder. Dit gaat er vanuit dat de normale leesacties gedaan kunnen
+        worden zonder inloggen.
+        Het is ook mogelijk om iedereen te laten inloggen en dat via de LDAP
+        de juiste rol wordt opgezocht.
+        Indien voor het checken van LDAP geen inlog nodig is, dan kunnen
+        connectionName en connectionPassword leeg blijven.
+        Beheerders kunnen inloggen met kun normale windows-account. In onderstaande
+        configuratie wordt als gebruikersnaam het emailadres gebruikt (mailNickname);
+        dit kan ook een ander veld uit de LDAP zijn.
+    -->
+    <!--
+    <Realm className="org.apache.catalina.realm.JNDIRealm"
+        connectionURL="ldap://localhost:389"
+        connectionName="cn=ldapserviceaccount,dc=b3p,dc=nl"
+        connectionPassword="secret"
+        userBase="ou=medewerkers,dc=b3p,dc=nl"
+	    userSubtree="true"
+        userSearch="(mailNickname={0})"
+        commonRole="beheerder"
+    />
+    -->
+    <!-- Naam van admin rol -->
+    <Parameter name="adminRole" value="beheerder" override="false"/>    
 
 </Context>
