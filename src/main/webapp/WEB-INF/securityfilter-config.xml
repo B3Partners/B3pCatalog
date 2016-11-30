@@ -48,21 +48,22 @@
 
     <security-constraint>
         <web-resource-collection>
-            <web-resource-name>applet</web-resource-name>
-            <url-pattern>/applet/*</url-pattern>
+            <web-resource-name>authinfo</web-resource-name>
+            <url-pattern>/authinfo.jsp</url-pattern>
             <http-method>GET</http-method>
         </web-resource-collection>
-    </security-constraint>
-    
+    </security-constraint>	
+
     <security-constraint>
         <web-resource-collection>
-            <web-resource-name>all</web-resource-name>
-            <url-pattern>/*</url-pattern>
+            <web-resource-name>alloreditor</web-resource-name>
+            <url-pattern>/editor.jsp</url-pattern>
+            <http-method>GET</http-method>
         </web-resource-collection>
-        <!--auth-constraint>
-            <role-name>*</role-name>
-        </auth-constraint-->
-    </security-constraint>
+        <auth-constraint>
+           <role-name>*</role-name>
+        </auth-constraint>    
+    </security-constraint>	
 
     <login-config>
         <auth-method>FORM</auth-method>

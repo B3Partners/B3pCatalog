@@ -71,7 +71,7 @@
                         <div class="logged-in">
                             <fmt:message key="notLoggedIn"/>
                         </div>
-                        <stripes:link class="login-link" href="/login.jsp">Inloggen</stripes:link>
+                        <stripes:link class="login-link" href="/editor.jsp">Inloggen</stripes:link>
                     </div>
                 </c:if>                
             </div>

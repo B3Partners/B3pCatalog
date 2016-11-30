@@ -8,6 +8,7 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <stripes:layout-component name="header"/>
         <title>${pageTitle}</title>
 
         <link rel="stylesheet" href="${contextPath}/scripts/mde/styles/jquery-ui-latest.custom.css" type="text/css" media="screen" />
