@@ -20,7 +20,7 @@
         <param-name>adminRole</param-name>
         <param-value>admin</param-value>
     </context-param>
-    
+        
     <listener>
         <listener-class>nl.b3p.catalog.config.CatalogAppConfig</listener-class>
     </listener>
@@ -41,7 +41,8 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     
-    <!-- Security -->
+    <!-- Security: kies of security-filter of LDAP --> 
+    <!-- security-filter config begin -->
     <filter>
         <display-name>Security Filter</display-name>
         <filter-name>SecurityFilter</filter-name>
@@ -68,6 +69,79 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    <!-- security-filter config end -->
+
+    <!-- LDAP config begin -->
+    <!--
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>styles</web-resource-name>
+            <url-pattern>/styles/*</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>scripts</web-resource-name>
+            <url-pattern>/scripts/*</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>images</web-resource-name>
+            <url-pattern>/images/*</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>xsls</web-resource-name>
+            <url-pattern>/xsls/*</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>scc</web-resource-name>
+            <url-pattern>/scc*</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+    </security-constraint>
+	
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>authinfo</web-resource-name>
+            <url-pattern>/authinfo.jsp</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+    </security-constraint>	
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>alloreditor</web-resource-name>
+            <url-pattern>/editor.jsp</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+           <role-name>beheerder</role-name>
+        </auth-constraint>    
+    </security-constraint>	
+    
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <form-login-config>
+            <form-login-page>/login.jsp</form-login-page>
+            <form-logout-page>/logout.jsp</form-logout-page>
+            <form-error-page>/loginError.jsp</form-error-page>
+        </form-login-config>
+    </login-config>
+    -->
+    <!-- LDAP config end -->
     
     <!-- See http://www.stripesframework.org/display/stripes/Localization (bottom of the page) -->
     <context-param>
