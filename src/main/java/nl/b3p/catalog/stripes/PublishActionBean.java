@@ -18,7 +18,6 @@ package nl.b3p.catalog.stripes;
 
 
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -42,10 +41,10 @@ import nl.b3p.csw.jaxb.csw.TransactionResponse;
 import nl.b3p.csw.server.GeoNetworkCswServer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.json.JSONObject;
 import org.xml.sax.InputSource;
 

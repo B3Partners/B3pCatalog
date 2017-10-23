@@ -3,8 +3,8 @@ package nl.b3p.catalog.resolution;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.Map;
-import org.jdom.Document;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Document;
+import org.jdom2.output.XMLOutputter;
 
 /**
  *

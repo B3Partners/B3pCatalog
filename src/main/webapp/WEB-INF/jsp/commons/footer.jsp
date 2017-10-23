@@ -12,7 +12,7 @@
         This program is distributed under the terms of the <a class="gpl_link" href="http://www.gnu.org/licenses/gpl.html">GNU General Public License</a>
     </div>
     <div id="footer-text-right" class="footer-text footer-text-vertical-center">
-        B3P GIS Suite 4.2
+        B3pCatalog ${project.version} ${builddetails.commit.id.abbrev}
     </div>
     <div class="footer-logo">
         <%@include file="/WEB-INF/jsp/commons/footerLogo.jsp" %>

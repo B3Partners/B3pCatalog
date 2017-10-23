@@ -1,3 +1,4 @@
 /target/
 nb-configuration.xml
 *.log
+src/main/resources/git.properties

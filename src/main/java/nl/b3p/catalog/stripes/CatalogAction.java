@@ -38,9 +38,9 @@ import nl.b3p.csw.jaxb.csw.GetRecords;
 import nl.b3p.csw.server.GeoNetworkCswServer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

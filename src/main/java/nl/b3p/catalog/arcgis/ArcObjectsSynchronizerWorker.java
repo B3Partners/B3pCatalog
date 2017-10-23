@@ -16,7 +16,7 @@
  */
 package nl.b3p.catalog.arcgis;
 
-import org.jdom.input.SAXBuilder;
+import org.jdom2.input.SAXBuilder;
 import nl.b3p.catalog.config.Root;
 import com.esri.arcgis.datasourcesGDB.SdeWorkspaceFactory;
 import com.esri.arcgis.geodatabase.IDataset;
@@ -29,9 +29,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jdom.Document;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Document;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 import static nl.b3p.catalog.arcgis.ArcObjectsSynchronizerMain.*;
 
