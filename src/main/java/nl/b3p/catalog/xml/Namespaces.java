@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import org.jdom.Namespace;
+import org.jdom2.Namespace;
 
 /**
  *

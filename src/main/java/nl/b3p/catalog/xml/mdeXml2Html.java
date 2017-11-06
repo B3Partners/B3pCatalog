@@ -39,18 +39,18 @@ import nl.b3p.catalog.config.CatalogAppConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jdom.Attribute;
-import org.jdom.Content;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.Namespace;
-import org.jdom.Parent;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
-import org.jdom.transform.JDOMResult;
-import org.jdom.transform.JDOMSource;
-import org.jdom.xpath.XPath;
+import org.jdom2.Attribute;
+import org.jdom2.Content;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
+import org.jdom2.Parent;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.jdom2.transform.JDOMResult;
+import org.jdom2.transform.JDOMSource;
+import org.jdom2.xpath.XPath;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -278,10 +278,9 @@ public class mdeXml2Html {
     }
     
     /**
-     * Extra sync transformer for client specific use
-     * 
+     * Extra sync transformer for client specific use.
+     *
      * @param doc
-     * @param viewMode
      * @return
      * @throws JDOMException
      * @throws IOException
