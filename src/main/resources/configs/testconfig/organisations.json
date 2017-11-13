@@ -1,13 +1,13 @@
 {
     "B3Partners BV": {
-        "address": "Zonnebaan 12&",
+        "voice": "030-214 20 81",
+        "country": "Nederland",
+        "address": "Zonnebaan 12",
         "city": "Utrecht",
-        "state": "Utrecht",
         "postalCode": "3542 EC",
-        "country": "Nederland's",
+        "state": "Utrecht",
         "url": "http://www.b3partners.nl",
         "email": "info@b3partners.nl",
-        "voice": "030-214 20 81",
         "contacts": {
             "support": {
                 "email": "support@b3partners.nl"
