@@ -16,13 +16,15 @@
  */
 package nl.b3p.catalog.config;
 
+import java.util.Locale;
+
 /**
  *
  * @author Matthijs Laan
  */
 public class RoleAccess implements Comparable {
-    private String role;
-    private AclAccess access;
+    private final String role;
+    private final AclAccess access;
 
     RoleAccess(String role, AclAccess access) {
         this.role = role;
@@ -37,6 +39,7 @@ public class RoleAccess implements Comparable {
         return role;
     }
 
+    @Override
     public int compareTo(Object o) {
         RoleAccess rhs = (RoleAccess)o;
         return new Integer(rhs.access.getSecurityLevel()).compareTo(access.getSecurityLevel());
@@ -44,6 +47,6 @@ public class RoleAccess implements Comparable {
     
     @Override
     public String toString() {
-        return String.format("(%s=%s)", role, access.name());
+        return String.format(Locale.ROOT, "(%s=%s)", role, access.name());
     }
 }

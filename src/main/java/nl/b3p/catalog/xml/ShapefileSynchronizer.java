@@ -16,6 +16,7 @@
  */
 package nl.b3p.catalog.xml;
 
+import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -26,7 +27,10 @@ import org.jdom2.JDOMException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 
 /**
  *
@@ -73,11 +77,11 @@ public class ShapefileSynchronizer {
                 if(epsgCode != null) {
                     XPathHelper.applyXPathValuePair(doc, XPathHelper.REF_CODESPACE, "EPSG");
                     XPathHelper.applyXPathValuePair(doc, XPathHelper.REF_CODE, "" + epsgCode);
-                    log.debug(String.format("looked up EPSG code %d for WKT string %s", epsgCode, prj));
+                    log.debug(String.format(Locale.ENGLISH, "looked up EPSG code %d for WKT string %s", epsgCode, prj));
                 } else {
-                    log.info(String.format("Failed to lookup EPSG code for WKT string %s", prj));
+                    log.info(String.format(Locale.ENGLISH, "Failed to lookup EPSG code for WKT string %s", prj));
                 }
-            } catch(Exception e) {
+            } catch (JDOMException | MismatchedDimensionException | FactoryException | TransformException e) {
                 log.error("Fout transformeren bbox shapefile van projectie string " + prj, e);
             }
         }

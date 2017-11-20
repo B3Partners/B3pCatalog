@@ -19,11 +19,13 @@ package nl.b3p.catalog.arcgis;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import javax.servlet.ServletContext;
 import nl.b3p.catalog.xml.DocumentHelper;
 import org.apache.commons.lang.StringUtils;
@@ -45,7 +47,7 @@ public class ArcObjectsSynchronizerForker {
         String cp = buildClasspath(context);
         String mainClass = ArcObjectsSynchronizerMain.class.getName();
         
-        List<String> args = new ArrayList<String>();
+        List<String> args = new ArrayList<>();
         
         args.addAll(Arrays.asList(
             "java",
@@ -71,22 +73,22 @@ public class ArcObjectsSynchronizerForker {
         
         final StringWriter output = new StringWriter();
         final StringWriter errors = new StringWriter(); // response.getWriter();
-        errors.write(String.format("Werkdirectory: %s\nUitvoeren synchronizer proces: %s\n\n", workingDir, StringUtils.join(args,' ')));
+        errors.write(String.format(Locale.ROOT, "Werkdirectory: %s\nUitvoeren synchronizer proces: %s\n\n", workingDir, StringUtils.join(args, ' ')));
         //errors.flush();
         int result;
         
         try {
             Process p = Runtime.getRuntime().exec(args.toArray(new String[] {}), null, new File(workingDir));
 
-            final BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            final BufferedReader stdout = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            final BufferedReader stderr = new BufferedReader(new InputStreamReader(p.getErrorStream(), "UTF-8"));
+            final BufferedReader stdout = new BufferedReader(new InputStreamReader(p.getInputStream(), "UTF-8"));
 
             if(metadata != null && !"".equals(metadata)) {
                 try {
                     p.getOutputStream().write(metadata.getBytes("UTF-8"));
                     p.getOutputStream().flush();
                     p.getOutputStream().close();
-                } catch(Exception e) {
+                } catch (IOException e) {
                     errors.write("Fout tijdens schrijven metadata XML met alle elementen naar stdin: " + e.getClass() + ": " + e.getMessage() + "\n");
                 }
             }

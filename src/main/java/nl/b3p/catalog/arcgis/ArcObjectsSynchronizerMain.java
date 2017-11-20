@@ -16,6 +16,7 @@
  */
 package nl.b3p.catalog.arcgis;
 
+import java.util.Locale;
 import org.apache.commons.cli.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,7 +68,7 @@ public class ArcObjectsSynchronizerMain {
 
             cl = parser.parse(options, args);
         } catch(ParseException e) {
-            System.err.printf("%s\n\n", e.getMessage());
+            System.err.printf(Locale.ENGLISH, "%s\n\n", e.getMessage());
             usage(options);
             System.exit(1);
         }

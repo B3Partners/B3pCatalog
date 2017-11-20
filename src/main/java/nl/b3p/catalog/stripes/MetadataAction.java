@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
@@ -86,7 +87,7 @@ public class MetadataAction extends DefaultAction {
 
     public static final String SESSION_KEY_METADATA_XML = MetadataAction.class.getName() + ".METADATA_XML";
     public static final String ISO2SIMPLE_HTML = "xsls/iso-simple-html.xsl";
-    private final static DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    private final static DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ROOT);
 
     /* XXX niet nodig omdat objecten van verschillende types toch niet dezelfde
      * naam mogen hebben...
@@ -428,11 +429,11 @@ public class MetadataAction extends DefaultAction {
 
         // Changed check for .shp.xml into .shp as afaik the filetree and java applet filter
         // out .xml files.
-        if (path.toLowerCase().endsWith(".shp")) {
+        if (path.toLowerCase(Locale.ROOT).endsWith(".shp")) {
 
             ShapefileSynchronizer.synchronizeFromLocalAccessJSON(md, synchronizeData);
 
-        } else if (path.toLowerCase().endsWith(".nc.xml")) {
+        } else if (path.toLowerCase(Locale.ROOT).endsWith(".nc.xml")) {
 
             md = NCMLSynchronizer.synchronizeNCML(md, synchronizeData);
         }
@@ -931,15 +932,21 @@ public class MetadataAction extends DefaultAction {
         Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
         Boolean datasetMode = mdeXml2Html.getXSLParam("datasetMode_init");
 
-        if (EXPORT_TYPE_DATASETS.equals(exportType)) {
-                    serviceMode = Boolean.FALSE;
-                    datasetMode = Boolean.TRUE;
-        } else if (EXPORT_TYPE_SERVICES.equals(exportType)) {
-                    serviceMode = Boolean.TRUE;
-                    datasetMode = Boolean.FALSE;
-        } else if (EXPORT_TYPE_ALL.equals(exportType)) {
-                    serviceMode = Boolean.TRUE;
-                    datasetMode = Boolean.TRUE;
+        switch (exportType) {
+            case EXPORT_TYPE_DATASETS:
+                serviceMode = Boolean.FALSE;
+                datasetMode = Boolean.TRUE;
+                break;
+            case EXPORT_TYPE_SERVICES:
+                serviceMode = Boolean.TRUE;
+                datasetMode = Boolean.FALSE;
+                break;
+            case EXPORT_TYPE_ALL:
+                serviceMode = Boolean.TRUE;
+                datasetMode = Boolean.TRUE;
+                break;
+            default:
+                break;
         }
 
         // create copy because instance in session variable should not be cleaned

@@ -7,6 +7,7 @@ package nl.b3p.catalog.filetree;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  *
@@ -64,10 +65,11 @@ public class DirEntry {
         if(i == -1) {
             return "";
         }
-        String lastExt = extName.substring(i + 1).toLowerCase();
-        if (DOUBLE_EXTENSIONS.contains(lastExt))
+        String lastExt = extName.substring(i + 1).toLowerCase(Locale.ROOT);
+        if (DOUBLE_EXTENSIONS.contains(lastExt)) {
             extName = extName.substring(0, extName.lastIndexOf("."));
-        return extName.substring(extName.lastIndexOf(".") + 1).toLowerCase();
+        }
+        return extName.substring(extName.lastIndexOf(".") + 1).toLowerCase(Locale.ROOT);
     }
 
     public boolean isIsGeo() {

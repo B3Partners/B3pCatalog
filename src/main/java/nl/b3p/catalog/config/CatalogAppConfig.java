@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.ServletContextEvent;
@@ -209,10 +210,11 @@ public class CatalogAppConfig implements ServletContextListener {
         
         if(!f.exists() || !f.canRead()) {
             throw new IllegalArgumentException(
-                    String.format("Config file specified in \"config\" context init parameter with value \"%s\" (canonical path \"%s\") does not exist or cannot be read",
-                        configParam,
-                        canonicalPath
-            ));
+                    String.format(Locale.ENGLISH,
+                            "Config file specified in \"config\" context init parameter with value \"%s\" (canonical path \"%s\") does not exist or cannot be read",
+                            configParam,
+                            canonicalPath
+                    ));
         }
 
         try {
@@ -228,7 +230,12 @@ public class CatalogAppConfig implements ServletContextListener {
             log.info("Parsed configuration: \n" + sw.toString());
             
             if(!CURRENT_VERSION.equals(config.getVersion())) {
-                throw new Exception(String.format("Wrong configuration file version: %s, must be %s",config.getVersion(),CURRENT_VERSION));
+                throw new Exception(String.format(
+                        Locale.ENGLISH,
+                        "Wrong configuration file version: %s, must be %s",
+                        config.getVersion(),
+                        CURRENT_VERSION
+                ));
             }
         } catch(Exception e) {
             log.error("Error loading configuration", e);
@@ -237,7 +244,7 @@ public class CatalogAppConfig implements ServletContextListener {
         
         if(log.isDebugEnabled()) {
             for(Root r: config.getRoots()) {
-                log.debug(String.format("Role access list for root %s: %s",
+                log.debug(String.format(Locale.ENGLISH, "Role access list for root %s: %s",
                         r.getName(), r.getRoleAccessList().toString()
                 ));
             }
