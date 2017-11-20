@@ -4,7 +4,6 @@
          van CATALINA_BASE. Standaardwaarde in web.xml: conf/b3pcatalog/config.xml
     -->
     <Parameter name="config" override="false" value="/mnt/tera1/home/mark/dev/projects/B3pCatalog/src/main/resources/configs/testconfig/config.xml"/>
-
     <!--
         Zie voor LDAP uitleg apart document over LDAP in Tomcat.
         In onderstaand voorbeeld wordt iedereen die gevonden worden in de LDAP
@@ -24,7 +23,7 @@
         connectionName="cn=ldapserviceaccount,dc=b3p,dc=nl"
         connectionPassword="secret"
         userBase="ou=medewerkers,dc=b3p,dc=nl"
-    userSubtree="true"
+        userSubtree="true"
         userSearch="(mailNickname={0})"
         commonRole="admin"
     />
