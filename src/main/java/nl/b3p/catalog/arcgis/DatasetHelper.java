@@ -5,8 +5,6 @@
 package nl.b3p.catalog.arcgis;
 
 import com.esri.arcgis.datasourcesfile.ShapefileWorkspaceFactory;
-import com.esri.arcgis.datasourcesraster.IMosaicWorkspaceExtension;
-import com.esri.arcgis.datasourcesraster.MosaicWorkspaceExtensionHelper;
 import com.esri.arcgis.datasourcesraster.RasterBand;
 import com.esri.arcgis.datasourcesraster.RasterDataset;
 import com.esri.arcgis.geodatabase.FeatureClass;
@@ -31,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Locale;
 import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.filetree.Extensions;
 import org.apache.commons.logging.Log;
@@ -64,12 +63,12 @@ public class DatasetHelper {
 
     // if datasetType < 0: skip dataset type equals check.
     public static IDataset getDataSubset(IDataset dataset, String name, int datasetType) throws IOException {
-        log.debug(String.format("Get sub dataset \"%s\" from \"%s\" (dataset type filter %d)", name, dataset.getName(), datasetType));
+        log.debug(String.format(Locale.ENGLISH, "Get sub dataset \"%s\" from \"%s\" (dataset type filter %d)", name, dataset.getName(), datasetType));
         IEnumDataset enumDataset = dataset.getSubsets();
         IDataset ds;
         while ((ds = enumDataset.next()) != null) {
             if ((datasetType == DATASET_TYPE_ANY || datasetType == ds.getType()) && ds.getName().equals(name)) {
-                log.debug(String.format("Found dataset, type: %s", getConstantFieldName(esriDatasetType.class, ds.getType())));
+                log.debug(String.format(Locale.ENGLISH, "Found dataset, type: %s", getConstantFieldName(esriDatasetType.class, ds.getType())));
                 return ds;
             }
         }
@@ -82,9 +81,9 @@ public class DatasetHelper {
         Workspace workspace = new Workspace(iWorkspace);
 
         String shapefileFullname = shapeFile.getName();
-        if (!shapefileFullname.endsWith(Extensions.SHAPE) || shapefileFullname.length() == Extensions.SHAPE.length())
+        if (!shapefileFullname.endsWith(Extensions.SHAPE) || shapefileFullname.length() == Extensions.SHAPE.length()) {
             throw new Exception("File is not a shape file");
-
+        }
         String shapeFilename = shapefileFullname.substring(0, shapefileFullname.lastIndexOf('.'));
         return DatasetHelper.getDataSubset(workspace, shapeFilename, -1);
     }

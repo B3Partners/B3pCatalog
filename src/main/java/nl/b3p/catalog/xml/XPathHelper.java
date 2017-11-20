@@ -5,6 +5,7 @@
 package nl.b3p.catalog.xml;
 
 import java.util.List;
+import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom2.Element;
@@ -70,7 +71,7 @@ public class XPathHelper {
     }
 
     public static void applyXPathValuePair(Object context, String xpathString, String value, boolean forceOverwrite) throws JDOMException {
-        String s = String.format("applyXPathValuePair xpath=%s, value=%s, overwrite=%b", xpathString, value, forceOverwrite);
+        String s = String.format(Locale.ENGLISH, "applyXPathValuePair xpath=%s, value=%s, overwrite=%b", xpathString, value, forceOverwrite);
         Element element = selectSingleElement(context, xpathString);
         if (element != null) {
             if (element.getTextNormalize().isEmpty() || forceOverwrite) {

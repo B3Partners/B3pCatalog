@@ -17,11 +17,11 @@
 package nl.b3p.catalog.filetree;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import nl.b3p.catalog.arcgis.FGDBHelperProxy;
 import nl.b3p.catalog.config.CatalogAppConfig;
@@ -82,17 +82,8 @@ public class FileListHelper {
     private static DirContent getNormalDirContent(File directory, String currentPath) throws IOException {
         DirContent dc = new DirContent();
 
-        File[] dirs = directory.listFiles(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isDirectory();
-            }
-        });
-
-        File[] files = directory.listFiles(new FileFilter() {
-            public boolean accept(File file) {
-                return !file.isDirectory();
-            }
-        });
+        File[] dirs = directory.listFiles((File file) -> file.isDirectory());
+        File[] files = directory.listFiles((File file) -> !file.isDirectory());
 
         if (dirs != null) {
             for (File dir: dirs) {
@@ -137,7 +128,7 @@ public class FileListHelper {
     }
 
     private static DirContent getFGDBDirContent(File directory, String currentPath) throws Exception {
-        log.debug(String.format("Get FGDB content from %s (currentPath %s)", directory, currentPath));
+        log.debug(String.format(Locale.ENGLISH, "Get FGDB content from %s (currentPath %s)", directory, currentPath));
         DirContent dc = new DirContent();
 
         List<Dir> dirsList =
@@ -158,7 +149,7 @@ public class FileListHelper {
     }
 
     private static void filterOutMetadataFiles(DirContent dc) {
-        List<DirEntry> toBeIgnoredFiles = new ArrayList<DirEntry>();
+        List<DirEntry> toBeIgnoredFiles = new ArrayList<>();
 
         dc.sort();
 
@@ -182,7 +173,7 @@ public class FileListHelper {
     }
 
     private static void filterOutShapeExtraFiles(DirContent dc) {
-        List<String> shapeNames = new ArrayList<String>();
+        List<String> shapeNames = new ArrayList<>();
         for(DirEntry file: dc.getFiles()) {
             if (file.getName().endsWith(Extensions.SHAPE)) {
                 shapeNames.add(file.getName().substring(0, file.getName().length() - Extensions.SHAPE.length()));
@@ -190,7 +181,7 @@ public class FileListHelper {
         }
 
         for(String shapeName: shapeNames) {
-            List<DirEntry> toBeIgnoredFiles = new ArrayList<DirEntry>();
+            List<DirEntry> toBeIgnoredFiles = new ArrayList<>();
             for(DirEntry file: dc.getFiles()) {
                 if (file.getName().startsWith(shapeName) && !file.getName().endsWith(Extensions.SHAPE)) {
                     toBeIgnoredFiles.add(file);

@@ -8,6 +8,7 @@ package nl.b3p.catalog.stripes;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerConfigurationException;
@@ -113,7 +114,7 @@ public class CatalogAction extends DefaultAction {
             //log.debug(new XMLOutputter().outputString(output.getXml()));
             
             if(output.getSearchResult() == null) {
-                throw new IllegalArgumentException(String.format("Metadata document met UUID \"%s\" kon niet worden gevonden bij CSW-service", uuid));
+                throw new IllegalArgumentException(String.format(Locale.ROOT, "Metadata document met UUID \"%s\" kon niet worden gevonden bij CSW-service", uuid));
             }
 
             String metadata = output.getSearchResultString();
@@ -140,7 +141,7 @@ public class CatalogAction extends DefaultAction {
             //log.debug(new XMLOutputter().outputString(output.getXml()));
             
             if(output.getSearchResult() == null) {
-                throw new IllegalArgumentException(String.format("Metadata document met UUID \"%s\" kon niet worden gevonden bij CSW-service", uuid));
+                throw new IllegalArgumentException(String.format(Locale.ROOT, "Metadata document met UUID \"%s\" kon niet worden gevonden bij CSW-service", uuid));
             }
 
             if(this.resultType != null && this.resultType.equals("json")) {

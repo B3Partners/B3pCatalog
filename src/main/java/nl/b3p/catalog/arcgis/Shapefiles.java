@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Locale;
 import java.util.Scanner;
 import org.geotools.data.shapefile.dbf.DbaseFileHeader;
 import org.geotools.data.shapefile.shp.ShapefileHeader;
@@ -41,7 +42,7 @@ public class Shapefiles {
      */
     public static String getMetadata(String file) throws IOException, JSONException {
 
-        if(!file.toLowerCase().endsWith(".shp")) {
+        if (!file.toLowerCase(Locale.ENGLISH).endsWith(".shp")) {
             throw new IllegalArgumentException("File does not end with .shp: " + file);
         }
 
@@ -91,7 +92,7 @@ public class Shapefiles {
                 field.put("class", dheader.getFieldClass(i).getName().toString());
                 field.put("type", dheader.getFieldType(i) + "");
             }
-        } catch(Exception e) {
+        } catch (IOException | JSONException e) {
             dbf.put("error", e.toString());
         } finally {
             if(channel != null) {
@@ -103,7 +104,7 @@ public class Shapefiles {
         File f = new File(file);
         String prj = null;
         if(f.exists()) {
-            Scanner s = new Scanner(f);
+            Scanner s = new Scanner(f, "UTF-8");
             prj = "";
             try {
                 while(s.hasNextLine()) {

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import javax.xml.transform.Templates;
@@ -367,7 +368,7 @@ public class mdeXml2Html {
                 Element fics = e.getChild("CharacterString", Namespaces.GCO);
              
                 if (overwriteUUIDs || fics.getTextNormalize().isEmpty()) {
-                    fics.setText(UUID.randomUUID().toString().toLowerCase());
+                    fics.setText(UUID.randomUUID().toString().toLowerCase(Locale.ENGLISH));
                 }
             }
         }
@@ -375,7 +376,7 @@ public class mdeXml2Html {
 
     public static void addDateStamp(Document xmlDoc, boolean overwrite) throws JDOMException {
         Element dateNode = XPathHelper.selectSingleElement(xmlDoc, "/*/gmd:MD_Metadata/gmd:dateStamp/gco:Date");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
         if (overwrite || dateNode.getTextNormalize().isEmpty()) {
             dateNode.setText( sdf.format(new Date()));
         }

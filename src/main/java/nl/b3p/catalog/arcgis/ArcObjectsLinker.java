@@ -22,6 +22,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -64,9 +65,9 @@ public class ArcObjectsLinker {
         }
         if (arcObjectsHome == null) {
             throw new Exception("Could not find ArcObjects home in environment variables " + homeEnvVars + ". "
-                        + (System.getProperty("os.name").toLowerCase().indexOf("win") > -1
-                        ? "ArcGIS Engine Runtime or ArcGIS Desktop must be installed"
-                        : "ArcGIS Engine Runtime must be installed"));
+                    + (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).indexOf("win") > -1
+                    ? "ArcGIS Engine Runtime or ArcGIS Desktop must be installed"
+                    : "ArcGIS Engine Runtime must be installed"));
         }   
         
         // The directory can be set to a JAR itself, the directory arcobjects.jar
@@ -79,7 +80,7 @@ public class ArcObjectsLinker {
         if(arcObjectsHome.endsWith(".jar")) {
             jarFile = new File(arcObjectsHome);
             if(jarFile.exists()) {
-                log.info(String.format("Using full path to ArcObjects JAR file: %s", jarFile.getAbsolutePath()));
+                log.info(String.format(Locale.ENGLISH, "Using full path to ArcObjects JAR file: %s", jarFile.getAbsolutePath()));
             } else {
                 jarFile = null;
             }
@@ -90,7 +91,7 @@ public class ArcObjectsLinker {
             jarFile = new File(jarPath);
 
             if(jarFile.exists()) {
-                log.info(String.format("Using arcobjects.jar found in directory: %s", jarFile.getAbsolutePath()));
+                log.info(String.format(Locale.ENGLISH, "Using arcobjects.jar found in directory: %s", jarFile.getAbsolutePath()));
             } else {
                 jarFile = null;
             }
@@ -103,7 +104,7 @@ public class ArcObjectsLinker {
             if(!jarFile.exists()) {
                 throw new Exception("Error: could not find arcobjects.jar at path \"" + jarFile.getAbsolutePath() + "\"");
             } else {
-                log.info(String.format("Using ArcObjects home \"%s\"", arcObjectsHome));
+                log.info(String.format(Locale.ENGLISH, "Using ArcObjects home \"%s\"", arcObjectsHome));
             }                
         }
 
