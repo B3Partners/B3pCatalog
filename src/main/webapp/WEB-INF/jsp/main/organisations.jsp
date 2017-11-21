@@ -49,7 +49,6 @@ Voorbeeld:
         "url": "???",  
         "email": "???",  
         "voice": "???" 
-    }  
-    etc...
-};    
+    }
+}
 </div>

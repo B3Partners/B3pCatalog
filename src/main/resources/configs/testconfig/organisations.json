@@ -8,10 +8,16 @@
         "state": "Utrecht",
         "url": "http://www.b3partners.nl",
         "email": "info@b3partners.nl",
-        "contacts": {
-            "support": {
-                "email": "support@b3partners.nl"
-            }
-        }
+        "contacts": {"support": {"email": "support@b3partners.nl"}}
+    },
+    "Klant 1": {
+        "voice": "???",
+        "country": "???",
+        "address": "???",
+        "city": "???",
+        "postalCode": "???",
+        "state": "???",
+        "url": "???",
+        "email": "???"
     }
 }
