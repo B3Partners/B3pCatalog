@@ -293,6 +293,14 @@
                 <version>2.8.2</version>
             </plugin>
             <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.0-M1</version>
+                <configuration>
+                    <!-- java 8 doclint van struikelt over de gegenereerde code; uitzetten! -->
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.6</version>
                 <dependencies>
