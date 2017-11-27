@@ -19,8 +19,6 @@ package nl.b3p.catalog.stripes;
 
 import java.io.StringReader;
 import java.util.List;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.ErrorResolution;
@@ -43,10 +41,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.output.DOMOutputter;
 import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 import org.json.JSONObject;
-import org.xml.sax.InputSource;
 
 /**
  *
@@ -158,12 +155,16 @@ public class PublishActionBean implements ActionBean {
         boolean exists = !out.getSearchResultsW3C().isEmpty();
         jo.put("exists", exists);
 
-        String mdString = new XMLOutputter(Format.getPrettyFormat()).outputString(md);
+//        String mdString = new XMLOutputter(Format.getPrettyFormat()).outputString(md);
+//        log.debug("metadata post:\n" + mdString);
 
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        org.w3c.dom.Document doc = db.parse(new InputSource(new StringReader(mdString)));
+//        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//        dbf.setNamespaceAware(true);
+//        DocumentBuilder db = dbf.newDocumentBuilder();
+//        org.w3c.dom.Document doc = db.parse(new InputSource(new StringReader(mdString)));
+        final DOMOutputter domOut = new DOMOutputter();
+        domOut.setFormat(Format.getPrettyFormat());
+        org.w3c.dom.Document doc = domOut.output(md);
 
         TransactionResponse response = exists ? csw.update(fileIdentifier, doc) : csw.insert(doc);
              
