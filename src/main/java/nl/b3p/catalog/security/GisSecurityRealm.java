@@ -28,7 +28,6 @@ import java.util.List;
 import nl.b3p.commons.security.XmlSecurityDatabase;
 import nl.b3p.commons.services.FormUtils;
 import nl.b3p.wms.capabilities.ServiceProvider;
-import nl.b3p.wms.capabilities.WMSCapabilitiesReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.securityfilter.filter.SecurityRequestWrapper;
@@ -123,8 +122,8 @@ public class GisSecurityRealm implements FlexibleRealmInterface, ExternalAuthent
         return new GisPrincipal(username, password, code, sp);
     }
 
+    @Override
     public Principal authenticate(String username, String password) {
-
         // Eventueel fake Principal aanmaken
         String url = createCapabilitiesURL(null);
         return authenticateHttp(url, username, password, null);

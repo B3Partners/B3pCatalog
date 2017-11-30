@@ -3,12 +3,9 @@ package nl.b3p.catalog.security;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 public class ConfigServlet extends HttpServlet {
 
-    private static final Log log = LogFactory.getLog(ConfigServlet.class);
     public static String ANONIEM_ROL = "anoniem";
     public static String GEBRUIKERS_ROL = "gebruiker";
     public static String THEMABEHEERDERS_ROL = "themabeheerder";
@@ -56,7 +53,10 @@ public class ConfigServlet extends HttpServlet {
     }
 
     /** Initializes the servlet.
+     * @param config servlet config
+     * @throws javax.servlet.ServletException if any
      */
+    @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
 

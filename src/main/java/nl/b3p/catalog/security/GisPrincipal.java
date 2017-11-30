@@ -74,6 +74,7 @@ public class GisPrincipal implements Principal {
         }
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -101,6 +102,7 @@ public class GisPrincipal implements Principal {
         return roles;
     }
 
+    @Override
     public String toString() {
         return "GisPrincipal[name=" + name + "]";
     }
@@ -138,7 +140,7 @@ public class GisPrincipal implements Principal {
         if (gp != null) {
             SecurityRequestWrapper srw = (SecurityRequestWrapper) request;
             srw.setUserPrincipal(gp);
-            log.debug("Automatic login for user: " + gp.name);
+            log.debug("Automatic login for user: " + gp.getName());
         }
         return gp;
     }
