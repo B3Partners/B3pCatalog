@@ -19,8 +19,6 @@ package nl.b3p.catalog.stripes;
 
 import java.io.StringReader;
 import java.util.List;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.action.ErrorResolution;
@@ -39,14 +37,11 @@ import nl.b3p.csw.client.InputById;
 import nl.b3p.csw.client.OutputById;
 import nl.b3p.csw.jaxb.csw.TransactionResponse;
 import nl.b3p.csw.server.GeoNetworkCswServer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.output.DOMOutputter;
 import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 import org.json.JSONObject;
-import org.xml.sax.InputSource;
 
 /**
  *
@@ -54,13 +49,12 @@ import org.xml.sax.InputSource;
  */
 @StrictBinding
 public class PublishActionBean implements ActionBean {
-
-    private final static Log log = LogFactory.getLog(PublishActionBean.class);
-    private ActionBeanContext context;
     
     private static final String EXPORT_TYPE_ALL = "all";
     private static final String EXPORT_TYPE_DATASETS = "datasets";
     private static final String EXPORT_TYPE_SERVICES = "services";
+
+    private ActionBeanContext context;
 
     @Validate(required = true, on = "publish")
     private String exportType = EXPORT_TYPE_DATASETS;
@@ -69,10 +63,12 @@ public class PublishActionBean implements ActionBean {
     private String cswServerName;
    
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
+    @Override
     public ActionBeanContext getContext() {
         return context;
     }
 
+    @Override
     public void setContext(ActionBeanContext context) {
         this.context = context;
     }
@@ -128,13 +124,13 @@ public class PublishActionBean implements ActionBean {
     public Resolution optionsList() throws Exception {
         List<CSWServerConfig> lcfgs = CatalogAppConfig.getConfig().getCswServers();
         StringBuilder sb = new StringBuilder();
-        for (CSWServerConfig lcfg : lcfgs) {
-            sb.append("<option value=\"");
-            sb.append(lcfg.getCswName());
-            sb.append("\">");
-            sb.append(lcfg.getCswName());
-            sb.append("</option>");
-        }
+        lcfgs.forEach((lcfg) -> {
+            sb.append("<option value=\"")
+                    .append(lcfg.getCswName())
+                    .append("\">")
+                    .append(lcfg.getCswName())
+                    .append("</option>");
+        });
         //TODO cvl vullen select in GUI
         return new HtmlResolution(sb.toString());
     }
@@ -158,12 +154,9 @@ public class PublishActionBean implements ActionBean {
         boolean exists = !out.getSearchResultsW3C().isEmpty();
         jo.put("exists", exists);
 
-        String mdString = new XMLOutputter(Format.getPrettyFormat()).outputString(md);
-
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        org.w3c.dom.Document doc = db.parse(new InputSource(new StringReader(mdString)));
+        final DOMOutputter domOut = new DOMOutputter();
+        domOut.setFormat(Format.getPrettyFormat());
+        org.w3c.dom.Document doc = domOut.output(md);
 
         TransactionResponse response = exists ? csw.update(fileIdentifier, doc) : csw.insert(doc);
              
@@ -188,19 +181,27 @@ public class PublishActionBean implements ActionBean {
         Boolean serviceMode = mdeXml2Html.getXSLParam("serviceMode_init");
         Boolean datasetMode = mdeXml2Html.getXSLParam("datasetMode_init");
 
-        if (EXPORT_TYPE_DATASETS.equals(exportType)) {
+        if (null != exportType) {
+            switch (exportType) {
+                case EXPORT_TYPE_DATASETS:
                     serviceMode = Boolean.FALSE;
                     datasetMode = Boolean.TRUE;
-        } else if (EXPORT_TYPE_SERVICES.equals(exportType)) {
+                    break;
+                case EXPORT_TYPE_SERVICES:
                     serviceMode = Boolean.TRUE;
                     datasetMode = Boolean.FALSE;
-        } else if (EXPORT_TYPE_ALL.equals(exportType)) {
+                    break;
+                case EXPORT_TYPE_ALL:
                     serviceMode = Boolean.TRUE;
                     datasetMode = Boolean.TRUE;
+                    break;
+                default:
+                    break;
+            }
         }
  
         // create copy because instance in session variable should not be cleaned
-        Document mdCopy = new Document((Element) md.getRootElement().clone());
+        Document mdCopy = new Document(md.getRootElement().clone());
         mdeXml2Html.cleanUpMetadata(mdCopy, serviceMode == null ? false : serviceMode, datasetMode == null ? false : datasetMode);
         mdeXml2Html.removeEmptyNodes(mdCopy);
 
