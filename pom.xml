@@ -34,7 +34,7 @@
             <dependency>
                 <groupId>nl.b3p</groupId>
                 <artifactId>datastorelinker-bom</artifactId>
-                <version>5.0.1</version>
+                <version>5.0.2</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -46,6 +46,11 @@
         -->
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>b3p-commons-csw</artifactId>
+            <version>5.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>b3p-commons-gis</artifactId>
             <version>5.0.1-SNAPSHOT</version>
             <exclusions>
@@ -54,11 +59,6 @@
                     <artifactId>fop</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>b3p-commons-csw</artifactId>
-            <version>5.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.esri</groupId>
@@ -122,7 +122,7 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
