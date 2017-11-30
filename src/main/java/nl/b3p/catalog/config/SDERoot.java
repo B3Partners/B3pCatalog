@@ -97,7 +97,6 @@ public class SDERoot extends Root {
                 ((ArcSDE10JDBCHelper)JDBCHelper).isOracle() ) {
                 JDBCHelper =  new ArcSDE10OracleHelper(this);
             }
-            
         }
         log.debug("gevonden JDBC helper implementatie: " + JDBCHelper.getName());
         return JDBCHelper;

@@ -18,16 +18,12 @@ package nl.b3p.catalog.config;
 
 import nl.b3p.catalog.filetree.DirContent;
 import nl.b3p.catalog.kaartenbalie.KbJDBCHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  *
  * @author Chris van Lith
  */
 public class KBRoot extends Root {
-    private static final Log log = LogFactory.getLog(KBRoot.class);
-    
     private String jndiDataSource;
     
     private KbJDBCHelper JDBCHelper = null;

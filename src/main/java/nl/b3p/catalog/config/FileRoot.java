@@ -16,10 +16,8 @@
  */
 package nl.b3p.catalog.config;
 
-import java.io.IOException;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
-import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.filetree.DirContent;
 import nl.b3p.catalog.filetree.FileListHelper;
 

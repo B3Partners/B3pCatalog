@@ -244,11 +244,9 @@ public class CatalogAppConfig implements ServletContextListener {
         }
         
         if(log.isDebugEnabled()) {
-            for(Root r: config.getRoots()) {
-                log.debug(String.format(Locale.ENGLISH, "Role access list for root %s: %s",
-                        r.getName(), r.getRoleAccessList().toString()
-                ));
-            }
+            config.getRoots().forEach((r) -> {
+                log.debug(String.format(Locale.ENGLISH, "Role access list for root %s: %s", r.getName(), r.getRoleAccessList().toString()));
+            });
         }        
     }
     

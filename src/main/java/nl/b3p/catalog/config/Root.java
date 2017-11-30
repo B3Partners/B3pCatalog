@@ -38,7 +38,7 @@ public abstract class Root {
     @XmlAttribute
     private String name;
       
-    private List<Acl> acl = new ArrayList<Acl>();
+    private List<Acl> acl = new ArrayList<>();
     
     public Root() {
     }
@@ -95,24 +95,23 @@ public abstract class Root {
         // TODO cache resultaat, invalidate cache wanneer achterliggende acl gewijzigd wordt
         
         /* maak een map met per role het hoogste access level */
-        Map<String,AclAccess> m = new HashMap<String,AclAccess>();
+        Map<String, AclAccess> m = new HashMap<>();
         
-        for(Acl thisAcl: acl) {
-            for(String role: thisAcl.getRoles()) {
+        acl.forEach((thisAcl) -> {
+            thisAcl.getRoles().forEach((role) -> {
                 AclAccess a = m.get(role);
-                
-                if(a == null || thisAcl.getAccess().getSecurityLevel() > a.getSecurityLevel()) {
+                if (a == null || thisAcl.getAccess().getSecurityLevel() > a.getSecurityLevel()) {
                     m.put(role, thisAcl.getAccess());
                 }
-            }
-        }
+            });
+        });
         /* maak een lijst van role->hoogste access level, met hoogste access 
          * levels eerst
          */
-        List<RoleAccess> l = new ArrayList<RoleAccess>();
-        for(Map.Entry<String,AclAccess> e: m.entrySet()) {
+        List<RoleAccess> l = new ArrayList<>();
+        m.entrySet().forEach((e) -> {
             l.add(new RoleAccess(e.getKey(), e.getValue()));
-        }
+        });
         Collections.sort(l);
         return Collections.unmodifiableList(l);       
     }

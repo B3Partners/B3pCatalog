@@ -33,8 +33,9 @@ public class ArcObjectsConfig {
     
     @XmlAttribute
     @XmlList
-    private List<String> productCodes = new ArrayList<String>(Arrays.asList(new String[] {
-        "ArcInfo", "ArcEditor", "ArcView", "ArcServer", "EngineGeoDB", "Engine"
+    private List<String> productCodes = new ArrayList<String>(Arrays.asList(new String[]{
+        // Basic (formerly ArcView), Standard (formerly ArcEditor) and Advanced (formerly ArcInfo).
+        "ArcInfo", "Advanced", "ArcEditor", "Standard", "ArcView", "Basic", "ArcServer", "EngineGeoDB", "Engine"
     }));
     
     @XmlAttribute
