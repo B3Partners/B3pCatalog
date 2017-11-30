@@ -77,12 +77,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>b3p-commons-csw</artifactId>
-            <version>5.0.1-SNAPSHOT</version>
+            <version>5.0.1</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>b3p-commons-gis</artifactId>
-            <version>5.0.1-SNAPSHOT</version>
+            <version>5.0.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.xmlgraphics</groupId>
