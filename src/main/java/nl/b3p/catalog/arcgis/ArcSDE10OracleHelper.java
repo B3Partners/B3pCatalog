@@ -35,7 +35,7 @@ public class ArcSDE10OracleHelper extends ArcSDE10JDBCHelper {
     
     @Override
     public void saveMetadata(ArcSDEJDBCDataset dataset, String metadata) throws Exception {
-        IDataset ds = (IDataset)ArcSDEHelperProxy.getArcObjectsDataset(dataset.getRoot(), dataset.getAbsoluteName());
+        IDataset ds = (IDataset) ArcSDEHelperProxy.getArcObjectsDataset(dataset.getRoot(), dataset.getAbsoluteName());
         
         IMetadata imd = (IMetadata)ds.getFullName();
         XmlPropertySet mdPS = (XmlPropertySet)imd.getMetadata();

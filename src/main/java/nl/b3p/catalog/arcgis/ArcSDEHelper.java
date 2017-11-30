@@ -91,7 +91,7 @@ public class ArcSDEHelper {
         Workspace ws = getWorkspace(root);
 
         try {
-            List<Dir> dirs = new ArrayList<Dir>();
+            List<Dir> dirs = new ArrayList<>();
 
             IEnumDataset enumDataset = ws.getSubsets();
             IDataset ds;
@@ -144,7 +144,7 @@ public class ArcSDEHelper {
     }
 
     private static List<nl.b3p.catalog.filetree.DirEntry> getDatasetEnumFeatureClassFiles(IEnumDataset enumDataset, String currentPath) throws IOException {
-        List<nl.b3p.catalog.filetree.DirEntry> files = new ArrayList<nl.b3p.catalog.filetree.DirEntry>();
+        List<nl.b3p.catalog.filetree.DirEntry> files = new ArrayList<>();
         IDataset ds;
         while ((ds = enumDataset.next()) != null) {
             if(ds.getType() !=  esriDatasetType.esriDTFeatureDataset) {

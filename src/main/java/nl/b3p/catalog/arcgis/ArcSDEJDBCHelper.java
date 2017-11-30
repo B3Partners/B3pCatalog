@@ -44,9 +44,9 @@ public abstract class ArcSDEJDBCHelper {
     
     protected Connection getConnection() throws NamingException, SQLException {
         Context initCtx = new InitialContext();
-        DataSource ds = (DataSource)initCtx.lookup(root.getJndiDataSource());
+        DataSource ds = (DataSource) initCtx.lookup(root.getJndiDataSource());
 
-        return ds.getConnection();        
+        return ds.getConnection();
     }
     
     public boolean isOracle() {
@@ -56,7 +56,7 @@ public abstract class ArcSDEJDBCHelper {
             if (databaseProductName.contains("Oracle")) {
                 return true;
             }
-        } catch (Exception ex) {
+        } catch (SQLException | NamingException ex) {
             throw new UnsupportedOperationException("Cannot get database product name", ex);
         }
         return false;
@@ -99,4 +99,9 @@ public abstract class ArcSDEJDBCHelper {
     public abstract String getMetadata(ArcSDEJDBCDataset dataset) throws NamingException, SQLException, IOException; 
     public abstract void saveMetadata(ArcSDEJDBCDataset dataset, String metadata) throws Exception;
     public abstract String getAbsoluteDatasetName(ArcSDEJDBCDataset dataset) throws Exception;
+    /**
+     *
+     * @return de naam van de implementatie
+     */
+    public abstract String getName();
 }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context antiResourceLocking="true" path="/b3pcatalog">
-    <!-- Locatie van XML configuratiebestand. Een relatief pad is ten opzichte
+  <!-- Locatie van XML configuratiebestand. Een relatief pad is ten opzichte
          van CATALINA_BASE. Standaardwaarde in web.xml: conf/b3pcatalog/config.xml
     -->
-    <Parameter name="config" override="false" value="/mnt/tera1/home/mark/dev/projects/B3pCatalog/src/main/resources/configs/testconfig/config.xml"/>
-    <!--
+  <Parameter name="config" override="false" value="/mnt/tera1/home/mark/dev/projects/B3pCatalog/src/main/resources/configs/testconfig/config.xml"/>
+  <!--
         Zie voor LDAP uitleg apart document over LDAP in Tomcat.
         In onderstaand voorbeeld wordt iedereen die gevonden worden in de LDAP
         admin ofwel beheerder. Dit gaat er vanuit dat de normale leesacties
@@ -17,7 +17,7 @@
         configuratie wordt als gebruikersnaam het emailadres gebruikt (mailNickname);
         dit kan ook een ander veld uit de LDAP zijn.
     -->
-    <!--
+  <!--
     <Realm className="org.apache.catalina.realm.JNDIRealm"
         connectionURL="ldap://localhost:389"
         connectionName="cn=ldapserviceaccount,dc=b3p,dc=nl"
@@ -28,6 +28,6 @@
         commonRole="admin"
     />
     -->
-    <!-- Naam van admin rol -->
-    <Parameter name="adminRole" override="false" value="admin"/>
+  <!-- Naam van admin rol -->
+  <Parameter name="adminRole" override="false" value="admin"/>
 </Context>

@@ -18,7 +18,6 @@ package nl.b3p.catalog.arcgis;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -40,10 +39,10 @@ import org.jdom2.Document;
 public class ArcObjectsSynchronizerForker {
     private static final Log log = LogFactory.getLog(ArcObjectsSynchronizerForker.class);
     
-    public static Document synchronize(ServletContext context,/* HttpServletResponse response,*/ String dataset, String type, String sdeConnectionString, String metadata) throws Exception {
+    public static Document synchronize(ServletContext context, String dataset, String type,
+            String sdeConnectionString, String metadata) throws Exception {
     
         String workingDir = context.getRealPath("/WEB-INF");
-
         String cp = buildClasspath(context);
         String mainClass = ArcObjectsSynchronizerMain.class.getName();
         
@@ -72,9 +71,8 @@ public class ArcObjectsSynchronizerForker {
         }
         
         final StringWriter output = new StringWriter();
-        final StringWriter errors = new StringWriter(); // response.getWriter();
+        final StringWriter errors = new StringWriter();
         errors.write(String.format(Locale.ROOT, "Werkdirectory: %s\nUitvoeren synchronizer proces: %s\n\n", workingDir, StringUtils.join(args, ' ')));
-        //errors.flush();
         int result;
         
         try {
@@ -102,10 +100,11 @@ public class ArcObjectsSynchronizerForker {
                     try {
                         while ((line = stderr.readLine()) != null) {
                            errors.write(line + "\r\n");
-                           //errors.flush();
                         }
                         stderr.close();
-                    } catch (Exception e) {throw new Error(e);}
+                    } catch (IOException e) {
+                        throw new Error(e);
+                    }
                 }
             };
 
@@ -117,7 +116,9 @@ public class ArcObjectsSynchronizerForker {
                             output.write(line + "\r\n");
                         }
                         stdout.close();
-                    } catch (Exception e) {throw new Error(e);}
+                    } catch (IOException e) {
+                        throw new Error(e);
+                    }
                 }
             };
 
@@ -130,7 +131,7 @@ public class ArcObjectsSynchronizerForker {
             stdoutReader.join();
 
             errors.write("Resultaat: " + (result == 0 ? "succesvol gesynchroniseerd" : "fout opgetreden") + "\n\n");
-        } catch(Exception e) {
+        } catch (IOException | InterruptedException e) {
             throw new Exception("Fout tijdens aanroepen extern proces voor synchroniseren, output: \n" + errors.toString(), e);
         }
         
@@ -140,22 +141,16 @@ public class ArcObjectsSynchronizerForker {
         if(result == 0) {
             return DocumentHelper.getMetadataDocument(output.toString());
         } else {
-            throw new Exception("Synchroniseren via apart process geeft error code " + result + "; output: \n" + errors.toString());
+            throw new Exception("Synchroniseren via apart process geeft error code: " + result + "; output: \n" + errors.toString());
         }
     }
     
     private static String buildClasspath(ServletContext context) {
-        StringBuilder cp = new StringBuilder();
-        cp.append("classes");
-        
-        File lib = new File(context.getRealPath("/WEB-INF/lib"));
-        File[] jarFiles = lib.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jar");
-            }
-        });
+        StringBuilder cp = new StringBuilder("classes");
 
-        for(File f: jarFiles) {
+        File lib = new File(context.getRealPath("/WEB-INF/lib"));
+        File[] jarFiles = lib.listFiles((File dir, String name) -> name.endsWith(".jar"));
+        for (File f : jarFiles) {
             cp.append(File.pathSeparator);
             cp.append("lib");
             cp.append(File.separatorChar);

@@ -27,24 +27,24 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
+  *
  * @author Matthijs Laan
  */
 public class ArcObjectsInitializer {
-    private final static Log log = LogFactory.getLog(ArcObjectsInitializer.class);    
+    private final static Log LOG = LogFactory.getLog(ArcObjectsInitializer.class);
     
     private static AoInitialize aoInit = null;
         
     private static int[] getProductCodeIntegers(String[] productCodes) {
         Class clazz = esriLicenseProductCode.class;
         
-        List<Integer> codes = new ArrayList<Integer>();
+        List<Integer> codes = new ArrayList<>();
         for(String c: productCodes) {
             try {
                 Field f = clazz.getDeclaredField("esriLicenseProductCode" + c);
                 codes.add(f.getInt(null));
-            } catch(Exception e) {
-                log.warn("Invalid product code: " + c);
+            } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e) {
+                LOG.warn("Invalid product code: " + c, e);
             }
         }
         int[] c = new int[codes.size()];
@@ -53,47 +53,58 @@ public class ArcObjectsInitializer {
         }
         return c;
     }
-   
+
+    /**
+     * <strong>NB:</strong> Basic (formerly ArcView), Standard (formerly
+     * ArcEditor) and Advanced (formerly ArcInfo).
+     *
+     * @param productCodes list met product codes
+     * @throws Exception if any
+     */
     public static void initializeLicenseWithStringCodes(String[] productCodes) throws Exception {
         int[] codes = getProductCodeIntegers(productCodes);
         initializeLicense(codes);        
     }
     
     /** 
-     * Will try to initialize, in order: ArcInfo, ArcEditor, ArcServer, ArcView, 
-     * EngineGeoDB, Engine
+     * Will try to initialize, in order: <s>ArcInfo</s>, Advanced,
+     * <s>ArcEditor</s>, Standard, ArcServer, <s>ArcView</s>, Basic,
+       * EngineGeoDB, Engine.
+     *
+     * @throws java.lang.Exception if any
      */
     public static void initializeEditOrViewLicense() throws Exception {
-        initializeLicense(new int[] {
-//            esriLicenseProductCode.esriLicenseProductCodeArcInfo,
-//            esriLicenseProductCode.esriLicenseProductCodeArcEditor,
+        initializeLicense(new int[]{
+            // 9.3.x
+            // esriLicenseProductCode.esriLicenseProductCodeArcInfo,
+            // esriLicenseProductCode.esriLicenseProductCodeArcEditor,
+            // esriLicenseProductCode.esriLicenseProductCodeArcView,
+            // 10.1-10.3           
+            esriLicenseProductCode.esriLicenseProductCodeAdvanced,
+            esriLicenseProductCode.esriLicenseProductCodeStandard,
             esriLicenseProductCode.esriLicenseProductCodeArcServer,
-//            esriLicenseProductCode.esriLicenseProductCodeArcView,
+            esriLicenseProductCode.esriLicenseProductCodeBasic,
             esriLicenseProductCode.esriLicenseProductCodeEngineGeoDB,
             esriLicenseProductCode.esriLicenseProductCodeEngine
-        });                
+        });
     }
 
     /**
-     * Will try to initialize, in order: ArcInfo, ArcEditor, ArcServer(?)
-     */
-    public static void initializeEditLicense() throws Exception {
-        initializeLicense(new int[] {
-//            esriLicenseProductCode.esriLicenseProductCodeArcInfo,
-//            esriLicenseProductCode.esriLicenseProductCodeArcEditor,
-            esriLicenseProductCode.esriLicenseProductCodeArcServer
-        });                
-    }
-
-    /**
-     * Will try to initialize, in order: ArcView, EngineGeoDB, Engine
+     * Will try to initialize, in order: <s>ArcView</s>, Basic, Standard,
+     * EngineGeoDB, Engine.
+     *
+     * @throws java.lang.Exception if any
      */
     public static void initializeViewLicense() throws Exception {
-        initializeLicense(new int[] {
-//            esriLicenseProductCode.esriLicenseProductCodeArcView,
+        initializeLicense(new int[]{
+            // 9.3.x
+            // esriLicenseProductCode.esriLicenseProductCodeArcView,
+            // 10.1-10.3
+            esriLicenseProductCode.esriLicenseProductCodeBasic,
+            esriLicenseProductCode.esriLicenseProductCodeStandard,
             esriLicenseProductCode.esriLicenseProductCodeEngineGeoDB,
             esriLicenseProductCode.esriLicenseProductCodeEngine
-        });                
+        });
     }
     
     /**
@@ -116,13 +127,13 @@ public class ArcObjectsInitializer {
         
         for(int code: productCodes) {
             String codeString = findStaticFieldByValue(esriLicenseProductCode.class, code);
-            log.info("Checking for product code availability for " + codeString);
+            LOG.info("Checking for product code availability for " + codeString);
             int status = aoInit.isProductCodeAvailable(code);
-            log.info("Status: " + findStaticFieldByValue(esriLicenseStatus.class, status));
+            LOG.info("Status: " + findStaticFieldByValue(esriLicenseStatus.class, status));
             
             if(status == esriLicenseStatus.esriLicenseAvailable) {
                 status = aoInit.initialize(code);
-                log.info("Initialize result: " + findStaticFieldByValue(esriLicenseStatus.class, status));
+                LOG.info("Initialize result: " + findStaticFieldByValue(esriLicenseStatus.class, status));
                 return;
             }
         }
@@ -139,12 +150,13 @@ public class ArcObjectsInitializer {
     private static String findStaticFieldByValue(Class clazz, Object value) {
         try {
             Field[] fields = clazz.getDeclaredFields();
-            for(int i = 0; i < fields.length; i++) {
-                if(fields[i].get(null).equals(value)) {
-                    return fields[i].getName();
+            for (Field field : fields) {
+                if (field.get(null).equals(value)) {
+                    return field.getName();
                 }
             }
-        } catch(Exception e) {
+        } catch (IllegalAccessException | IllegalArgumentException | SecurityException e) {
+            LOG.debug(e.getLocalizedMessage());
         }
         return value.toString();
     }

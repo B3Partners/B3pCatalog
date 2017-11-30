@@ -10,20 +10,19 @@ import com.esri.arcgis.geodatabase.IFeatureClass;
 import com.esri.arcgis.geodatabase.IFeatureClassContainer;
 import java.io.IOException;
 import java.util.Iterator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  *
  * @author Erik van de Pol
  */
 public class IFeatureClassList implements Iterable<IFeatureClass> {
-    private IDataset dataset;
+    private final IDataset dataset;
 
     public IFeatureClassList(IDataset dataset) {
         this.dataset = dataset;
     }
 
+    @Override
     public Iterator<IFeatureClass> iterator() {
         try {
             if (dataset instanceof IFeatureClassContainer) {
@@ -45,16 +44,19 @@ public class IFeatureClassList implements Iterable<IFeatureClass> {
             this.featureClass = featureClass;
         }
 
+        @Override
         public boolean hasNext() {
             return featureClass != null;
         }
 
+        @Override
         public IFeatureClass next() {
             IFeatureClass tempFeatureClass = featureClass;
             featureClass = null;
             return tempFeatureClass;
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException("Not supported.");
         }
@@ -62,13 +64,14 @@ public class IFeatureClassList implements Iterable<IFeatureClass> {
 
 
     private class IFeatureClassContainerIterator implements Iterator<IFeatureClass> {
-        private IEnumFeatureClass enumFeatureClass;
+        private final IEnumFeatureClass enumFeatureClass;
         private IFeatureClass nextFeatureClass;
 
         public IFeatureClassContainerIterator(IFeatureClassContainer featureClassContainer) throws IOException {
             enumFeatureClass = featureClassContainer.getClasses();
         }
 
+        @Override
         public boolean hasNext() {
             try {
                 nextFeatureClass = enumFeatureClass.next();
@@ -78,6 +81,7 @@ public class IFeatureClassList implements Iterable<IFeatureClass> {
             }
         }
 
+        @Override
         public IFeatureClass next() {
             try {
                 if (nextFeatureClass != null) {
@@ -92,6 +96,7 @@ public class IFeatureClassList implements Iterable<IFeatureClass> {
             }
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException("Not supported.");
         }

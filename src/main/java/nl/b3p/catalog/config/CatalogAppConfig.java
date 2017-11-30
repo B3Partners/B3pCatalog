@@ -183,6 +183,7 @@ public class CatalogAppConfig implements ServletContextListener {
         return cfg;
     }
 
+    @Override
     public void contextInitialized(ServletContextEvent sce) {
         
         String configParam = sce.getServletContext().getInitParameter("config");
@@ -280,6 +281,7 @@ public class CatalogAppConfig implements ServletContextListener {
     }
 
     
+    @Override
     public void contextDestroyed(ServletContextEvent sce) {
     }
 }

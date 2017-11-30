@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2011 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package nl.b3p.catalog.arcgis;
 
@@ -43,7 +55,7 @@ import org.jdom2.input.SAXBuilder;
  * @author Erik van de Pol
  */
 public class ArcGISSynchronizer {
-    private final static Log log = LogFactory.getLog(ArcGISSynchronizer.class);
+    private final static Log LOG = LogFactory.getLog(ArcGISSynchronizer.class);
 
     public static final String FORMAT_NAME_FGDB = "ESRI file geodatabase (FGDB)";
     public static final String FORMAT_NAME_SDE =  "ESRI ArcSDE";
@@ -54,6 +66,7 @@ public class ArcGISSynchronizer {
         IMetadata im = (IMetadata)name;
         XmlPropertySet xmlPropertySet = (XmlPropertySet)im.getMetadata();
         String xml = xmlPropertySet.getXml("/");
+        LOG.trace("opgehaald metadata document: " + xml);
         return new SAXBuilder().build(new StringReader(xml));
     }
 
@@ -89,6 +102,7 @@ public class ArcGISSynchronizer {
 
     private static void sync(Document xmlDoc, IDataset dataset) throws IOException, B3PCatalogException, JDOMException {
         dataset = DatasetHelper.getIDataset(dataset); // tja, ArcGIS; dataset is in den beginne slechts een IDatasetProxy. Zie verder getIDataset
+        LOG.debug("sync document: " + xmlDoc.toString() + " voor dataset: " + dataset.getName());
 
         // Set title if needed in DC or DS
         // Check if synchroniseDC_init in config.xml is true
@@ -135,8 +149,9 @@ public class ArcGISSynchronizer {
                 XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_EAST, "" + ur.getX(), true);
                 XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_SOUTH, "" + ll.getY(), true);
                 XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.BBOX_NORTH, "" + ur.getY(), true);
-            } catch(Exception e) {
+            } catch (IOException | JDOMException e) {
                 // Kan voorkomen als geen features in de dataset voorkomen ("AutomationException: 0x80040202 - The operation was attempted on an empty geometry. in '"esri.Point"'")
+                LOG.debug(e.getLocalizedMessage());
             }
 
             ISpatialReferenceInfo spatialRef = (ISpatialReferenceInfo)geoDataset.getSpatialReference();
@@ -206,8 +221,9 @@ public class ArcGISSynchronizer {
                 gfc_featureType.addContent(gfc_FC_FeatureType);
                 gfc_FC_FeatureCatalogue.addContent(gfc_featureType);
             }
-        } catch(Exception e) {
+        } catch (IOException e) {
             // Thrown when dataset has no feature classes, ignore
+            LOG.trace(e.getLocalizedMessage());
         }
     }
 

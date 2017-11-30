@@ -74,7 +74,7 @@ public class CSWServerConfig {
     }
 
     /**
-     * @param name the name to set
+     * @param cswName the name to set
      */
     public void setCswName(String cswName) {
         this.cswName = cswName;

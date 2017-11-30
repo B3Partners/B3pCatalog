@@ -17,7 +17,9 @@
 package nl.b3p.catalog.arcgis;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
@@ -43,9 +45,9 @@ import org.apache.commons.logging.LogFactory;
  * @author Matthijs Laan
  */
 public class ArcObjectsLinker {
-    private static final Log log = LogFactory.getLog(ArcObjectsLinker.class);
+    private static final Log LOG = LogFactory.getLog(ArcObjectsLinker.class);
     
-    private static List<String> homeEnvVars = Arrays.asList(new String[] {
+    private static final List<String> HOME_ENV_VARS = Arrays.asList(new String[]{
         "AGSSERVERJAVA", "AGSENGINEJAVA", "AGSDESKTOPJAVA", "ARCGISHOME"});    
     
     public static void link() throws Exception {
@@ -55,19 +57,19 @@ public class ArcObjectsLinker {
     public static void link(String arcObjectsHome) throws Exception {
         
         if(arcObjectsHome == null) {
-            for(String s: homeEnvVars) {
+            for (String s : HOME_ENV_VARS) {
                 arcObjectsHome = System.getenv(s);
                 if(arcObjectsHome != null) {
-                    log.info("Using environment variable " + s + " to find ArcObjects");
+                    LOG.info("Using environment variable " + s + " to find ArcObjects");
                     break;
                 }
             }
         }
         if (arcObjectsHome == null) {
-            throw new Exception("Could not find ArcObjects home in environment variables " + homeEnvVars + ". "
-                    + (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).indexOf("win") > -1
-                    ? "ArcGIS Engine Runtime or ArcGIS Desktop must be installed"
-                    : "ArcGIS Engine Runtime must be installed"));
+            throw new Exception("Could not find ArcObjects home in environment variables " + HOME_ENV_VARS + ". "
+                    + (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("win")
+                    ? "ArcGIS Engine Runtime or ArcGIS Desktop must be installed."
+                    : "ArcGIS Engine Runtime must be installed."));
         }   
         
         // The directory can be set to a JAR itself, the directory arcobjects.jar
@@ -80,7 +82,7 @@ public class ArcObjectsLinker {
         if(arcObjectsHome.endsWith(".jar")) {
             jarFile = new File(arcObjectsHome);
             if(jarFile.exists()) {
-                log.info(String.format(Locale.ENGLISH, "Using full path to ArcObjects JAR file: %s", jarFile.getAbsolutePath()));
+                LOG.info(String.format(Locale.ENGLISH, "Using full path to ArcObjects JAR file: %s", jarFile.getAbsolutePath()));
             } else {
                 jarFile = null;
             }
@@ -91,7 +93,7 @@ public class ArcObjectsLinker {
             jarFile = new File(jarPath);
 
             if(jarFile.exists()) {
-                log.info(String.format(Locale.ENGLISH, "Using arcobjects.jar found in directory: %s", jarFile.getAbsolutePath()));
+                LOG.info(String.format(Locale.ENGLISH, "Using arcobjects.jar found in directory: %s", jarFile.getAbsolutePath()));
             } else {
                 jarFile = null;
             }
@@ -104,7 +106,7 @@ public class ArcObjectsLinker {
             if(!jarFile.exists()) {
                 throw new Exception("Error: could not find arcobjects.jar at path \"" + jarFile.getAbsolutePath() + "\"");
             } else {
-                log.info(String.format(Locale.ENGLISH, "Using ArcObjects home \"%s\"", arcObjectsHome));
+                LOG.info(String.format(Locale.ENGLISH, "Using ArcObjects home \"%s\"", arcObjectsHome));
             }                
         }
 
@@ -118,8 +120,9 @@ public class ArcObjectsLinker {
             Method method = sysclass.getDeclaredMethod("addURL", new Class[]{URL.class});
             method.setAccessible(true);
             method.invoke(sysloader, new Object[]{jarFile.toURI().toURL()});
-        } catch (Throwable throwable) {
-            throw new Exception("Could not add arcobjects.jar to system classloader", throwable);
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException
+                | SecurityException | InvocationTargetException | MalformedURLException e) {
+            throw new Exception("Could not add arcobjects.jar to system classloader", e);
         }               
     }      
 }

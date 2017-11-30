@@ -13,7 +13,6 @@ import com.esri.arcgis.geodatabase.IWorkspaceFactoryLockControlProxy;
 import com.esri.arcgis.geodatabase.Workspace;
 import com.esri.arcgis.geodatabase.XmlPropertySet;
 import com.esri.arcgis.geodatabase.esriDatasetType;
-import com.esri.arcgis.interop.AutomationException;
 import com.esri.arcgis.system.Cleaner;
 import java.io.File;
 import java.io.IOException;
@@ -31,15 +30,17 @@ import org.apache.commons.logging.LogFactory;
  * @author Erik
  */
 public class FGDBHelper {
-    private final static Log log = LogFactory.getLog(FGDBHelper.class);
+    private final static Log LOG = LogFactory.getLog(FGDBHelper.class);
 
     public static String getMetadata(File fileGDBPath, int datasetType) throws IOException, B3PCatalogException {
+        LOG.debug("Zoek metadata voor " + fileGDBPath + ", type " + datasetType);
         IMetadata iMetadata = getIMetadata(fileGDBPath, datasetType);
         XmlPropertySet xmlPropertySet = (XmlPropertySet)iMetadata.getMetadata();
         return xmlPropertySet.getXml("/");
     }
 
     public static void setMetadata(File fileGDBPath, int datasetType, String metadata) throws IOException, B3PCatalogException {
+        LOG.debug("Zet metadata voor " + fileGDBPath + ", type " + datasetType + ", metadata:" + metadata);
         IMetadata iMetadata = getIMetadata(fileGDBPath, datasetType);
         XmlPropertySet xmlPropertySet = (XmlPropertySet)iMetadata.getMetadata();
         xmlPropertySet.setXml(metadata);
@@ -52,9 +53,9 @@ public class FGDBHelper {
     }
 
     public static List<Dir> getAllDirDatasets(File fileGDBPath, String currentPath) throws Exception {
-        List<Dir> files = new ArrayList<Dir>();
+        List<Dir> files = new ArrayList<>();
 
-        log.debug("Opening FGDB dataset: " + fileGDBPath);
+        LOG.debug("Opening FGDB dataset: " + fileGDBPath);
         IDataset targetDataset = getTargetDataset(fileGDBPath, DatasetHelper.DATASET_TYPE_ANY);
 
         IEnumDataset enumDataset = targetDataset.getSubsets();
@@ -71,9 +72,9 @@ public class FGDBHelper {
     }
 
     public static List<nl.b3p.catalog.filetree.DirEntry> getAllFileDatasets(File fileGDBPath, String currentPath) throws Exception {
-        List<nl.b3p.catalog.filetree.DirEntry> files = new ArrayList<nl.b3p.catalog.filetree.DirEntry>();
+        List<nl.b3p.catalog.filetree.DirEntry> files = new ArrayList<>();
 
-        log.debug("Opening FGDB dataset: " + fileGDBPath);
+        LOG.debug("Opening FGDB dataset: " + fileGDBPath);
         IDataset targetDataset = getTargetDataset(fileGDBPath, DatasetHelper.DATASET_TYPE_ANY);
 
         IEnumDataset enumDataset = targetDataset.getSubsets();
@@ -98,7 +99,7 @@ public class FGDBHelper {
         } else if (FGDBHelperProxy.isInsideFGDBDir(fileGDBPath)) {
             File fgdb = FGDBHelperProxy.getRootFGDBDir(fileGDBPath);
             File currentDirFile = fileGDBPath;
-            List<String> subDirList = new LinkedList<String>();
+            List<String> subDirList = new LinkedList<>();
             while (!currentDirFile.getCanonicalFile().equals(fgdb.getCanonicalFile())) {
                 subDirList.add(0, currentDirFile.getName());
                 currentDirFile = currentDirFile.getParentFile();

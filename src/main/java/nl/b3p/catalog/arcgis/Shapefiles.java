@@ -39,11 +39,13 @@ public class Shapefiles {
      *
      * @param file the shapefile to read
      * @return a JSON object, read the code to find out which properties
+     * @throws java.io.IOException if any
+     * @throws JSONException if any
      */
     public static String getMetadata(String file) throws IOException, JSONException {
 
         if (!file.toLowerCase(Locale.ENGLISH).endsWith(".shp")) {
-            throw new IllegalArgumentException("File does not end with .shp: " + file);
+            throw new IllegalArgumentException("File does not end with '.shp': " + file);
         }
 
         JSONObject j = new JSONObject();
@@ -89,7 +91,7 @@ public class Shapefiles {
                 field.put("name", dheader.getFieldName(i));
                 field.put("length", dheader.getFieldLength(i));
                 field.put("decimalCount", dheader.getFieldDecimalCount(i));
-                field.put("class", dheader.getFieldClass(i).getName().toString());
+                field.put("class", dheader.getFieldClass(i).getName() + "");
                 field.put("type", dheader.getFieldType(i) + "");
             }
         } catch (IOException | JSONException e) {

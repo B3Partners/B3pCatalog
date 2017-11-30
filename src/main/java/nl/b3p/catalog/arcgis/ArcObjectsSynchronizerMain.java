@@ -20,7 +20,9 @@ import java.util.Locale;
 import org.apache.commons.cli.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.*;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 /**
  *
@@ -65,7 +67,6 @@ public class ArcObjectsSynchronizerMain {
         CommandLine cl = null;
         try {
             CommandLineParser parser = new PosixParser();
-
             cl = parser.parse(options, args);
         } catch(ParseException e) {
             System.err.printf(Locale.ENGLISH, "%s\n\n", e.getMessage());

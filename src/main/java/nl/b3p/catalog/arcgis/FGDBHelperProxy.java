@@ -6,7 +6,6 @@
 package nl.b3p.catalog.arcgis;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.List;
 import nl.b3p.catalog.B3PCatalogException;
@@ -24,7 +23,7 @@ public class FGDBHelperProxy {
 
     private static void rethrow(NoClassDefFoundError ncdfex) throws B3PCatalogException {
         String message = "ArcObjects is niet goed geinitialiseerd. Om metadata te bekijken en weg te schrijven in deze ESRI file geodatabase (FGDB) is dit nodig.";
-        log.warn(message, ncdfex);
+        log.error(message, ncdfex);
         throw new ArcObjectsNotFoundException(message, ncdfex);
     }
 
@@ -60,23 +59,22 @@ public class FGDBHelperProxy {
     }
 
     public static boolean isInsideFGDBDir(File file) {
-        if (file == null)
+        if (file == null) {
             return false;
+        }
 
         file = file.getParentFile();
         return isFGDBDirOrInsideFGDBDir(file);
     }
 
     public static boolean isFGDBDir(File file) {
-        if (!file.exists() || !file.isDirectory())
+        if (!file.exists() || !file.isDirectory()) {
             return false;
-        String[] gdbFiles = file.list(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.equals("gdb");
-            }
-        });
-        if (gdbFiles == null)
+        }
+        String[] gdbFiles = file.list((File dir, String name) -> name.equals("gdb"));
+        if (gdbFiles == null) {
             return false;
+        }
         return gdbFiles.length >= 1;
     }
 

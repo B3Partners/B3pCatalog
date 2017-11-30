@@ -17,14 +17,13 @@
 package nl.b3p.catalog.arcgis;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.sql.Clob;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import javax.naming.NamingException;
 import nl.b3p.catalog.config.Root;
 import nl.b3p.catalog.config.SDERoot;
@@ -36,6 +35,8 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom2.Document;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
@@ -45,6 +46,7 @@ import org.jdom2.output.XMLOutputter;
  * @author Matthijs Laan
  */
 public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
+    private static final Log LOG = LogFactory.getLog(ArcSDE10JDBCHelper.class);
     protected String TABLE_ITEMS;
     protected String TABLE_ITEMRELATIONSHIPS;
     
@@ -63,21 +65,21 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
     public List<Dir> getFeatureDatasets(final String currentPath) throws NamingException, SQLException {
         Connection c = getConnection();
         try {
-            
             // Nested featuredatasets are not possible to create with ArcCatalog,
             // so no need to check relationships 
-            
             String sql = "select i.objectid, i.name from " + getTableName(TABLE_ITEMS) + " i where type = ?";
-            
+
             ResultSetHandler<List<Dir>> h = new ResultSetHandler<List<Dir>>() {
+                @Override
                 public List<Dir> handle(ResultSet rs) throws SQLException {
-                    List<Dir> l = new ArrayList<Dir>();
+                    List<Dir> l = new ArrayList<>();
                     while(rs.next()) {
                         l.add(new Dir(rs.getString(2) + "", currentPath + rs.getInt(1)));
                     }                    
                     return l;
                 }
             };
+            LOG.debug("Zoeken naar feature data sets met SQL: " + sql + ", param: " + TYPE_FEATURE_DATASET);
             return new QueryRunner().query(c, sql, h, TYPE_FEATURE_DATASET);
         } finally {
             DbUtils.closeQuietly(c);
@@ -100,17 +102,20 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
             }
             
             ResultSetHandler<List<DirEntry>> h = new ResultSetHandler<List<DirEntry>>() {
+                @Override
                 public List<DirEntry> handle(ResultSet rs) throws SQLException {
-                    List<DirEntry> l = new ArrayList<DirEntry>();
+                    List<DirEntry> l = new ArrayList<>();
                     while(rs.next()) {
                         l.add(new DirEntry(rs.getString(2) + "", currentPath + rs.getInt(1)));
                     }                    
                     return l;
                 }
             };
-            if(parent == null) {
+            if (parent == null) {
+                LOG.debug(String.format(Locale.ROOT, "Zoeken voor feature classes met SQL: %s , param: [%s,%s,%s]", sql, TYPE_FEATURE_CLASS, TYPE_RASTER, TYPE_RASTER_2));
                 return new QueryRunner().query(c, sql, h, TYPE_FEATURE_CLASS, TYPE_RASTER, TYPE_RASTER_2);
             } else {
+                LOG.debug(String.format(Locale.ROOT, "Zoeken voor feature classes met SQL: %s , param: [%s,%s,%s,%s]", sql, TYPE_FEATURE_CLASS, TYPE_RASTER, TYPE_RASTER_2, parent.getObjectID()));
                 return new QueryRunner().query(c, sql, h, TYPE_FEATURE_CLASS, TYPE_RASTER, TYPE_RASTER_2, parent.getObjectID());
             }
         } finally {
@@ -124,8 +129,10 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
         Connection c = getConnection();
         try {
             String sql = "select documentation from " + getTableName(TABLE_ITEMS) + " where objectid = ?";
+            LOG.debug(String.format(Locale.ROOT, "Zoeken naar metadata met SQL: %s , param: [%s]", sql, dataset.getObjectID()));
             Clob xml = (Clob)new QueryRunner().query(c, sql, new ScalarHandler(), dataset.getObjectID());
-            if(xml == null) {
+            if (xml == null) {
+                LOG.debug("Geen metadata document gevonden.");
                 return DocumentHelper.EMPTY_METADATA;
             }
             return IOUtils.toString(xml.getCharacterStream());
@@ -137,25 +144,25 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
     @Override
     public void saveMetadata(ArcSDEJDBCDataset dataset, String metadata) throws Exception {
         Connection c = getConnection();
-        PreparedStatement ps = null;
+//        PreparedStatement ps = null;
         try {
-            
             // Sloop encoding uit XML declaratie, anders geeft MSSQL error 
             // "unable to switch the encoding" op column type xml
-            
             Document doc = DocumentHelper.getMetadataDocument(metadata);
             metadata = new XMLOutputter(Format.getPrettyFormat().setOmitEncoding(true)).outputString(doc);
             
             String sql = "update " + getTableName(TABLE_ITEMS) + " set documentation = ? where objectid = ?";
-            ps = c.prepareStatement(sql);
-            ps.setCharacterStream(1, new StringReader(metadata), metadata.length());
-            ps.setObject(2, dataset.getObjectID());
-            int rowsAffected = ps.executeUpdate();
+//            ps = c.prepareStatement(sql);
+//            ps.setCharacterStream(1, new StringReader(metadata), metadata.length());
+//            ps.setObject(2, dataset.getObjectID());
+//            int rowsAffected = ps.executeUpdate();
+            LOG.debug(String.format(Locale.ROOT, "Update metadata met SQL: %s , param: [%s,%s]", sql, metadata, dataset.getObjectID()));
+            int rowsAffected = new QueryRunner().update(c, sql, metadata, dataset.getObjectID());
             if(rowsAffected != 1) {
-                throw new Exception("Updating metadata should affect maximum one row; got rows affected count of " + rowsAffected);
+                throw new Exception("Updating metadata should affect maximum one row; got rows affected count of: " + rowsAffected);
             }
         } finally {
-            DbUtils.closeQuietly(ps);
+//            DbUtils.closeQuietly(ps);
             DbUtils.closeQuietly(c);
         }         
     }
@@ -165,6 +172,7 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
         Connection c = getConnection();
         try {
             String sql = "select name from " + getTableName(TABLE_ITEMS) + " where objectid = ?";
+            LOG.debug(String.format(Locale.ROOT, "Uitlezen dataset naam met SQL: %s , param: [%s]", sql, dataset.getObjectID()));
             String name = (String)new QueryRunner().query(c, sql, new ScalarHandler(), dataset.getObjectID());
             
             if(dataset.getParent() != null) {
@@ -176,4 +184,9 @@ public class ArcSDE10JDBCHelper extends ArcSDEJDBCHelper {
              DbUtils.closeQuietly(c);
         }              
     }  
+
+    @Override
+    public String getName() {
+        return "ArcSDE10JDBCHelper";
+    }
 }

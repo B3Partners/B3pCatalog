@@ -29,38 +29,40 @@ import org.apache.commons.logging.LogFactory;
  * @author Matthijs Laan
  */
 public class ArcObjectsInitializerListener implements ServletContextListener {
-    private final static Log log = LogFactory.getLog(ArcObjectsInitializerListener.class);
+    private final static Log LOG = LogFactory.getLog(ArcObjectsInitializerListener.class);
 
     private boolean initialized;
 
+    @Override
     public void contextInitialized(ServletContextEvent sce) {
         
         CatalogAppConfig cfg = CatalogAppConfig.getConfig();
         
         if(cfg != null && !cfg.getArcObjectsConfig().isEnabled()) {
-            log.info("ArcObjects is not enabled by config");
+            LOG.info("ArcObjects is not enabled by config");
             return;
         }
-        ArcObjectsConfig aoCfg = cfg.getArcObjectsConfig();
-        try {
-            log.info("Attempting to add ArcObjects jar to classpath...");
-            ArcObjectsLinker.link(aoCfg.getArcEngineHome());
-            log.info("OK, initializing license");
 
+        try {
+            ArcObjectsConfig aoCfg = cfg.getArcObjectsConfig();
+            LOG.info("Attempting to add ArcObjects jar to classpath...");
+            ArcObjectsLinker.link(aoCfg.getArcEngineHome());
+            LOG.info("OK, initializing license");
             ArcObjectsInitializer.initializeLicenseWithStringCodes(aoCfg.getProductCodes().toArray(new String[]{}));
             initialized = true;
         } catch (Exception e) {
-            log.error("Error initializing ArcObjects", e);
+            LOG.error("Error initializing ArcObjects", e);
         }        
     }
     
+    @Override
     public void contextDestroyed(ServletContextEvent sce) {
         try {
             if(initialized) {
                 ArcObjectsInitializer.shutdown();
             }
         } catch(Exception e) {
-            log.error("Error shutting down ArcObjects", e);
+            LOG.error("Error shutting down ArcObjects", e);
         }
     }  
 }

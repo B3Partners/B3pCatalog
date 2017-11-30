@@ -66,7 +66,7 @@ public class ArcObjectsSynchronizerWorker {
                 }
 
                 // XXX wachtwoord mogelijk zichtbaar in output
-                log.info("Opening SDE workspace using connection string " + connectionString);
+                log.info("Opening SDE workspace using connection string: " + connectionString);
                 SdeWorkspaceFactory factory = new SdeWorkspaceFactory();
                 ws = new Workspace(factory.openFromString(connectionString, 0));
             } else {
@@ -78,22 +78,23 @@ public class ArcObjectsSynchronizerWorker {
                 IWorkspaceFactory factory = new SdeWorkspaceFactory();
                 ws = new Workspace(factory.openFromFile(file, 0));
             }
-            log.info("SDE workspace open, looking for dataset " + dataset);
+            log.info("SDE workspace open, looking for dataset: " + dataset);
             ds = findSDEDataset(ws, dataset);
 
         } else if(TYPE_FGDB.equals(type)) {
             formatName = ArcGISSynchronizer.FORMAT_NAME_FGDB;
+            log.info("Looking for file dataset: " + dataset);
             ds = FGDBHelper.getTargetDataset(new File(dataset), esriDatasetType.esriDTFeatureClass);
         } else {
             throw new IllegalArgumentException("Invalid type: " + type);
         }
 
-        log.info("Dataset found, synchronizing");
+        log.info("Dataset found, synchronizing...");
         Document doc;
         if(metadataAllElements == null) {
             doc = ArcGISSynchronizer.synchronize(ds, formatName);
         } else {
-            System.err.println("Synchronizing using stdin document");
+            System.err.println("Synchronizing using stdin document.");
             ArcGISSynchronizer.synchronize(metadataAllElements, ds, formatName);
             doc = metadataAllElements;
         }

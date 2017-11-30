@@ -99,6 +99,7 @@ public class SDERoot extends Root {
             }
             
         }
+        log.debug("gevonden JDBC helper implementatie: " + JDBCHelper.getName());
         return JDBCHelper;
     }
 }

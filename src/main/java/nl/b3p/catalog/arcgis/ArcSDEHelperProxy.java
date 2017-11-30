@@ -23,7 +23,7 @@ public class ArcSDEHelperProxy {
 
     static void rethrow(NoClassDefFoundError ncdfex) throws B3PCatalogException {
         String message = "ArcObjects is niet goed geinitialiseerd. Om metadata te bekijken en weg te schrijven in ArcSDE is dit nodig.";
-        log.warn(message, ncdfex);
+        log.error(message, ncdfex);
         throw new ArcObjectsNotFoundException(message, ncdfex);
     }
 
