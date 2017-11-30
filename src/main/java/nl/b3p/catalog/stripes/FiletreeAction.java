@@ -31,7 +31,6 @@ public class FiletreeAction extends DefaultAction {
     /* TODO: eigenlijk moet er voor front-end geen verschil zijn tussen listDir 
      * en listSDEDir. JavaScript code is nogal hairy om meteen aan te passen
      */
-    
     public Resolution listDir() {
         log.debug("listDir: " + dir);
         return list(FileRoot.class);

@@ -4,6 +4,7 @@
  */
 package nl.b3p.catalog.stripes;
 
+import java.io.IOException;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
@@ -13,6 +14,7 @@ import nl.b3p.catalog.Roles;
 import nl.b3p.catalog.resolution.HtmlErrorResolution;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
 
 /**
  *
@@ -26,11 +28,12 @@ public class AdminAction extends DefaultAction {
     @DefaultHandler
     public Resolution loadOrganisations() {
         try {
-            if(!Roles.isAdmin(getContext().getServletContext(), getContext().getRequest()))
+            if (!Roles.isAdmin(getContext().getServletContext(), getContext().getRequest())) {
                 throw new B3PCatalogException("User is not an admin");
+            }
 
             organisations = OrganisationsAction.getOrganisations();
-        } catch (Exception ex) {
+        } catch (B3PCatalogException ex) {
             log.error("Cannot read organisations config file", ex);
             organisations = "";
         }
@@ -39,12 +42,14 @@ public class AdminAction extends DefaultAction {
     
     public Resolution saveOrganisations() {
         try {
-            if(!Roles.isAdmin(getContext().getServletContext(), getContext().getRequest()))
+            if (!Roles.isAdmin(getContext().getServletContext(), getContext().getRequest())) {
                 throw new B3PCatalogException("User is not an admin");
+            }
+            log.debug("Opslaan organisaties: " + organisations);
             OrganisationsAction.setOrganisations(organisations);
             return new StreamingResolution("text/plain", "success");
-        } catch (Exception ex) {
-            String message ="Fout bij opslaan organisaties";
+        } catch (IOException | B3PCatalogException | JSONException ex) {
+            final String message = "Fout bij opslaan organisaties";
             log.error(message, ex);
             return new HtmlErrorResolution(message, ex);
         }

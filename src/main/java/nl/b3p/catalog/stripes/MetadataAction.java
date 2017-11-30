@@ -605,18 +605,20 @@ public class MetadataAction extends DefaultAction {
     }
 
     /**
-     * load metadata from session
-     * add comment
-     * preprocesses metadata to hold all elements
-     * saves metadata on session
-     * transforms metadata to html fragment
+     * Save comment.
+     * <ol>
+     * <li>load metadata from session
+     * <li>add comment
+     * <li>preprocesses metadata to hold all elements
+     * <li>saves metadata on session
+     * <li>transforms metadata to html fragment
+     * </ol>
+     *
      * @return transformed html fragment
-     * @throws Exception
+     * @throws Exception if any
      */
     public Resolution postComment() throws Exception {
-
         try {
-
             Document md = (Document) getContext().getRequest().getSession().getAttribute(SESSION_KEY_METADATA_XML);
             if (md == null) {
                 throw new IllegalStateException("Geen metadatadocument geopend in deze sessie");
@@ -628,9 +630,7 @@ public class MetadataAction extends DefaultAction {
             }
 
             addComment(md, comment);
-
             md = preprocessXml(md);
-
             getContext().getRequest().getSession().setAttribute(SESSION_KEY_METADATA_XML, md);
 
             // do save xml with comment when posting, otherwise users with only
@@ -643,7 +643,6 @@ public class MetadataAction extends DefaultAction {
 
             String html = createHtmlFragment(md);
             return new HtmlResolution(new StringReader(html), extraHeaders);
-
         } catch (Exception e) {
             String message = "Het is niet gelukt om het commentaar (" + comment + ") te posten in " + mode + " op lokatie \"" + path + "\"";
             log.error(message, e);
@@ -652,8 +651,9 @@ public class MetadataAction extends DefaultAction {
     }
 
     /**
-     * preprocesing adds all elements possible
-     * client specific preprocessing possible
+     * preprocesing adds all elements possible client specific preprocessing
+     * possible.
+     *
      * @param md
      * @return
      * @throws JDOMException
@@ -668,8 +668,9 @@ public class MetadataAction extends DefaultAction {
     }
 
     /**
-     * transform xml into html fragment
-     * client specific adaptation of html possible
+     * transform xml into html fragment client specific adaptation of html
+     * possible.
+     *
      * @param md
      * @return
      * @throws JDOMException
@@ -691,7 +692,8 @@ public class MetadataAction extends DefaultAction {
     }
 
     /**
-     * syncing between elements of the xml tree
+     * syncing between elements of the xml tree.
+     *
      * @param md
      * @return
      * @throws B3PCatalogException
@@ -832,87 +834,89 @@ public class MetadataAction extends DefaultAction {
      * <li>title
      * <li>projection
      * <li>.....
-     * @param md
-     * @return
-     * @throws JDOMException
-     * @throws Exception
+     *
+     * @param md document
+     * @return synced document
+     * @throws JDOMException if any
+     * @throws Exception if any
      */
     private Document syncXmlFromDataSource(Document md) throws JDOMException, Exception {
-        if (KB_MODE.equals(mode)) {
-
-            String mdString = DocumentHelper.getDocumentString(md);
-            mdString = KbJDBCHelperProxy.syncMetadata(root, path, mdString);
-            md = DocumentHelper.getMetadataDocument(mdString);
-
-        } else if (SDE_MODE.equals(mode)) {
-
-            Object dataset = ArcSDEHelperProxy.getDataset(root, path);
-
-            if (dataset instanceof ArcSDEJDBCDataset) {
-                ArcSDEJDBCDataset ds = (ArcSDEJDBCDataset) dataset;
-                ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();
-                log.info("Synchroniseren SDE dataset pad " + path + ", absolute name " + ds.getAbsoluteName());
-                if (cfg.isEnabled()) {
-                    dataset = ArcSDEHelperProxy.getArcObjectsDataset(root, ds.getAbsoluteName());
-                    ArcGISSynchronizer.synchronize(md, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
-                } else if (cfg.isForkSynchroniser()) {
-
-                    if (ds.getRoot().getArcobjectsConnection() == null) {
-                        throw new Exception("ArcObjects niet geconfigureerd, synchroniseren niet mogelijk");
-                    }
-                    md = ArcObjectsSynchronizerForker.synchronize(
-                            getContext().getServletContext(),
-                            ds.getAbsoluteName(),
-                            ArcObjectsSynchronizerMain.TYPE_SDE,
-                            ds.getRoot().getArcobjectsConnection(),
-                            metadata
-                    );
-                } else {
-                    throw new Exception("ArcObjects niet geconfigureerd, synchroniseren niet mogelijk");
-                }
-            } else {
-                ArcGISSynchronizer.synchronize(md, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
-            }
-
-        } else if (FILE_MODE.equals(mode)) {
-
-            File dataFile = FileListHelper.getFileForPath(root, path);
-
-            boolean isFGDB = FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dataFile);
-            ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();
-            if(isFGDB && cfg.isEnabled()) {
-                if (cfg.isForkSynchroniser()) {
-                    md = ArcObjectsSynchronizerForker.synchronize(
-                            getContext().getServletContext(),
-                            FileListHelper.getFileForPath(root, path).getAbsolutePath(),
-                            ArcObjectsSynchronizerMain.TYPE_FGDB,
-                            null,
-                            metadata
-                    );
-                } else {
-                    try {
-                        FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
-
-                        Object ds = FGDBHelperProxy.getTargetDataset(dataFile, DATASET_TYPE_ANY);
-                        ArcGISSynchronizer.synchronize(md, ds, ArcGISSynchronizer.FORMAT_NAME_FGDB);
-                    } finally {
-                        FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
-                    }
-                }
-            } else if (path.endsWith(Extensions.SHAPE)) {
-                File shapeFile = FileListHelper.getFileForPath(root, path);
-
-                    // TODO: Create a new method which combines the two. No point in first creating
-                // A JSON object and then saving it. The JSON step has to go.
-                // Implement this after all other requirements are done/tested.
-                String data = Shapefiles.getMetadata(shapeFile.getCanonicalPath());
-                ShapefileSynchronizer.synchronizeFromLocalAccessJSON(md, data);
-
-            } else {
-                synchronizeRegularMetadata(md, dataFile);
-            }
-        } else {
+        if (null == mode) {
             throw new IllegalArgumentException("Invalid mode: " + mode);
+        } else {
+            switch (mode) {
+                case KB_MODE:
+                    String mdString = DocumentHelper.getDocumentString(md);
+                    mdString = KbJDBCHelperProxy.syncMetadata(root, path, mdString);
+                    md = DocumentHelper.getMetadataDocument(mdString);
+                    break;
+                case SDE_MODE:
+                    Object dataset = ArcSDEHelperProxy.getDataset(root, path);
+                    if (dataset instanceof ArcSDEJDBCDataset) {
+                        ArcSDEJDBCDataset ds = (ArcSDEJDBCDataset) dataset;
+                        ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();
+                        log.info("Synchroniseren SDE dataset pad " + path + ", absolute name " + ds.getAbsoluteName());
+                        if (cfg.isEnabled()) {
+                            dataset = ArcSDEHelperProxy.getArcObjectsDataset(root, ds.getAbsoluteName());
+                            ArcGISSynchronizer.synchronize(md, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
+                        } else if (cfg.isForkSynchroniser()) {
+
+                            if (ds.getRoot().getArcobjectsConnection() == null) {
+                                throw new Exception("ArcObjects niet geconfigureerd, synchroniseren niet mogelijk");
+                            }
+                            md = ArcObjectsSynchronizerForker.synchronize(
+                                    getContext().getServletContext(),
+                                    ds.getAbsoluteName(),
+                                    ArcObjectsSynchronizerMain.TYPE_SDE,
+                                    ds.getRoot().getArcobjectsConnection(),
+                                    metadata
+                            );
+                        } else {
+                            throw new Exception("ArcObjects niet geconfigureerd, synchroniseren niet mogelijk");
+                        }
+                    } else {
+                        ArcGISSynchronizer.synchronize(md, dataset, ArcGISSynchronizer.FORMAT_NAME_SDE);
+                    }
+                    break;
+                case FILE_MODE:
+                    File dataFile = FileListHelper.getFileForPath(root, path);
+                    boolean isFGDB = FGDBHelperProxy.isFGDBDirOrInsideFGDBDir(dataFile);
+                    ArcObjectsConfig cfg = CatalogAppConfig.getConfig().getArcObjectsConfig();
+                    if (isFGDB && cfg.isEnabled()) {
+                        if (cfg.isForkSynchroniser()) {
+                            md = ArcObjectsSynchronizerForker.synchronize(
+                                    getContext().getServletContext(),
+                                    FileListHelper.getFileForPath(root, path).getAbsolutePath(),
+                                    ArcObjectsSynchronizerMain.TYPE_FGDB,
+                                    null,
+                                    metadata
+                            );
+                        } else {
+                            try {
+                                FGDBHelperProxy.cleanerTrackObjectsInCurrentThread();
+
+                                Object ds = FGDBHelperProxy.getTargetDataset(dataFile, DATASET_TYPE_ANY);
+                                ArcGISSynchronizer.synchronize(md, ds, ArcGISSynchronizer.FORMAT_NAME_FGDB);
+                            } finally {
+                                FGDBHelperProxy.cleanerReleaseAllInCurrentThread();
+                            }
+                        }
+                    } else if (path.endsWith(Extensions.SHAPE)) {
+                        File shapeFile = FileListHelper.getFileForPath(root, path);
+
+                        // TODO: Create a new method which combines the two. No point in first creating
+                        // A JSON object and then saving it. The JSON step has to go.
+                        // Implement this after all other requirements are done/tested.
+                        String data = Shapefiles.getMetadata(shapeFile.getCanonicalPath());
+                        ShapefileSynchronizer.synchronizeFromLocalAccessJSON(md, data);
+
+                    } else {
+                        synchronizeRegularMetadata(md, dataFile);
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid mode: " + mode);
+            }
         }
         return md;
     }
@@ -1145,6 +1149,4 @@ public class MetadataAction extends DefaultAction {
         this.newUuid = newUuid;
     }
     // </editor-fold>
-
 }
-

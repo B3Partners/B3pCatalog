@@ -5,6 +5,7 @@
 
 package nl.b3p.catalog.stripes;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -69,8 +71,9 @@ public class CatalogAction extends DefaultAction {
     private String uuid;
 
     public Resolution search() {
-        if (searchString == null || searchString.trim().equals(""))
+        if (searchString == null || searchString.trim().equals("")) {
             searchString = "*";
+        }
 
         try {
             CswClient client = getCswClient();
@@ -97,7 +100,7 @@ public class CatalogAction extends DefaultAction {
             }
 
             return new ForwardResolution(SEARCH_RESULTS_JSP);
-        } catch (Exception e) {
+        } catch (IOException | JAXBException | TransformerException | B3PCatalogException | OwsException | JDOMException | JSONException e) {
             String message = "Fout bij het zoeken naar de metadata";
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
@@ -105,9 +108,7 @@ public class CatalogAction extends DefaultAction {
     }
     
     public Resolution loadMdAsHtml() {
-        
         Document mdDoc;
-        
         try {
             CswClient client = getCswClient();
             OutputById output = client.search(new InputById(uuid));
@@ -127,7 +128,7 @@ public class CatalogAction extends DefaultAction {
             StringReader sr = new StringReader(d);
             return new HtmlResolution(sr);
 
-        } catch (Exception e) {
+        } catch (IOException | IllegalArgumentException | JAXBException | TransformerException | B3PCatalogException | OwsException | JDOMException e) {
             String message = "Fout bij het laden van de metadata.";
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
@@ -152,7 +153,7 @@ public class CatalogAction extends DefaultAction {
             }
             
             return new XmlResolution(output.getSearchResultString());
-        } catch (Exception e) {
+        } catch (IOException | IllegalArgumentException | JAXBException | TransformerException | B3PCatalogException | OwsException | JDOMException | JSONException e) {
             String message = "Fout bij het laden van de metadata.";
             log.error(message, e);
             return new HtmlErrorResolution(message, e);
@@ -162,7 +163,6 @@ public class CatalogAction extends DefaultAction {
     public Resolution export() {
         Resolution resolution = load();
         if (resolution instanceof XmlResolution) {
-            // je zou hier de title kunnen extracten en die als filename kunnen includen
             String exportName = "metadata.xml";
             XmlResolution xmlResolution = (XmlResolution)resolution;
             xmlResolution.setAttachment(true);
@@ -186,7 +186,7 @@ public class CatalogAction extends DefaultAction {
 
     protected List<MetadataBean> createMetadataList(Output output) throws TransformerConfigurationException, TransformerFactoryConfigurationError, TransformerException, JDOMException, JAXBException, OwsException {
         List<Element> metadataDocs = output.getSearchResults();
-        List<MetadataBean> list = new ArrayList<MetadataBean>(metadataDocs.size());
+        List<MetadataBean> list = new ArrayList<>(metadataDocs.size());
 
         for (Element mdElem : metadataDocs) {
             MetadataBean metadataBean = new MetadataBean();

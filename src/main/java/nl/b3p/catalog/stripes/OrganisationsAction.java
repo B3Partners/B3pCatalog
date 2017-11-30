@@ -26,22 +26,22 @@ import org.json.JSONObject;
  * @author Chris van Lith
  */
 public class OrganisationsAction extends DefaultAction {
+
     private final static Log log = LogFactory.getLog(OrganisationsAction.class);
-    
+
     private static final String ENCODING = "UTF-8";
-    
+
     private static final String DEFAULT_ORGANISATIONS_FILE = "organisations.json";
-        
+
     @DefaultHandler
     public Resolution main() {
         String organisations = "organisations = " + getOrganisations() + ";";
-        
+
         // TODO ipv JavaScript code JSON teruggeven en dit eerst valideren
         // met org.json.JSONObject
         // In MDE niet met <script> tag maar met XHR laden 
         // Checked with Matthijs. Niet meer relevant is volgende commentaar: 
         // (mogelijk probleem met XHR in ArcCatalog plugin?)
-        
         return new StreamingResolution("text/javascript; charset=" + ENCODING, organisations);
     }
 
@@ -49,59 +49,55 @@ public class OrganisationsAction extends DefaultAction {
         String organisations = getOrganisations();
         return new StreamingResolution("text/plain; charset=" + ENCODING, organisations);
     }
-    
+
     public static JSONObject getOrganisationsJson() throws IOException, JSONException {
         String jsonFileContents = FileUtils.readFileToString(getOrganisationsConfigFile(), ENCODING);
         return new JSONObject(jsonFileContents);
     }
-    
+
     public static String getOrganisations() {
         try {
             JSONObject jsonObj = getOrganisationsJson();
-            return jsonObj.toString(4); // prety print it.
-                    //+ DEFAULT_ORGANISATIONS_FILE_PREAMBULE; 
-            
-         } catch (Exception ex) {
+            // prety print returned json.
+            return jsonObj.toString(4);
+
+        } catch (IOException | JSONException ex) {
             log.error("Cannot read organisations config file: " + ex.getMessage());
-            
-            return "{\"error\": \""+ ex.getMessage() + "\"}";
+
+            return "{\"error\": \"" + ex.getMessage() + "\"}";
         }
     }
-    
-    public static void setOrganisations (String organisations) throws IOException, JSONException {
-        setOrganisationsJson (new JSONObject(organisations));
+
+    public static void setOrganisations(String organisations) throws IOException, JSONException {
+        setOrganisationsJson(new JSONObject(organisations));
     }
-       
-    public static void setOrganisationsJson (JSONObject organisations) throws IOException, JSONException {
-            // This validates the json object as well.
-            String OrganisationsString = 
-                    organisations.toString(4); // prety print it.
-                    //+ DEFAULT_ORGANISATIONS_FILE_PREAMBULE;
-            
-            FileUtils.writeStringToFile(getOrganisationsConfigFile(), OrganisationsString, ENCODING);
+
+    public static void setOrganisationsJson(JSONObject organisations) throws IOException, JSONException {
+        // This validates the json object as well.
+        String OrganisationsString = organisations.toString(4); // prety print it.
+        FileUtils.writeStringToFile(getOrganisationsConfigFile(), OrganisationsString, ENCODING);
     }
-       
-    private static File getOrganisationsConfigFile()  {
+
+    private static File getOrganisationsConfigFile() {
         CatalogAppConfig cfg = CatalogAppConfig.getConfig();
         String ojf = cfg.getOrganizationsJsonFile();
-        if (ojf==null) {
+        if (ojf == null) {
             ojf = DEFAULT_ORGANISATIONS_FILE;
         }
         File f = new File(ojf);
-        if(!f.isAbsolute()) {
+        if (!f.isAbsolute()) {
             f = new File(cfg.getConfigFilePath(), cfg.getOrganizationsJsonFile());
         }
         return f;
-    } 
-    
+    }
+
     public static void saveOrganisations(Document md) throws JDOMException, JSONException, IOException {
-        
         Document mdCopy = new Document((Element) md.getRootElement().clone());
-        List<Document> orgNodes = new ArrayList<Document>();
+        List<Document> orgNodes = new ArrayList<>();
         Element e1 = XPathHelper.selectSingleElement(mdCopy, XPathHelper.DOM_DS1_ORGANISATION_NAME);
         // jbd: Not sure what the need for element.detach is?
         // even on document after 'legen' ALL 4 elements report that they are NOT null.
-        
+
         if (e1 != null) {
             e1.detach();
             orgNodes.add(new Document(e1));
@@ -123,9 +119,9 @@ public class OrganisationsAction extends DefaultAction {
         }
 
         JSONObject configOrgs = getOrganisationsJson();
-        
+
         // maak map met nieuwe/aangepaste orgaisaties
-        Map<String,JSONObject> checkedOrgs = new HashMap<String,JSONObject>();
+        Map<String, JSONObject> checkedOrgs = new HashMap<>();
         // loop over alle organisaties in metadata
         for (Document d : orgNodes) {
             Element e = XPathHelper.selectSingleElement(d, XPathHelper.ORGANISATION_NAME);
@@ -135,7 +131,7 @@ public class OrganisationsAction extends DefaultAction {
                 JSONObject mdOrg = convertElement2Json(d);
                 // bepaal of info van organisatie is aangapast
                 List devis = findDeviations(mdOrg, getConfigOrganisation(configOrgs, name));
-                if (devis!=null && !devis.isEmpty()) {
+                if (devis != null && !devis.isEmpty()) {
                     int loopnum = 1;
                     String loopname = name;
                     while (checkedOrgs.containsKey(loopname)) {
@@ -158,26 +154,25 @@ public class OrganisationsAction extends DefaultAction {
     }
 
     private static List findDeviations(JSONObject o1, JSONObject o2) throws JSONException {
-        ArrayList<String> deviList = new ArrayList<String>();
+        ArrayList<String> deviList = new ArrayList<>();
         if (o1 == null) {
             return null;
         } else if (o2 == null) {
             // Organisation contains values in the mde AND that organisation is NOT in the current organisations.json file.
-
-            Iterator<?> o1it = o1.keys();
+            Iterator<String> o1it = o1.keys();
             while (o1it.hasNext()) {
-                String label = (String) o1it.next();
+                String label = o1it.next();
                 // contact
                 if (label.equals("contacts")) {
                     JSONObject contacts1 = o1.optJSONObject(label);
                     if (contacts1 == null) {
                         // nothing to do
-                    } else {                    
+                    } else {
                         Iterator<?> contacts1it = contacts1.keys();
                         while (contacts1it.hasNext()) {
                             String sublabel = (String) contacts1it.next();
-                            String value1 = contacts1.optString(sublabel); 
-                            if (!value1.isEmpty() )  {
+                            String value1 = contacts1.optString(sublabel);
+                            if (!value1.isEmpty()) {
                                 deviList.add(label + "_" + sublabel);
                             }
                         }
@@ -193,9 +188,9 @@ public class OrganisationsAction extends DefaultAction {
             }
         } else {
             // o1 and o2 are both NOT null.  
-            Iterator<?> o1it = o1.keys();
+            Iterator<String> o1it = o1.keys();
             while (o1it.hasNext()) {
-                String label = (String) o1it.next();
+                String label = o1it.next();
                 if (label.equals("contacts")) {
                     JSONObject contacts1 = o1.optJSONObject(label);
                     JSONObject contacts2 = o2.optJSONObject(label);
@@ -206,7 +201,7 @@ public class OrganisationsAction extends DefaultAction {
                         deviList.add(label);
                     } else {
                         // check differences
-                        Iterator<?> contacts1it = contacts1.keys(); 
+                        Iterator<?> contacts1it = contacts1.keys();
                         while (contacts1it.hasNext()) {
                             String sublabel = (String) contacts1it.next();
 
@@ -217,12 +212,12 @@ public class OrganisationsAction extends DefaultAction {
                             }
                         }
                     }
-                // not a contact.
+                    // not a contact.
                 } else {
                     // optString() returns empty string if in the JSON object the key does not contain a value
                     String value1 = o1.optString(label);
                     String value2 = o2.optString(label);
-                    if (!value1.equals(value2) ) {
+                    if (!value1.equals(value2)) {
                         deviList.add(label);
                     }
 
@@ -231,7 +226,6 @@ public class OrganisationsAction extends DefaultAction {
         }
         return deviList;
     }
-
 
     private static JSONObject convertElement2Json(Document d) throws JDOMException, JSONException {
         JSONObject orgJson = new JSONObject();
@@ -272,7 +266,7 @@ public class OrganisationsAction extends DefaultAction {
         }
         // belong to contact
         e = XPathHelper.selectSingleElement(d, XPathHelper.INDIVIDUAL_NAME);
-        if (e != null && !e.getTextTrim().isEmpty() && email!=null) {
+        if (e != null && !e.getTextTrim().isEmpty() && email != null) {
             JSONObject contactJson = new JSONObject();
             JSONObject emailJson = new JSONObject();
             emailJson.putOpt("email", email);
@@ -281,7 +275,7 @@ public class OrganisationsAction extends DefaultAction {
         } else {
             orgJson.putOpt("email", email);
         }
-        
+
         return orgJson;
     }
 
@@ -291,7 +285,7 @@ public class OrganisationsAction extends DefaultAction {
         }
         return null;
     }
-    
+
     private static JSONObject mergeOrganisation(JSONObject configOrgs, String mdOrgName, JSONObject mdOrg) throws JSONException, IOException {
         //  check if mdOrg in configOrgs
         if (configOrgs.has(mdOrgName)) { //  if yes
@@ -314,13 +308,13 @@ public class OrganisationsAction extends DefaultAction {
                     // add or replace mdContacts to configContacts
                     configContacts.put(mdContactName, mdContact);
                 }
-             }
-             //      add configContacts to mdOrg
-             mdOrg.put("contacts", configContacts);
+            }
+            //      add configContacts to mdOrg
+            mdOrg.put("contacts", configContacts);
         }
         // add or replace mdOrg to configOrgs
         configOrgs.put(mdOrgName, mdOrg);
         // return configOrgs
         return configOrgs;
-   }
+    }
 }

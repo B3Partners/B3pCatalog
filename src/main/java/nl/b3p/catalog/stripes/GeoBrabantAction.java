@@ -12,8 +12,6 @@ import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.validation.Validate;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,8 +21,7 @@ import org.json.JSONObject;
  * @author Geert Plaisier
  */
 public class GeoBrabantAction extends DefaultAction {
-    
-    private final static Log log = LogFactory.getLog(GeoBrabantAction.class);
+
     
     @Validate(required=false)
     private String searchString;
@@ -67,7 +64,7 @@ public class GeoBrabantAction extends DefaultAction {
             "{ \"class\": \"kunst-cultuur\", \"title\": \"Kunst &amp; Cultuur\", \"description\": \"In dit thema vindt u alle informatie over cultuurhistorie en musea: gemeentelijke- en rijksmonumenten, maar ook archeologische monumenten.\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN09/v1\" }," +
             "{ \"class\": \"werklocaties\", \"title\": \"Werklocaties\", \"description\": \"In dit thema vindt u alles over bedrijvigheid. Bedrijventerreinen en kantoorlocaties, maar ook winkelcentra bij u in de buurt.\", \"url\": \"http://acc.geobrabant.nl/viewer/app/RIN10/v1\" }" +
         "]";
-        this.mapsList = new ArrayList<MapsBean>();
+        this.mapsList = new ArrayList<>();
         try {
             JSONArray maps = new JSONArray(mapsJson);
             for (int i = 0; i < maps.length(); ++i) {
