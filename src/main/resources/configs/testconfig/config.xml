@@ -11,7 +11,7 @@
 
                 "access" kan 1 van onderstaande waardes hebben:
                   "write"  : gebruiker met deze rol kan metadata wijzigen
-                  "add"      : gebruiker met deze rol kan metadata toevoegen, maar niet in lijst zien
+                  "add"    : gebruiker met deze rol kan metadata toevoegen, maar niet in lijst zien
                   "comment": gebruiker met deze rol kan metadata lezen en commentaar toevoegen
                   "read"   : gebruiker kan alleen metadata lezen
                   "none"   : root wordt niet getoond in de boomstructuur voor gebruiker, kan geen metadata lezen

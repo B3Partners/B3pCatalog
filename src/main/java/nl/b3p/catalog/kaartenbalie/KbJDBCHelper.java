@@ -37,6 +37,8 @@ import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom2.Document;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
@@ -46,7 +48,7 @@ import org.jdom2.output.XMLOutputter;
  * @author Chris van Lith
  */
 public class KbJDBCHelper {
-    
+    private static final Log LOG = LogFactory.getLog(KbJDBCHelper.class);
     protected KBRoot root;
     
     public KbJDBCHelper(KBRoot root) {
@@ -55,6 +57,7 @@ public class KbJDBCHelper {
     
     protected Connection getConnection() throws NamingException, SQLException {
         Context initCtx = new InitialContext();
+        LOG.debug("opzoeken JNDI datasource: " + root.getJndiDataSource());
         DataSource ds = (DataSource)initCtx.lookup(root.getJndiDataSource());
 
         return ds.getConnection();        

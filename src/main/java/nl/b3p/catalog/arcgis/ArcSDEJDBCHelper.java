@@ -29,12 +29,16 @@ import nl.b3p.catalog.config.SDERoot;
 import nl.b3p.catalog.filetree.Dir;
 import nl.b3p.catalog.filetree.DirContent;
 import nl.b3p.catalog.filetree.DirEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
  * @author Matthijs Laan
  */
 public abstract class ArcSDEJDBCHelper {
+
+    private static final Log LOG = LogFactory.getLog(ArcSDEJDBCHelper.class);
     
     protected SDERoot root;
     
@@ -44,6 +48,7 @@ public abstract class ArcSDEJDBCHelper {
     
     protected Connection getConnection() throws NamingException, SQLException {
         Context initCtx = new InitialContext();
+        LOG.debug("opzoeken JNDI datasource: " + root.getJndiDataSource());
         DataSource ds = (DataSource) initCtx.lookup(root.getJndiDataSource());
 
         return ds.getConnection();

@@ -1,4 +1,25 @@
 {
+    "Dienst van Het Kadaster en Openbare Registers": {
+        "voice": "+31 881832200",
+        "country": "Nederland",
+        "address": "Postbus 9046",
+        "city": "Apeldoorn",
+        "postalCode": "7300 GH",
+        "state": "Gelderland",
+        "url": "https://www.kadaster.nl/brk",
+        "email": "kcc@kadaster.nl"
+    },
+    "Kadaster": {
+        "voice": "088-1832200",
+        "country": "Nederland",
+        "address": "Postbus 9046",
+        "city": "Apeldoorn",
+        "postalCode": "7300 GH",
+        "state": "Gelderland",
+        "url": "http://www.kadaster.nl/",
+        "email": "https://www.kadaster.nl/forms/default.asp?ft=contact",
+        "contacts": {}
+    },
     "B3Partners BV": {
         "voice": "030-214 20 81",
         "country": "Nederland",
@@ -6,11 +27,22 @@
         "city": "Utrecht",
         "postalCode": "3542 EC",
         "state": "Utrecht",
-        "url": "http://www.b3partners.nl",
+        "url": "http://www.b3partners.nl/",
         "email": "info@b3partners.nl",
         "contacts": {"support": {"email": "support@b3partners.nl"}}
     },
-    "Klant 1": {
+    "CycloMedia Technology B.V. ": {
+        "voice": "0418-556100",
+        "country": "Nederland",
+        "address": "Postbus 68",
+        "city": "Waardenburg",
+        "postalCode": "4180 BB",
+        "state": "Gelderland",
+        "url": "http://www.cyclomedia.nl/",
+        "email": "http://www.cyclomedia.nl/contact/",
+        "contacts": {}
+    },
+    "leverancier A": {
         "voice": "???",
         "country": "???",
         "address": "???",

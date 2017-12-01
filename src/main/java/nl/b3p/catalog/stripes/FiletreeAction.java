@@ -28,21 +28,18 @@ public class FiletreeAction extends DefaultAction {
     @Validate
     private String dir;   
     
-    /* TODO: eigenlijk moet er voor front-end geen verschil zijn tussen listDir 
-     * en listSDEDir. JavaScript code is nogal hairy om meteen aan te passen
-     */
     public Resolution listDir() {
-        log.debug("listDir: " + dir);
+        log.debug("lijst maken voor file root/dir: " + dir);
         return list(FileRoot.class);
     }    
     
     public Resolution listSDEDir() {
-        log.debug("listDir: " + dir);
+        log.debug("lijst maken voor SDE root/dir: " + dir);
         return list(SDERoot.class);
     }
     
     public Resolution listKBDir() {
-        log.debug("listDir: " + dir);
+        log.debug("lijst maken voor KB root/dir: " + dir);
         return list(KBRoot.class);
     }    
         
@@ -52,6 +49,7 @@ public class FiletreeAction extends DefaultAction {
                 dirContent = getRoots(clazz);
             } else {
                 Root r = Root.getRootForPath(dir, getContext().getRequest(), AclAccess.READ);
+                log.debug("lijst uitlezen voor: " + r.getName() + " - " + dir);
                 dirContent = r.getDirContent(dir);
                 dirContent.sort();                
             }

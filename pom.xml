@@ -14,10 +14,6 @@
         <url>http://www.b3partners.nl/</url>
     </organization>
 
-    <prerequisites>
-        <maven>3.2.5</maven>
-    </prerequisites>
-
     <scm>
         <connection>scm:git:git@github.com:B3Partners/B3pCatalog.git</connection>
         <developerConnection>scm:git:git@github.com:B3Partners/B3pCatalog.git</developerConnection>
