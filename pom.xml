@@ -4,7 +4,7 @@
 
     <groupId>nl.b3p</groupId>
     <artifactId>B3pCatalog</artifactId>
-    <version>5.0.0-RC2</version>
+    <version>5.0.0-RC3-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>B3pCatalog</name>
@@ -18,7 +18,7 @@
         <connection>scm:git:git@github.com:B3Partners/B3pCatalog.git</connection>
         <developerConnection>scm:git:git@github.com:B3Partners/B3pCatalog.git</developerConnection>
         <url>https://github.com/B3Partners/B3pCatalog</url>
-        <tag>B3pCatalog-5.0.0-RC2</tag>
+        <tag>HEAD</tag>
     </scm>
     <issueManagement>
         <system>Github</system>
