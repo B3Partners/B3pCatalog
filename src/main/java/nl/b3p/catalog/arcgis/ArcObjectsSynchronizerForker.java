@@ -135,12 +135,13 @@ public class ArcObjectsSynchronizerForker {
             throw new Exception("Fout tijdens aanroepen extern proces voor synchroniseren, output: \n" + errors.toString(), e);
         }
         
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Synchroniseren via apart proces succesvol; output: " + errors.toString());
         }
         if(result == 0) {
-            return DocumentHelper.getMetadataDocument(output.toString());
+            return DocumentHelper.getMetadataDocument(output.toString().trim());
         } else {
+            log.debug("Ontvangen input: " + output.toString());
             throw new Exception("Synchroniseren via apart process geeft error code: " + result + "; output: \n" + errors.toString());
         }
     }
