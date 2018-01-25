@@ -42,7 +42,6 @@ import nl.b3p.catalog.B3PCatalogException;
 import nl.b3p.catalog.xml.Names;
 import nl.b3p.catalog.xml.Namespaces;
 import nl.b3p.catalog.xml.XPathHelper;
-import static nl.b3p.catalog.xml.mdeXml2Html.getXSLParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jdom2.Document;
@@ -106,16 +105,16 @@ public class ArcGISSynchronizer {
 
         // Set title if needed in DC or DS
         // Check if synchroniseDC_init in config.xml is true
-        if (getXSLParam("synchroniseDC_init")) {
+//        if (getXSLParam("synchroniseDC_init")) {
 
             Element dcTitle = XPathHelper.selectSingleElement(xmlDoc, XPathHelper.DOM_DC_TITLE);
 
                 // If title is NOT already filled then synchronize it.
             // Note: Changes made in the MDE are only picked up after a save of the document.
-            if (dcTitle.getText().isEmpty()) {
-                XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, dataset.getBrowseName());
-            }
-        } else {
+        if (dcTitle.getText().isEmpty()) {
+            XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, dataset.getBrowseName());
+        }
+//        } else {
             // set title in DS1.
 
             Element dsTitle = XPathHelper.selectSingleElement(xmlDoc, XPathHelper.TITLE);
@@ -125,7 +124,7 @@ public class ArcGISSynchronizer {
             if (dsTitle.getText().isEmpty()) {
                 XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, dataset.getBrowseName());
             }
-        }
+//        }
 
         if(dataset instanceof IObjectClass) {
             XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.ALT_TITLE, ((IObjectClass)dataset).getAliasName());
