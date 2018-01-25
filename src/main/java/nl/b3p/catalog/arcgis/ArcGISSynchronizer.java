@@ -111,7 +111,7 @@ public class ArcGISSynchronizer {
 
                 // If title is NOT already filled then synchronize it.
             // Note: Changes made in the MDE are only picked up after a save of the document.
-        if (dcTitle.getText().isEmpty()) {
+        if (dcTitle != null && dcTitle.getText().isEmpty()) {
             XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, dataset.getBrowseName());
         }
 //        } else {
@@ -121,7 +121,7 @@ public class ArcGISSynchronizer {
 
             // If title is NOT already filled then synchronize it.
             // Note: Changes made in the MDE are only picked up after a save of the document.
-            if (dsTitle.getText().isEmpty()) {
+            if (dsTitle != null && dsTitle.getText().isEmpty()) {
                 XPathHelper.applyXPathValuePair(xmlDoc, XPathHelper.TITLE, dataset.getBrowseName());
             }
 //        }
