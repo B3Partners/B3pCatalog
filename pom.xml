@@ -49,7 +49,7 @@
         <maven.compiler.source>${project.build.sourceVersion}</maven.compiler.source>
         <maven.compiler.target>${project.build.targetVersion}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <geotools.version>18.2</geotools.version>
+        <geotools.version>19.0</geotools.version>
         <org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_j2eeVersion>1.7-web</org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_j2eeVersion>
         <org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_deploy_2e_server>Tomcat</org-netbeans-modules-maven-j2ee.netbeans_2e_hint_2e_deploy_2e_server>
         <netbeans.hint.jdkPlatform>JDK_${project.build.targetVersion}</netbeans.hint.jdkPlatform>
@@ -60,7 +60,7 @@
             <dependency>
                 <groupId>nl.b3p</groupId>
                 <artifactId>datastorelinker-bom</artifactId>
-                <version>5.0.3</version>
+                <version>5.0.4</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
