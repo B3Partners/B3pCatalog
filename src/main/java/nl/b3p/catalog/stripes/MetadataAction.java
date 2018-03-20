@@ -864,10 +864,9 @@ public class MetadataAction extends DefaultAction {
                             if (ds.getRoot().getArcobjectsConnection() == null) {
                                 throw new Exception("ArcObjects niet geconfigureerd, synchroniseren niet mogelijk");
                             }
-//                            Document mdCopy = cleanupXmlCopy(md, EXPORT_TYPE_ALL);
-//                            metadata = DocumentHelper.getDocumentString(mdCopy);
+
                             metadata = DocumentHelper.getDocumentString(md);
-                            log.debug("input metadata voor sync: " + md);
+                            log.debug("input metadata voor sync: " + metadata);
 
                             md = ArcObjectsSynchronizerForker.synchronize(
                                     getContext().getServletContext(),
