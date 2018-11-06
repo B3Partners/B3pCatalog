@@ -2303,7 +2303,7 @@
 				</xsl:variable>
 				<xsl:choose>
 					<xsl:when test="$currentval != '' ">
-						<xsl:attribute name="ui-mde-current-value"><xsl:value-of select="normalize-space($currentval)"/></xsl:attribute>
+						<xsl:attribute name="ui-mde-current-value"><xsl:value-of select="$currentval"/></xsl:attribute>
 						<xsl:if test="$picklist != '' ">
 							<xsl:attribute name="ui-mde-codelistvalue"><xsl:value-of select="normalize-space($currentval)"/></xsl:attribute>
 						</xsl:if>

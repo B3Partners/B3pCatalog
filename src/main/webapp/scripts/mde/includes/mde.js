@@ -1354,9 +1354,6 @@ $.widget("ui.mde", {
 
     _getSavedValueOnClientSide: function($element) {
         var savedValue = xmlUnescape($element.attr("ui-mde-current-value"));
-        this.log("_getSavedValueOnClientSide (voor decode): " + savedValue);
-        savedValue = this._decodeNewLines(savedValue);
-        this.log("_getSavedValueOnClientSide (na decode): " + savedValue);
         return savedValue;
     },
 
@@ -1367,10 +1364,11 @@ $.widget("ui.mde", {
         var attrName = $element.attr("attrname");
         //this.log(attrName);
         
-        this.log("_saveValueOnClientSide (voor decode): " + newValue);
-        newValue = this._encodeNewLines(newValue);
-        newText = this._encodeNewLines(newText);
-        this.log("_saveValueOnClientSide (na decode): " + newValue);
+        this.log("_saveValueOnClientSide newvalue: " + newValue);
+        this.log("_saveValueOnClientSide newtext: " + newValue);
+        if (typeof newValue == "undefined" || newValue === null || newValue === "") newValue = "";
+        if (typeof newText == "undefined" || newText === null || newText === "") newText = "";
+        
 
         var change = {
             path: path,
