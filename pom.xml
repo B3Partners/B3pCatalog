@@ -28,12 +28,12 @@
         <repository>
             <id>repo.b3p.nl</id>
             <name>B3P release Repository</name>
-            <url>http://repo.b3p.nl/nexus/content/repositories/releases/</url>
+            <url>https://repo.b3p.nl/nexus/repository/releases/</url>
         </repository>
         <snapshotRepository>
             <id>repo.b3p.nl</id>
             <name>B3P snapshot Repository</name>
-            <url>http://repo.b3p.nl/nexus/content/repositories/snapshots/</url>
+            <url>https://repo.b3p.nl/nexus/repository/snapshots/</url>
         </snapshotRepository>
         <site>
             <id>gh-pages</id>
@@ -157,7 +157,7 @@
         <repository>
             <id>repo.b3p.nl</id>
             <name>B3P Repository</name>
-            <url>http://repo.b3p.nl/nexus/content/groups/public/</url>
+            <url>https://repo.b3p.nl/nexus/repository/public/</url>
         </repository>
         <repository>
             <!-- voor arcobjects -->
@@ -169,7 +169,7 @@
     <build>
         <plugins>
             <!-- controleren of er nieuwe plugins zijn:
-                mvn -U org.codehaus.mojo:versions-maven-plugin:2.5:display-plugin-updates -T1
+                mvn -U org.codehaus.mojo:versions-maven-plugin:2.7:display-plugin-updates -T1
             -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
