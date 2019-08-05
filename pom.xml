@@ -167,6 +167,20 @@
         </repository>
     </repositories>
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>5.2.1</version>
+                    <configuration>
+                        <skipSystemScope>true</skipSystemScope>
+                        <format>ALL</format>
+                        <suppressionFile>${project.basedir}/.mvn/owasp-suppression.xml</suppressionFile>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <!-- controleren of er nieuwe plugins zijn:
                 mvn -U org.codehaus.mojo:versions-maven-plugin:2.7:display-plugin-updates -T1
