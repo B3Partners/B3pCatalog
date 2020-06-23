@@ -1,0 +1,14 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: weekly
+    day: sunday
+    time: "06:00"
+    timezone: Europe/Amsterdam
+  open-pull-requests-limit: 25
+  ignore:
+  - dependency-name: xml-apis:xml-apis
+    versions:
+    - "> 1.4.01"
