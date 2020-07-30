@@ -73,7 +73,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>b3p-commons-csw</artifactId>
-            <version>5.1.2</version>
+            <version>6.2.1</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
